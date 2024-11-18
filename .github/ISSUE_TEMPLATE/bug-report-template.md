@@ -1,3 +1,12 @@
+---
+name: Bug template
+about: 버그 해결 시 사용해주세요
+title: "[Fix]"
+labels: "\U0001F41E BugFix"
+assignees: ''
+
+---
+
 ## 어떤 버그인가요?
 
 > 어떤 버그인지 간결하게 설명해주세요
