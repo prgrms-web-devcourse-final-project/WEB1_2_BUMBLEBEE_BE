@@ -24,7 +24,6 @@ public class SpringSecurityConfig {
                 .authorizeHttpRequests(request -> request
                         .anyRequest().permitAll()); //모두 허용
 
-
         return http.build();
     }
 }
