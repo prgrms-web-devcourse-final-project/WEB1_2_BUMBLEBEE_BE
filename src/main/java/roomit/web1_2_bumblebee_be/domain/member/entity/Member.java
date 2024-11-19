@@ -1,5 +1,7 @@
 package roomit.web1_2_bumblebee_be.domain.member.entity;
+
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,8 +10,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -21,28 +21,31 @@ public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long memberId;
 
     @Column(nullable = false)
-    private String nickName;
+    private String memberNickName;
 
     @Column(nullable = false)
-    private String phoneNumber;
+    private String memberPhoneNumber;
 
     @Column(nullable = false)
-    private int age;
+    private int memberAge;
 
     @Column(nullable = false)
-    private Sex sex;
+    @Enumerated(value = EnumType.STRING)
+    private Sex memberSex;
+
+    @Column(nullable = false, unique = true)
+    @Email
+    private String memberEmail;
 
     @Column(nullable = false)
-    private String email;
+    private String memberPwd;
 
     @Column(nullable = false)
-    private String pwd;
-
-    @Column(nullable = false)
-    private Role role;
+    @Enumerated(value = EnumType.STRING)
+    private Role memberRole;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -57,35 +60,28 @@ public class Member {
 //    private List<Reservation> reservations = new ArrayList();
 
     @Builder
-    public Member(String nickName, String phoneNumber, int age, Sex sex, String email, String pwd, Role role /*Review review, Reservation reservation*/) {
-        this.nickName = nickName;
-        this.phoneNumber = phoneNumber;
-        this.age = age;
-        this.sex = sex;
-        this.email = email;
-        this.pwd = pwd;
-        this.role = role;
-        this.createdAt = LocalDateTime.now();
+    public Member(String memberNickName, String memberPhoneNumber, int memberAge, Sex memberSex, String memberEmail, String memberPwd, Role memberRole /*Review review, Reservation reservation*/) {
+        this.memberNickName = memberNickName;
+        this.memberPhoneNumber = memberPhoneNumber;
+        this.memberAge = memberAge;
+        this.memberSex = memberSex;
+        this.memberEmail = memberEmail;
+        this.memberPwd = memberPwd;
+        this.memberRole = memberRole;
 //        this.review = review;
 //        this.reservation = reservation;
     }
 
     public void changePwd(String newPwd) {
-        this.pwd = newPwd;
-    }
-    public void changeRole(Role newRole) {
-        this.role = newRole;
+        this.memberPwd = newPwd;
     }
     public void changeEmail(String newEmail) {
-        this.email = newEmail;
+        this.memberEmail = newEmail;
     }
     public void changePhoneNumber(String newPhoneNumber) {
-        this.phoneNumber = newPhoneNumber;
+        this.memberPhoneNumber = newPhoneNumber;
     }
-    public void changeAge(int newAge) {
-        this.age = newAge;
-    }
-    public void nickName(String newNickName) {
-        this.nickName = newNickName;
+    public void changeNickName(String newNickName) {
+        this.memberNickName = newNickName;
     }
 }
