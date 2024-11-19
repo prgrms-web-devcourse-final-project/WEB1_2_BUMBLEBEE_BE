@@ -28,14 +28,14 @@ public class MemberResponse {
     private LocalDateTime createAt;
 
     public MemberResponse(Member member) {
-        this.id = member.getId();
-        this.nickName = member.getNickName();
-        this.phoneNumber = member.getPhoneNumber();
-        this.age = member.getAge();
-        this.sex = member.getSex();
-        this.email = member.getEmail();
-        this.pwd = member.getPwd();
-        this.role = member.getRole();
+        this.id = member.getMemberId();
+        this.nickName = member.getMemberNickName();
+        this.phoneNumber = member.getMemberPhoneNumber();
+        this.age = member.getMemberAge();
+        this.sex = member.getMemberSex();
+        this.email = member.getMemberEmail();
+        this.pwd = member.getMemberPwd();
+        this.role = member.getMemberRole();
         this.createAt = LocalDateTime.now();
     }
 
