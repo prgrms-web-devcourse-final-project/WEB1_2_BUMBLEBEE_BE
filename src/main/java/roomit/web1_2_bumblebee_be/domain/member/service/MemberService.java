@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
+import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
+import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
 import roomit.web1_2_bumblebee_be.domain.member.exception.MemberNotFound;
 import roomit.web1_2_bumblebee_be.domain.member.repository.MemberRepository;
 import roomit.web1_2_bumblebee_be.domain.member.request.MemberRegisterRequest;
@@ -20,13 +22,13 @@ public class MemberService {
 
     public void signupMember(MemberRegisterRequest memberRequest) {
         Member member = Member.builder()
-                .nickName(memberRequest.getNickName())
-                .age(memberRequest.getAge())
-                .sex(memberRequest.getSex())
-                .pwd(memberRequest.getPwd())
-                .email(memberRequest.getEmail())
-                .role(memberRequest.getRole())
-                .phoneNumber(memberRequest.getPhoneNumber())
+                .memberAge(10)
+                .memberSex(Sex.FEMALE)
+                .memberPwd("1111")
+                .memberEmail("이시현@Naver.com")
+                .memberRole(Role.Admin)
+                .memberPhoneNumber("010-33230-23")
+                .memberNickName("치킨유저")
                 .build();
 
         memberRepository.save(member);
@@ -43,9 +45,8 @@ public class MemberService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFound::new);
 
-        member.changeAge(request.getAge());
         member.changeEmail(request.getEmail());
-        member.changeRole(request.getRole());
+        member.changeNickName(request.getMemberNickName());
         member.changePhoneNumber(request.getPhoneNumber());
         member.changePwd(request.getPwd());
         memberRepository.save(member);
