@@ -8,6 +8,7 @@ public class Web12BumblebeeBeApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(Web12BumblebeeBeApplication.class, args);
+
     }
 
 }
