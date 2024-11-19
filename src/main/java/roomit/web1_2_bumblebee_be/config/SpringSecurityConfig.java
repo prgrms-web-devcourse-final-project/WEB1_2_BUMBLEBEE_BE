@@ -25,5 +25,6 @@ public class SpringSecurityConfig {
                         .anyRequest().permitAll()); //모두 허용
 
         return http.build();
+
     }
 }
