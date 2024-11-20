@@ -4,7 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomit.web1_2_bumblebee_be.domain.business.entity.Business;
+import roomit.web1_2_bumblebee_be.domain.business.exception.BusinessNotDelete;
 import roomit.web1_2_bumblebee_be.domain.business.exception.BusinessNotFound;
+import roomit.web1_2_bumblebee_be.domain.business.exception.BusinessNotModify;
+import roomit.web1_2_bumblebee_be.domain.business.exception.BusinessNotRegister;
 import roomit.web1_2_bumblebee_be.domain.business.repository.BusinessRepository;
 import roomit.web1_2_bumblebee_be.domain.business.request.BusinessRegisterRequest;
 import roomit.web1_2_bumblebee_be.domain.business.request.BusinessUpdateRequest;
@@ -19,16 +22,20 @@ public class BusinessService {
     //사업자 등록
     @Transactional
     public void signUpBusiness(BusinessRegisterRequest registerRequest) {
-        Business business = Business.builder()
-                .businessName(registerRequest.getBusinessName())
-                .businessEmail(registerRequest.getBusinessEmail())
-                //비밀 번호 암호화 처리 필요
-                .businessPwd(registerRequest.getBusinessPwd())
-                .businessNum(registerRequest.getBusinessNum())
-                .build();
+        try {
+            Business business = Business.builder()
+                    .businessName(registerRequest.getBusinessName())
+                    .businessEmail(registerRequest.getBusinessEmail())
+                    //비밀 번호 암호화 처리 필요
+                    .businessPwd(registerRequest.getBusinessPwd())
+                    .businessNum(registerRequest.getBusinessNum())
+                    .build();
 
-        // 예외 처리 필요
-        businessRepository.save(business);
+            // 예외 처리 필요
+            businessRepository.save(business);
+        }catch (Exception e) {
+            throw new BusinessNotRegister();
+        }
     }
 
     //사업자 정보 조회
@@ -43,7 +50,7 @@ public class BusinessService {
 
     //사업자 정보 수정
     @Transactional
-    public BusinessResponse updateBusinessInfo(Long businessId, BusinessUpdateRequest updateRequest) {
+    public void updateBusinessInfo(Long businessId, BusinessUpdateRequest updateRequest) {
         Business business = businessRepository.findById(businessId)
                 .orElseThrow(BusinessNotFound::new);
 
@@ -52,13 +59,10 @@ public class BusinessService {
             business.changeBusinessName(updateRequest.getBusinessName());
             business.changeBusinessNum(updateRequest.getBusinessNum());
 
-            business = businessRepository.save(business);
+            businessRepository.save(business);
         }catch (Exception e){
-            //다른 예외처리로 변경 필요
-            throw new BusinessNotFound();
+            throw new BusinessNotModify();
         }
-
-        return new BusinessResponse(business);
     }
 
 
@@ -68,7 +72,10 @@ public class BusinessService {
         businessRepository.findById(businessId)
                 .orElseThrow(BusinessNotFound::new);
 
-        //예외 처리 필요
-        businessRepository.deleteById(businessId);
+        try {
+            businessRepository.deleteById(businessId);
+        }catch (Exception e){
+            throw new BusinessNotDelete();
+        }
     }
 }
