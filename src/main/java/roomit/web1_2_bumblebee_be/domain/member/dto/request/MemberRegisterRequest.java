@@ -2,7 +2,6 @@ package roomit.web1_2_bumblebee_be.domain.member.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 import lombok.Builder;
 import lombok.Getter;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Age;
@@ -11,7 +10,6 @@ import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
 
 @Getter
 public class MemberRegisterRequest {
-
 
     @NotBlank(message = "닉네임을 입력해주세요.")
     private String nickName;

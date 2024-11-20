@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import roomit.web1_2_bumblebee_be.domain.member.entity.Age;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
@@ -39,7 +40,7 @@ class MemberServiceTest {
                 .sex(Sex.FEMALE)
                 .pwd("1111")
                 .email("이시현@Naver.com")
-                .role(Role.Admin)
+                .role(Role.ROLE_ADMIN)
                 .phoneNumber("010-33230-23")
                 .nickName("치킨유저")
                 .build();
@@ -64,7 +65,7 @@ class MemberServiceTest {
                 .memberSex(Sex.FEMALE)
                 .memberPwd("1111")
                 .memberEmail("이시현@Naver.com")
-                .memberRole(Role.Admin)
+                .memberRole(Role.ROLE_ADMIN)
                 .memberPhoneNumber("010-33230-23")
                 .memberNickName("치킨유저")
                 .build();
@@ -86,7 +87,7 @@ class MemberServiceTest {
                 .memberSex(Sex.FEMALE)
                 .memberPwd("1111")
                 .memberEmail("이시현@Naver.com")
-                .memberRole(Role.Admin)
+                .memberRole(Role.ROLE_ADMIN)
                 .memberPhoneNumber("010-33230-23")
                 .memberNickName("치킨유저")
                 .build();
@@ -107,7 +108,7 @@ class MemberServiceTest {
                 .memberSex(Sex.FEMALE)
                 .memberPwd("1111")
                 .memberEmail("이시현@Naver.com")
-                .memberRole(Role.Admin)
+                .memberRole(Role.ROLE_ADMIN)
                 .memberPhoneNumber("010-33230-23")
                 .memberNickName("치킨유저")
                 .build();
@@ -137,7 +138,7 @@ class MemberServiceTest {
                 .memberSex(Sex.FEMALE)
                 .memberPwd("1111")
                 .memberEmail("이시현@Naver.com")
-                .memberRole(Role.Admin)
+                .memberRole(Role.ROLE_ADMIN)
                 .memberPhoneNumber("010-33230-23")
                 .memberNickName("치킨유저")
                 .build();
@@ -157,7 +158,7 @@ class MemberServiceTest {
                 .memberSex(Sex.FEMALE)
                 .memberPwd("1111")
                 .memberEmail("이시현@Naver.com")
-                .memberRole(Role.Admin)
+                .memberRole(Role.ROLE_ADMIN)
                 .memberPhoneNumber("010-33230-23")
                 .memberNickName("치킨유저")
                 .build();
