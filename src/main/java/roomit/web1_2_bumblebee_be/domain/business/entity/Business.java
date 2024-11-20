@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
-import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
 
 import java.time.LocalDateTime;
@@ -19,6 +19,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Table(name = "business")
 @Getter
 @NoArgsConstructor(access = PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 public class Business {
 
     @Id
@@ -52,8 +53,6 @@ public class Business {
 
     @OneToMany(mappedBy = "business", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Workplace> workplace;
-
-
 
     @Builder
     public Business(String businessName, String businessPwd, String businessEmail,String businessNum) {
