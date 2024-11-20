@@ -41,6 +41,27 @@ class MemberControllerTest {
     void setUp() {
         memberRepository.deleteAll();
     }
+    @Test
+    @DisplayName("성별, 비밀번호 없을떄 등록시 필요한 검증값 나오게끔 테스트")
+    void test() throws Exception{
+        MemberRegisterRequest memberRequest = MemberRegisterRequest.builder()
+                .age(Age.TEN)
+                .role(Role.Admin)
+                .email("이시현@naver.com")
+                .phoneNumber("010-33230-23")
+                .nickName("치킨유저")
+                .build();
+
+
+        String json = objectMapper.writeValueAsString(memberRequest);
+
+        mockMvc.perform(post("/api/v1/member/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                )
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
 
     @Test
     @DisplayName("회원 등록")
