@@ -1,11 +1,7 @@
 package roomit.web1_2_bumblebee_be.domain.studyroom.dto.request;
 
-import jakarta.persistence.PreUpdate;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 
 @Getter
 public class StudyRoomRequest {
