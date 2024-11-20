@@ -10,7 +10,7 @@ public enum ErrorCode {
     WORKPLACE_NOT_MODIFIED(403,"W002","사업장 수정에 실패하였습니다."),
     WORKPLACE_NOT_DELETE(403,"W003","사업장 삭제에 실패하였습니다."),
     WORKPLACE_NOT_FOUND(400,"W004","존재하지 않는 사업장 입니다"),
-    WORKPLACE_INVALID_REQUEST(400,"E001","잘못된 입력입니다."),
+    WORKPLACE_INVALID_REQUEST(400,"E001","잘못된 입력입니다."), // 공통에러?
     ;
 
     private final String code;
