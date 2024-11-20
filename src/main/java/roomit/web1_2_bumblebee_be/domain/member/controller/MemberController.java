@@ -2,6 +2,8 @@ package roomit.web1_2_bumblebee_be.domain.member.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomit.web1_2_bumblebee_be.domain.member.request.MemberRegisterRequest;
 import roomit.web1_2_bumblebee_be.domain.member.request.MemberUpdateRequest;
@@ -24,15 +26,15 @@ public class MemberController {
 
     // 내 정보 조회
     @GetMapping("/api/v1/member/{memberId}")
-    public MemberResponse read(@PathVariable Long memberId){
-        return memberService.read(memberId);
+    public ResponseEntity<MemberResponse> read(@PathVariable Long memberId){
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.read(memberId));
     }
 
 
     // 내 정보 수정
     @PutMapping("/api/v1/member/{memberId}")
-    public MemberResponse update(@PathVariable Long memberId, @RequestBody @Valid MemberUpdateRequest request) {
-       return memberService.update(memberId, request);
+    public ResponseEntity<MemberResponse> update(@PathVariable Long memberId, @RequestBody @Valid MemberUpdateRequest request) {
+       return ResponseEntity.status(HttpStatus.OK).body(memberService.update(memberId, request));
     }
 
     // 내 정보 삭제
