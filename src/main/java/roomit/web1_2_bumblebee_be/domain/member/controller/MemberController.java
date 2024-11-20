@@ -10,34 +10,33 @@ import roomit.web1_2_bumblebee_be.domain.member.service.MemberService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/member")
 public class MemberController {
 
     private final MemberService memberService;
 
 
     // 회원 등록
-    @PostMapping("/signup")
+    @PostMapping("/api/v1/member/signup")
     public void signup(@RequestBody @Valid MemberRegisterRequest request) {
 
         memberService.signupMember(request);
     }
 
     // 내 정보 조회
-    @GetMapping("/{memberId}")
+    @GetMapping("/api/v1/member/{memberId}")
     public MemberResponse read(@PathVariable Long memberId){
         return memberService.read(memberId);
     }
 
 
     // 내 정보 수정
-    @PutMapping("/{memberId}")
+    @PutMapping("/api/v1/member/{memberId}")
     public MemberResponse update(@PathVariable Long memberId, @RequestBody @Valid MemberUpdateRequest request) {
        return memberService.update(memberId, request);
     }
 
     // 내 정보 삭제
-    @DeleteMapping("/{memberId}")
+    @DeleteMapping("/api/v1/member/{memberId}")
     public void delete(@PathVariable Long memberId) {
         memberService.delete(memberId);
     }
