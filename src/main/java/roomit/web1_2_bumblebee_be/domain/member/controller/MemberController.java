@@ -1,6 +1,9 @@
 package roomit.web1_2_bumblebee_be.domain.member.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomit.web1_2_bumblebee_be.domain.member.request.MemberRegisterRequest;
 import roomit.web1_2_bumblebee_be.domain.member.request.MemberUpdateRequest;
@@ -9,34 +12,33 @@ import roomit.web1_2_bumblebee_be.domain.member.service.MemberService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/member")
 public class MemberController {
 
     private final MemberService memberService;
 
 
     // 회원 등록
-    @PostMapping("/signup")
-    public void signup(@RequestBody MemberRegisterRequest request) {
+    @PostMapping("/api/v1/member/signup")
+    public void signup(@RequestBody @Valid MemberRegisterRequest request) {
 
         memberService.signupMember(request);
     }
 
     // 내 정보 조회
-    @GetMapping("/{memberId}")
-    public MemberResponse read(@PathVariable Long memberId){
-        return memberService.read(memberId);
+    @GetMapping("/api/v1/member/{memberId}")
+    public ResponseEntity<MemberResponse> read(@PathVariable Long memberId){
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.read(memberId));
     }
 
 
     // 내 정보 수정
-    @PutMapping("/{memberId}")
-    public MemberResponse update(@PathVariable Long memberId, @RequestBody MemberUpdateRequest request) {
-       return memberService.update(memberId, request);
+    @PutMapping("/api/v1/member/{memberId}")
+    public ResponseEntity<MemberResponse> update(@PathVariable Long memberId, @RequestBody @Valid MemberUpdateRequest request) {
+       return ResponseEntity.status(HttpStatus.OK).body(memberService.update(memberId, request));
     }
 
     // 내 정보 삭제
-    @DeleteMapping("/{memberId}")
+    @DeleteMapping("/api/v1/member/{memberId}")
     public void delete(@PathVariable Long memberId) {
         memberService.delete(memberId);
     }
