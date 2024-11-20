@@ -19,9 +19,10 @@ public class MemberController {
 
     // 회원 등록
     @PostMapping("/api/v1/member/signup")
-    public void signup(@RequestBody @Valid MemberRegisterRequest request) {
-
+    public ResponseEntity<String> signup(@RequestBody @Valid MemberRegisterRequest request) {
         memberService.signupMember(request);
+
+        return ResponseEntity.status(HttpStatus.OK).body("회원 등록 완료.");
     }
 
     // 내 정보 조회

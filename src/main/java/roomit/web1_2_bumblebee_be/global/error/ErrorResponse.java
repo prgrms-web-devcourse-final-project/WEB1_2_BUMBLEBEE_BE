@@ -9,10 +9,10 @@ import java.util.Map;
 @Getter
 public class ErrorResponse {
 
-    private  String code;
-    private  String message;
-    private int status;
-    private Map<String, String> validation;
+    private final String code;
+    private final String message;
+    private final int status;
+    private final Map<String, String> validation;
 
     @Builder
     public ErrorResponse(ErrorCode errorCode, Map<String, String> validation) {
