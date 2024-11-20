@@ -1,21 +1,16 @@
 package roomit.web1_2_bumblebee_be.domain.workplace.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 
-@Builder
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "workplace")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 //@EntityListeners()
 public class Workplace {
     @Id
@@ -46,6 +41,22 @@ public class Workplace {
 
 //    @OneToMany(mappedBy = "room", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
 //    private List<Room> rooms = new ArrayList<>();
+
+    @Builder
+    public Workplace(Long workplaceId, String workplaceName, String workplacePhoneNumber, String workplaceDescription, String workplaceAddress, LocalDateTime workplaceStartTime, LocalDateTime workplaceEndTime, Long starSum, byte[] profileImage, String imageType, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.workplaceId = workplaceId;
+        this.workplaceName = workplaceName;
+        this.workplacePhoneNumber = workplacePhoneNumber;
+        this.workplaceDescription = workplaceDescription;
+        this.workplaceAddress = workplaceAddress;
+        this.workplaceStartTime = workplaceStartTime;
+        this.workplaceEndTime = workplaceEndTime;
+        this.starSum = starSum;
+        this.profileImage = profileImage;
+        this.imageType = imageType;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 
 
     public void changeWorkplaceName(String workplaceName) {

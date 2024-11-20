@@ -1,13 +1,18 @@
-package roomit.web1_2_bumblebee_be.domain.workplace.request;
+package roomit.web1_2_bumblebee_be.domain.workplace.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
 
 import java.time.LocalDateTime;
 
 @Getter
-public class WorkplaceRequest {
+@NoArgsConstructor
+public class WorkplaceResponse {
+
+    private Long businessId;
+
     private String workplaceName;
     private String workplacePhoneNumber;
     private String workplaceDescription;
@@ -17,8 +22,10 @@ public class WorkplaceRequest {
     private String imageType;
     private LocalDateTime workplaceStartTime;
     private LocalDateTime workplaceEndTime;
+    private LocalDateTime createdAt;
 
-    public WorkplaceRequest(Workplace workplace) {
+    public WorkplaceResponse(Workplace workplace) {
+//        this.businessId = workplace.getBusiness().getBusinessId();
         this.workplaceName = workplace.getWorkplaceName();
         this.workplacePhoneNumber = workplace.getWorkplacePhoneNumber();
         this.workplaceDescription = workplace.getWorkplaceDescription();
@@ -27,24 +34,6 @@ public class WorkplaceRequest {
         this.imageType = workplace.getImageType();
         this.workplaceStartTime = workplace.getWorkplaceStartTime();
         this.workplaceEndTime = workplace.getWorkplaceEndTime();
+        this.createdAt = workplace.getCreatedAt();
     }
-
-    @Builder
-    public Workplace toEntity() {
-//        Business business=Business.builder()
-//                .businessId(businessId).build();
-
-        return Workplace.builder()
-                .workplacePhoneNumber(workplacePhoneNumber)
-                .workplaceDescription(workplaceDescription)
-                .workplaceAddress(workplaceAddress)
-                .profileImage(profileImage)
-                .imageType(imageType)
-                .workplaceStartTime(workplaceStartTime)
-                .workplaceEndTime(workplaceEndTime)
-//                .business(business)
-                .build();
-    }
-
-
 }

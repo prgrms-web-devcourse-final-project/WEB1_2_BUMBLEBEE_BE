@@ -1,30 +1,41 @@
-package roomit.web1_2_bumblebee_be.domain.workplace.request;
+package roomit.web1_2_bumblebee_be.domain.workplace.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
 
 import java.time.LocalDateTime;
 
 @Getter
-public class WorkplaceResponse {
-    private Long workplaceId;
-    private Long businessId;
+@NoArgsConstructor
+public class WorkplaceRequest {
 
+    @NotBlank(message = "사업장 이름을 입력해주세요.")
     private String workplaceName;
+
+    @NotBlank(message = "사업장 전화번호를 입력해주세요.")
     private String workplacePhoneNumber;
+
+    @NotBlank(message = "사업장 세부사항을 입력해주세요")
     private String workplaceDescription;
+
+    @NotBlank(message = "사업장 주소를 입력해주세요.")
     private String workplaceAddress;
 
     private byte[] profileImage;
     private String imageType;
-    private LocalDateTime workplaceStartTime;
-    private LocalDateTime workplaceEndTime;
-    private LocalDateTime createdAt;
 
-    public WorkplaceResponse(Workplace workplace) {
-        this.workplaceId = workplace.getWorkplaceId();
-//        this.businessId = workplace.getBusiness().getBusinessId;
+    @NotNull(message = "사업장 시작 시간을 입력해주세요.")
+    private LocalDateTime workplaceStartTime;
+
+    @NotNull(message = "사업장 종료 시간을 입력해주세요.")
+    private LocalDateTime workplaceEndTime;
+
+    @Builder
+    public WorkplaceRequest(Workplace workplace) {
         this.workplaceName = workplace.getWorkplaceName();
         this.workplacePhoneNumber = workplace.getWorkplacePhoneNumber();
         this.workplaceDescription = workplace.getWorkplaceDescription();
@@ -33,16 +44,13 @@ public class WorkplaceResponse {
         this.imageType = workplace.getImageType();
         this.workplaceStartTime = workplace.getWorkplaceStartTime();
         this.workplaceEndTime = workplace.getWorkplaceEndTime();
-        this.createdAt = workplace.getCreatedAt();
     }
 
-    @Builder
     public Workplace toEntity() {
 //        Business business=Business.builder()
 //                .businessId(businessId).build();
 
         return Workplace.builder()
-                .workplaceId(workplaceId)
                 .workplaceName(workplaceName)
                 .workplacePhoneNumber(workplacePhoneNumber)
                 .workplaceDescription(workplaceDescription)
@@ -51,9 +59,8 @@ public class WorkplaceResponse {
                 .imageType(imageType)
                 .workplaceStartTime(workplaceStartTime)
                 .workplaceEndTime(workplaceEndTime)
-                .createdAt(createdAt)
-//                .business(business)
                 .build();
-
     }
+
+
 }
