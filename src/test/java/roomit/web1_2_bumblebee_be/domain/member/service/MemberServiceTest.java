@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
+import roomit.web1_2_bumblebee_be.domain.member.entity.Age;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
@@ -36,7 +37,7 @@ class MemberServiceTest {
     @DisplayName("멤버 등록")
     void test1(){
         MemberRegisterRequest memberRequest = MemberRegisterRequest.builder()
-                .age(10)
+                .age(Age.TEN)
                 .sex(Sex.FEMALE)
                 .pwd("1111")
                 .email("이시현@Naver.com")
@@ -61,7 +62,7 @@ class MemberServiceTest {
     @DisplayName("정보 조회")
     void test2(){
         Member member = Member.builder()
-                .memberAge(10)
+                .memberAge(Age.TEN)
                 .memberSex(Sex.FEMALE)
                 .memberPwd("1111")
                 .memberEmail("이시현@Naver.com")
@@ -74,7 +75,7 @@ class MemberServiceTest {
 
         MemberResponse myDate = memberService.read(member.getMemberId());
 
-        assertEquals(10,myDate.getAge());
+        assertEquals("10대",member.getMemberAge().getDescription());
         assertEquals("1111",myDate.getPwd());
 
     }
@@ -83,7 +84,7 @@ class MemberServiceTest {
     @DisplayName("없는 정보 조회")
     void test3(){
         Member member = Member.builder()
-                .memberAge(10)
+                .memberAge(Age.TEN)
                 .memberSex(Sex.FEMALE)
                 .memberPwd("1111")
                 .memberEmail("이시현@Naver.com")
@@ -104,7 +105,7 @@ class MemberServiceTest {
     @DisplayName(" 정보 수정")
     void test4(){
         Member member = Member.builder()
-                .memberAge(10)
+                .memberAge(Age.TEN)
                 .memberSex(Sex.FEMALE)
                 .memberPwd("1111")
                 .memberEmail("이시현@Naver.com")
@@ -134,7 +135,7 @@ class MemberServiceTest {
     @DisplayName(" 정보 삭제")
     void test5(){
         Member member = Member.builder()
-                .memberAge(10)
+                .memberAge(Age.TEN)
                 .memberSex(Sex.FEMALE)
                 .memberPwd("1111")
                 .memberEmail("이시현@Naver.com")
@@ -154,7 +155,7 @@ class MemberServiceTest {
     @DisplayName(" 없는 정보 삭제")
     void test6(){
         Member member = Member.builder()
-                .memberAge(10)
+                .memberAge(Age.TEN)
                 .memberSex(Sex.FEMALE)
                 .memberPwd("1111")
                 .memberEmail("이시현@Naver.com")
