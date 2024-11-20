@@ -1,10 +1,7 @@
-package roomit.web1_2_bumblebee_be.domain.member.response;
+package roomit.web1_2_bumblebee_be.global.error;
 
 import lombok.Builder;
 import lombok.Getter;
-import roomit.web1_2_bumblebee_be.global.error.ErrorCode;
-
-import java.util.Map;
 
 @Getter
 public class ErrorResponse {
