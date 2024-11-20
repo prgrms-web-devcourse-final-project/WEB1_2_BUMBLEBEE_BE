@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 
 @Getter
 public class MemberResponse {
-    private Long id;
 
     private String nickName;
 
@@ -29,7 +28,6 @@ public class MemberResponse {
     private LocalDateTime createAt;
 
     public MemberResponse(Member member) {
-        this.id = member.getMemberId();
         this.nickName = member.getMemberNickName();
         this.phoneNumber = member.getMemberPhoneNumber();
         this.age = member.getMemberAge();
