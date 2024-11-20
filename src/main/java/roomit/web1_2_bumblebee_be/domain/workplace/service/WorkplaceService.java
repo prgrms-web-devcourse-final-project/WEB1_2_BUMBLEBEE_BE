@@ -7,10 +7,7 @@ import org.springframework.stereotype.Service;
 import roomit.web1_2_bumblebee_be.domain.workplace.dto.WorkplaceRequest;
 import roomit.web1_2_bumblebee_be.domain.workplace.dto.WorkplaceResponse;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
-import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkplaceInvalidRequest;
-import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkplaceNotFound;
-import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkplaceNotRegistered;
-import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkspaceNotModified;
+import roomit.web1_2_bumblebee_be.domain.workplace.exception.*;
 import roomit.web1_2_bumblebee_be.domain.workplace.repository.WorkplaceRepository;
 
 import java.util.ArrayList;
@@ -74,6 +71,23 @@ public class WorkplaceService {
             throw new WorkplaceInvalidRequest();
         }
 
+        // 필수 필드 검증
+        if (workplaceDto.getWorkplaceName() == null || workplaceDto.getWorkplaceName().isBlank()) {
+            throw new WorkplaceInvalidRequest();
+        }
+        if (workplaceDto.getWorkplacePhoneNumber() == null || workplaceDto.getWorkplacePhoneNumber().isBlank()) {
+            throw new WorkplaceInvalidRequest();
+        }
+        if (workplaceDto.getWorkplaceStartTime() == null) {
+            throw new WorkplaceInvalidRequest();
+        }
+        if (workplaceDto.getWorkplaceEndTime() == null) {
+            throw new WorkplaceInvalidRequest();
+        }
+        if (!workplaceDto.getWorkplaceStartTime().isBefore(workplaceDto.getWorkplaceEndTime())) {
+            throw new WorkplaceInvalidRequest();
+        }
+
         Workplace workplace = workplaceRepository.findById(workplaceId)
                 .orElseThrow(WorkplaceNotFound::new);
 
@@ -92,10 +106,14 @@ public class WorkplaceService {
 
     @Transactional
     public void deleteWorkplace(Long workplaceId) {
-        workplaceRepository.findById(workplaceId)
+        Workplace workplace = workplaceRepository.findById(workplaceId)
                 .orElseThrow(WorkplaceNotFound::new);
 
-        workplaceRepository.deleteById(workplaceId);
+        try {
+            workplaceRepository.delete(workplace);
+        } catch (Exception e) {
+            throw new WorkplaceNotDelete();
+        }
     }
 
     //사진 업로드 및 수정
