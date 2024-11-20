@@ -1,15 +1,18 @@
 package roomit.web1_2_bumblebee_be.domain.member.exception;
 
-public class MemberNotFound extends commonException{
+import roomit.web1_2_bumblebee_be.global.error.ErrorCode;
+import roomit.web1_2_bumblebee_be.global.exception.commonException;
 
-    private static final String MESSAGE = "존재 하지 않는 회원입니다.";
+public class MemberNotFound extends commonException {
+
+
 
     public MemberNotFound() {
-        super(MESSAGE);
+        super(ErrorCode.MEMBER_NOT_FOUND);
     }
 
     @Override
     public int getStatusCode() {
-        return 404;
+        return 400;
     }
 }

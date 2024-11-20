@@ -42,9 +42,8 @@ public class MemberService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFound::new);
 
-        member.changeAge(request.getAge());
         member.changeEmail(request.getEmail());
-        member.changeRole(request.getRole());
+        member.changeNickName(request.getMemberNickName());
         member.changePhoneNumber(request.getPhoneNumber());
         member.changePwd(request.getPwd());
         memberRepository.save(member);
