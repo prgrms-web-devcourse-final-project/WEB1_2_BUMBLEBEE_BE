@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import roomit.web1_2_bumblebee_be.domain.member.entity.Age;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
@@ -45,7 +46,7 @@ class MemberControllerTest {
     @DisplayName("회원 등록")
     void test1() throws Exception{
         MemberRegisterRequest memberRequest = MemberRegisterRequest.builder()
-                .age(10)
+                .age(Age.TEN)
                 .sex(Sex.FEMALE)
                 .pwd("1111")
                 .email("이시현@Naver.com")
@@ -69,7 +70,7 @@ class MemberControllerTest {
     @DisplayName("회원 정보")
     void test2() throws Exception{
         Member member = Member.builder()
-                .memberAge(10)
+                .memberAge(Age.TEN)
                 .memberSex(Sex.FEMALE)
                 .memberPwd("1111")
                 .memberEmail("이시현@Naver.com")
@@ -85,7 +86,7 @@ class MemberControllerTest {
 
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.age").value(10))
+                .andExpect(jsonPath("$.age").value(Age.TEN.name()))
                 .andExpect(jsonPath("$.sex").value(Sex.FEMALE.name()))
                 .andExpect(jsonPath("$.pwd").value("1111"))
                 .andExpect(jsonPath("$.email").value("이시현@Naver.com"))
@@ -98,7 +99,7 @@ class MemberControllerTest {
     @DisplayName("회원 정보 수정")
     void test3() throws Exception{
         Member member = Member.builder()
-                .memberAge(10)
+                .memberAge(Age.TEN)
                 .memberSex(Sex.FEMALE)
                 .memberPwd("1111")
                 .memberEmail("이시현@Naver.com")
@@ -135,7 +136,7 @@ class MemberControllerTest {
     @DisplayName("회원 정보 삭제")
     void test4() throws Exception{
         Member member = Member.builder()
-                .memberAge(10)
+                .memberAge(Age.TEN)
                 .memberSex(Sex.FEMALE)
                 .memberPwd("1111")
                 .memberEmail("이시현@Naver.com")
