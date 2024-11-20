@@ -21,29 +21,30 @@ public class Business {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "business_id")
     private int businessId;
 
-    @Column(nullable = false)
+    @Column(name = "business_name", nullable = false)
     private String businessName;
 
-    @Column(nullable = false)
+    @Column(name = "business_pwd",nullable = false)
     private String businessPwd;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "business_email",nullable = false, unique = true)
     private String businessEmail;
 
-    @Column(nullable = false)
+    @Column(name = "business_role",nullable = false)
     @Enumerated(value = EnumType.STRING)
     private Role businessRole;
 
-    @Column(nullable = false)
+    @Column(name = "business_num",nullable = false)
     private String businessNum;
 
-    @Column(nullable = false)
+    @Column(name = "createdAt",nullable = false)
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @Column(nullable = true)
+    @Column(name = "updatedAt", nullable = true)
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
@@ -54,11 +55,11 @@ public class Business {
 
 
     @Builder
-    public Business(String businessName, String businessPwd, String businessEmail, Role businessRole, String businessNum) {
+    public Business(String businessName, String businessPwd, String businessEmail,String businessNum) {
         this.businessName = businessName;
         this.businessPwd = businessPwd;
         this.businessEmail = businessEmail;
-        this.businessRole = businessRole;
+        this.businessRole = Role.Business;
         this.businessNum = businessNum;
     }
 
@@ -68,10 +69,6 @@ public class Business {
 
     public void changeBusinessEmail(String businessEmail) {
         this.businessEmail = businessEmail;
-    }
-
-    public void changeBusinessRole(Role businessRole) {
-        this.businessRole = businessRole;
     }
 
     public void changeBusinessNum(String businessNum) {
