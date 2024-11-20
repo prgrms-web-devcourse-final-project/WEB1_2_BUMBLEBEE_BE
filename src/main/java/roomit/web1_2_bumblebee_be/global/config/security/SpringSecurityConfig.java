@@ -49,7 +49,8 @@ public class SpringSecurityConfig {
     @Bean
     public RoleHierarchy roleHierarchy() {
         return RoleHierarchyImpl.fromHierarchy("""
-                ROLE_ADMIN > ROLE_USER
+                ROLE_ADMIN > ROLE_BUSINESS
+                ROLE_BUSINESS > ROLE_USER
                 """);
     }
 
@@ -85,6 +86,7 @@ public class SpringSecurityConfig {
                         .requestMatchers("/login","/").permitAll()
                         .requestMatchers("/api/v1/member/signup").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN") //ADMIN권한만 사용 가능
+                        .requestMatchers("/business").hasRole("BUSINESS") //ADMIN권한만 사용 가능
                         .requestMatchers("/user").hasRole("USER") //USER권한만 사용 가능
                         .anyRequest().authenticated()); // permitAll()로 할시 모두 허용
 
