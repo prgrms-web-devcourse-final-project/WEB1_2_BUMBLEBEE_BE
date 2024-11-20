@@ -1,6 +1,7 @@
 package roomit.web1_2_bumblebee_be.domain.member.response;
 
 import lombok.Getter;
+import roomit.web1_2_bumblebee_be.domain.member.entity.Age;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
@@ -15,7 +16,7 @@ public class MemberResponse {
 
     private String phoneNumber;
 
-    private int age;
+    private Age age;
 
     private Sex sex;
 
