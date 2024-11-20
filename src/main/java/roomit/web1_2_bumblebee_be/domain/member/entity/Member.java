@@ -23,28 +23,28 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memberId;
 
-    @Column(nullable = false)
+    @Column(name = "member_nickname", nullable = false)
     private String memberNickName;
 
-    @Column(nullable = false)
+    @Column(name = "member_phonenumber", nullable = false)
     private String memberPhoneNumber;
 
-    @Column(nullable = false)
+    @Column(name = "member_age", nullable = false)
     @Enumerated(value = EnumType.STRING)
     private Age memberAge;
 
-    @Column(nullable = false)
+    @Column(name = "member_sex", nullable = false)
     @Enumerated(value = EnumType.STRING)
     private Sex memberSex;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "member_email", nullable = false, unique = true)
     @Email
     private String memberEmail;
 
-    @Column(nullable = false)
+    @Column(name = "member_pwd", nullable = false)
     private String memberPwd;
 
-    @Column(nullable = false)
+    @Column(name = "member_role", nullable = false)
     @Enumerated(value = EnumType.STRING)
     private Role memberRole;
 
