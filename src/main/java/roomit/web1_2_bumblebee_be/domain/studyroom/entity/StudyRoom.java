@@ -22,9 +22,6 @@ public class StudyRoom extends BaseEntity {
     @Column(name = "studyroom_description", nullable = false ,columnDefinition = "VARCHAR(255)")
     private String description;
 
-    @Column(name = "studyroom_location", nullable = false, columnDefinition = "VARCHAR(255)")
-    private String location;
-
     @Column(name = "studyroom_num", nullable = false, columnDefinition = "INT")
     private Integer num;
 
