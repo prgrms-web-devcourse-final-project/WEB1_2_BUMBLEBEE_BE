@@ -9,10 +9,5 @@ import roomit.web1_2_bumblebee_be.domain.studyroom.repository.StudyroomRepositor
 @RequiredArgsConstructor
 public class StudyroomService {
 
-    private final StudyroomRepository studyroomRepository;
-
-    // 스터디룸 등록
-    @Transactional
-    public
 
 }
