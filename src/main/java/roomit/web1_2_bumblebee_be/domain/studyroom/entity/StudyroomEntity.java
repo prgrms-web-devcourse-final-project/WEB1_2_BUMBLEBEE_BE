@@ -1,7 +1,6 @@
 package roomit.web1_2_bumblebee_be.domain.studyroom.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

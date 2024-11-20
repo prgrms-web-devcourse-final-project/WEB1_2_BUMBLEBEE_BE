@@ -1,10 +1,8 @@
 package roomit.web1_2_bumblebee_be.domain.studyroom.dto.response;
 
 import lombok.*;
-import org.springframework.cglib.core.Local;
 import roomit.web1_2_bumblebee_be.domain.studyroom.entity.StudyroomEntity;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
