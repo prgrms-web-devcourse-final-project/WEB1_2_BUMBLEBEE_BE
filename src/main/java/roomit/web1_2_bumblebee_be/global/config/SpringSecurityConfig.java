@@ -1,4 +1,4 @@
-package roomit.web1_2_bumblebee_be.config;
+package roomit.web1_2_bumblebee_be.global.config;
 
 
 import org.springframework.context.annotation.Bean;
