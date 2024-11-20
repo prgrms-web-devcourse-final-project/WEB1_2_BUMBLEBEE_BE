@@ -30,7 +30,8 @@ public class Member {
     private String memberPhoneNumber;
 
     @Column(nullable = false)
-    private int memberAge;
+    @Enumerated(value = EnumType.STRING)
+    private Age memberAge;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
@@ -60,7 +61,7 @@ public class Member {
 //    private List<Reservation> reservations = new ArrayList();
 
     @Builder
-    public Member(String memberNickName, String memberPhoneNumber, int memberAge, Sex memberSex, String memberEmail, String memberPwd, Role memberRole /*Review review, Reservation reservation*/) {
+    public Member(String memberNickName, String memberPhoneNumber, Age memberAge, Sex memberSex, String memberEmail, String memberPwd, Role memberRole /*Review review, Reservation reservation*/) {
         this.memberNickName = memberNickName;
         this.memberPhoneNumber = memberPhoneNumber;
         this.memberAge = memberAge;
