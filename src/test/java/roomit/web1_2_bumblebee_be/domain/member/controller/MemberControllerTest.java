@@ -2,6 +2,7 @@ package roomit.web1_2_bumblebee_be.domain.member.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import roomit.web1_2_bumblebee_be.domain.member.entity.Age;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
@@ -35,11 +37,37 @@ class MemberControllerTest {
     @Autowired
     private MemberRepository memberRepository;
 
+    @BeforeEach
+    void setUp() {
+        memberRepository.deleteAll();
+    }
+    @Test
+    @DisplayName("성별, 비밀번호 없을떄 등록시 필요한 검증값 나오게끔 테스트")
+    void test() throws Exception{
+        MemberRegisterRequest memberRequest = MemberRegisterRequest.builder()
+                .age(Age.TEN)
+                .role(Role.Admin)
+                .email("이시현@naver.com")
+                .phoneNumber("010-33230-23")
+                .nickName("치킨유저")
+                .build();
+
+
+        String json = objectMapper.writeValueAsString(memberRequest);
+
+        mockMvc.perform(post("/api/v1/member/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                )
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
     @Test
     @DisplayName("회원 등록")
     void test1() throws Exception{
         MemberRegisterRequest memberRequest = MemberRegisterRequest.builder()
-                .age(10)
+                .age(Age.TEN)
                 .sex(Sex.FEMALE)
                 .pwd("1111")
                 .email("이시현@Naver.com")
@@ -51,7 +79,7 @@ class MemberControllerTest {
 
         String json = objectMapper.writeValueAsString(memberRequest);
 
-        mockMvc.perform(post("/api/v1/member/register")
+        mockMvc.perform(post("/api/v1/member/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json)
                 )
@@ -63,23 +91,23 @@ class MemberControllerTest {
     @DisplayName("회원 정보")
     void test2() throws Exception{
         Member member = Member.builder()
-                .age(10)
-                .sex(Sex.FEMALE)
-                .pwd("1111")
-                .email("이시현@Naver.com")
-                .role(Role.Admin)
-                .phoneNumber("010-33230-23")
-                .nickName("치킨유저")
+                .memberAge(Age.TEN)
+                .memberSex(Sex.FEMALE)
+                .memberPwd("1111")
+                .memberEmail("이시현@Naver.com")
+                .memberRole(Role.Admin)
+                .memberPhoneNumber("010-33230-23")
+                .memberNickName("치킨유저")
                 .build();
 
         memberRepository.save(member);
 
-        mockMvc.perform(get("/api/v1/member/{memberId}", member.getId())
+        mockMvc.perform(get("/api/v1/member/{memberId}", member.getMemberId())
                         .contentType(MediaType.APPLICATION_JSON)
 
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.age").value(10))
+                .andExpect(jsonPath("$.age").value(Age.TEN.name()))
                 .andExpect(jsonPath("$.sex").value(Sex.FEMALE.name()))
                 .andExpect(jsonPath("$.pwd").value("1111"))
                 .andExpect(jsonPath("$.email").value("이시현@Naver.com"))
@@ -92,38 +120,36 @@ class MemberControllerTest {
     @DisplayName("회원 정보 수정")
     void test3() throws Exception{
         Member member = Member.builder()
-                .age(10)
-                .sex(Sex.FEMALE)
-                .pwd("1111")
-                .email("이시현@Naver.com")
-                .role(Role.Admin)
-                .phoneNumber("010-33230-23")
-                .nickName("치킨유저")
+                .memberAge(Age.TEN)
+                .memberSex(Sex.FEMALE)
+                .memberPwd("1111")
+                .memberEmail("이시현@Naver.com")
+                .memberRole(Role.Admin)
+                .memberPhoneNumber("010-33230-23")
+                .memberNickName("치킨유저")
                 .build();
 
         memberRepository.save(member);
 
 
         MemberUpdateRequest memberRequest = MemberUpdateRequest.builder()
-                .age(20)
                 .pwd("2222")
                 .email("김시현@Naver.com")
-                .role(Role.Admin)
                 .phoneNumber("010-33230-23")
+                .memberNickName("이이")
                 .build();
 
         String json = objectMapper.writeValueAsString(memberRequest);
 
-        mockMvc.perform(put("/api/v1/member/{memberId}", member.getId())
+        mockMvc.perform(put("/api/v1/member/{memberId}", member.getMemberId())
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.age").value(20))
                 .andExpect(jsonPath("$.pwd").value("2222"))
                 .andExpect(jsonPath("$.email").value("김시현@Naver.com"))
                 .andExpect(jsonPath("$.phoneNumber").value("010-33230-23"))
-                .andExpect(jsonPath("$.nickName").value("치킨유저"))
+                .andExpect(jsonPath("$.nickName").value("이이"))
                 .andDo(print());
     }
 
@@ -131,20 +157,20 @@ class MemberControllerTest {
     @DisplayName("회원 정보 삭제")
     void test4() throws Exception{
         Member member = Member.builder()
-                .age(10)
-                .sex(Sex.FEMALE)
-                .pwd("1111")
-                .email("이시현@Naver.com")
-                .role(Role.Admin)
-                .phoneNumber("010-33230-23")
-                .nickName("치킨유저")
+                .memberAge(Age.TEN)
+                .memberSex(Sex.FEMALE)
+                .memberPwd("1111")
+                .memberEmail("이시현@Naver.com")
+                .memberRole(Role.Admin)
+                .memberPhoneNumber("010-33230-23")
+                .memberNickName("치킨유저")
                 .build();
 
         memberRepository.save(member);
 
 
 
-        mockMvc.perform(delete("/api/v1/member/{memberId}", member.getId())
+        mockMvc.perform(delete("/api/v1/member/{memberId}", member.getMemberId())
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
