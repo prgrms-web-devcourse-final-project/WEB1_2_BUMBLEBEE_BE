@@ -23,13 +23,13 @@ public class MemberService {
 
     public void signupMember(MemberRegisterRequest memberRequest) {
         Member member = Member.builder()
-                .memberAge(Age.TEN)
-                .memberSex(Sex.FEMALE)
-                .memberPwd("1111")
-                .memberEmail("이시현@Naver.com")
-                .memberRole(Role.Admin)
-                .memberPhoneNumber("010-33230-23")
-                .memberNickName("치킨유저")
+                .memberAge(memberRequest.getAge())
+                .memberSex(memberRequest.getSex())
+                .memberPwd(memberRequest.getPwd())
+                .memberEmail(memberRequest.getEmail())
+                .memberRole(memberRequest.getRole())
+                .memberPhoneNumber(memberRequest.getPhoneNumber())
+                .memberNickName(memberRequest.getNickName())
                 .build();
 
         memberRepository.save(member);
