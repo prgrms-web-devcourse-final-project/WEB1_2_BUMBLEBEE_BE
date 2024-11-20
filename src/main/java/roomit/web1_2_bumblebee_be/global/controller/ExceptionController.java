@@ -3,8 +3,8 @@ package roomit.web1_2_bumblebee_be.global.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomit.web1_2_bumblebee_be.global.error.ErrorResponse;
 import roomit.web1_2_bumblebee_be.global.exception.commonException;
-import roomit.web1_2_bumblebee_be.domain.member.response.ErrorResponse;
 
 @RestControllerAdvice
 public class ExceptionController {
