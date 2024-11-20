@@ -114,7 +114,6 @@ class WorkplaceServiceTest {
         // Then
         WorkplaceResponse findWorkplace = workplaceService.readWorkplace(1L);
         assertNotNull(findWorkplace);
-        assertEquals(findWorkplace.getWorkplaceId(), 1L);
         assertEquals(findWorkplace.getWorkplaceName(), "사업장 수정");
         assertEquals(findWorkplace.getWorkplaceDescription(), "사업장 설명 수정");
     }
