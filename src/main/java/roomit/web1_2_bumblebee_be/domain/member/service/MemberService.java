@@ -1,35 +1,34 @@
 package roomit.web1_2_bumblebee_be.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
-import roomit.web1_2_bumblebee_be.domain.member.exception.MemberNotFound;
-import roomit.web1_2_bumblebee_be.domain.member.repository.MemberRepository;
 import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberRegisterRequest;
 import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberUpdateRequest;
 import roomit.web1_2_bumblebee_be.domain.member.dto.response.MemberResponse;
+import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
+import roomit.web1_2_bumblebee_be.domain.member.exception.MemberNotFound;
+import roomit.web1_2_bumblebee_be.domain.member.exception.MemberUpdateException;
+import roomit.web1_2_bumblebee_be.domain.member.repository.MemberRepository;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder; // BCryptPasswordEncoder 추가
 
-//    public void signupMember(MemberRegisterRequest memberRequest) {
-//        Member member = Member.builder()
-//                .nickName(memberRequest.getNickName())
-//                .age(memberRequest.getAge())
-//                .sex(memberRequest.getSex())
-//                .pwd(bCryptPasswordEncoder.encode(memberRequest.getPwd())) //비밀번호 암호화 추가
-//                .email(memberRequest.getEmail())
-//                .role(memberRequest.getRole())
-//                .phoneNumber(memberRequest.getPhoneNumber())
-//                .build();
-//
-//        memberRepository.save(member);
-//    }
+    public void signupMember(MemberRegisterRequest memberRequest) {
+        Member member = Member.builder()
+                .memberAge(memberRequest.getAge())
+                .memberSex(memberRequest.getSex())
+                .memberPwd(memberRequest.getPwd())
+                .memberEmail(memberRequest.getEmail())
+                .memberRole(memberRequest.getRole())
+                .memberPhoneNumber(memberRequest.getPhoneNumber())
+                .memberNickName(memberRequest.getNickName())
+                .build();
+
+        memberRepository.save(member);
+    }
 
     public MemberResponse read(Long memberId) {
         Member member = memberRepository.findById(memberId)
@@ -42,11 +41,16 @@ public class MemberService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFound::new);
 
-        member.changeEmail(request.getEmail());
-        member.changeNickName(request.getMemberNickName());
-        member.changePhoneNumber(request.getPhoneNumber());
-        member.changePwd(request.getPwd());
-        memberRepository.save(member);
+        try {
+            member.changeEmail(request.getEmail());
+            member.changeNickName(request.getMemberNickName());
+            member.changePhoneNumber(request.getPhoneNumber());
+            member.changePwd(request.getPwd());
+            memberRepository.save(member);
+
+        }catch (MemberUpdateException e){
+            throw new MemberUpdateException();
+        }
 
         return new MemberResponse(member);
     }
