@@ -47,9 +47,6 @@ public class WorkplaceRequest {
     }
 
     public Workplace toEntity() {
-//        Business business=Business.builder()
-//                .businessId(businessId).build();
-
         return Workplace.builder()
                 .workplaceName(workplaceName)
                 .workplacePhoneNumber(workplacePhoneNumber)

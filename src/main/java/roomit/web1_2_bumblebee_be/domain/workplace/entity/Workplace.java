@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import roomit.web1_2_bumblebee_be.domain.business.entity.Business;
 
 import java.time.LocalDateTime;
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @Table(name = "workplace")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-//@EntityListeners()
+@EntityListeners(AuditingEntityListener.class)
 public class Workplace {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
