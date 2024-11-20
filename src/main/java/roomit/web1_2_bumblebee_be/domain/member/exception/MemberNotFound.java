@@ -5,14 +5,7 @@ import roomit.web1_2_bumblebee_be.global.exception.commonException;
 
 public class MemberNotFound extends commonException {
 
-
-
     public MemberNotFound() {
         super(ErrorCode.MEMBER_NOT_FOUND);
-    }
-
-    @Override
-    public int getStatusCode() {
-        return 400;
     }
 }
