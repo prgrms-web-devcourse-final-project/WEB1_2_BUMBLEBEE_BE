@@ -8,12 +8,12 @@ import lombok.Getter;
 @Builder
 public class BusinessRegisterRequest {
 
-    private String businessNum;
+    private final String businessNum;
 
-    private String businessName;
+    private final String businessName;
 
-    private String businessEmail;
+    private final String businessEmail;
 
-    private String businessPwd;
+    private final String businessPwd;
 
 }

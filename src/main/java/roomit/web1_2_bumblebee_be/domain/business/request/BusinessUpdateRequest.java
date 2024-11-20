@@ -7,10 +7,10 @@ import lombok.Getter;
 @Builder
 public class BusinessUpdateRequest {
 
-    private String businessName;
+    private final String businessName;
 
-    private String businessEmail;
+    private final String businessEmail;
 
-    private String businessNum;
+    private final String businessNum;
 
 }
