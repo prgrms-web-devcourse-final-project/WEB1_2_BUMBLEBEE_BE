@@ -3,6 +3,7 @@ package roomit.web1_2_bumblebee_be.domain.member.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomit.web1_2_bumblebee_be.domain.member.entity.Age;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
@@ -22,7 +23,7 @@ public class MemberService {
 
     public void signupMember(MemberRegisterRequest memberRequest) {
         Member member = Member.builder()
-                .memberAge(10)
+                .memberAge(Age.TEN)
                 .memberSex(Sex.FEMALE)
                 .memberPwd("1111")
                 .memberEmail("이시현@Naver.com")
