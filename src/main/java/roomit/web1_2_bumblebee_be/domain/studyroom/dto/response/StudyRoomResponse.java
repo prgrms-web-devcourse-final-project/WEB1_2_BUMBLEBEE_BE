@@ -14,7 +14,6 @@ public class StudyRoomResponse {
     private Long studyRoomId; // 변수명 변경
     private String title;
     private String description;
-    private String location;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -26,7 +25,6 @@ public class StudyRoomResponse {
         this.studyRoomId = studyRoom.getStudyroomId();
         this.title = studyRoom.getTitle();
         this.description = studyRoom.getDescription();
-        this.location = studyRoom.getLocation();
         this.createdAt = studyRoom.getCreatedAt();
         this.updatedAt = studyRoom.getUpdatedAt();
     }
