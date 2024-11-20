@@ -15,24 +15,43 @@ import java.time.LocalDateTime;
 public class Workplace {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="workplace_id", unique = true, nullable = false)
     private Long workplaceId;
 
+    @Column(name = "workplace_name", nullable = false, length = 100)
     private String workplaceName;
+
+    @Column(name = "workplace_phone_number", nullable = false, length = 15)
     private String workplacePhoneNumber;
+
+    @Column(name = "workplace_description", nullable = false)
     private String workplaceDescription;
+
+    @Column(name = "workplace_address", nullable = false, length = 255)
     private String workplaceAddress;
+
+    @Column(name = "workplace_start_time", nullable = false)
     private LocalDateTime workplaceStartTime;
+
+    @Column(name = "workplace_end_time", nullable = false)
     private LocalDateTime workplaceEndTime;
+
+    @Column(name = "star_sum")
     private Long starSum;
 
-    @Lob  // BLOB 타입으로 처리됨
+    @Lob
+    @Column(name = "profile_image")
     private byte[] profileImage;
+
+    @Column(name = "image_type", length = 50)
     private String imageType;
 
     @CreatedDate
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
 //    @ManyToOne(fetch = FetchType.LAZY)

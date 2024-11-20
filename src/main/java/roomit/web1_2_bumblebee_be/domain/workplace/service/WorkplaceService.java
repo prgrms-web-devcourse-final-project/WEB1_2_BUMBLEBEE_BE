@@ -58,6 +58,7 @@ public class WorkplaceService {
 
         try {
             Workplace workplace = workplaceDto.toEntity();
+            workplace.changeStarSum(0L);
             workplaceRepository.save(workplace);
         } catch (Exception e) {
             throw WorkplaceException.WORKPLACE_NOT_REGISTERED.getWorkplaceTaskException();
