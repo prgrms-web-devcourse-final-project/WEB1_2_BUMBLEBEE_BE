@@ -15,12 +15,12 @@ public class ExceptionController {
 
     @ExceptionHandler(commonException.class)
     public ResponseEntity<ErrorResponse> commonException(commonException e) {
-        int statusCode = e.getStatusCode();
+        String statusCode = e.getErrorCode().getCode();
         ErrorResponse response = ErrorResponse.builder()
                 .errorCode(e.getErrorCode())
                 .build();
 
-        return ResponseEntity.status(statusCode).body(response);
+        return ResponseEntity.status(Integer.parseInt(statusCode)).body(response);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

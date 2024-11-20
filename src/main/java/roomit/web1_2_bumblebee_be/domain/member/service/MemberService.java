@@ -8,6 +8,7 @@ import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
 import roomit.web1_2_bumblebee_be.domain.member.exception.MemberNotFound;
+import roomit.web1_2_bumblebee_be.domain.member.exception.MemberUpdateException;
 import roomit.web1_2_bumblebee_be.domain.member.repository.MemberRepository;
 import roomit.web1_2_bumblebee_be.domain.member.request.MemberRegisterRequest;
 import roomit.web1_2_bumblebee_be.domain.member.request.MemberUpdateRequest;
@@ -23,13 +24,13 @@ public class MemberService {
 
     public void signupMember(MemberRegisterRequest memberRequest) {
         Member member = Member.builder()
-                .memberAge(Age.TEN)
-                .memberSex(Sex.FEMALE)
-                .memberPwd("1111")
-                .memberEmail("이시현@Naver.com")
-                .memberRole(Role.Admin)
-                .memberPhoneNumber("010-33230-23")
-                .memberNickName("치킨유저")
+                .memberAge(memberRequest.getAge())
+                .memberSex(memberRequest.getSex())
+                .memberPwd(memberRequest.getPwd())
+                .memberEmail(memberRequest.getEmail())
+                .memberRole(memberRequest.getRole())
+                .memberPhoneNumber(memberRequest.getPhoneNumber())
+                .memberNickName(memberRequest.getNickName())
                 .build();
 
         memberRepository.save(member);
@@ -46,11 +47,16 @@ public class MemberService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFound::new);
 
-        member.changeEmail(request.getEmail());
-        member.changeNickName(request.getMemberNickName());
-        member.changePhoneNumber(request.getPhoneNumber());
-        member.changePwd(request.getPwd());
-        memberRepository.save(member);
+        try {
+            member.changeEmail(request.getEmail());
+            member.changeNickName(request.getMemberNickName());
+            member.changePhoneNumber(request.getPhoneNumber());
+            member.changePwd(request.getPwd());
+            memberRepository.save(member);
+
+        }catch (MemberUpdateException e){
+            throw new MemberUpdateException();
+        }
 
         return new MemberResponse(member);
     }
