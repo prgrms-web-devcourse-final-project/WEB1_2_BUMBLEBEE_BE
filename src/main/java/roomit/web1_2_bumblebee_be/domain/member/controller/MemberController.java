@@ -1,5 +1,6 @@
 package roomit.web1_2_bumblebee_be.domain.member.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import roomit.web1_2_bumblebee_be.domain.member.request.MemberRegisterRequest;
@@ -17,7 +18,7 @@ public class MemberController {
 
     // 회원 등록
     @PostMapping("/signup")
-    public void signup(@RequestBody MemberRegisterRequest request) {
+    public void signup(@RequestBody @Valid MemberRegisterRequest request) {
 
         memberService.signupMember(request);
     }
@@ -31,7 +32,7 @@ public class MemberController {
 
     // 내 정보 수정
     @PutMapping("/{memberId}")
-    public MemberResponse update(@PathVariable Long memberId, @RequestBody MemberUpdateRequest request) {
+    public MemberResponse update(@PathVariable Long memberId, @RequestBody @Valid MemberUpdateRequest request) {
        return memberService.update(memberId, request);
     }
 
