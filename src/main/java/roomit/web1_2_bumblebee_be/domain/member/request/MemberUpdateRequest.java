@@ -15,7 +15,7 @@ public class MemberUpdateRequest {
     @NotBlank(message = "휴대번호를 입력해주세요.")
     private String phoneNumber;
     @NotNull(message = "비밀번호를 입력해주세요.")
-    private String pwd;;
+    private String pwd;
     @NotBlank(message = "닉네임을 입력해주세요.")
     private String memberNickName;
 
