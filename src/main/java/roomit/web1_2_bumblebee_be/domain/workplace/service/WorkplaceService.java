@@ -7,7 +7,10 @@ import org.springframework.stereotype.Service;
 import roomit.web1_2_bumblebee_be.domain.workplace.dto.WorkplaceRequest;
 import roomit.web1_2_bumblebee_be.domain.workplace.dto.WorkplaceResponse;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
-import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkplaceException;
+import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkplaceInvalidRequest;
+import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkplaceNotFound;
+import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkplaceNotRegistered;
+import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkspaceNotModified;
 import roomit.web1_2_bumblebee_be.domain.workplace.repository.WorkplaceRepository;
 
 import java.util.ArrayList;
@@ -32,7 +35,7 @@ public class WorkplaceService {
 
     public WorkplaceResponse readWorkplace(Long workplaceId) {
         Workplace workplace = workplaceRepository.findById(workplaceId)
-                .orElseThrow(() -> WorkplaceException.WORKPLACE_NOT_FOUND.getWorkplaceTaskException());
+                .orElseThrow(WorkplaceNotFound::new);
 
         return new WorkplaceResponse(workplace);
     }
@@ -45,7 +48,7 @@ public class WorkplaceService {
         String workplaceAddress = workplaceDto.getWorkplaceAddress();
 
         if (workplaceName == null || workplacePhoneNumber == null || workplaceDescription == null || workplaceAddress == null) {
-            throw new RuntimeException("입력을 다시 해주세요");
+            throw new WorkplaceInvalidRequest();
         }
 
         if (workplaceRepository.getWorkplaceByWorkplaceName(workplaceDto.getWorkplaceName()) != null
@@ -61,18 +64,18 @@ public class WorkplaceService {
             workplace.changeStarSum(0L);
             workplaceRepository.save(workplace);
         } catch (Exception e) {
-            throw WorkplaceException.WORKPLACE_NOT_REGISTERED.getWorkplaceTaskException();
+            throw new WorkplaceNotRegistered();
         }
     }
 
     @Transactional
     public void updateWorkplace(Long workplaceId, WorkplaceRequest workplaceDto) {
         if (workplaceDto == null) {
-            throw WorkplaceException.WORKPLACE_INVALID_REQUEST.getWorkplaceTaskException();
+            throw new WorkplaceInvalidRequest();
         }
 
         Workplace workplace = workplaceRepository.findById(workplaceId)
-                .orElseThrow(() -> WorkplaceException.WORKPLACE_NOT_FOUND.getWorkplaceTaskException());
+                .orElseThrow(WorkplaceNotFound::new);
 
         try {
             workplace.changeWorkplaceName(workplaceDto.getWorkplaceName());
@@ -83,14 +86,14 @@ public class WorkplaceService {
             workplace.changeWorkplaceEndTime(workplaceDto.getWorkplaceEndTime());
             workplaceRepository.save(workplace);
         } catch (Exception e) {
-            throw WorkplaceException.WORKPLACE_NOT_MODIFIED.getWorkplaceTaskException();
+            throw new WorkspaceNotModified();
         }
     }
 
     @Transactional
     public void deleteWorkplace(Long workplaceId) {
         workplaceRepository.findById(workplaceId)
-                .orElseThrow(() -> WorkplaceException.WORKPLACE_NOT_FOUND.getWorkplaceTaskException());
+                .orElseThrow(WorkplaceNotFound::new);
 
         workplaceRepository.deleteById(workplaceId);
     }
