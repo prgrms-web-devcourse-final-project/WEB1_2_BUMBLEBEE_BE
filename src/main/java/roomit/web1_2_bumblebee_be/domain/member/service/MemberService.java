@@ -1,29 +1,28 @@
 package roomit.web1_2_bumblebee_be.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
 import roomit.web1_2_bumblebee_be.domain.member.exception.MemberNotFound;
 import roomit.web1_2_bumblebee_be.domain.member.repository.MemberRepository;
-import roomit.web1_2_bumblebee_be.domain.member.request.MemberRegisterRequest;
-import roomit.web1_2_bumblebee_be.domain.member.request.MemberUpdateRequest;
-import roomit.web1_2_bumblebee_be.domain.member.response.MemberResponse;
-
-import java.util.NoSuchElementException;
+import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberRegisterRequest;
+import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberUpdateRequest;
+import roomit.web1_2_bumblebee_be.domain.member.dto.response.MemberResponse;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder; // BCryptPasswordEncoder 추가
 
     public void signupMember(MemberRegisterRequest memberRequest) {
         Member member = Member.builder()
                 .nickName(memberRequest.getNickName())
                 .age(memberRequest.getAge())
                 .sex(memberRequest.getSex())
-                .pwd(memberRequest.getPwd())
+                .pwd(bCryptPasswordEncoder.encode(memberRequest.getPwd())) //비밀번호 암호화 추가
                 .email(memberRequest.getEmail())
                 .role(memberRequest.getRole())
                 .phoneNumber(memberRequest.getPhoneNumber())

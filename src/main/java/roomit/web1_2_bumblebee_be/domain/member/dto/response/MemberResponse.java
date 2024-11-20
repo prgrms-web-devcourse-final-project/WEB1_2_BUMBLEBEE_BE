@@ -1,4 +1,4 @@
-package roomit.web1_2_bumblebee_be.domain.member.response;
+package roomit.web1_2_bumblebee_be.domain.member.dto.response;
 
 import lombok.Getter;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Member;

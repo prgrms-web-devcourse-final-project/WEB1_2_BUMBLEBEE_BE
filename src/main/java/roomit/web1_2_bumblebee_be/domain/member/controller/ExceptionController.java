@@ -1,14 +1,10 @@
 package roomit.web1_2_bumblebee_be.domain.member.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomit.web1_2_bumblebee_be.domain.member.exception.commonException;
-import roomit.web1_2_bumblebee_be.domain.member.response.ErrorResponse;
+import roomit.web1_2_bumblebee_be.domain.member.dto.response.ErrorResponse;
 
 @RestControllerAdvice
 public class ExceptionController {

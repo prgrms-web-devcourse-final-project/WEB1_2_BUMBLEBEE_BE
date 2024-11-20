@@ -9,14 +9,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
 import roomit.web1_2_bumblebee_be.domain.member.repository.MemberRepository;
-import roomit.web1_2_bumblebee_be.domain.member.request.MemberRegisterRequest;
-import roomit.web1_2_bumblebee_be.domain.member.request.MemberUpdateRequest;
+import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberRegisterRequest;
+import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberUpdateRequest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
