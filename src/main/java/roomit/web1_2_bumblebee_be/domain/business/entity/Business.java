@@ -8,8 +8,10 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
+import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -48,10 +50,9 @@ public class Business {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-/*
-    @OneToMany(mappedBy = "workPlace", cascade = CascadeType.ALL, orphanRemoval = true)
-    private WorkPlace workPlace;
- */
+    @OneToMany(mappedBy = "business", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Workplace> workplace;
+
 
 
     @Builder

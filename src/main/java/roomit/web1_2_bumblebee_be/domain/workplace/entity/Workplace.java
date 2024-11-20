@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import roomit.web1_2_bumblebee_be.domain.business.entity.Business;
 
 import java.time.LocalDateTime;
 
@@ -54,9 +55,9 @@ public class Workplace {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "business_id")
-//    private Business business;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "business_id")
+    private Business business;
 
 //    @OneToMany(mappedBy = "room", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
 //    private List<Room> rooms = new ArrayList<>();

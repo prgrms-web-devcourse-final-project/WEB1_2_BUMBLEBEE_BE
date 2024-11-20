@@ -8,21 +8,20 @@ import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
 import java.time.LocalDateTime;
 
 @Getter
-@NoArgsConstructor
 public class WorkplaceResponse {
 
     private Long businessId;
 
-    private String workplaceName;
-    private String workplacePhoneNumber;
-    private String workplaceDescription;
-    private String workplaceAddress;
+    private final String workplaceName;
+    private final String workplacePhoneNumber;
+    private final String workplaceDescription;
+    private final String workplaceAddress;
 
-    private byte[] profileImage;
-    private String imageType;
-    private LocalDateTime workplaceStartTime;
-    private LocalDateTime workplaceEndTime;
-    private LocalDateTime createdAt;
+    private final byte[] profileImage;
+    private final String imageType;
+    private final LocalDateTime workplaceStartTime;
+    private final LocalDateTime workplaceEndTime;
+    private final LocalDateTime createdAt;
 
     public WorkplaceResponse(Workplace workplace) {
 //        this.businessId = workplace.getBusiness().getBusinessId();
