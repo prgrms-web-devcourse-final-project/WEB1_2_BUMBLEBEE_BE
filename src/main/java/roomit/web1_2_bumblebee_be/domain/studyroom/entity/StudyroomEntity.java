@@ -15,21 +15,21 @@ public class StudyroomEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "studyroom_ID", unique = true, updatable = false, columnDefinition = "BIGINT")
-    private Long id;
+    private Long studyroomId;
 
-    @NotNull
-    @Column(name = "studyroom_title", columnDefinition = "VARCHAR(255)")
+    @Column(name = "studyroom_title", nullable = false , columnDefinition = "VARCHAR(255)")
     private String title;
 
-    @NotNull
-    @Column(name = "studyroom_description",  columnDefinition = "VARCHAR(255)")
+    @Column(name = "studyroom_description", nullable = false ,columnDefinition = "VARCHAR(255)")
     private String description;
 
-    @NotNull
-    @Column(name = "studyroom_location", columnDefinition = "VARCHAR(255)")
+    @Column(name = "studyroom_location", nullable = false, columnDefinition = "VARCHAR(255)")
     private String location;
 
-    @NotNull
-    @Column(name = "studyroom_num", columnDefinition = "BIGINT")
-    private Long num;
+    @Column(name = "studyroom_num", nullable = false, columnDefinition = "BIGINT")
+    private Integer num;
+
+    /* @ManyToOne(fetch = FetchType.LAZY)
+    @Column(name = "workplace_id", updatable = false,columnDefinition = "BIGINT")
+    private WorkPlace workPlace; */
 }
