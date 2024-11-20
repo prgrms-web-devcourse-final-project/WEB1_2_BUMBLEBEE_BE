@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 public class WorkplaceResponse {
 
-    private Long businessId;
+    private final Long businessId;
 
     private final String workplaceName;
     private final String workplacePhoneNumber;
@@ -24,7 +24,7 @@ public class WorkplaceResponse {
     private final LocalDateTime createdAt;
 
     public WorkplaceResponse(Workplace workplace) {
-//        this.businessId = workplace.getBusiness().getBusinessId();
+        this.businessId = workplace.getBusiness().getBusinessId();
         this.workplaceName = workplace.getWorkplaceName();
         this.workplacePhoneNumber = workplace.getWorkplacePhoneNumber();
         this.workplaceDescription = workplace.getWorkplaceDescription();

@@ -23,11 +23,7 @@ public class WorkplaceService {
     public List<WorkplaceResponse> readAllWorkplaces() {
         List<Workplace> workplaceList = workplaceRepository.findAll();
 
-        List<WorkplaceResponse> workplaceDtoList = new ArrayList<>();
-        for (Workplace workplace : workplaceList) {
-            workplaceDtoList.add(new WorkplaceResponse(workplace));
-        }
-        return workplaceDtoList;
+        return toResponseDto(workplaceList);
     }
 
     public WorkplaceResponse readWorkplace(Long workplaceId) {
@@ -115,6 +111,25 @@ public class WorkplaceService {
             throw new WorkplaceNotDelete();
         }
     }
+
+    public List<WorkplaceResponse> findWorkplacesByBusinessId(Long businessId) {
+        List<Workplace> workplaces = workplaceRepository.findByBusiness_BusinessId(businessId);
+
+        if (workplaces.isEmpty()) {
+            throw new WorkplaceNotFound();
+        }
+
+        return toResponseDto(workplaces);
+    }
+
+    private List<WorkplaceResponse> toResponseDto(List<Workplace> workplaces) {
+        List<WorkplaceResponse> workplaceDtoList = new ArrayList<>();
+        for (Workplace workplace : workplaces) {
+            workplaceDtoList.add(new WorkplaceResponse(workplace));
+        }
+        return workplaceDtoList;
+    }
+
 
     //사진 업로드 및 수정
 //    @Transactional

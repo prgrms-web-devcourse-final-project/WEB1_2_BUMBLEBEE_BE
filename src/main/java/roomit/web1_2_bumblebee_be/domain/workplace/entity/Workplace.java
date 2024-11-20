@@ -64,7 +64,7 @@ public class Workplace {
 //    private List<Room> rooms = new ArrayList<>();
 
     @Builder
-    public Workplace(Long workplaceId, String workplaceName, String workplacePhoneNumber, String workplaceDescription, String workplaceAddress, LocalDateTime workplaceStartTime, LocalDateTime workplaceEndTime, Long starSum, byte[] profileImage, String imageType, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Workplace(Long workplaceId, String workplaceName, String workplacePhoneNumber, String workplaceDescription, String workplaceAddress, LocalDateTime workplaceStartTime, LocalDateTime workplaceEndTime, Long starSum, byte[] profileImage, String imageType, LocalDateTime createdAt, LocalDateTime updatedAt, Business business) {
         this.workplaceId = workplaceId;
         this.workplaceName = workplaceName;
         this.workplacePhoneNumber = workplacePhoneNumber;
@@ -72,6 +72,7 @@ public class Workplace {
         this.workplaceAddress = workplaceAddress;
         this.workplaceStartTime = workplaceStartTime;
         this.workplaceEndTime = workplaceEndTime;
+        this.business = business;
         this.starSum = starSum;
         this.profileImage = profileImage;
         this.imageType = imageType;

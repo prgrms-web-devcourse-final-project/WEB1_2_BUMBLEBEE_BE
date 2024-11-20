@@ -8,6 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import roomit.web1_2_bumblebee_be.domain.business.entity.Business;
+import roomit.web1_2_bumblebee_be.domain.business.repository.BusinessRepository;
 import roomit.web1_2_bumblebee_be.domain.workplace.dto.WorkplaceRequest;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
 import roomit.web1_2_bumblebee_be.domain.workplace.repository.WorkplaceRepository;
@@ -33,11 +35,27 @@ public class WorkplaceControllerTest {
     private ObjectMapper objectMapper;
 
     @Autowired
+    private BusinessRepository businessRepository;
+
+    @Autowired
     private WorkplaceRepository workplaceRepository;
+
+    private Business savedBusiness;
 
     @BeforeEach
     void setUp() {
         workplaceRepository.deleteAll();
+        businessRepository.deleteAll();
+
+        // 고유한 business_email로 설정
+        Business business = Business.builder()
+                .businessName("Test Business")
+                .businessPwd("securePassword123")
+                .businessEmail("testbusiness" + System.currentTimeMillis() + "@example.com") // 고유 이메일
+                .businessNum("123-45-67890")
+                .build();
+
+        savedBusiness = businessRepository.save(business);
     }
 
 
@@ -86,6 +104,7 @@ public class WorkplaceControllerTest {
                 .imageType(null)
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                .business(savedBusiness)
                 .build();
 
         workplaceRepository.save(workplace);
@@ -199,6 +218,7 @@ public class WorkplaceControllerTest {
                     .imageType(null)
                     .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                     .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                    .business(savedBusiness)
                     .build();
 
             workplaceRepository.save(workplace);
