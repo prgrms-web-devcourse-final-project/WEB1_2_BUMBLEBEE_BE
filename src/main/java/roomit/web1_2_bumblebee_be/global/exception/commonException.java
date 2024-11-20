@@ -12,7 +12,6 @@ public abstract class commonException extends RuntimeException{
         super(errorCode.getMessage());
         this.errorCode = errorCode;
     }
-    public abstract int getStatusCode();
 
     public ErrorCode getErrorCode() {
         return errorCode;
