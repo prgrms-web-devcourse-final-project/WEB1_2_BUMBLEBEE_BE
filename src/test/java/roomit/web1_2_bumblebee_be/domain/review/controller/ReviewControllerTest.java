@@ -54,6 +54,8 @@ class ReviewControllerTest {
     @BeforeEach
     void setUp() {
         memberRepository.deleteAll();
+        reviewRepository.deleteAll();
+        workplaceRepository.deleteAll();
     }
 
     @Test
@@ -192,7 +194,7 @@ class ReviewControllerTest {
                 .build();
         reviewRepository.save(review);
 
-        mockMvc.perform(get("/api/v1/review/{reviewId}",1L)
+        mockMvc.perform(get("/api/v1/review/{reviewId}",review.getReviewId())
                         .contentType(MediaType.APPLICATION_JSON)
                         )
                 .andExpect(jsonPath("$.reviewContent").value(review.getReviewContent()))
