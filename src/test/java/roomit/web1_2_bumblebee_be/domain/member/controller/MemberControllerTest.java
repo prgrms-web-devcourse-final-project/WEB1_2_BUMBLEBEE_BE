@@ -12,13 +12,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberRegisterRequest;
+import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberUpdateRequest;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Age;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
 import roomit.web1_2_bumblebee_be.domain.member.repository.MemberRepository;
-import roomit.web1_2_bumblebee_be.domain.member.request.MemberRegisterRequest;
-import roomit.web1_2_bumblebee_be.domain.member.request.MemberUpdateRequest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -46,7 +46,7 @@ class MemberControllerTest {
     void test() throws Exception{
         MemberRegisterRequest memberRequest = MemberRegisterRequest.builder()
                 .age(Age.TEN)
-                .role(Role.Admin)
+                .role(Role.ROLE_ADMIN)
                 .email("이시현@naver.com")
                 .phoneNumber("010-33230-23")
                 .nickName("치킨유저")
@@ -71,7 +71,7 @@ class MemberControllerTest {
                 .sex(Sex.FEMALE)
                 .pwd("1111")
                 .email("이시현@Naver.com")
-                .role(Role.Admin)
+                .role(Role.ROLE_ADMIN)
                 .phoneNumber("010-33230-23")
                 .nickName("치킨유저")
                 .build();
@@ -95,7 +95,7 @@ class MemberControllerTest {
                 .memberSex(Sex.FEMALE)
                 .memberPwd("1111")
                 .memberEmail("이시현@Naver.com")
-                .memberRole(Role.Admin)
+                .memberRole(Role.ROLE_ADMIN)
                 .memberPhoneNumber("010-33230-23")
                 .memberNickName("치킨유저")
                 .build();
@@ -124,7 +124,7 @@ class MemberControllerTest {
                 .memberSex(Sex.FEMALE)
                 .memberPwd("1111")
                 .memberEmail("이시현@Naver.com")
-                .memberRole(Role.Admin)
+                .memberRole(Role.ROLE_ADMIN)
                 .memberPhoneNumber("010-33230-23")
                 .memberNickName("치킨유저")
                 .build();
@@ -161,7 +161,7 @@ class MemberControllerTest {
                 .memberSex(Sex.FEMALE)
                 .memberPwd("1111")
                 .memberEmail("이시현@Naver.com")
-                .memberRole(Role.Admin)
+                .memberRole(Role.ROLE_ADMIN)
                 .memberPhoneNumber("010-33230-23")
                 .memberNickName("치킨유저")
                 .build();
