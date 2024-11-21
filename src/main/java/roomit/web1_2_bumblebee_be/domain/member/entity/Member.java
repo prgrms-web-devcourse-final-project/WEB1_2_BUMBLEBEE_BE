@@ -72,7 +72,7 @@ public class Member {
         this.memberSex = memberSex;
         this.memberEmail = memberEmail;
         this.memberPwd = memberPwd;
-        this.memberRole = memberRole;
+        this.memberRole = Role.ROLE_USER;
 //        this.reviews = (List<Review>) review;
 //        this.reservation = reservation;
     }
