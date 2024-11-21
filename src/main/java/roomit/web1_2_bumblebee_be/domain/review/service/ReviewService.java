@@ -6,6 +6,7 @@ import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
 import roomit.web1_2_bumblebee_be.domain.member.exception.MemberNotFound;
 import roomit.web1_2_bumblebee_be.domain.member.repository.MemberRepository;
 import roomit.web1_2_bumblebee_be.domain.review.dto.request.ReviewRegisterRequest;
+import roomit.web1_2_bumblebee_be.domain.review.dto.request.ReviewSearch;
 import roomit.web1_2_bumblebee_be.domain.review.dto.request.ReviewUpdateRequest;
 import roomit.web1_2_bumblebee_be.domain.review.dto.response.ReviewResponse;
 import roomit.web1_2_bumblebee_be.domain.review.entity.Review;
@@ -16,6 +17,7 @@ import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
 import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkplaceNotFound;
 import roomit.web1_2_bumblebee_be.domain.workplace.repository.WorkplaceRepository;
 
+import java.util.List;
 import java.util.stream.IntStream;
 
 @Service
@@ -51,24 +53,32 @@ public class ReviewService {
         try {
             review.changeReviewContent(request.getReviewContent());
             review.changeReviewRating(request.getReviewRating());
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new ReviewUpdateException();
         }
 
         return new ReviewResponse(review);
     }
 
-    public ReviewResponse read(Long reviewId){
+    public ReviewResponse read(Long reviewId) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(ReviewNotFound::new);
 
         return new ReviewResponse(review);
     }
 
-    public void remove(Long reviewId){
+    public void remove(Long reviewId) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(ReviewNotFound::new);
 
         reviewRepository.delete(review);
+    }
+
+    public List<ReviewResponse> getList(ReviewSearch reviewSearch) {
+
+        return reviewRepository.getList(reviewSearch)
+                .stream()
+                .map(ReviewResponse::new)
+                .toList();
     }
 }
