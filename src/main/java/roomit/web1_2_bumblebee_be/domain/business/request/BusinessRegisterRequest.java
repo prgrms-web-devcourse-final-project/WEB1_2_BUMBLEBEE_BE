@@ -15,9 +15,6 @@ import roomit.web1_2_bumblebee_be.domain.business.entity.value.BusinessPassword;
 @Builder
 public class BusinessRegisterRequest {
 
-    @Pattern(regexp = BusinessNum.REGEX, message = BusinessNum.ERR_MSG)
-    private final String businessNum;
-
     @Pattern(regexp = BusinessNickname.REGEX, message = BusinessNickname.ERR_MSG)
     private final String businessName;
 
@@ -27,6 +24,8 @@ public class BusinessRegisterRequest {
     @Pattern(regexp = BusinessPassword.REGEX, message = BusinessPassword.ERR_MSG)
     private final String businessPwd;
 
+    @Pattern(regexp = BusinessNum.REGEX, message = BusinessNum.ERR_MSG)
+    private final String businessNum;
 
     public Business toEntity(final PasswordEncoder passwordEncoder) {
         return Business.builder()
