@@ -1,4 +1,4 @@
-package roomit.web1_2_bumblebee_be.domain.member.request;
+package roomit.web1_2_bumblebee_be.domain.member.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

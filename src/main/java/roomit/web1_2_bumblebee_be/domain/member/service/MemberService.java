@@ -1,32 +1,31 @@
 package roomit.web1_2_bumblebee_be.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import roomit.web1_2_bumblebee_be.domain.member.entity.Age;
+import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberRegisterRequest;
+import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberUpdateRequest;
+import roomit.web1_2_bumblebee_be.domain.member.dto.response.MemberResponse;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
-import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
-import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
 import roomit.web1_2_bumblebee_be.domain.member.exception.MemberNotFound;
 import roomit.web1_2_bumblebee_be.domain.member.exception.MemberUpdateException;
 import roomit.web1_2_bumblebee_be.domain.member.repository.MemberRepository;
-import roomit.web1_2_bumblebee_be.domain.member.request.MemberRegisterRequest;
-import roomit.web1_2_bumblebee_be.domain.member.request.MemberUpdateRequest;
-import roomit.web1_2_bumblebee_be.domain.member.response.MemberResponse;
-
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public void signupMember(MemberRegisterRequest memberRequest) {
+        log.info(memberRequest.getNickName());
         Member member = Member.builder()
                 .memberAge(memberRequest.getAge())
                 .memberSex(memberRequest.getSex())
-                .memberPwd(memberRequest.getPwd())
+                .memberPwd(bCryptPasswordEncoder.encode(memberRequest.getPwd())) //암호화
                 .memberEmail(memberRequest.getEmail())
                 .memberRole(memberRequest.getRole())
                 .memberPhoneNumber(memberRequest.getPhoneNumber())
