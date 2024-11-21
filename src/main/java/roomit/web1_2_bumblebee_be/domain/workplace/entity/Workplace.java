@@ -20,6 +20,7 @@ public class Workplace {
     @Column(name="workplace_id", unique = true, nullable = false)
     private Long workplaceId;
 
+    @Getter
     @Column(name = "workplace_name", nullable = false, length = 100)
     private String workplaceName;
 
@@ -78,7 +79,6 @@ public class Workplace {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-
 
     public void changeWorkplaceName(String workplaceName) {
         this.workplaceName = workplaceName;
