@@ -3,11 +3,15 @@ package roomit.web1_2_bumblebee_be.global.config.security;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,6 +23,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import roomit.web1_2_bumblebee_be.domain.business.service.CustomBusinessDetailsService;
+import roomit.web1_2_bumblebee_be.domain.member.service.CustomMemberDetailsService;
 import roomit.web1_2_bumblebee_be.global.config.security.jwt.JWTFilter;
 import roomit.web1_2_bumblebee_be.global.config.security.jwt.JWTUtil;
 import roomit.web1_2_bumblebee_be.global.config.security.jwt.LoginFilter;
@@ -33,11 +39,15 @@ public class SpringSecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
+    private final CustomMemberDetailsService memberDetailsService;
+    private final CustomBusinessDetailsService businessDetailsService;
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-
-        return configuration.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+        return http.getSharedObject(AuthenticationManagerBuilder.class)
+                .authenticationProvider(memberAuthenticationProvider())
+                .authenticationProvider(businessAuthenticationProvider())
+                .build();
     }
 
     @Bean
@@ -52,6 +62,22 @@ public class SpringSecurityConfig {
                 ROLE_ADMIN > ROLE_BUSINESS
                 ROLE_BUSINESS > ROLE_USER
                 """);
+    }
+
+    @Bean
+    public DaoAuthenticationProvider memberAuthenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(memberDetailsService);
+        provider.setPasswordEncoder(bCryptPasswordEncoder());
+        return provider;
+    }
+
+    @Bean
+    public DaoAuthenticationProvider businessAuthenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(businessDetailsService);
+        provider.setPasswordEncoder(bCryptPasswordEncoder());
+        return provider;
     }
 
     @Bean
@@ -83,20 +109,19 @@ public class SpringSecurityConfig {
         http
                 // 경로별 인가 작업
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/login","/").permitAll()
+                        .requestMatchers("/login/**","/").permitAll()
                         .requestMatchers("/api/v1/member/signup").permitAll()
-                        .requestMatchers("/admin").hasRole("ADMIN") //ADMIN권한만 사용 가능
-                        .requestMatchers("/business").hasRole("BUSINESS") //ADMIN권한만 사용 가능
-                        .requestMatchers("/user").hasRole("USER") //USER권한만 사용 가능
-                        .anyRequest().authenticated()); // permitAll()로 할시 모두 허용
+                        .requestMatchers("/api/v1/business/signup").permitAll()
+                        .anyRequest().permitAll()); // permitAll()로 할시 모두 허용
 
         http
                 //JWT 필터 추가
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
 
-         http
+        http
                 //커스텀 로그인 필터 추가
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration),jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginFilter(authenticationManager(http), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+
 
         http
                 // 세션 설정
@@ -106,6 +131,7 @@ public class SpringSecurityConfig {
 
 
         return http.build();
-
     }
+
+
 }
