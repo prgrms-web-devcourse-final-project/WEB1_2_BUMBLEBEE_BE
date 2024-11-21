@@ -2,31 +2,35 @@ package roomit.web1_2_bumblebee_be.domain.workplace.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
+import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.ImageUrl;
+import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplaceAddress;
+import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplaceName;
+import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplacePhoneNumber;
 
 import java.time.LocalDateTime;
 
 @Getter
-@NoArgsConstructor
+@Builder
 public class WorkplaceRequest {
 
-    @NotBlank(message = "사업장 이름을 입력해주세요.")
+    @Pattern(regexp = WorkplaceName.REGEX, message = WorkplaceName.ERR_MSG)
     private String workplaceName;
 
-    @NotBlank(message = "사업장 전화번호를 입력해주세요.")
+    @Pattern(regexp = WorkplacePhoneNumber.REGEX, message = WorkplacePhoneNumber.ERR_MSG)
     private String workplacePhoneNumber;
 
     @NotBlank(message = "사업장 세부사항을 입력해주세요")
     private String workplaceDescription;
 
-    @NotBlank(message = "사업장 주소를 입력해주세요.")
+    @Pattern(regexp = WorkplaceAddress.REGEX, message = WorkplaceAddress.ERR_MSG)
     private String workplaceAddress;
 
-    private byte[] profileImage;
-    private String imageType;
+    @Pattern(regexp = ImageUrl.REGEX, message = ImageUrl.ERR_MSG)
+    private String imageUrl;
 
     @NotNull(message = "사업장 시작 시간을 입력해주세요.")
     private LocalDateTime workplaceStartTime;
@@ -34,30 +38,15 @@ public class WorkplaceRequest {
     @NotNull(message = "사업장 종료 시간을 입력해주세요.")
     private LocalDateTime workplaceEndTime;
 
-    @Builder
-    public WorkplaceRequest(Workplace workplace) {
-        this.workplaceName = workplace.getWorkplaceName();
-        this.workplacePhoneNumber = workplace.getWorkplacePhoneNumber();
-        this.workplaceDescription = workplace.getWorkplaceDescription();
-        this.workplaceAddress = workplace.getWorkplaceAddress();
-        this.profileImage = workplace.getProfileImage();
-        this.imageType = workplace.getImageType();
-        this.workplaceStartTime = workplace.getWorkplaceStartTime();
-        this.workplaceEndTime = workplace.getWorkplaceEndTime();
-    }
-
     public Workplace toEntity() {
         return Workplace.builder()
                 .workplaceName(workplaceName)
-                .workplacePhoneNumber(workplacePhoneNumber)
                 .workplaceDescription(workplaceDescription)
+                .workplacePhoneNumber(workplacePhoneNumber)
                 .workplaceAddress(workplaceAddress)
-                .profileImage(profileImage)
-                .imageType(imageType)
+                .imageUrl(imageUrl)
                 .workplaceStartTime(workplaceStartTime)
                 .workplaceEndTime(workplaceEndTime)
                 .build();
     }
-
-
 }

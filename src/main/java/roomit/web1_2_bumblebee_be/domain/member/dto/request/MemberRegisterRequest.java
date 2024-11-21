@@ -29,8 +29,6 @@ public class MemberRegisterRequest {
     @NotNull(message = "비밀번호를 입력해주세요.")
     private String pwd;
 
-    @NotNull(message = "사업자/사용자 입력을 해주세요")
-    private Role role;
     @Builder
     public MemberRegisterRequest(String nickName, String phoneNumber, Age age, Sex sex, String email, String pwd, Role role) {
         this.nickName = nickName;
@@ -39,7 +37,6 @@ public class MemberRegisterRequest {
         this.sex = sex;
         this.email = email;
         this.pwd = pwd;
-        this.role = role;
     }
 
 }

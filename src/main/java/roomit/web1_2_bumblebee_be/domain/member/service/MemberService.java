@@ -14,20 +14,17 @@ import roomit.web1_2_bumblebee_be.domain.member.repository.MemberRepository;
 
 @Service
 @RequiredArgsConstructor
-@Log4j2
 public class MemberService {
 
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public void signupMember(MemberRegisterRequest memberRequest) {
-        log.info(memberRequest.getNickName());
         Member member = Member.builder()
                 .memberAge(memberRequest.getAge())
                 .memberSex(memberRequest.getSex())
                 .memberPwd(bCryptPasswordEncoder.encode(memberRequest.getPwd())) //암호화
                 .memberEmail(memberRequest.getEmail())
-                .memberRole(memberRequest.getRole())
                 .memberPhoneNumber(memberRequest.getPhoneNumber())
                 .memberNickName(memberRequest.getNickName())
                 .build();

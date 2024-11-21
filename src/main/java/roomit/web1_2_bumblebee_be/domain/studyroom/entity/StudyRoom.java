@@ -1,14 +1,15 @@
 package roomit.web1_2_bumblebee_be.domain.studyroom.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
 
 @Entity
 @Table(name = "StudyRoom")
 @NoArgsConstructor( access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Getter
+@Setter
 public class StudyRoom extends BaseEntity {
 
     @Id
@@ -22,13 +23,36 @@ public class StudyRoom extends BaseEntity {
     @Column(name = "studyroom_description", nullable = false ,columnDefinition = "VARCHAR(255)")
     private String description;
 
-    @Column(name = "studyroom_num", nullable = false, columnDefinition = "INT")
-    private Integer num;
+    @Column(name = "studyroom_capacity", nullable = false, columnDefinition = "INT")
+    private Integer capacity;
 
     @Column(name = "studyroom_price", nullable = false,columnDefinition = "INT")
     private Integer price;
 
-    /* @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "workplace_id", updatable = false,columnDefinition = "BIGINT")
-    private WorkPlace workPlace;*/
+    @Column(name = "studyroom_image_url", nullable = false, columnDefinition = "VARCHAR(255)")
+    private String imageUrl;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "workplace_id", nullable = false)
+    private Workplace workPlaceId;
+
+    @Builder
+    public StudyRoom(String title, String description, Integer capacity, Integer price,String imageUrl,Workplace workplaceId) {
+        this.title = title;
+        this.description = description;
+        this.capacity = capacity;
+        this.price = price;
+        this.imageUrl = imageUrl;
+        this.workPlaceId = workplaceId;
+    }
+
+    public static class StudyRoomBuilder {
+        public StudyRoomBuilder workPlaceId(Workplace workPlaceId) {
+            this.workplaceId = workPlaceId;
+            return this;
+        }
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Workplace workPlace;
 }

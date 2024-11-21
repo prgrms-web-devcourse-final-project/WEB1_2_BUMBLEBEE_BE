@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +17,7 @@ import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
 import java.io.IOException;
 
 @RequiredArgsConstructor
+@Log4j2
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
@@ -25,6 +27,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         String authorization = request.getHeader("Authorization");
 
+        log.info("token: " +authorization);
         // Authorization 헤더 검증
         if (authorization == null || !authorization.startsWith("Bearer ")){
 
@@ -46,11 +49,15 @@ public class JWTFilter extends OncePerRequestFilter {
         String email = jwtUtil.getUsername(token);
         Role role = jwtUtil.getRole(token);
 
+        log.info("email : " + email);
+        log.info("role : " + role);
+
+
         //Member 엔티티 생성하여 값 set
         Member member = Member.builder()
                 .memberEmail(email)
                 .memberPwd("dummy")
-                .memberRole(role)
+                .memberRole(Role.ROLE_USER)
                 .build();
 
         CustomMemberDetails customMemberDetails = new CustomMemberDetails(member);
@@ -70,6 +77,10 @@ public class JWTFilter extends OncePerRequestFilter {
             return true;
         }
         if (request.getRequestURI().startsWith("/api/v1/member/signup")) {
+
+            return true;
+        }
+        if (request.getRequestURI().startsWith("/api/v1/business/signup")) {
 
             return true;
         }
