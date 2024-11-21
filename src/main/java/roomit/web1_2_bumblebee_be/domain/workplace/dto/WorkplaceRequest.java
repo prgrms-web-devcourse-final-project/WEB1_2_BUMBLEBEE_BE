@@ -2,6 +2,7 @@ package roomit.web1_2_bumblebee_be.domain.workplace.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,7 @@ import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
 import java.time.LocalDateTime;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class WorkplaceRequest {
 
     @NotBlank(message = "사업장 이름을 입력해주세요.")
