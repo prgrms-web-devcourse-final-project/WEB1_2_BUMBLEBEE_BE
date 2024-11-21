@@ -5,6 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Age;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
@@ -14,11 +16,14 @@ import roomit.web1_2_bumblebee_be.domain.member.repository.MemberRepository;
 import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberRegisterRequest;
 import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberUpdateRequest;
 import roomit.web1_2_bumblebee_be.domain.member.dto.response.MemberResponse;
+import roomit.web1_2_bumblebee_be.domain.review.repository.ReviewRepository;
+import roomit.web1_2_bumblebee_be.domain.workplace.repository.WorkplaceRepository;
 
 import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
+
 class MemberServiceTest {
 
     @Autowired
@@ -27,14 +32,22 @@ class MemberServiceTest {
     @Autowired
     private MemberRepository memberRepository;
 
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+    @Autowired
+    private WorkplaceRepository workplaceRepository;
     @BeforeEach
     void setUp() {
         memberRepository.deleteAll();
+        reviewRepository.deleteAll();
+        workplaceRepository.deleteAll();
     }
 
     @Test
     @DisplayName("멤버 등록")
     void test1(){
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         MemberRegisterRequest memberRequest = MemberRegisterRequest.builder()
                 .age(Age.TEN)
                 .sex(Sex.FEMALE)
@@ -52,7 +65,7 @@ class MemberServiceTest {
 
 
 
-        assertEquals("1111",member.getMemberPwd());
+        assertTrue(passwordEncoder.matches("1111",member.getMemberPwd()));
         assertEquals("치킨유저",member.getMemberNickName());
 
     }
