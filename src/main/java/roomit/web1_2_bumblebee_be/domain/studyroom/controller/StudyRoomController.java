@@ -19,9 +19,9 @@ public class StudyRoomController {
 
     // 스터디룸 생성
     @PostMapping
-    public ResponseEntity<Void> createStudyRoom(@RequestBody CreateStudyRoomRequest request) {
+    public ResponseEntity<String> createStudyRoom(@RequestBody CreateStudyRoomRequest request) {
         studyRoomService.createStudyRoom(request);
-        return ResponseEntity.ok().build();  // 200 OK 반환
+        return ResponseEntity.status(201).body("스터디룸 생성이 성공적으로 완료되었습니다.");  // 200 OK 반환
     }
 
     // 스터디룸 조회 (전체)
@@ -40,17 +40,17 @@ public class StudyRoomController {
 
     // 스터디룸 업데이트
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateStudyRoom( @RequestBody UpdateStudyRoomRequest request) {
+    public ResponseEntity<String> updateStudyRoom( @RequestBody UpdateStudyRoomRequest request) {
         request = new UpdateStudyRoomRequest(request.getStudyRoomId(), request.getTitle(), request.getDescription(), request.getCapacity(), request.getPrice());
         studyRoomService.updateStudyRoom(request);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(200).body("스터디룸 수정이 성공적으로 완료되었습니다.");
     }
 
     // 스터디룸 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStudyRoom(@PathVariable Long id) {
+    public ResponseEntity<String> deleteStudyRoom(@PathVariable Long id) {
         studyRoomService.deleteStudyRoom(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(200).body("스터디룸 삭제가 성공적으로 완료되었습니다.");
     }
 
     // 사용 가능한 스터디룸 목록 조회
