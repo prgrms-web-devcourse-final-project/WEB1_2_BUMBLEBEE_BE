@@ -1,6 +1,7 @@
 package roomit.web1_2_bumblebee_be.global.error;
 
 import lombok.Getter;
+import roomit.web1_2_bumblebee_be.domain.review.exception.ReviewNotFound;
 
 @Getter
 public enum ErrorCode {
@@ -20,7 +21,11 @@ public enum ErrorCode {
     WORKPLACE_NOT_DELETE(403,"W003","사업장 삭제에 실패하였습니다."),
     WORKPLACE_NOT_FOUND(400,"W004","존재하지 않는 사업장 입니다"),
     WORKPLACE_INVALID_REQUEST(400,"W001-2","잘못된 입력입니다."),
-    ;
+
+
+    /*Review*/
+    REVIEW_NOT_FOUND(400,"V003","존재 하지 않는 리뷰입니다."),
+    REVIEW_UPDATE_EXCEPTION(400,"V002","잘못 수정 입니다.");
 
     private final String code;
     private final String message;
