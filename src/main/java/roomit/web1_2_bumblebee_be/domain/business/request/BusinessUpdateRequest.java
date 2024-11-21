@@ -1,6 +1,5 @@
 package roomit.web1_2_bumblebee_be.domain.business.request;
 
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
