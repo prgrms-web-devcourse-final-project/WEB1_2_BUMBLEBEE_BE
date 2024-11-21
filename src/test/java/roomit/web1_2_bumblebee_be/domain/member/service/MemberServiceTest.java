@@ -65,7 +65,6 @@ class MemberServiceTest {
                 .memberSex(Sex.FEMALE)
                 .memberPwd("1111")
                 .memberEmail("이시현@Naver.com")
-                .memberRole(Role.ROLE_ADMIN)
                 .memberPhoneNumber("010-33230-23")
                 .memberNickName("치킨유저")
                 .build();
@@ -87,7 +86,6 @@ class MemberServiceTest {
                 .memberSex(Sex.FEMALE)
                 .memberPwd("1111")
                 .memberEmail("이시현@Naver.com")
-                .memberRole(Role.ROLE_ADMIN)
                 .memberPhoneNumber("010-33230-23")
                 .memberNickName("치킨유저")
                 .build();
@@ -108,7 +106,6 @@ class MemberServiceTest {
                 .memberSex(Sex.FEMALE)
                 .memberPwd("1111")
                 .memberEmail("이시현@Naver.com")
-                .memberRole(Role.ROLE_ADMIN)
                 .memberPhoneNumber("010-33230-23")
                 .memberNickName("치킨유저")
                 .build();
@@ -138,7 +135,6 @@ class MemberServiceTest {
                 .memberSex(Sex.FEMALE)
                 .memberPwd("1111")
                 .memberEmail("이시현@Naver.com")
-                .memberRole(Role.ROLE_ADMIN)
                 .memberPhoneNumber("010-33230-23")
                 .memberNickName("치킨유저")
                 .build();
@@ -158,7 +154,6 @@ class MemberServiceTest {
                 .memberSex(Sex.FEMALE)
                 .memberPwd("1111")
                 .memberEmail("이시현@Naver.com")
-                .memberRole(Role.ROLE_ADMIN)
                 .memberPhoneNumber("010-33230-23")
                 .memberNickName("치킨유저")
                 .build();
