@@ -5,9 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomit.web1_2_bumblebee_be.domain.member.request.MemberRegisterRequest;
-import roomit.web1_2_bumblebee_be.domain.member.request.MemberUpdateRequest;
-import roomit.web1_2_bumblebee_be.domain.member.response.MemberResponse;
+import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberRegisterRequest;
+import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberUpdateRequest;
+import roomit.web1_2_bumblebee_be.domain.member.dto.response.MemberResponse;
 import roomit.web1_2_bumblebee_be.domain.member.service.MemberService;
 
 @RestController

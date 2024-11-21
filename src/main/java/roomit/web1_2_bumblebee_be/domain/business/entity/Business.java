@@ -60,7 +60,7 @@ public class Business {
         this.businessName = businessName;
         this.businessPwd = businessPwd;
         this.businessEmail = businessEmail;
-        this.businessRole = Role.Business;
+        this.businessRole = Role.ROLE_BUSINESS;
         this.businessNum = businessNum;
     }
 
