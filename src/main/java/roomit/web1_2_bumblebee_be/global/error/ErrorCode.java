@@ -20,6 +20,9 @@ public enum ErrorCode {
     WORKPLACE_NOT_DELETE(403,"W003","사업장 삭제에 실패하였습니다."),
     WORKPLACE_NOT_FOUND(400,"W004","존재하지 않는 사업장 입니다"),
     WORKPLACE_INVALID_REQUEST(400,"W001-2","잘못된 입력입니다."),
+
+    /*StudyRoom*/
+    STUDYROOM_NOT_FOUND(400,"S001","존재하지 않는 스터디룸입니다.")
     ;
 
     private final String code;
