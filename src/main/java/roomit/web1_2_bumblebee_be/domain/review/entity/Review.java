@@ -61,8 +61,4 @@ public class Review {
     public void changeReviewContent(String reviewContent) {
         this.reviewContent = reviewContent;
     }
-    public void changeCreatedAt() {
-        this.createdAt = LocalDateTime.now();
-    }
-
 }
