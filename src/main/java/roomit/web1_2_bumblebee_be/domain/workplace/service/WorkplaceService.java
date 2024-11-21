@@ -3,10 +3,14 @@ package roomit.web1_2_bumblebee_be.domain.workplace.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
 import roomit.web1_2_bumblebee_be.domain.workplace.dto.WorkplaceRequest;
 import roomit.web1_2_bumblebee_be.domain.workplace.dto.WorkplaceResponse;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
+import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplaceAddress;
+import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplaceName;
+import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplacePhoneNumber;
 import roomit.web1_2_bumblebee_be.domain.workplace.exception.*;
 import roomit.web1_2_bumblebee_be.domain.workplace.repository.WorkplaceRepository;
 
@@ -35,27 +39,19 @@ public class WorkplaceService {
 
     @Transactional
     public void createWorkplace(WorkplaceRequest workplaceDto) {
-        String workplaceName = workplaceDto.getWorkplaceName();
-        String workplacePhoneNumber = workplaceDto.getWorkplacePhoneNumber();
-        String workplaceDescription = workplaceDto.getWorkplaceDescription();
-        String workplaceAddress = workplaceDto.getWorkplaceAddress();
 
-        if (workplaceName == null || workplacePhoneNumber == null || workplaceDescription == null || workplaceAddress == null) {
-            throw new WorkplaceInvalidRequest();
-        }
-
-        if (workplaceRepository.getWorkplaceByWorkplaceName(workplaceDto.getWorkplaceName()) != null
-        || workplaceRepository.getWorkplaceByWorkplacePhoneNumber(workplaceDto.getWorkplacePhoneNumber()) !=null
-        || workplaceRepository.getWorkplaceByWorkplaceAddress(workplaceDto.getWorkplaceAddress()) != null) {
+        if (workplaceRepository.getWorkplaceByWorkplaceName(new WorkplaceName(workplaceDto.getWorkplaceName())) != null ||
+                workplaceRepository.getWorkplaceByWorkplacePhoneNumber(new WorkplacePhoneNumber(workplaceDto.getWorkplacePhoneNumber())) != null ||
+                workplaceRepository.getWorkplaceByWorkplaceAddress(new WorkplaceAddress(workplaceDto.getWorkplaceAddress())) != null) {
             throw new RuntimeException("이미 존재합니다");
         }
-
-//        uploadImage(workplaceDto.getProfileImage())
 
         try {
             Workplace workplace = workplaceDto.toEntity();
             workplace.changeStarSum(0L);
             workplaceRepository.save(workplace);
+        } catch (InvalidDataAccessApiUsageException e) {
+            throw new WorkplaceInvalidRequest(); // 예외 감싸기
         } catch (Exception e) {
             throw new WorkplaceNotRegistered();
         }
@@ -68,18 +64,6 @@ public class WorkplaceService {
         }
 
         // 필수 필드 검증
-        if (workplaceDto.getWorkplaceName() == null || workplaceDto.getWorkplaceName().isBlank()) {
-            throw new WorkplaceInvalidRequest();
-        }
-        if (workplaceDto.getWorkplacePhoneNumber() == null || workplaceDto.getWorkplacePhoneNumber().isBlank()) {
-            throw new WorkplaceInvalidRequest();
-        }
-        if (workplaceDto.getWorkplaceStartTime() == null) {
-            throw new WorkplaceInvalidRequest();
-        }
-        if (workplaceDto.getWorkplaceEndTime() == null) {
-            throw new WorkplaceInvalidRequest();
-        }
         if (!workplaceDto.getWorkplaceStartTime().isBefore(workplaceDto.getWorkplaceEndTime())) {
             throw new WorkplaceInvalidRequest();
         }
@@ -88,10 +72,10 @@ public class WorkplaceService {
                 .orElseThrow(WorkplaceNotFound::new);
 
         try {
-            workplace.changeWorkplaceName(workplaceDto.getWorkplaceName());
+            workplace.changeWorkplaceName(new WorkplaceName(workplaceDto.getWorkplaceName()));
             workplace.changeWorkplaceDescription(workplaceDto.getWorkplaceDescription());
-            workplace.changeWorkplaceAddress(workplaceDto.getWorkplaceAddress());
-            workplace.changeWorkplacePhoneNumber(workplaceDto.getWorkplacePhoneNumber());
+            workplace.changeWorkplaceAddress(new WorkplaceAddress(workplaceDto.getWorkplaceAddress()));
+            workplace.changeWorkplacePhoneNumber(new WorkplacePhoneNumber(workplaceDto.getWorkplacePhoneNumber()));
             workplace.changeWorkplaceStartTime(workplaceDto.getWorkplaceStartTime());
             workplace.changeWorkplaceEndTime(workplaceDto.getWorkplaceEndTime());
             workplaceRepository.save(workplace);

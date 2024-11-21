@@ -1,11 +1,18 @@
 package roomit.web1_2_bumblebee_be.domain.workplace.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import roomit.web1_2_bumblebee_be.domain.business.entity.Business;
+import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.ImageUrl;
+import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplaceAddress;
+import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplaceName;
+import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplacePhoneNumber;
 
 import java.time.LocalDateTime;
 
@@ -17,20 +24,20 @@ import java.time.LocalDateTime;
 public class Workplace {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="workplace_id", unique = true, nullable = false)
+    @Column(name = "workplace_id", unique = true, nullable = false)
     private Long workplaceId;
 
-    @Column(name = "workplace_name", nullable = false, length = 100)
-    private String workplaceName;
+    @Embedded
+    private WorkplaceName workplaceName;
 
-    @Column(name = "workplace_phone_number", nullable = false, length = 15)
-    private String workplacePhoneNumber;
+    @Embedded
+    private WorkplacePhoneNumber workplacePhoneNumber;
 
     @Column(name = "workplace_description", nullable = false)
     private String workplaceDescription;
 
-    @Column(name = "workplace_address", nullable = false, length = 255)
-    private String workplaceAddress;
+    @Embedded
+    private WorkplaceAddress workplaceAddress;
 
     @Column(name = "workplace_start_time", nullable = false)
     private LocalDateTime workplaceStartTime;
@@ -41,12 +48,8 @@ public class Workplace {
     @Column(name = "star_sum")
     private Long starSum;
 
-    @Lob
-    @Column(name = "profile_image")
-    private byte[] profileImage;
-
-    @Column(name = "image_type", length = 50)
-    private String imageType;
+    @Embedded
+    private ImageUrl imageUrl;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -60,32 +63,39 @@ public class Workplace {
     @JoinColumn(name = "business_id")
     private Business business;
 
-//    @OneToMany(mappedBy = "room", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-//    private List<Room> rooms = new ArrayList<>();
+//    @OneToMany(mappedBy = "workplace", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+//    private List<StudyRoom> studyRoom = new ArrayList<>();
+
+//    @OneToMany(mappedBy = "workplace", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+//    private List<Review> review = new ArrayList<>();
+
 
     @Builder
-    public Workplace(Long workplaceId, String workplaceName, String workplacePhoneNumber, String workplaceDescription, String workplaceAddress, LocalDateTime workplaceStartTime, LocalDateTime workplaceEndTime, Long starSum, byte[] profileImage, String imageType, LocalDateTime createdAt, LocalDateTime updatedAt, Business business) {
-        this.workplaceId = workplaceId;
-        this.workplaceName = workplaceName;
-        this.workplacePhoneNumber = workplacePhoneNumber;
+    public Workplace(final String workplaceName,
+                     final String workplacePhoneNumber,
+                     final String workplaceDescription,
+                     final String workplaceAddress,
+                     final String imageUrl,
+                     final LocalDateTime workplaceStartTime,
+                     final LocalDateTime workplaceEndTime,
+                     final Business business) {
+        this.workplaceName = new WorkplaceName(workplaceName);
+        this.workplacePhoneNumber = new WorkplacePhoneNumber(workplacePhoneNumber);
         this.workplaceDescription = workplaceDescription;
-        this.workplaceAddress = workplaceAddress;
+        this.workplaceAddress = new WorkplaceAddress(workplaceAddress);
+        this.imageUrl = new ImageUrl(imageUrl);
         this.workplaceStartTime = workplaceStartTime;
         this.workplaceEndTime = workplaceEndTime;
         this.business = business;
-        this.starSum = starSum;
-        this.profileImage = profileImage;
-        this.imageType = imageType;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
 
-    public void changeWorkplaceName(String workplaceName) {
+
+    public void changeWorkplaceName(WorkplaceName workplaceName) {
         this.workplaceName = workplaceName;
     }
 
-    public void changeWorkplacePhoneNumber(String workplacePhoneNumber) {
+    public void changeWorkplacePhoneNumber(WorkplacePhoneNumber workplacePhoneNumber) {
         this.workplacePhoneNumber = workplacePhoneNumber;
     }
 
@@ -93,7 +103,7 @@ public class Workplace {
         this.workplaceDescription = workplaceDescription;
     }
 
-    public void changeWorkplaceAddress(String workplaceAddress) {
+    public void changeWorkplaceAddress(WorkplaceAddress workplaceAddress) {
         this.workplaceAddress = workplaceAddress;
     }
 
@@ -109,11 +119,7 @@ public class Workplace {
         this.starSum = starSum;
     }
 
-    public void changeProfileImage(byte[] profileImage) {
-        this.profileImage = profileImage;
-    }
-
-    public void changeImageType(String imageType) {
-        this.imageType = imageType;
+    public void changeImageUrl(ImageUrl imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

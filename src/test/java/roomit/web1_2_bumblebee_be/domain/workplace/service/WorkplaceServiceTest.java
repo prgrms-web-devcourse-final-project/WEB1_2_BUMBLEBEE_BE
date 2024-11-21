@@ -7,11 +7,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import roomit.web1_2_bumblebee_be.domain.business.entity.Business;
 import roomit.web1_2_bumblebee_be.domain.business.repository.BusinessRepository;
+import roomit.web1_2_bumblebee_be.domain.business.request.BusinessRegisterRequest;
+import roomit.web1_2_bumblebee_be.domain.business.service.BusinessService;
 import roomit.web1_2_bumblebee_be.domain.workplace.dto.WorkplaceRequest;
 import roomit.web1_2_bumblebee_be.domain.workplace.dto.WorkplaceResponse;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
+import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplaceName;
 import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkplaceInvalidRequest;
 import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkplaceNotFound;
+import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkplaceNotRegistered;
+import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkspaceNotModified;
 import roomit.web1_2_bumblebee_be.domain.workplace.repository.WorkplaceRepository;
 
 import java.time.LocalDateTime;
@@ -32,6 +37,9 @@ class WorkplaceServiceTest {
     private BusinessRepository businessRepository;
 
     @Autowired
+    private BusinessService businessService;
+
+    @Autowired
     private WorkplaceService workplaceService;
 
     private Business savedBusiness;
@@ -41,15 +49,23 @@ class WorkplaceServiceTest {
         // 기존 데이터를 모두 삭제하여 중복 방지
         businessRepository.deleteAll();
 
+        workplaceRepository.deleteAll();
+        businessRepository.deleteAll();
+
+        String email = "business12@gmail.com";
+
         // 고유한 business_email로 설정
-        Business business = Business.builder()
-                .businessName("Test Business")
-                .businessPwd("securePassword123")
-                .businessEmail("testbusiness" + System.currentTimeMillis() + "@example.com") // 고유 이메일
-                .businessNum("123-45-67890")
+        BusinessRegisterRequest businessRegisterRequest = BusinessRegisterRequest.builder()
+                .businessName("테스트사업자")
+                .businessEmail(email)
+                .businessPwd("Business1!")
+                .businessNum("123-12-12345")
                 .build();
 
-        savedBusiness = businessRepository.save(business);
+        businessService.signUpBusiness(businessRegisterRequest);
+
+        savedBusiness = businessRepository.findByBusinessEmail(email)
+                .orElseThrow(RuntimeException::new);
     }
 
 
@@ -59,15 +75,14 @@ class WorkplaceServiceTest {
     void createAndReadWorkplace() {
         // Given
         Workplace workplace = Workplace.builder()
-                .workplaceName("사업장")
+                .workplaceName("사업장 넘버원")
                 .workplacePhoneNumber("010-1234-1234")
                 .workplaceDescription("사업장 설명")
-                .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
+                .workplaceAddress("대한민국 서울시")
+                .imageUrl("http://image.url")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
-                .business(savedBusiness) // 저장된 Business 객체를 참조
+                .business(savedBusiness)
                 .build();
 
         Workplace savedWorkplace = workplaceRepository.save(workplace); // Workplace 저장 후 반환된 객체 사용
@@ -77,37 +92,61 @@ class WorkplaceServiceTest {
 
         // Then
         assertNotNull(findWorkplace);
-        assertEquals("사업장", findWorkplace.getWorkplaceName());
+        assertEquals("사업장 넘버원", findWorkplace.getWorkplaceName());
         assertEquals("010-1234-1234", findWorkplace.getWorkplacePhoneNumber());
-        assertEquals("대한민국", findWorkplace.getWorkplaceAddress());
+        assertEquals("대한민국 서울시", findWorkplace.getWorkplaceAddress());
     }
 
 
 
     @Test
-    @DisplayName("사업장 등록 - 필수 필드 누락 실패")
+    @DisplayName("사업장 등록")
     @Order(2)
-    void createWorkplaceFailed() {
+    void createWorkplace() {
         // Given
-        Workplace workplace = Workplace.builder()
+        WorkplaceRequest workplace = WorkplaceRequest.builder()
+                .workplaceName("사업장1")
                 .workplacePhoneNumber("010-1234-1234")
                 .workplaceDescription("사업장 설명")
-                .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
+                .workplaceAddress("대한민국 서울시")
+                .imageUrl("http://image.url")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .build();
 
-        WorkplaceRequest workplaceDto = new WorkplaceRequest(workplace);
+        // When
+        workplaceService.createWorkplace(workplace);
+        Workplace findWorkplace = workplaceRepository.getWorkplaceByWorkplaceName(new WorkplaceName("사업장1"));
 
-        // When & Then: WorkplaceInvalidRequest 예외 발생 확인
-        WorkplaceInvalidRequest exception = assertThrows(WorkplaceInvalidRequest.class, () -> {
-            workplaceService.createWorkplace(workplaceDto);
+        // Then
+        assertEquals("사업장1", findWorkplace.getWorkplaceName().getValue());
+        assertEquals("010-1234-1234", findWorkplace.getWorkplacePhoneNumber().getValue());
+        assertEquals("대한민국 서울시", findWorkplace.getWorkplaceAddress().getValue());
+    }
+
+    @Test
+    @DisplayName("사업장 등록 - 필수 필드 오류 실패")
+    @Order(3)
+    void createWorkplaceFailed() {
+        // Given
+        WorkplaceRequest workplace = WorkplaceRequest.builder()
+                .workplaceName("사")
+                .workplacePhoneNumber("010-1234-1234")
+                .workplaceDescription("사업장 설명")
+                .workplaceAddress("대한민국 서울시")
+                .imageUrl("http://image.url")
+                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
+                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                .build();
+
+        // When & Then
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            workplaceService.createWorkplace(workplace);
         });
 
-        assertEquals("잘못된 입력입니다.", exception.getMessage());
+        assertEquals("사업장명은 특수문자를 제외한 2~30자리여야 하며, 띄워쓰기가 가능합니다.", exception.getMessage());
     }
+
 
 
     @Test
@@ -130,9 +169,8 @@ class WorkplaceServiceTest {
                 .workplaceName("기존 사업장")
                 .workplacePhoneNumber("010-1234-1234")
                 .workplaceDescription("기존 설명")
-                .workplaceAddress("기존 주소")
-                .profileImage(null)
-                .imageType(null)
+                .workplaceAddress("대한민국 서울시")
+                .imageUrl("http://image.url")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .business(savedBusiness) // 기존 Business 설정
@@ -140,23 +178,18 @@ class WorkplaceServiceTest {
 
         Workplace savedWorkplace = workplaceRepository.save(workplace);
 
-        Workplace updatedworkplace = Workplace.builder()
-                .workplaceId(savedWorkplace.getWorkplaceId())
+        WorkplaceRequest updatedworkplace = WorkplaceRequest.builder()
                 .workplaceName("사업장 수정")
                 .workplacePhoneNumber("010-1234-1230")
                 .workplaceDescription("사업장 설명 수정")
-                .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
+                .workplaceAddress("대한민국 서울시 수정")
+                .imageUrl("http://image.url")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
-                .business(savedBusiness)
                 .build();
 
-        WorkplaceRequest workplaceDto = new WorkplaceRequest(updatedworkplace);
-
         // When
-        workplaceService.updateWorkplace(savedWorkplace.getWorkplaceId(), workplaceDto);
+        workplaceService.updateWorkplace(savedWorkplace.getWorkplaceId(), updatedworkplace);
 
         // Then
         WorkplaceResponse findWorkplace = workplaceService.readWorkplace(workplace.getWorkplaceId());
@@ -174,32 +207,29 @@ class WorkplaceServiceTest {
                 .workplaceName("사업장")
                 .workplacePhoneNumber("010-1234-1234")
                 .workplaceDescription("사업장 설명")
-                .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
+                .workplaceAddress("대한민국 서울시")
+                .imageUrl("http://image.url")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .build();
         workplaceRepository.save(workplace);
 
         // Given: 필수 필드 중 일부 누락된 요청
-        Workplace request = Workplace.builder()
+        WorkplaceRequest request = WorkplaceRequest.builder()
                 .workplacePhoneNumber("010-1234-5678")
                 .workplaceDescription("수정된 설명")
-                .workplaceAddress("수정된 주소")
+                .workplaceAddress("대한민국 서울시 수정")
                 .workplaceStartTime(LocalDateTime.of(2023, 2, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 2, 1, 18, 0))
                 .build();
 
-        WorkplaceRequest workplaceDto = new WorkplaceRequest(request);
-
 
         // When & Then: WorkplaceInvalidRequest 예외 발생 확인
-        WorkplaceInvalidRequest exception = assertThrows(WorkplaceInvalidRequest.class, () -> {
-            workplaceService.updateWorkplace(workplace.getWorkplaceId(), workplaceDto);
+        WorkspaceNotModified exception = assertThrows(WorkspaceNotModified.class, () -> {
+            workplaceService.updateWorkplace(workplace.getWorkplaceId(), request);
         });
 
-        assertEquals("잘못된 입력입니다.", exception.getMessage());
+        assertEquals("사업장 수정에 실패하였습니다.", exception.getMessage());
     }
 
     @Test
@@ -212,9 +242,8 @@ class WorkplaceServiceTest {
                 .workplaceName("사업장")
                 .workplacePhoneNumber("010-1234-1234")
                 .workplaceDescription("사업장 설명")
-                .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
+                .workplaceAddress("대한민국 서울시")
+                .imageUrl("http://image.url")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .build();
@@ -242,8 +271,7 @@ class WorkplaceServiceTest {
                     .workplacePhoneNumber("010-1234-" + String.format("%04d", i))
                     .workplaceDescription("테스트 사업장 " + i)
                     .workplaceAddress("테스트 주소 " + i)
-                    .profileImage(null) // 이미지 생략 가능
-                    .imageType("image/png")
+                    .imageUrl("http://image.url")
                     .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                     .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                     .business(savedBusiness)
@@ -273,6 +301,7 @@ class WorkplaceServiceTest {
                     .workplaceAddress("테스트 주소 " + i)
                     .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                     .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                    .imageUrl("http://image.url")
                     .business(savedBusiness) // Set the businessId
                     .build();
 

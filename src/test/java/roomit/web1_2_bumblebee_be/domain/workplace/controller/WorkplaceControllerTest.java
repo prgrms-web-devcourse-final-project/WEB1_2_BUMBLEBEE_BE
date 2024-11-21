@@ -10,6 +10,9 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import roomit.web1_2_bumblebee_be.domain.business.entity.Business;
 import roomit.web1_2_bumblebee_be.domain.business.repository.BusinessRepository;
+import roomit.web1_2_bumblebee_be.domain.business.request.BusinessRegisterRequest;
+import roomit.web1_2_bumblebee_be.domain.business.service.BusinessService;
+import roomit.web1_2_bumblebee_be.domain.member.service.MemberService;
 import roomit.web1_2_bumblebee_be.domain.workplace.dto.WorkplaceRequest;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
 import roomit.web1_2_bumblebee_be.domain.workplace.repository.WorkplaceRepository;
@@ -38,24 +41,36 @@ public class WorkplaceControllerTest {
     private BusinessRepository businessRepository;
 
     @Autowired
+    private BusinessService businessService;
+
+    @Autowired
     private WorkplaceRepository workplaceRepository;
 
     private Business savedBusiness;
+
+    @Autowired
+    private MemberService memberService;
 
     @BeforeEach
     void setUp() {
         workplaceRepository.deleteAll();
         businessRepository.deleteAll();
 
+        String email = "business15@gmail.com";
+
         // 고유한 business_email로 설정
-        Business business = Business.builder()
-                .businessName("Test Business")
-                .businessPwd("securePassword123")
-                .businessEmail("testbusiness" + System.currentTimeMillis() + "@example.com") // 고유 이메일
-                .businessNum("123-45-67890")
+        BusinessRegisterRequest businessRegisterRequest = BusinessRegisterRequest.builder()
+                .businessName("테스트사업자")
+                .businessEmail(email)
+                .businessPwd("Business1!")
+                .businessNum("123-12-12345")
                 .build();
 
-        savedBusiness = businessRepository.save(business);
+        businessService.signUpBusiness(businessRegisterRequest);
+
+        savedBusiness = businessRepository.findByBusinessEmail(email)
+                .orElseThrow(RuntimeException::new);
+
     }
 
 
@@ -64,20 +79,17 @@ public class WorkplaceControllerTest {
     @DisplayName("사업장 등록")
     void create() throws Exception {
         // Given
-        Workplace workplace = Workplace.builder()
+        WorkplaceRequest workplace = WorkplaceRequest.builder()
                 .workplaceName("사업장")
                 .workplacePhoneNumber("010-1234-1234")
                 .workplaceDescription("사업장 설명")
-                .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
+                .workplaceAddress("대한민국 서울시")
+                .imageUrl("http://image.url")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .build();
 
-        WorkplaceRequest workplaceDto = new WorkplaceRequest(workplace);
-
-        String json = objectMapper.writeValueAsString(workplaceDto);
+        String json = objectMapper.writeValueAsString(workplace);
 
         // When
         mockMvc.perform(post("/api/v1/workplace/create")
@@ -99,9 +111,8 @@ public class WorkplaceControllerTest {
                 .workplaceName("사업장")
                 .workplacePhoneNumber("010-1234-1234")
                 .workplaceDescription("사업장 설명")
-                .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
+                .workplaceAddress("대한민국 서울시")
+                .imageUrl("http://image.url")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .business(savedBusiness)
@@ -119,7 +130,7 @@ public class WorkplaceControllerTest {
                 .andExpect(jsonPath("$.workplaceName").value("사업장"))
                 .andExpect(jsonPath("$.workplacePhoneNumber").value("010-1234-1234"))
                 .andExpect(jsonPath("$.workplaceDescription").value("사업장 설명"))
-                .andExpect(jsonPath("$.workplaceAddress").value("대한민국"))
+                .andExpect(jsonPath("$.workplaceAddress").value("대한민국 서울시"))
                 .andExpect(jsonPath("$.workplaceStartTime").value("2023-01-01T09:00:00"))
                 .andExpect(jsonPath("$.workplaceEndTime").value("2023-01-01T18:00:00"))
                 .andDo(print());
@@ -134,30 +145,25 @@ public class WorkplaceControllerTest {
                 .workplaceName("사업장")
                 .workplacePhoneNumber("010-1234-1234")
                 .workplaceDescription("사업장 설명")
-                .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
+                .workplaceAddress("대한민국 서울시")
+                .imageUrl("http://image.url")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .build();
 
         workplaceRepository.save(workplace);
 
-        Workplace updatedWorkplace = Workplace.builder()
-                .workplaceId(1L)
+        WorkplaceRequest updatedWorkplace = WorkplaceRequest.builder()
                 .workplaceName("사업장 수정")
                 .workplacePhoneNumber("010-1234-1230")
                 .workplaceDescription("사업장 설명 수정")
-                .workplaceAddress("중국")
-                .profileImage(null)
-                .imageType(null)
+                .workplaceAddress("중국 상하이")
+                .imageUrl("http://image.url")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 8, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 19, 0))
                 .build();
 
-        WorkplaceRequest request = new WorkplaceRequest(updatedWorkplace);
-
-        String json = objectMapper.writeValueAsString(request);
+        String json = objectMapper.writeValueAsString(updatedWorkplace);
 
         System.out.println("Generated JSON: " + json); // JSON 출력 확인
 
@@ -181,9 +187,8 @@ public class WorkplaceControllerTest {
                 .workplaceName("사업장")
                 .workplacePhoneNumber("010-1234-1234")
                 .workplaceDescription("사업장 설명")
-                .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
+                .workplaceAddress("대한민국 서울시")
+                .imageUrl("http://image.url")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .build();
@@ -213,9 +218,8 @@ public class WorkplaceControllerTest {
                     .workplaceName("사업장 " + i)
                     .workplacePhoneNumber("010-1234-" + String.format("%04d", i))
                     .workplaceDescription("사업장 설명 " + i)
-                    .workplaceAddress("대한민국 " + i)
-                    .profileImage(null)
-                    .imageType(null)
+                    .workplaceAddress("대한민국 서울시 " + i)
+                    .imageUrl("http://image.url")
                     .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                     .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                     .business(savedBusiness)
