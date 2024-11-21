@@ -18,12 +18,15 @@ import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
 import roomit.web1_2_bumblebee_be.domain.member.repository.MemberRepository;
 import roomit.web1_2_bumblebee_be.domain.review.dto.request.ReviewRegisterRequest;
+import roomit.web1_2_bumblebee_be.domain.review.dto.request.ReviewSearch;
 import roomit.web1_2_bumblebee_be.domain.review.entity.Review;
 import roomit.web1_2_bumblebee_be.domain.review.repository.ReviewRepository;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
 import roomit.web1_2_bumblebee_be.domain.workplace.repository.WorkplaceRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -243,5 +246,54 @@ class ReviewControllerTest {
                 .andDo(print());
 
         assertEquals(0, reviewRepository.count());
+    }
+    @Test
+    @DisplayName("리뷰 페이징")
+    void test5() throws Exception{
+
+        Member member = Member.builder()
+                .memberAge(Age.TEN)
+                .memberSex(Sex.FEMALE)
+                .memberRole(Role.ROLE_USER)
+                .memberPwd("1111")
+                .memberEmail("이시현@Naver.com")
+                .memberPhoneNumber("010-33230-23")
+                .memberNickName("치킨유저")
+                .build();
+
+        memberRepository.save(member);
+
+        Workplace workplace = Workplace.builder()
+                .workplaceName("사업장")
+                .workplacePhoneNumber("010-1234-1234")
+                .workplaceDescription("사업장 설명")
+                .workplaceAddress("대한민국")
+                .profileImage(null)
+                .imageType(null)
+                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
+                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                .build();
+
+        workplaceRepository.save(workplace);
+
+        List<Review> list = IntStream.rangeClosed(0, 19).mapToObj(i -> Review.builder()
+                .reviewContent("치킨이 안보이네요.." + i)
+                .reviewRating("별점4개" + i)
+                .member(member)
+                .workplace(workplace)
+                .build()).toList();
+
+        reviewRepository.saveAll(list);
+
+//        ReviewSearch reviewSearch = ReviewSearch.builder()
+//                .page(0)
+//                .size(10)
+//                .build();
+
+        mockMvc.perform(get("/api/v1/review?size=10&page=0")
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
     }
 }
