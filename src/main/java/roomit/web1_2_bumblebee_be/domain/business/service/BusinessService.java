@@ -1,6 +1,8 @@
 package roomit.web1_2_bumblebee_be.domain.business.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomit.web1_2_bumblebee_be.domain.business.entity.Business;
@@ -15,24 +17,17 @@ import roomit.web1_2_bumblebee_be.domain.business.response.BusinessResponse;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BusinessService {
 
     private final BusinessRepository businessRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     //사업자 등록
     @Transactional
     public void signUpBusiness(BusinessRegisterRequest registerRequest) {
         try {
-            Business business = Business.builder()
-                    .businessName(registerRequest.getBusinessName())
-                    .businessEmail(registerRequest.getBusinessEmail())
-                    //비밀 번호 암호화 처리 필요
-                    .businessPwd(registerRequest.getBusinessPwd())
-                    .businessNum(registerRequest.getBusinessNum())
-                    .build();
-
-            // 예외 처리 필요
-            businessRepository.save(business);
+            businessRepository.save(registerRequest.toEntity(passwordEncoder));
         }catch (Exception e) {
             throw new BusinessNotRegister();
         }
@@ -55,9 +50,7 @@ public class BusinessService {
                 .orElseThrow(BusinessNotFound::new);
 
         try {
-            business.changeBusinessEmail(updateRequest.getBusinessEmail());
-            business.changeBusinessName(updateRequest.getBusinessName());
-            business.changeBusinessNum(updateRequest.getBusinessNum());
+            business.updateBusiness(updateRequest);
 
             businessRepository.save(business);
         }catch (Exception e){
