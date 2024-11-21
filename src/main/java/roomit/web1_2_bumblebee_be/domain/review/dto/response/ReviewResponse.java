@@ -16,7 +16,7 @@ public class ReviewResponse {
     private final LocalDateTime reviewDate;
 
     public ReviewResponse(Review review) {
-        this.workplaceName = review.getWorkplace().getWorkplaceName();
+        this.workplaceName = review.getWorkplace().getWorkplaceName().getValue();
         this.reviewRating = review.getReviewRating();
         this.reviewContent = review.getReviewContent();
         this.reviewDate = LocalDateTime.now();

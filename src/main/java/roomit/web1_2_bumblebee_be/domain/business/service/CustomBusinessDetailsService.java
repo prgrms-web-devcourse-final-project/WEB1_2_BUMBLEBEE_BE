@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import roomit.web1_2_bumblebee_be.domain.business.entity.Business;
+import roomit.web1_2_bumblebee_be.domain.business.exception.BusinessNotFound;
 import roomit.web1_2_bumblebee_be.domain.business.repository.BusinessRepository;
 import roomit.web1_2_bumblebee_be.domain.business.response.CustomBusinessDetails;
 import roomit.web1_2_bumblebee_be.domain.member.dto.CustomMemberDetails;
@@ -21,7 +22,7 @@ public class CustomBusinessDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Business business = businessRepository.findByEmail(email);
+        Business business = businessRepository.findByBusinessEmail(email).orElseThrow(BusinessNotFound::new);
 
         if (business != null){
 
