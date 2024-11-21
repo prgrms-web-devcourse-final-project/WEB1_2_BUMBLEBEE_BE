@@ -11,6 +11,9 @@ public enum ErrorCode {
     MEMBER_NOT_FOUND(400, "M003-1", "존재 하지 않는 회원입니다."),
     MEMBER_UPDATE_EXCEPTION(400, "M001", "잘못된 회원 수정 입니다."),
 
+    /*StudyRoom*/
+    STUDYROOM_NOT_FOUND(400,"S001","존재하지 않는 스터디룸입니다."),
+
     /*Business*/
     BUSINESS_NOT_FOUND(400, "B003", "존재 하지 않는 사업자입니다."),
     BUSINESS_NOT_MODIFY(400, "B001", "사업자 수정에 실패했습니다."),
