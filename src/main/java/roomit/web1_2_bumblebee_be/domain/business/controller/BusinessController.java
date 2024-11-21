@@ -27,7 +27,6 @@ public class BusinessController {
         return ResponseEntity.status(200).body("사업자 회원 등록이 완료되었습니다.");
     }
 
-
     //사업자 정보 수정
     @PutMapping("api/v1/business/update")
     public ResponseEntity<String> businessModify(@RequestBody @Valid BusinessUpdateRequest businessUpdateRequest
