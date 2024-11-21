@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -92,6 +93,12 @@ public class SpringSecurityConfig {
                         .requestMatchers("/business").hasRole("BUSINESS") //ADMIN권한만 사용 가능
                         .requestMatchers("/user").hasRole("USER") //USER권한만 사용 가능
                         .anyRequest().permitAll()); // permitAll()로 할시 모두 허용
+                        .requestMatchers(HttpMethod.GET, "/api/v1/workplace/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/workplace/create").hasAnyRole("ADMIN", "BUSINESS")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/workplace/**").hasAnyRole("ADMIN", "BUSINESS")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/workplace/**").hasAnyRole("ADMIN", "BUSINESS")
+                        .requestMatchers("/api/v1/workplace/business/**").hasRole("BUSINESS")
+
 
         http
                 //JWT 필터 추가
