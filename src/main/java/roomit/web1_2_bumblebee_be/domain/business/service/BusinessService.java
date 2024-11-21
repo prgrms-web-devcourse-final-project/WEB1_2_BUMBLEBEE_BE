@@ -1,7 +1,6 @@
 package roomit.web1_2_bumblebee_be.domain.business.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +16,6 @@ import roomit.web1_2_bumblebee_be.domain.business.response.BusinessResponse;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class BusinessService {
 
     private final BusinessRepository businessRepository;
