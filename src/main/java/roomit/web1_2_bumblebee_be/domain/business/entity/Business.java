@@ -7,6 +7,12 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import roomit.web1_2_bumblebee_be.domain.business.entity.value.BusinessEmail;
+import roomit.web1_2_bumblebee_be.domain.business.entity.value.BusinessNickname;
+import roomit.web1_2_bumblebee_be.domain.business.entity.value.BusinessNum;
+import roomit.web1_2_bumblebee_be.domain.business.entity.value.BusinessPassword;
+import roomit.web1_2_bumblebee_be.domain.business.request.BusinessUpdateRequest;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
 
@@ -25,29 +31,29 @@ public class Business {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "business_id")
-    private int businessId;
+    private Long businessId;
 
-    @Column(name = "business_name", nullable = false)
-    private String businessName;
+    @Embedded
+    private BusinessNickname businessName;
 
-    @Column(name = "business_pwd",nullable = false)
-    private String businessPwd;
+    @Embedded
+    private BusinessPassword businessPwd;
 
-    @Column(name = "business_email",nullable = false, unique = true)
-    private String businessEmail;
+    @Embedded
+    private BusinessEmail businessEmail;
+
+    @Embedded
+    private BusinessNum businessNum;
 
     @Column(name = "business_role",nullable = false)
     @Enumerated(value = EnumType.STRING)
     private Role businessRole;
 
-    @Column(name = "business_num",nullable = false)
-    private String businessNum;
-
     @Column(name = "createdAt",nullable = false)
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @Column(name = "updatedAt", nullable = true)
+    @Column(name = "updatedAt")
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
@@ -55,23 +61,31 @@ public class Business {
     private List<Workplace> workplace;
 
     @Builder
-    public Business(String businessName, String businessPwd, String businessEmail,String businessNum) {
-        this.businessName = businessName;
-        this.businessPwd = businessPwd;
-        this.businessEmail = businessEmail;
+    public Business(final String businessName,
+                    final String businessPwd,
+                    final String businessEmail,
+                    final String businessNum,
+                    final PasswordEncoder passwordEncoder) {
+        this.businessName = new BusinessNickname(businessName);
+        this.businessPwd = new BusinessPassword(businessPwd, passwordEncoder);
+        this.businessEmail = new BusinessEmail(businessEmail);
+        this.businessNum = new BusinessNum(businessNum);
         this.businessRole = Role.ROLE_BUSINESS;
-        this.businessNum = businessNum;
     }
 
-    public void changeBusinessName(String businessName) {
-        this.businessName = businessName;
+    public String getBusinessName() {
+        return this.businessName.getValue();
     }
 
-    public void changeBusinessEmail(String businessEmail) {
-        this.businessEmail = businessEmail;
+    public String getBusinessEmail() {
+        return this.businessEmail.getValue();
     }
 
-    public void changeBusinessNum(String businessNum) {
-        this.businessNum = businessNum;
+
+    public void updateBusiness(final BusinessUpdateRequest businessUpdateRequest) {
+        this.businessName = new BusinessNickname(businessUpdateRequest.getBusinessName());
+        this.businessEmail = new BusinessEmail(businessUpdateRequest.getBusinessEmail());
+        this.businessNum = new BusinessNum(businessUpdateRequest.getBusinessNum());
     }
+
 }
