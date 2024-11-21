@@ -3,6 +3,8 @@ package roomit.web1_2_bumblebee_be.global.config.security;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -13,6 +15,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -89,16 +92,18 @@ public class SpringSecurityConfig {
                         .requestMatchers("/admin").hasRole("ADMIN") //ADMIN권한만 사용 가능
                         .requestMatchers("/business").hasRole("BUSINESS") //ADMIN권한만 사용 가능
                         .requestMatchers("/user").hasRole("USER") //USER권한만 사용 가능
+                        .anyRequest().permitAll()); // permitAll()로 할시 모두 허용
                         .requestMatchers(HttpMethod.GET, "/api/v1/workplace/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/workplace/create").hasAnyRole("ADMIN", "BUSINESS")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/workplace/**").hasAnyRole("ADMIN", "BUSINESS")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/workplace/**").hasAnyRole("ADMIN", "BUSINESS")
                         .requestMatchers("/api/v1/workplace/business/**").hasRole("BUSINESS")
-                        .anyRequest().authenticated()); // permitAll()로 할시 모두 허용
+
 
         http
                 //JWT 필터 추가
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
+
 
          http
                 //커스텀 로그인 필터 추가
@@ -113,5 +118,12 @@ public class SpringSecurityConfig {
 
         return http.build();
 
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "spring.h2.console.enabled",havingValue = "true")
+    public WebSecurityCustomizer configureH2ConsoleEnable() {
+        return web -> web.ignoring()
+                .requestMatchers(PathRequest.toH2Console());
     }
 }

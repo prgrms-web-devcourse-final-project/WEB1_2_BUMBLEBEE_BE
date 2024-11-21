@@ -27,7 +27,6 @@ public class MemberService {
                 .memberSex(memberRequest.getSex())
                 .memberPwd(bCryptPasswordEncoder.encode(memberRequest.getPwd())) //암호화
                 .memberEmail(memberRequest.getEmail())
-                .memberRole(memberRequest.getRole())
                 .memberPhoneNumber(memberRequest.getPhoneNumber())
                 .memberNickName(memberRequest.getNickName())
                 .build();

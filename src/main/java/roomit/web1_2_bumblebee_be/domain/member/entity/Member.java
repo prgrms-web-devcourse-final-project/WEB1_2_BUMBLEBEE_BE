@@ -8,8 +8,11 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import roomit.web1_2_bumblebee_be.domain.review.entity.Review;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -21,6 +24,7 @@ public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_id", nullable = false)
     private Long memberId;
 
     @Column(name = "member_nickname", nullable = false)
@@ -54,22 +58,22 @@ public class Member {
     @LastModifiedDate
     private LocalDateTime deleteAt;
 
-//    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Review> reviews = new ArrayList();
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviews = new ArrayList();
 //
 //    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private List<Reservation> reservations = new ArrayList();
 
     @Builder
-    public Member(String memberNickName, String memberPhoneNumber, Age memberAge, Sex memberSex, String memberEmail, String memberPwd, Role memberRole /*Review review, Reservation reservation*/) {
+    public Member(String memberNickName, String memberPhoneNumber, Age memberAge, Sex memberSex, String memberEmail, String memberPwd, Role memberRole ,Review review /*Reservation reservation*/) {
         this.memberNickName = memberNickName;
         this.memberPhoneNumber = memberPhoneNumber;
         this.memberAge = memberAge;
         this.memberSex = memberSex;
         this.memberEmail = memberEmail;
         this.memberPwd = memberPwd;
-        this.memberRole = memberRole;
-//        this.review = review;
+        this.memberRole = Role.ROLE_USER;
+//        this.reviews = (List<Review>) review;
 //        this.reservation = reservation;
     }
 
