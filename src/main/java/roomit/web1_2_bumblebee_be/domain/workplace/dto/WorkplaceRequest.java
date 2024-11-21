@@ -5,8 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import roomit.web1_2_bumblebee_be.domain.business.entity.value.BusinessNickname;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.ImageUrl;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplaceAddress;
