@@ -57,7 +57,7 @@ public class JWTFilter extends OncePerRequestFilter {
         Member member = Member.builder()
                 .memberEmail(email)
                 .memberPwd("dummy")
-                .memberRole(role)
+                .memberRole(Role.ROLE_USER)
                 .build();
 
         CustomMemberDetails customMemberDetails = new CustomMemberDetails(member);
