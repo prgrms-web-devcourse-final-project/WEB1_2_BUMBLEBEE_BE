@@ -1,5 +1,6 @@
 package roomit.web1_2_bumblebee_be.domain.review.dto.response;
 
+import lombok.Builder;
 import lombok.Getter;
 import roomit.web1_2_bumblebee_be.domain.review.entity.Review;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
@@ -20,4 +21,13 @@ public class ReviewResponse {
         this.reviewContent = review.getReviewContent();
         this.reviewDate = LocalDateTime.now();
     }
+
+    @Builder
+    public ReviewResponse(String workplaceName, String reviewRating, String reviewContent, LocalDateTime reviewDate) {
+        this.workplaceName = workplaceName;
+        this.reviewRating = reviewRating;
+        this.reviewContent = reviewContent;
+        this.reviewDate = reviewDate;
+    }
+
 }
