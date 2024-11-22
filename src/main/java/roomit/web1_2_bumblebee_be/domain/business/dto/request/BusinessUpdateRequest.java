@@ -1,4 +1,4 @@
-package roomit.web1_2_bumblebee_be.domain.business.request;
+package roomit.web1_2_bumblebee_be.domain.business.dto.request;
 
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;

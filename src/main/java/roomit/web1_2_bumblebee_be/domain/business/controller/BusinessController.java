@@ -4,12 +4,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomit.web1_2_bumblebee_be.domain.business.entity.Business;
-import roomit.web1_2_bumblebee_be.domain.business.exception.BusinessNotFound;
-import roomit.web1_2_bumblebee_be.domain.business.repository.BusinessRepository;
-import roomit.web1_2_bumblebee_be.domain.business.request.BusinessRegisterRequest;
-import roomit.web1_2_bumblebee_be.domain.business.request.BusinessUpdateRequest;
-import roomit.web1_2_bumblebee_be.domain.business.response.BusinessResponse;
+import roomit.web1_2_bumblebee_be.domain.business.dto.request.BusinessRegisterRequest;
+import roomit.web1_2_bumblebee_be.domain.business.dto.request.BusinessUpdateRequest;
+import roomit.web1_2_bumblebee_be.domain.business.dto.response.BusinessResponse;
 import roomit.web1_2_bumblebee_be.domain.business.service.BusinessService;
 
 
