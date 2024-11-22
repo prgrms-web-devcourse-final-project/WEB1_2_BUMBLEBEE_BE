@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -51,6 +52,9 @@ class ReviewControllerTest {
     @Autowired
     private WorkplaceRepository workplaceRepository;
 
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
     @BeforeEach
     void setUp() {
         memberRepository.deleteAll();
@@ -65,11 +69,11 @@ class ReviewControllerTest {
         Member member = Member.builder()
                 .memberAge(Age.TEN)
                 .memberSex(Sex.FEMALE)
-                .memberRole(Role.ROLE_USER)
-                .memberPwd("1111")
-                .memberEmail("이시현@Naver.com")
-                .memberPhoneNumber("010-33230-23")
+                .memberPwd("Business1!")
+                .memberEmail("sdsd@naver.com")
+                .memberPhoneNumber("010-3323-2323")
                 .memberNickName("치킨유저")
+                .passwordEncoder(bCryptPasswordEncoder)
                 .build();
 
         memberRepository.save(member);
@@ -78,9 +82,7 @@ class ReviewControllerTest {
                 .workplaceName("사업장")
                 .workplacePhoneNumber("010-1234-1234")
                 .workplaceDescription("사업장 설명")
-                .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
+                .workplaceAddress("대한민국sa")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .build();
@@ -109,11 +111,11 @@ class ReviewControllerTest {
         Member member = Member.builder()
                 .memberAge(Age.TEN)
                 .memberSex(Sex.FEMALE)
-                .memberRole(Role.ROLE_USER)
-                .memberPwd("1111")
-                .memberEmail("이시현@Naver.com")
-                .memberPhoneNumber("010-33230-23")
+                .memberPwd("Business1!")
+                .memberEmail("sdsd@naver.com")
+                .memberPhoneNumber("010-3323-2323")
                 .memberNickName("치킨유저")
+                .passwordEncoder(bCryptPasswordEncoder)
                 .build();
 
         memberRepository.save(member);
@@ -122,9 +124,7 @@ class ReviewControllerTest {
                 .workplaceName("사업장")
                 .workplacePhoneNumber("010-1234-1234")
                 .workplaceDescription("사업장 설명")
-                .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
+                .workplaceAddress("대한민국sa")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .build();
@@ -164,11 +164,11 @@ class ReviewControllerTest {
         Member member = Member.builder()
                 .memberAge(Age.TEN)
                 .memberSex(Sex.FEMALE)
-                .memberRole(Role.ROLE_USER)
-                .memberPwd("1111")
-                .memberEmail("이시현@Naver.com")
-                .memberPhoneNumber("010-33230-23")
+                .memberPwd("Business1!")
+                .memberEmail("sdsd@naver.com")
+                .memberPhoneNumber("010-3323-2323")
                 .memberNickName("치킨유저")
+                .passwordEncoder(bCryptPasswordEncoder)
                 .build();
 
         memberRepository.save(member);
@@ -177,9 +177,7 @@ class ReviewControllerTest {
                 .workplaceName("사업장")
                 .workplacePhoneNumber("010-1234-1234")
                 .workplaceDescription("사업장 설명")
-                .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
+                .workplaceAddress("대한민국sa")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .build();
@@ -199,7 +197,7 @@ class ReviewControllerTest {
                         )
                 .andExpect(jsonPath("$.reviewContent").value(review.getReviewContent()))
                 .andExpect(jsonPath("$.reviewRating").value(review.getReviewRating()))
-                .andExpect(jsonPath("$.workplaceName").value(review.getWorkplace().getWorkplaceName()))
+                .andExpect(jsonPath("$.workplaceName").value(review.getWorkplace().getWorkplaceName().getValue()))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
@@ -211,11 +209,11 @@ class ReviewControllerTest {
         Member member = Member.builder()
                 .memberAge(Age.TEN)
                 .memberSex(Sex.FEMALE)
-                .memberRole(Role.ROLE_USER)
-                .memberPwd("1111")
-                .memberEmail("이시현@Naver.com")
-                .memberPhoneNumber("010-33230-23")
+                .memberPwd("Business1!")
+                .memberEmail("sdsd@naver.com")
+                .memberPhoneNumber("010-3323-2323")
                 .memberNickName("치킨유저")
+                .passwordEncoder(bCryptPasswordEncoder)
                 .build();
 
         memberRepository.save(member);
@@ -224,9 +222,7 @@ class ReviewControllerTest {
                 .workplaceName("사업장")
                 .workplacePhoneNumber("010-1234-1234")
                 .workplaceDescription("사업장 설명")
-                .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
+                .workplaceAddress("대한민국sa")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .build();
@@ -256,11 +252,11 @@ class ReviewControllerTest {
         Member member = Member.builder()
                 .memberAge(Age.TEN)
                 .memberSex(Sex.FEMALE)
-                .memberRole(Role.ROLE_USER)
-                .memberPwd("1111")
-                .memberEmail("이시현@Naver.com")
-                .memberPhoneNumber("010-33230-23")
+                .memberPwd("Business1!")
+                .memberEmail("sdsd@naver.com")
+                .memberPhoneNumber("010-3323-2323")
                 .memberNickName("치킨유저")
+                .passwordEncoder(bCryptPasswordEncoder)
                 .build();
 
         memberRepository.save(member);
@@ -269,9 +265,7 @@ class ReviewControllerTest {
                 .workplaceName("사업장")
                 .workplacePhoneNumber("010-1234-1234")
                 .workplaceDescription("사업장 설명")
-                .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
+                .workplaceAddress("대한민국sa")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .build();
