@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Age;
@@ -42,6 +43,9 @@ class ReviewServiceTest {
 
     @Autowired
     private WorkplaceRepository workplaceRepository;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @BeforeEach
     void setUp() {
@@ -99,10 +103,11 @@ class ReviewServiceTest {
                 .memberAge(Age.TEN)
                 .memberSex(Sex.FEMALE)
                 .memberRole(Role.ROLE_USER)
-                .memberPwd("1111")
-                .memberEmail("이시현@Naver.com")
-                .memberPhoneNumber("010-33230-23")
+                .memberPwd("Bass!1123")
+                .memberEmail("asd@naver.com")
+                .memberPhoneNumber("010-3323-2323")
                 .memberNickName("치킨유저")
+                .passwordEncoder(bCryptPasswordEncoder)
                 .build();
 
         memberRepository.save(member);
@@ -111,9 +116,7 @@ class ReviewServiceTest {
                 .workplaceName("사업장")
                 .workplacePhoneNumber("010-1234-1234")
                 .workplaceDescription("사업장 설명")
-                .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
+                .workplaceAddress("대한민국sa")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .build();
@@ -142,10 +145,11 @@ class ReviewServiceTest {
                 .memberAge(Age.TEN)
                 .memberSex(Sex.FEMALE)
                 .memberRole(Role.ROLE_USER)
-                .memberPwd("1111")
-                .memberEmail("이시현@Naver.com")
-                .memberPhoneNumber("010-33230-23")
+                .memberPwd("Bass!1123")
+                .memberEmail("asd@naver.com")
+                .memberPhoneNumber("010-3323-2323")
                 .memberNickName("치킨유저")
+                .passwordEncoder(bCryptPasswordEncoder)
                 .build();
 
         memberRepository.save(member);
@@ -154,9 +158,7 @@ class ReviewServiceTest {
                 .workplaceName("사업장")
                 .workplacePhoneNumber("010-1234-1234")
                 .workplaceDescription("사업장 설명")
-                .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
+                .workplaceAddress("대한민국sa")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .build();
@@ -197,10 +199,11 @@ class ReviewServiceTest {
                 .memberAge(Age.TEN)
                 .memberSex(Sex.FEMALE)
                 .memberRole(Role.ROLE_USER)
-                .memberPwd("1111")
-                .memberEmail("이시현@Naver.com")
-                .memberPhoneNumber("010-33230-23")
+                .memberPwd("Bass!1123")
+                .memberEmail("asd@naver.com")
+                .memberPhoneNumber("010-3323-2323")
                 .memberNickName("치킨유저")
+                .passwordEncoder(bCryptPasswordEncoder)
                 .build();
 
         memberRepository.save(member);
@@ -209,9 +212,7 @@ class ReviewServiceTest {
                 .workplaceName("사업장")
                 .workplacePhoneNumber("010-1234-1234")
                 .workplaceDescription("사업장 설명")
-                .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
+                .workplaceAddress("대한민국sa")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .build();
@@ -243,10 +244,11 @@ class ReviewServiceTest {
                 .memberAge(Age.TEN)
                 .memberSex(Sex.FEMALE)
                 .memberRole(Role.ROLE_USER)
-                .memberPwd("1111")
-                .memberEmail("이시현@Naver.com")
-                .memberPhoneNumber("010-33230-23")
+                .memberPwd("Bass!1123")
+                .memberEmail("asd@naver.com")
+                .memberPhoneNumber("010-3323-2323")
                 .memberNickName("치킨유저")
+                .passwordEncoder(bCryptPasswordEncoder)
                 .build();
 
         memberRepository.save(member);
@@ -255,9 +257,7 @@ class ReviewServiceTest {
                 .workplaceName("사업장")
                 .workplacePhoneNumber("010-1234-1234")
                 .workplaceDescription("사업장 설명")
-                .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
+                .workplaceAddress("대한민국sa")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .build();
@@ -287,10 +287,11 @@ class ReviewServiceTest {
                 .memberAge(Age.TEN)
                 .memberSex(Sex.FEMALE)
                 .memberRole(Role.ROLE_USER)
-                .memberPwd("1111")
-                .memberEmail("이시현@Naver.com")
-                .memberPhoneNumber("010-33230-23")
+                .memberPwd("Bass!1123")
+                .memberEmail("asd@naver.com")
+                .memberPhoneNumber("010-3323-2323")
                 .memberNickName("치킨유저")
+                .passwordEncoder(bCryptPasswordEncoder)
                 .build();
 
         memberRepository.save(member);
@@ -299,9 +300,7 @@ class ReviewServiceTest {
                 .workplaceName("사업장")
                 .workplacePhoneNumber("010-1234-1234")
                 .workplaceDescription("사업장 설명")
-                .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
+                .workplaceAddress("대한민국sa")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .build();
