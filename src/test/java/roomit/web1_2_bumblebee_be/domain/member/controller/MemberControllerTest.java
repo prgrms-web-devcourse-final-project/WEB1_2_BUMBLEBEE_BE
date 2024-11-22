@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -18,6 +19,7 @@ import roomit.web1_2_bumblebee_be.domain.member.entity.Age;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
+import roomit.web1_2_bumblebee_be.domain.member.exception.MemberNotFound;
 import roomit.web1_2_bumblebee_be.domain.member.repository.MemberRepository;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -37,6 +39,9 @@ class MemberControllerTest {
     @Autowired
     private MemberRepository memberRepository;
 
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
     @BeforeEach
     void setUp() {
         memberRepository.deleteAll();
@@ -46,9 +51,10 @@ class MemberControllerTest {
     void test() throws Exception{
         MemberRegisterRequest memberRequest = MemberRegisterRequest.builder()
                 .age(Age.TEN)
+                .pwd("Business1!")
+                .email("sdsd@naver.com")
                 .role(Role.ROLE_ADMIN)
-                .email("이시현@naver.com")
-                .phoneNumber("010-33230-23")
+                .phoneNumber("010-3323-2323")
                 .nickName("치킨유저")
                 .build();
 
@@ -69,10 +75,10 @@ class MemberControllerTest {
         MemberRegisterRequest memberRequest = MemberRegisterRequest.builder()
                 .age(Age.TEN)
                 .sex(Sex.FEMALE)
-                .pwd("1111")
-                .email("이시현@Naver.com")
+                .pwd("Business1!")
+                .email("sdsd@naver.com")
                 .role(Role.ROLE_ADMIN)
-                .phoneNumber("010-33230-23")
+                .phoneNumber("010-3323-2323")
                 .nickName("치킨유저")
                 .build();
 
@@ -93,11 +99,11 @@ class MemberControllerTest {
         Member member = Member.builder()
                 .memberAge(Age.TEN)
                 .memberSex(Sex.FEMALE)
-                .memberPwd("1111")
-                .memberEmail("이시현@Naver.com")
-                .memberRole(Role.ROLE_ADMIN)
-                .memberPhoneNumber("010-33230-23")
+                .memberPwd("Business1!")
+                .memberEmail("sdsd@naver.com")
+                .memberPhoneNumber("010-3323-2323")
                 .memberNickName("치킨유저")
+                .passwordEncoder(bCryptPasswordEncoder)
                 .build();
 
         memberRepository.save(member);
@@ -109,11 +115,16 @@ class MemberControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.age").value(Age.TEN.name()))
                 .andExpect(jsonPath("$.sex").value(Sex.FEMALE.name()))
-                .andExpect(jsonPath("$.pwd").value("1111"))
-                .andExpect(jsonPath("$.email").value("이시현@Naver.com"))
-                .andExpect(jsonPath("$.phoneNumber").value("010-33230-23"))
+                .andExpect(jsonPath("$.email").value("sdsd@naver.com"))
+                .andExpect(jsonPath("$.phoneNumber").value("010-3323-2323"))
                 .andExpect(jsonPath("$.nickName").value("치킨유저"))
                 .andDo(print());
+
+
+        Member member1 = memberRepository.findByMemberEmail("sdsd@naver.com")
+                .orElseThrow(MemberNotFound::new);
+
+        Assertions.assertTrue(bCryptPasswordEncoder.matches("Business1!",member1.getMemberPwd()));
     }
 
     @Test
@@ -122,20 +133,20 @@ class MemberControllerTest {
         Member member = Member.builder()
                 .memberAge(Age.TEN)
                 .memberSex(Sex.FEMALE)
-                .memberPwd("1111")
-                .memberEmail("이시현@Naver.com")
-                .memberRole(Role.ROLE_ADMIN)
-                .memberPhoneNumber("010-33230-23")
+                .memberPwd("Business1!")
+                .memberEmail("sdsd@naver.com")
+                .memberPhoneNumber("010-3323-2323")
                 .memberNickName("치킨유저")
+                .passwordEncoder(bCryptPasswordEncoder)
                 .build();
 
         memberRepository.save(member);
 
 
         MemberUpdateRequest memberRequest = MemberUpdateRequest.builder()
-                .pwd("2222")
-                .email("김시현@Naver.com")
-                .phoneNumber("010-33230-23")
+                .pwd("Business2!")
+                .email("sdsd@naver.com")
+                .phoneNumber("010-3323-2323")
                 .memberNickName("이이")
                 .build();
 
@@ -146,11 +157,15 @@ class MemberControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.pwd").value("2222"))
-                .andExpect(jsonPath("$.email").value("김시현@Naver.com"))
-                .andExpect(jsonPath("$.phoneNumber").value("010-33230-23"))
+                .andExpect(jsonPath("$.email").value("sdsd@naver.com"))
+                .andExpect(jsonPath("$.phoneNumber").value("010-3323-2323"))
                 .andExpect(jsonPath("$.nickName").value("이이"))
                 .andDo(print());
+
+        Member member1 = memberRepository.findByMemberEmail("sdsd@naver.com")
+                .orElseThrow(MemberNotFound::new);
+
+        Assertions.assertTrue(bCryptPasswordEncoder.matches("Business2!",member1.getMemberPwd()));
     }
 
     @Test
@@ -159,11 +174,11 @@ class MemberControllerTest {
         Member member = Member.builder()
                 .memberAge(Age.TEN)
                 .memberSex(Sex.FEMALE)
-                .memberPwd("1111")
-                .memberEmail("이시현@Naver.com")
-                .memberRole(Role.ROLE_ADMIN)
-                .memberPhoneNumber("010-33230-23")
+                .memberPwd("Business1!")
+                .memberEmail("sdsd@naver.com")
+                .memberPhoneNumber("010-3323-2323")
                 .memberNickName("치킨유저")
+                .passwordEncoder(bCryptPasswordEncoder)
                 .build();
 
         memberRepository.save(member);
