@@ -46,9 +46,6 @@ class WorkplaceServiceTest {
 
     @BeforeEach
     void setUp() {
-        // 기존 데이터를 모두 삭제하여 중복 방지
-        businessRepository.deleteAll();
-
         workplaceRepository.deleteAll();
         businessRepository.deleteAll();
 
@@ -76,7 +73,7 @@ class WorkplaceServiceTest {
         // Given
         Workplace workplace = Workplace.builder()
                 .workplaceName("사업장 넘버원")
-                .workplacePhoneNumber("010-1234-1234")
+                .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("대한민국 서울시")
                 .imageUrl("http://image.url")
@@ -93,7 +90,7 @@ class WorkplaceServiceTest {
         // Then
         assertNotNull(findWorkplace);
         assertEquals("사업장 넘버원", findWorkplace.getWorkplaceName());
-        assertEquals("010-1234-1234", findWorkplace.getWorkplacePhoneNumber());
+        assertEquals("0507-1234-5678", findWorkplace.getWorkplacePhoneNumber());
         assertEquals("대한민국 서울시", findWorkplace.getWorkplaceAddress());
     }
 
@@ -106,7 +103,7 @@ class WorkplaceServiceTest {
         // Given
         WorkplaceRequest workplace = WorkplaceRequest.builder()
                 .workplaceName("사업장1")
-                .workplacePhoneNumber("010-1234-1234")
+                .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("대한민국 서울시")
                 .imageUrl("http://image.url")
@@ -120,7 +117,7 @@ class WorkplaceServiceTest {
 
         // Then
         assertEquals("사업장1", findWorkplace.getWorkplaceName().getValue());
-        assertEquals("010-1234-1234", findWorkplace.getWorkplacePhoneNumber().getValue());
+        assertEquals("0507-1234-5678", findWorkplace.getWorkplacePhoneNumber().getValue());
         assertEquals("대한민국 서울시", findWorkplace.getWorkplaceAddress().getValue());
     }
 
@@ -130,8 +127,8 @@ class WorkplaceServiceTest {
     void createWorkplaceFailed() {
         // Given
         WorkplaceRequest workplace = WorkplaceRequest.builder()
-                .workplaceName("사")
-                .workplacePhoneNumber("010-1234-1234")
+                .workplaceName("사업장@") // '@' 특수문자는 허용되지 않음
+                .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("대한민국 서울시")
                 .imageUrl("http://image.url")
@@ -139,12 +136,13 @@ class WorkplaceServiceTest {
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .build();
 
+
         // When & Then
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             workplaceService.createWorkplace(workplace);
         });
 
-        assertEquals("사업장명은 특수문자를 제외한 2~30자리여야 하며, 띄워쓰기가 가능합니다.", exception.getMessage());
+        assertEquals("사업장명은 특수문자를 제외한 1~20자리여야 하며, 띄워쓰기가 가능합니다.", exception.getMessage());
     }
 
 
@@ -167,7 +165,7 @@ class WorkplaceServiceTest {
         // Given
         Workplace workplace = Workplace.builder()
                 .workplaceName("기존 사업장")
-                .workplacePhoneNumber("010-1234-1234")
+                .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("기존 설명")
                 .workplaceAddress("대한민국 서울시")
                 .imageUrl("http://image.url")
@@ -180,7 +178,7 @@ class WorkplaceServiceTest {
 
         WorkplaceRequest updatedworkplace = WorkplaceRequest.builder()
                 .workplaceName("사업장 수정")
-                .workplacePhoneNumber("010-1234-1230")
+                .workplacePhoneNumber("0507-1234-5670")
                 .workplaceDescription("사업장 설명 수정")
                 .workplaceAddress("대한민국 서울시 수정")
                 .imageUrl("http://image.url")
@@ -205,7 +203,7 @@ class WorkplaceServiceTest {
         // Given
         Workplace workplace = Workplace.builder()
                 .workplaceName("사업장")
-                .workplacePhoneNumber("010-1234-1234")
+                .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("대한민국 서울시")
                 .imageUrl("http://image.url")
@@ -216,7 +214,7 @@ class WorkplaceServiceTest {
 
         // Given: 필수 필드 중 일부 누락된 요청
         WorkplaceRequest request = WorkplaceRequest.builder()
-                .workplacePhoneNumber("010-1234-5678")
+                .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("수정된 설명")
                 .workplaceAddress("대한민국 서울시 수정")
                 .workplaceStartTime(LocalDateTime.of(2023, 2, 1, 9, 0))
@@ -240,7 +238,7 @@ class WorkplaceServiceTest {
         // Given
         Workplace workplace = Workplace.builder()
                 .workplaceName("사업장")
-                .workplacePhoneNumber("010-1234-1234")
+                .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("대한민국 서울시")
                 .imageUrl("http://image.url")
@@ -268,7 +266,7 @@ class WorkplaceServiceTest {
         for (int i = 1; i <= 100; i++) {
             Workplace workplace = Workplace.builder()
                     .workplaceName("사업장 " + i)
-                    .workplacePhoneNumber("010-1234-" + String.format("%04d", i))
+                    .workplacePhoneNumber("0507-1234-" + String.format("%04d", i))
                     .workplaceDescription("테스트 사업장 " + i)
                     .workplaceAddress("테스트 주소 " + i)
                     .imageUrl("http://image.url")
@@ -296,7 +294,7 @@ class WorkplaceServiceTest {
         for (int i = 1; i <= 3; i++) {
             Workplace workplace = Workplace.builder()
                     .workplaceName("사업장 " + i)
-                    .workplacePhoneNumber("010-1234-" + String.format("%04d", i))
+                    .workplacePhoneNumber("0507-1234-" + String.format("%04d", i))
                     .workplaceDescription("테스트 사업장 " + i)
                     .workplaceAddress("테스트 주소 " + i)
                     .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
