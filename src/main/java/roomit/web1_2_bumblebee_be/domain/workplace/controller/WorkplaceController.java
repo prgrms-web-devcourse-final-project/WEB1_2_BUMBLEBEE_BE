@@ -47,9 +47,9 @@ public class WorkplaceController {
         return ResponseEntity.status(204).body(Map.of("message", "workplace deleted"));
     }
 
-    @GetMapping("/api/v1/workplace/business/{businessId}") // 사업자ID로 사업장 조회
-    public ResponseEntity<List<WorkplaceResponse>> getWorkplacesByBusinessId(@PathVariable Long businessId) {
-        List<WorkplaceResponse> workplaces = workplaceService.findWorkplacesByBusinessId(businessId);
-        return ResponseEntity.ok(workplaces);
-    }
+//    @GetMapping("/api/v1/business/workplace") // 사업자ID로 사업장 조회
+//    public ResponseEntity<List<WorkplaceResponse>> getWorkplacesByBusinessId(/*@AuthenticationPrincipal CustomUserDetails customUser*/) {
+//        List<WorkplaceResponse> workplaces = workplaceService.findWorkplacesByBusinessId(customUser.getBusinessId());
+//        return ResponseEntity.ok(workplaces);
+//    }
 }

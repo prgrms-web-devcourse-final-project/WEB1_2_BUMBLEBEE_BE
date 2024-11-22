@@ -114,33 +114,4 @@ public class WorkplaceService {
         return workplaceDtoList;
     }
 
-
-    //사진 업로드 및 수정
-//    @Transactional
-//    public WorkplaceResponse uploadImage(MultipartFile file, Long workplaceId) {
-//        if (file == null || file.isEmpty()) {
-//            throw WorkplaceException.NOT_UPLOAD_IMAGE.getWorkplaceTaskException();
-//        }
-//
-//        try {
-//            // Workplace 조회
-//            Workplace workplace = workplaceRepository.findById(workplaceId)
-//                    .orElseThrow(() -> WorkplaceException.MEMBER_NOT_FOUND.getWorkplaceTaskException());
-//
-//            // 파일 데이터 저장
-//            workplace.changeProfileImage(file.getBytes());
-//            workplace.changeImageType(file.getContentType());
-//
-//            log.info("Profile image updated successfully for memberId: {}", workplaceId);
-//
-//            // 저장 후 DTO 반환
-//            return new WorkplaceResponse(workplaceRepository.save(workplace));
-//        } catch (IOException e) {
-//            log.error("Error while processing file upload: {}", e.getMessage(), e);
-//            throw WorkplaceException.NOT_UPLOAD_IMAGE.getWorkplaceTaskException();
-//        } catch (Exception e) {
-//            log.error("Unexpected error: {}", e.getMessage(), e);
-//            throw WorkplaceException.NOT_UPLOAD_IMAGE.getWorkplaceTaskException();
-//        }
-//    }
 }
