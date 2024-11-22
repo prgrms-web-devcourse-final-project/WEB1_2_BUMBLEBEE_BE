@@ -22,7 +22,7 @@ public class MemberService {
 
     public void signupMember(MemberRegisterRequest memberRequest) {
         Member member = Member.builder()
-                .memberAge(memberRequest.getAge())
+                .birthDay(memberRequest.getBirthDay())
                 .memberSex(memberRequest.getSex())
                 .memberPwd(memberRequest.getPwd()) //암호화
                 .memberEmail(memberRequest.getEmail())
