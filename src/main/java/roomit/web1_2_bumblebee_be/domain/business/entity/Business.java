@@ -12,7 +12,7 @@ import roomit.web1_2_bumblebee_be.domain.business.entity.value.BusinessEmail;
 import roomit.web1_2_bumblebee_be.domain.business.entity.value.BusinessNickname;
 import roomit.web1_2_bumblebee_be.domain.business.entity.value.BusinessNum;
 import roomit.web1_2_bumblebee_be.domain.business.entity.value.BusinessPassword;
-import roomit.web1_2_bumblebee_be.domain.business.request.BusinessUpdateRequest;
+import roomit.web1_2_bumblebee_be.domain.business.dto.request.BusinessUpdateRequest;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
 

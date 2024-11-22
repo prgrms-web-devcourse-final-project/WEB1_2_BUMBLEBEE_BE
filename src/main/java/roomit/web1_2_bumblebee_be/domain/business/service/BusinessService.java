@@ -10,9 +10,9 @@ import roomit.web1_2_bumblebee_be.domain.business.exception.BusinessNotFound;
 import roomit.web1_2_bumblebee_be.domain.business.exception.BusinessNotModify;
 import roomit.web1_2_bumblebee_be.domain.business.exception.BusinessNotRegister;
 import roomit.web1_2_bumblebee_be.domain.business.repository.BusinessRepository;
-import roomit.web1_2_bumblebee_be.domain.business.request.BusinessRegisterRequest;
-import roomit.web1_2_bumblebee_be.domain.business.request.BusinessUpdateRequest;
-import roomit.web1_2_bumblebee_be.domain.business.response.BusinessResponse;
+import roomit.web1_2_bumblebee_be.domain.business.dto.request.BusinessRegisterRequest;
+import roomit.web1_2_bumblebee_be.domain.business.dto.request.BusinessUpdateRequest;
+import roomit.web1_2_bumblebee_be.domain.business.dto.response.BusinessResponse;
 
 @Service
 @RequiredArgsConstructor

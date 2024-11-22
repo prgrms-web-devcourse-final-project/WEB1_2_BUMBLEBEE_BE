@@ -16,8 +16,8 @@ import static lombok.AccessLevel.*;
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 public class WorkplacePhoneNumber {
-    public static final String REGEX = "^\\d{2,3}-\\d{3,4}-\\d{4}$";
-    public static final String ERR_MSG = "전화번호는 형식에 맞게 입력해야 합니다. (예: 010-1234-5678)";
+    public static final String REGEX = "^(0507-\\d{4}-\\d{4}|\\d{2,3}-\\d{3,4}-\\d{4})$";
+    public static final String ERR_MSG = "전화번호는 형식에 맞게 입력해야 합니다. (예: 0507-1234-5678, 02-123-4567, 031-1234-5678)";
     private static final Pattern PATTERN = Pattern.compile(REGEX);
 
     @Column(name = "workplace_phone_number", nullable = false, length = 15)

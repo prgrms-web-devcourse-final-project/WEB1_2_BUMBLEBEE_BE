@@ -3,7 +3,6 @@ package roomit.web1_2_bumblebee_be.domain.business.entity.value;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.regex.Pattern;
 
@@ -11,7 +10,6 @@ import java.util.regex.Pattern;
 @EqualsAndHashCode
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Slf4j
 public class BusinessNum {
     public static final String REGEX = "^[0-9]{3}-[0-9]{2}-[0-9]{5}";
     public static final String ERR_MSG = "사업자 번호는 10자리 번호로 이루어져야합니다";
@@ -22,7 +20,6 @@ public class BusinessNum {
 
     public BusinessNum(final String nickname) {
         if (!PATTERN.matcher(nickname).matches()) {
-            log.error(ERR_MSG);
             throw new IllegalArgumentException(ERR_MSG);
         }
         this.value = nickname;
