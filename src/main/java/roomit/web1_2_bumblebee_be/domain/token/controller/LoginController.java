@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomit.web1_2_bumblebee_be.domain.business.response.CustomBusinessDetails;
+import roomit.web1_2_bumblebee_be.domain.business.dto.CustomBusinessDetails;
 import roomit.web1_2_bumblebee_be.domain.member.dto.CustomMemberDetails;
 import roomit.web1_2_bumblebee_be.domain.token.config.JWTUtil;
 import roomit.web1_2_bumblebee_be.domain.token.dto.LoginRequest;
