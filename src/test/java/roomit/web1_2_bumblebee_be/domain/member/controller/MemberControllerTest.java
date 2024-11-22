@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -22,6 +23,8 @@ import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
 import roomit.web1_2_bumblebee_be.domain.member.exception.MemberNotFound;
 import roomit.web1_2_bumblebee_be.domain.member.repository.MemberRepository;
 
+import java.time.LocalDate;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -29,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @SpringBootTest
+@ActiveProfiles("test")
 class MemberControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -42,24 +46,38 @@ class MemberControllerTest {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    private LocalDate date;
+    private Member member;
+
     @BeforeEach
     void setUp() {
         memberRepository.deleteAll();
+        date  = LocalDate.of(2024, 11, 22);
+        member = Member.builder()
+                .birthDay(date)
+                .memberSex(Sex.FEMALE)
+                .memberPwd("Business1!")
+                .memberEmail("sdsd@naver.com")
+                .memberPhoneNumber("010-3323-2323")
+                .memberNickName("치킨유저")
+                .passwordEncoder(bCryptPasswordEncoder)
+                .build();
     }
     @Test
     @DisplayName("성별, 비밀번호 없을떄 등록시 필요한 검증값 나오게끔 테스트")
     void test() throws Exception{
-        MemberRegisterRequest memberRequest = MemberRegisterRequest.builder()
-                .age(Age.TEN)
-                .pwd("Business1!")
+
+
+        MemberRegisterRequest 치킨유저 = MemberRegisterRequest.builder()
+                .birthDay(date)
+                .pwd("")
                 .email("sdsd@naver.com")
                 .role(Role.ROLE_ADMIN)
                 .phoneNumber("010-3323-2323")
                 .nickName("치킨유저")
                 .build();
 
-
-        String json = objectMapper.writeValueAsString(memberRequest);
+        String json = objectMapper.writeValueAsString(치킨유저);
 
         mockMvc.perform(post("/api/v1/member/signup")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -73,7 +91,7 @@ class MemberControllerTest {
     @DisplayName("회원 등록")
     void test1() throws Exception{
         MemberRegisterRequest memberRequest = MemberRegisterRequest.builder()
-                .age(Age.TEN)
+                .birthDay(date)
                 .sex(Sex.FEMALE)
                 .pwd("Business1!")
                 .email("sdsd@naver.com")
@@ -96,15 +114,7 @@ class MemberControllerTest {
     @Test
     @DisplayName("회원 정보")
     void test2() throws Exception{
-        Member member = Member.builder()
-                .memberAge(Age.TEN)
-                .memberSex(Sex.FEMALE)
-                .memberPwd("Business1!")
-                .memberEmail("sdsd@naver.com")
-                .memberPhoneNumber("010-3323-2323")
-                .memberNickName("치킨유저")
-                .passwordEncoder(bCryptPasswordEncoder)
-                .build();
+
 
         memberRepository.save(member);
 
@@ -113,7 +123,7 @@ class MemberControllerTest {
 
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.age").value(Age.TEN.name()))
+                .andExpect(jsonPath("$.birthDay").value("2024-11-22"))
                 .andExpect(jsonPath("$.sex").value(Sex.FEMALE.name()))
                 .andExpect(jsonPath("$.email").value("sdsd@naver.com"))
                 .andExpect(jsonPath("$.phoneNumber").value("010-3323-2323"))
@@ -130,15 +140,7 @@ class MemberControllerTest {
     @Test
     @DisplayName("회원 정보 수정")
     void test3() throws Exception{
-        Member member = Member.builder()
-                .memberAge(Age.TEN)
-                .memberSex(Sex.FEMALE)
-                .memberPwd("Business1!")
-                .memberEmail("sdsd@naver.com")
-                .memberPhoneNumber("010-3323-2323")
-                .memberNickName("치킨유저")
-                .passwordEncoder(bCryptPasswordEncoder)
-                .build();
+
 
         memberRepository.save(member);
 
@@ -171,15 +173,7 @@ class MemberControllerTest {
     @Test
     @DisplayName("회원 정보 삭제")
     void test4() throws Exception{
-        Member member = Member.builder()
-                .memberAge(Age.TEN)
-                .memberSex(Sex.FEMALE)
-                .memberPwd("Business1!")
-                .memberEmail("sdsd@naver.com")
-                .memberPhoneNumber("010-3323-2323")
-                .memberNickName("치킨유저")
-                .passwordEncoder(bCryptPasswordEncoder)
-                .build();
+
 
         memberRepository.save(member);
 
