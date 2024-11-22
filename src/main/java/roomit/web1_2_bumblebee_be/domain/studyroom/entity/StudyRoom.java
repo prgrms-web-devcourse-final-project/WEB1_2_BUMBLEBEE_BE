@@ -46,13 +46,4 @@ public class StudyRoom extends BaseEntity {
         this.workPlaceId = workplaceId;
     }
 
-    public static class StudyRoomBuilder {
-        public StudyRoomBuilder workPlaceId(Workplace workPlaceId) {
-            this.workplaceId = workPlaceId;
-            return this;
-        }
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Workplace workPlace;
 }

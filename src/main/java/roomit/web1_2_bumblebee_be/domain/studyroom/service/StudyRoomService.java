@@ -3,7 +3,6 @@ package roomit.web1_2_bumblebee_be.domain.studyroom.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
-import roomit.web1_2_bumblebee_be.domain.member.repository.MemberRepository;
 import roomit.web1_2_bumblebee_be.domain.reservation.repository.ReservationRepository;
 import roomit.web1_2_bumblebee_be.domain.studyroom.dto.request.CreateStudyRoomRequest;
 import roomit.web1_2_bumblebee_be.domain.studyroom.dto.request.FindPossibleStudyRoomRequest;
@@ -24,7 +23,6 @@ import java.util.stream.Collectors;
 public class StudyRoomService {
 
     private final StudyRoomRepository studyRoomRepository;
-    private final MemberRepository memberRepository;
     private final ReservationRepository reservationRepository;
     private final WorkplaceRepository workplaceRepository;
     //private final ReviewRepository reviewRepository;
@@ -72,6 +70,12 @@ public class StudyRoomService {
         studyRoomRepository.delete(studyRoom);
     }
 
+    // 사업장ID에 따른 스터디룸 리스트 조회
+    @Transactional(readOnly = true)
+    public List<StudyRoom> findStudyRoomsByWorkPlaceId(Long workplaceId) {
+        return studyRoomRepository.findStudyRoomsByWorkPlaceId(workplaceId);
+    }
+
     // 사용 가능한 스터디룸 목록 조회
     @Transactional(readOnly = true)
     public List<FindPossibleStudyRoomResponse> findAvailableStudyRooms(FindPossibleStudyRoomRequest request) {
@@ -89,7 +93,7 @@ public class StudyRoomService {
                         .studyRoomTitle(studyRoom.getTitle())
                         .studyRoomCapacity(studyRoom.getCapacity())
                         .studyRoomPrice(studyRoom.getPrice())
-                        //.averageReviewScore(workPlace.getstarSum()) // 이후 review수만큼 나누기
+                        //.averageReviewScore(Workplace.getstarSum()) // 이후 review수만큼 나누기
                         .imageUrl(studyRoom.getImageUrl())
                         .build())
                 .collect(Collectors.toList());

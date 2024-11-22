@@ -15,5 +15,7 @@ public interface StudyRoomRepository extends JpaRepository<StudyRoom,Long> {
             " OR (r.startTime <= :startTime AND r.endTime >= :endTime)))")
     List<StudyRoom> findAvailableStudyRooms(@Param("workplaceAddress") String workplaceAddress,@Param("startTime") String startTime, @Param("endTime") String endTime,@Param("capacity") Integer capacity);
 
+    @Query("SELECT sr FROM StudyRoom sr JOIN sr.workPlaceId wp WHERE wp.workplaceId = :workplaceId")
+    List<StudyRoom> findStudyRoomsByWorkPlaceId(@Param("workplaceId") Long workplaceId);
 
 }

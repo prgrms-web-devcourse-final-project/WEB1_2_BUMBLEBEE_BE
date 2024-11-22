@@ -34,7 +34,7 @@ public class CreateStudyRoomRequest {
                 .capacity(this.capacity)
                 .price(this.price)
                 .imageUrl(this.imageUrl)
-                .workPlaceId(workplace)
+                .workplaceId(workplace)
                 .build();
     }
 

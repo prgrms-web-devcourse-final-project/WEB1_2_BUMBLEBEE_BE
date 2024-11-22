@@ -79,8 +79,7 @@ class ReviewControllerTest {
                 .workplacePhoneNumber("010-1234-1234")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
+                .imageUrl("http")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .build();
@@ -123,8 +122,7 @@ class ReviewControllerTest {
                 .workplacePhoneNumber("010-1234-1234")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
+                .imageUrl("null")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .build();
@@ -178,8 +176,7 @@ class ReviewControllerTest {
                 .workplacePhoneNumber("010-1234-1234")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
+                .imageUrl("null")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .build();
@@ -225,8 +222,7 @@ class ReviewControllerTest {
                 .workplacePhoneNumber("010-1234-1234")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
+                .imageUrl("null")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .build();
@@ -270,8 +266,7 @@ class ReviewControllerTest {
                 .workplacePhoneNumber("010-1234-1234")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
+                .imageUrl("null")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .build();
