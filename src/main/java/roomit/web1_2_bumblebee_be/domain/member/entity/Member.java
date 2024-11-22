@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import roomit.web1_2_bumblebee_be.domain.member.entity.value.MemberEmail;
@@ -16,6 +17,7 @@ import roomit.web1_2_bumblebee_be.domain.member.entity.value.MemberPassword;
 import roomit.web1_2_bumblebee_be.domain.member.entity.value.MemberPhoneNumber;
 import roomit.web1_2_bumblebee_be.domain.review.entity.Review;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,10 +47,6 @@ public class Member {
     @Embedded
     private MemberPassword memberPwd;
 
-    @Column(name = "member_age", nullable = false)
-    @Enumerated(value = EnumType.STRING)
-    private Age memberAge;
-
     @Column(name = "member_sex", nullable = false)
     @Enumerated(value = EnumType.STRING)
     private Sex memberSex;
@@ -56,6 +54,10 @@ public class Member {
     @Column(name = "member_role", nullable = false)
     @Enumerated(value = EnumType.STRING)
     private Role memberRole;
+
+    @Column(name = "birth_day", nullable = false)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate birthDay;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -70,12 +72,12 @@ public class Member {
 //    private List<Reservation> reservations = new ArrayList();
 
     @Builder
-    public Member(String memberNickName, String memberPhoneNumber, Age memberAge, Sex memberSex, String memberEmail, String memberPwd, Role memberRole , PasswordEncoder passwordEncoder /*Reservation reservation*/) {
+    public Member(String memberNickName, String memberPhoneNumber, LocalDate birthDay, Sex memberSex, String memberEmail, String memberPwd, Role memberRole , PasswordEncoder passwordEncoder /*Reservation reservation*/) {
         this.memberNickname = new MemberNickname(memberNickName);
         this.memberPhonenumber = new MemberPhoneNumber(memberPhoneNumber);
         this.memberEmail = new MemberEmail(memberEmail);
         this.memberPwd = new MemberPassword(memberPwd, passwordEncoder);
-        this.memberAge = memberAge;
+        this.birthDay = birthDay;
         this.memberSex = memberSex;
         this.memberRole = Role.ROLE_USER;
 //        this.reservation = reservation;
