@@ -84,8 +84,8 @@ public class StudyRoomService {
 
         return studyRooms.stream()
                 .map(studyRoom -> FindPossibleStudyRoomResponse.builder()
-                        .workplaceName(studyRoom.getWorkPlaceId().getWorkplaceName())
-                        .workplaceAddress(studyRoom.getWorkPlaceId().getWorkplaceAddress())
+                        .workplaceName(studyRoom.getWorkPlaceId().getWorkplaceName().getValue())
+                        .workplaceAddress(studyRoom.getWorkPlaceId().getWorkplaceAddress().getValue())
                         .studyRoomTitle(studyRoom.getTitle())
                         .studyRoomCapacity(studyRoom.getCapacity())
                         .studyRoomPrice(studyRoom.getPrice())
