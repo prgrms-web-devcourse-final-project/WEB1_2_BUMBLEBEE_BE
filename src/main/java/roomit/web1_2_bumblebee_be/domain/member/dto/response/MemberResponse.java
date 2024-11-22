@@ -11,29 +11,29 @@ import java.time.LocalDateTime;
 @Getter
 public class MemberResponse {
 
-    private String nickName;
+    private final String nickName;
 
-    private String phoneNumber;
+    private final String phoneNumber;
 
-    private Age age;
+    private final Age age;
 
-    private Sex sex;
+    private final Sex sex;
 
-    private String email;
+    private final String email;
 
-    private String pwd;
+    private final String pwd;
 
-    private Role role;
+    private final Role role;
 
     private LocalDateTime createAt;
 
     public MemberResponse(Member member) {
         this.nickName = member.getMemberNickName();
         this.phoneNumber = member.getMemberPhoneNumber();
-        this.age = member.getMemberAge();
-        this.sex = member.getMemberSex();
         this.email = member.getMemberEmail();
         this.pwd = member.getMemberPwd();
+        this.age = member.getMemberAge();
+        this.sex = member.getMemberSex();
         this.role = member.getMemberRole();
         this.createAt = LocalDateTime.now();
     }
