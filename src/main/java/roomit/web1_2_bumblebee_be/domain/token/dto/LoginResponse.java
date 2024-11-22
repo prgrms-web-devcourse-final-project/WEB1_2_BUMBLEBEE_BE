@@ -1,4 +1,4 @@
-package roomit.web1_2_bumblebee_be.global.config.security.jwt.dto;
+package roomit.web1_2_bumblebee_be.domain.token.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

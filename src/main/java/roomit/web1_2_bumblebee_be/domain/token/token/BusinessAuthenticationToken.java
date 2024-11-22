@@ -1,4 +1,4 @@
-package roomit.web1_2_bumblebee_be.global.config.security.jwt.token;
+package roomit.web1_2_bumblebee_be.domain.token.token;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
