@@ -10,7 +10,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import roomit.web1_2_bumblebee_be.domain.business.entity.Business;
 import roomit.web1_2_bumblebee_be.domain.business.repository.BusinessRepository;
-import roomit.web1_2_bumblebee_be.domain.business.request.BusinessRegisterRequest;
+import roomit.web1_2_bumblebee_be.domain.business.dto.request.BusinessRegisterRequest;
 import roomit.web1_2_bumblebee_be.domain.business.service.BusinessService;
 import roomit.web1_2_bumblebee_be.domain.member.service.MemberService;
 import roomit.web1_2_bumblebee_be.domain.workplace.dto.WorkplaceRequest;

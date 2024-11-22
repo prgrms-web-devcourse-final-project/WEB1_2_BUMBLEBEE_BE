@@ -8,11 +8,7 @@ import org.springframework.stereotype.Service;
 import roomit.web1_2_bumblebee_be.domain.business.entity.Business;
 import roomit.web1_2_bumblebee_be.domain.business.exception.BusinessNotFound;
 import roomit.web1_2_bumblebee_be.domain.business.repository.BusinessRepository;
-import roomit.web1_2_bumblebee_be.domain.business.response.CustomBusinessDetails;
-import roomit.web1_2_bumblebee_be.domain.member.dto.CustomMemberDetails;
-import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
-
-import java.util.NoSuchElementException;
+import roomit.web1_2_bumblebee_be.domain.business.dto.CustomBusinessDetails;
 
 @Service
 @RequiredArgsConstructor
