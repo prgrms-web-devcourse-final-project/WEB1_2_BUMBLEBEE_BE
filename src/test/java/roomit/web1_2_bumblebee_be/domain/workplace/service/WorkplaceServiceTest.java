@@ -7,15 +7,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import roomit.web1_2_bumblebee_be.domain.business.entity.Business;
 import roomit.web1_2_bumblebee_be.domain.business.repository.BusinessRepository;
-import roomit.web1_2_bumblebee_be.domain.business.request.BusinessRegisterRequest;
+import roomit.web1_2_bumblebee_be.domain.business.dto.request.BusinessRegisterRequest;
 import roomit.web1_2_bumblebee_be.domain.business.service.BusinessService;
 import roomit.web1_2_bumblebee_be.domain.workplace.dto.WorkplaceRequest;
 import roomit.web1_2_bumblebee_be.domain.workplace.dto.WorkplaceResponse;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplaceName;
-import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkplaceInvalidRequest;
 import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkplaceNotFound;
-import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkplaceNotRegistered;
 import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkspaceNotModified;
 import roomit.web1_2_bumblebee_be.domain.workplace.repository.WorkplaceRepository;
 

@@ -1,4 +1,4 @@
-package roomit.web1_2_bumblebee_be.domain.business.response;
+package roomit.web1_2_bumblebee_be.domain.business.dto;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

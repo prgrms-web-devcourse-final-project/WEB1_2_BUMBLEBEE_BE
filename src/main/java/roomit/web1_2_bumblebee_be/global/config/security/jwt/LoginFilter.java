@@ -11,7 +11,7 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import roomit.web1_2_bumblebee_be.domain.business.response.CustomBusinessDetails;
+import roomit.web1_2_bumblebee_be.domain.business.dto.CustomBusinessDetails;
 import roomit.web1_2_bumblebee_be.domain.member.dto.CustomMemberDetails;
 import roomit.web1_2_bumblebee_be.global.config.security.jwt.token.BusinessAuthenticationToken;
 import roomit.web1_2_bumblebee_be.global.config.security.jwt.token.MemberAuthenticationToken;

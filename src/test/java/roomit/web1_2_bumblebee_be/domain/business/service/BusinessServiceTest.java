@@ -6,8 +6,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import roomit.web1_2_bumblebee_be.domain.business.entity.Business;
 import roomit.web1_2_bumblebee_be.domain.business.repository.BusinessRepository;
-import roomit.web1_2_bumblebee_be.domain.business.request.BusinessRegisterRequest;
-import roomit.web1_2_bumblebee_be.domain.business.request.BusinessUpdateRequest;
+import roomit.web1_2_bumblebee_be.domain.business.dto.request.BusinessRegisterRequest;
+import roomit.web1_2_bumblebee_be.domain.business.dto.request.BusinessUpdateRequest;
 import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
 
