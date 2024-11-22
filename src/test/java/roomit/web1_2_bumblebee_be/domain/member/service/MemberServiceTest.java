@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Age;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
@@ -19,11 +20,12 @@ import roomit.web1_2_bumblebee_be.domain.member.dto.response.MemberResponse;
 import roomit.web1_2_bumblebee_be.domain.review.repository.ReviewRepository;
 import roomit.web1_2_bumblebee_be.domain.workplace.repository.WorkplaceRepository;
 
+import java.time.LocalDate;
 import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
-
+@ActiveProfiles("test")
 class MemberServiceTest {
 
     @Autowired
@@ -40,19 +42,32 @@ class MemberServiceTest {
 
     @Autowired
     private WorkplaceRepository workplaceRepository;
+
+    private Member member;
+
+    private LocalDate date = LocalDate.of(2024, 11, 22);
     @BeforeEach
     void setUp() {
         memberRepository.deleteAll();
         reviewRepository.deleteAll();
         workplaceRepository.deleteAll();
+
+       member =  Member.builder()
+                .birthDay(date)
+                .memberSex(Sex.FEMALE)
+                .memberPwd("Business1!")
+                .memberEmail("sdsd@naver.com")
+                .memberPhoneNumber("010-3323-2323")
+                .memberNickName("치킨유저")
+                .passwordEncoder(bCryptPasswordEncoder)
+                .build();
     }
 
     @Test
     @DisplayName("멤버 등록")
     void test1(){
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         MemberRegisterRequest memberRequest = MemberRegisterRequest.builder()
-                .age(Age.TEN)
+                .birthDay(date)
                 .sex(Sex.FEMALE)
                 .pwd("Business1!")
                 .email("sdsd@naver.com")
@@ -76,21 +91,13 @@ class MemberServiceTest {
     @Test
     @DisplayName("정보 조회")
     void test2(){
-        Member member = Member.builder()
-                .memberAge(Age.TEN)
-                .memberSex(Sex.FEMALE)
-                .memberPwd("Business1!")
-                .memberEmail("sdsd@naver.com")
-                .memberPhoneNumber("010-3323-2323")
-                .memberNickName("치킨유저")
-                .passwordEncoder(bCryptPasswordEncoder)
-                .build();
+
 
         memberRepository.save(member);
 
         MemberResponse myDate = memberService.read(member.getMemberId());
 
-        assertEquals("10대",member.getMemberAge().getDescription());
+        assertEquals("2024-11-22",member.getBirthDay().toString());
         assertTrue(bCryptPasswordEncoder.matches("Business1!",myDate.getPwd()));
         assertEquals("치킨유저",myDate.getNickName());
     }
@@ -98,15 +105,7 @@ class MemberServiceTest {
     @Test
     @DisplayName("없는 정보 조회")
     void test3(){
-        Member member = Member.builder()
-                .memberAge(Age.TEN)
-                .memberSex(Sex.FEMALE)
-                .memberPwd("Business1!")
-                .memberEmail("sdsd@naver.com")
-                .memberPhoneNumber("010-3323-2323")
-                .memberNickName("치킨유저")
-                .passwordEncoder(bCryptPasswordEncoder)
-                .build();
+
 
         memberRepository.save(member);
         assertThrows( MemberNotFound.class, () -> memberService.read(member.getMemberId() + 1));
@@ -117,15 +116,7 @@ class MemberServiceTest {
     @Test
     @DisplayName(" 정보 수정")
     void test4(){
-        Member member = Member.builder()
-                .memberAge(Age.TEN)
-                .memberSex(Sex.FEMALE)
-                .memberPwd("Business1!")
-                .memberEmail("sdsd@naver.com")
-                .memberPhoneNumber("010-3323-2323")
-                .memberNickName("치킨유저")
-                .passwordEncoder(bCryptPasswordEncoder)
-                .build();
+
 
         memberRepository.save(member);
 
@@ -147,15 +138,7 @@ class MemberServiceTest {
     @Test
     @DisplayName(" 정보 삭제")
     void test5(){
-        Member member = Member.builder()
-                .memberAge(Age.TEN)
-                .memberSex(Sex.FEMALE)
-                .memberPwd("Business1!")
-                .memberEmail("sdsd@naver.com")
-                .memberPhoneNumber("010-3323-2323")
-                .memberNickName("치킨유저")
-                .passwordEncoder(bCryptPasswordEncoder)
-                .build();
+
 
         memberRepository.save(member);
 
@@ -167,15 +150,7 @@ class MemberServiceTest {
     @Test
     @DisplayName(" 없는 정보 삭제")
     void test6(){
-        Member member = Member.builder()
-                .memberAge(Age.TEN)
-                .memberSex(Sex.FEMALE)
-                .memberPwd("Business1!")
-                .memberEmail("sdsd@naver.com")
-                .memberPhoneNumber("010-3323-2323")
-                .memberNickName("치킨유저")
-                .passwordEncoder(bCryptPasswordEncoder)
-                .build();
+
 
         memberRepository.save(member);
 
