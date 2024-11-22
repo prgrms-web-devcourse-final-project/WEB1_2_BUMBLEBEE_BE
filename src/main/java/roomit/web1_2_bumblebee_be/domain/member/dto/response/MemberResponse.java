@@ -6,6 +6,7 @@ import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -15,7 +16,7 @@ public class MemberResponse {
 
     private final String phoneNumber;
 
-    private final Age age;
+    private final LocalDate birthDay;
 
     private final Sex sex;
 
@@ -32,9 +33,9 @@ public class MemberResponse {
         this.phoneNumber = member.getMemberPhoneNumber();
         this.email = member.getMemberEmail();
         this.pwd = member.getMemberPwd();
-        this.age = member.getMemberAge();
         this.sex = member.getMemberSex();
         this.role = member.getMemberRole();
+        this.birthDay = member.getBirthDay();
         this.createAt = LocalDateTime.now();
     }
 

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.format.annotation.DateTimeFormat;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Age;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
@@ -12,6 +13,8 @@ import roomit.web1_2_bumblebee_be.domain.member.entity.value.MemberEmail;
 import roomit.web1_2_bumblebee_be.domain.member.entity.value.MemberNickname;
 import roomit.web1_2_bumblebee_be.domain.member.entity.value.MemberPassword;
 import roomit.web1_2_bumblebee_be.domain.member.entity.value.MemberPhoneNumber;
+
+import java.time.LocalDate;
 
 @Getter
 public class MemberRegisterRequest {
@@ -28,18 +31,17 @@ public class MemberRegisterRequest {
     @Pattern(regexp = MemberPassword.REGEX, message = MemberPassword.ERR_MSG)
     private final String pwd;
 
-
-    @NotNull(message = "나이 입력해주세요")
-    private final Age age;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private final LocalDate birthDay;
 
     @NotNull(message = "성별 입력해주세요")
     private final Sex sex;
 
     @Builder
-    public MemberRegisterRequest(String nickName, String phoneNumber, Age age, Sex sex, String email, String pwd, Role role) {
+    public MemberRegisterRequest(String nickName, String phoneNumber, Sex sex, String email, String pwd, Role role, LocalDate birthDay) {
         this.nickName = nickName;
         this.phoneNumber = phoneNumber;
-        this.age = age;
+        this.birthDay = birthDay;
         this.sex = sex;
         this.email = email;
         this.pwd = pwd;
