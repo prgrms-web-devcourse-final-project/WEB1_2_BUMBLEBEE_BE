@@ -39,7 +39,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         String accessToken = headerAuth.substring(7);
 
-        // 토큰이 없다면 다음 필터로 넘김
+        // 토큰이 없으면 다음 필터로
         if (accessToken == null) {
 
             filterChain.doFilter(request, response);
@@ -47,7 +47,7 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        // 토큰 만료 여부 확인, 만료시 다음 필터로 넘기지 않음
+        // 토큰 만료 여부 확인
         try {
             jwtUtil.isExpired(accessToken);
         } catch (ExpiredJwtException e) {
@@ -61,7 +61,7 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        // 토큰이 access인지 확인 (발급시 페이로드에 명시)
+        // 토큰 카테고리가 무엇인지
         String category = jwtUtil.getCategory(accessToken);
 
         if (!category.equals("access")) {
