@@ -3,6 +3,7 @@ package roomit.web1_2_bumblebee_be.domain.member.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberRegisterRequest;
 import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberUpdateRequest;
@@ -21,12 +22,13 @@ public class MemberService {
 
     public void signupMember(MemberRegisterRequest memberRequest) {
         Member member = Member.builder()
-                .memberAge(memberRequest.getAge())
+                .birthDay(memberRequest.getBirthDay())
                 .memberSex(memberRequest.getSex())
-                .memberPwd(bCryptPasswordEncoder.encode(memberRequest.getPwd())) //암호화
+                .memberPwd(memberRequest.getPwd()) //암호화
                 .memberEmail(memberRequest.getEmail())
                 .memberPhoneNumber(memberRequest.getPhoneNumber())
                 .memberNickName(memberRequest.getNickName())
+                .passwordEncoder(bCryptPasswordEncoder)
                 .build();
 
         memberRepository.save(member);
@@ -45,7 +47,7 @@ public class MemberService {
 
         try {
             member.changeEmail(request.getEmail());
-            member.changeNickName(request.getMemberNickName());
+            member.changeNickName(request.getNickName());
             member.changePhoneNumber(request.getPhoneNumber());
             member.changePwd(request.getPwd());
             memberRepository.save(member);
