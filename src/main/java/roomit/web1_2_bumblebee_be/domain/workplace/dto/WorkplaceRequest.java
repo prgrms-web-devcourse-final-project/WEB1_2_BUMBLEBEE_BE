@@ -10,6 +10,7 @@ import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplaceAddress
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplaceName;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplacePhoneNumber;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Builder
@@ -22,7 +23,7 @@ public record WorkplaceRequest(
         @NotNull(message = "사업장 시작 시간을 입력해주세요.") LocalDateTime workplaceStartTime,
         @NotNull(message = "사업장 종료 시간을 입력해주세요.") LocalDateTime workplaceEndTime
 ) {
-    public Workplace toEntity() {
+    public Workplace toEntity(BigDecimal latitude, BigDecimal longitude) {
         return Workplace.builder()
                 .workplaceName(workplaceName)
                 .workplaceDescription(workplaceDescription)
@@ -31,6 +32,8 @@ public record WorkplaceRequest(
                 .imageUrl(imageUrl)
                 .workplaceStartTime(workplaceStartTime)
                 .workplaceEndTime(workplaceEndTime)
+                .latitude(latitude)
+                .longitude(longitude)
                 .build();
     }
 }
