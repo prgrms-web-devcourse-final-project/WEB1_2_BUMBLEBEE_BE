@@ -16,6 +16,8 @@ import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplaceName;
 import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkplaceNotFound;
 import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkspaceNotModified;
 import roomit.web1_2_bumblebee_be.domain.workplace.repository.WorkplaceRepository;
+import roomit.web1_2_bumblebee_be.global.error.ErrorCode;
+import roomit.web1_2_bumblebee_be.global.exception.CommonException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -151,9 +153,11 @@ class WorkplaceServiceTest {
     void readWorkplaceFailed() {
 
         // When & Then
-        assertThrows(WorkplaceNotFound.class, () -> {
+        CommonException exception = assertThrows(CommonException.class, () -> {
             workplaceService.readWorkplace(10000L);
         });
+
+        assertEquals(ErrorCode.WORKPLACE_NOT_FOUND.getMessage(), exception.getMessage());
     }
 
     @Test
@@ -221,11 +225,11 @@ class WorkplaceServiceTest {
 
 
         // When & Then: WorkplaceInvalidRequest 예외 발생 확인
-        WorkspaceNotModified exception = assertThrows(WorkspaceNotModified.class, () -> {
+        CommonException exception = assertThrows(CommonException.class, () -> {
             workplaceService.updateWorkplace(workplace.getWorkplaceId(), request);
         });
 
-        assertEquals("사업장 수정에 실패하였습니다.", exception.getMessage());
+        assertEquals(ErrorCode.WORKPLACE_NOT_MODIFIED.getMessage(), exception.getMessage());
     }
 
     @Test
@@ -250,9 +254,10 @@ class WorkplaceServiceTest {
         workplaceService.deleteWorkplace(workplaceId);
 
         // When & Then: 삭제된 Workplace를 조회하면 예외 발생
-        assertThrows(WorkplaceNotFound.class, () -> {
+        assertThrows(CommonException.class, () -> {
             workplaceService.readWorkplace(workplaceId);
-        });}
+        });
+    }
 
     @Test
     @DisplayName("사업장 목록 조회")

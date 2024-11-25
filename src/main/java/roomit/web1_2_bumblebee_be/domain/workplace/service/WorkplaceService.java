@@ -41,9 +41,9 @@ public class WorkplaceService {
     @Transactional
     public void createWorkplace(WorkplaceRequest workplaceDto) {
 
-        if (workplaceRepository.getWorkplaceByWorkplaceName(new WorkplaceName(workplaceDto.getWorkplaceName())) != null ||
-                workplaceRepository.getWorkplaceByWorkplacePhoneNumber(new WorkplacePhoneNumber(workplaceDto.getWorkplacePhoneNumber())) != null ||
-                workplaceRepository.getWorkplaceByWorkplaceAddress(new WorkplaceAddress(workplaceDto.getWorkplaceAddress())) != null) {
+        if (workplaceRepository.getWorkplaceByWorkplaceName(new WorkplaceName(workplaceDto.workplaceName())) != null ||
+                workplaceRepository.getWorkplaceByWorkplacePhoneNumber(new WorkplacePhoneNumber(workplaceDto.workplacePhoneNumber())) != null ||
+                workplaceRepository.getWorkplaceByWorkplaceAddress(new WorkplaceAddress(workplaceDto.workplaceAddress())) != null) {
             throw ErrorCode.WORKPLACE_NOT_REGISTERED.commonException();
         }
 
@@ -65,7 +65,7 @@ public class WorkplaceService {
         }
 
         // 필수 필드 검증
-        if (!workplaceDto.getWorkplaceStartTime().isBefore(workplaceDto.getWorkplaceEndTime())) {
+        if (!workplaceDto.workplaceStartTime().isBefore(workplaceDto.workplaceEndTime())) {
             throw ErrorCode.WORKPLACE_INVALID_REQUEST.commonException();
         }
 
@@ -73,12 +73,12 @@ public class WorkplaceService {
                 .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
 
         try {
-            workplace.changeWorkplaceName(new WorkplaceName(workplaceDto.getWorkplaceName()));
-            workplace.changeWorkplaceDescription(workplaceDto.getWorkplaceDescription());
-            workplace.changeWorkplaceAddress(new WorkplaceAddress(workplaceDto.getWorkplaceAddress()));
-            workplace.changeWorkplacePhoneNumber(new WorkplacePhoneNumber(workplaceDto.getWorkplacePhoneNumber()));
-            workplace.changeWorkplaceStartTime(workplaceDto.getWorkplaceStartTime());
-            workplace.changeWorkplaceEndTime(workplaceDto.getWorkplaceEndTime());
+            workplace.changeWorkplaceName(new WorkplaceName(workplaceDto.workplaceName()));
+            workplace.changeWorkplaceDescription(workplaceDto.workplaceDescription());
+            workplace.changeWorkplaceAddress(new WorkplaceAddress(workplaceDto.workplaceAddress()));
+            workplace.changeWorkplacePhoneNumber(new WorkplacePhoneNumber(workplaceDto.workplacePhoneNumber()));
+            workplace.changeWorkplaceStartTime(workplaceDto.workplaceStartTime());
+            workplace.changeWorkplaceEndTime(workplaceDto.workplaceEndTime());
             workplaceRepository.save(workplace);
         } catch (Exception e) {
             throw ErrorCode.WORKPLACE_NOT_MODIFIED.commonException();
