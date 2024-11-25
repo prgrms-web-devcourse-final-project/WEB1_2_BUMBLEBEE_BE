@@ -7,21 +7,19 @@ import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
 
 import java.time.LocalDateTime;
 
-@Getter
-public class ReviewResponse {
 
-    private final String workplaceName;
-    private final String reviewRating;
-    private final String reviewContent;
-    private final LocalDateTime reviewDate;
-    private final Long reviewId;
+public record ReviewResponse(String workplaceName, String reviewRating, String reviewContent, LocalDateTime reviewDate,
+                             Long reviewId) {
+
 
     public ReviewResponse(Review review) {
-        this.workplaceName = review.getWorkplace().getWorkplaceName().getValue();
-        this.reviewRating = review.getReviewRating();
-        this.reviewContent = review.getReviewContent();
-        this.reviewId = review.getReviewId();
-        this.reviewDate = LocalDateTime.now();
+        this(
+                review.getWorkplace().getWorkplaceName().getValue(),
+                review.getReviewRating(),
+                review.getReviewContent(),
+                LocalDateTime.now(),
+                review.getReviewId()
+        );
     }
 
     @Builder

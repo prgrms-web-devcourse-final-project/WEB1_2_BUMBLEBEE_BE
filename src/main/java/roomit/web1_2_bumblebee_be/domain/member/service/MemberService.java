@@ -9,9 +9,8 @@ import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberRegisterReques
 import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberUpdateRequest;
 import roomit.web1_2_bumblebee_be.domain.member.dto.response.MemberResponse;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
-import roomit.web1_2_bumblebee_be.domain.member.exception.MemberNotFound;
-import roomit.web1_2_bumblebee_be.domain.member.exception.MemberUpdateException;
 import roomit.web1_2_bumblebee_be.domain.member.repository.MemberRepository;
+import roomit.web1_2_bumblebee_be.global.error.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -22,12 +21,12 @@ public class MemberService {
 
     public void signupMember(MemberRegisterRequest memberRequest) {
         Member member = Member.builder()
-                .birthDay(memberRequest.getBirthDay())
-                .memberSex(memberRequest.getSex())
-                .memberPwd(memberRequest.getPwd()) //암호화
-                .memberEmail(memberRequest.getEmail())
-                .memberPhoneNumber(memberRequest.getPhoneNumber())
-                .memberNickName(memberRequest.getNickName())
+                .birthDay(memberRequest.birthDay())
+                .memberSex(memberRequest.sex())
+                .memberPwd(memberRequest.pwd()) //암호화
+                .memberEmail(memberRequest.email())
+                .memberPhoneNumber(memberRequest.phoneNumber())
+                .memberNickName(memberRequest.nickName())
                 .passwordEncoder(bCryptPasswordEncoder)
                 .build();
 
@@ -36,24 +35,24 @@ public class MemberService {
 
     public MemberResponse read(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(MemberNotFound::new);
+                .orElseThrow(ErrorCode.MEMBER_NOT_FOUND::commonException);
 
         return new MemberResponse(member);
     }
 
     public MemberResponse update(Long memberId, MemberUpdateRequest request) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(MemberNotFound::new);
+                .orElseThrow(ErrorCode.MEMBER_NOT_FOUND::commonException);
 
         try {
-            member.changeEmail(request.getEmail());
-            member.changeNickName(request.getNickName());
-            member.changePhoneNumber(request.getPhoneNumber());
-            member.changePwd(request.getPwd());
+            member.changeEmail(request.email());
+            member.changeNickName(request.nickName());
+            member.changePhoneNumber(request.phoneNumber());
+            member.changePwd(request.pwd());
             memberRepository.save(member);
 
-        }catch (MemberUpdateException e){
-            throw new MemberUpdateException();
+        }catch (Exception e){
+            throw ErrorCode.MEMBER_UPDATE_EXCEPTION.commonException();
         }
 
         return new MemberResponse(member);
@@ -61,7 +60,7 @@ public class MemberService {
 
     public void delete(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(MemberNotFound::new);
+                .orElseThrow(ErrorCode.MEMBER_NOT_FOUND::commonException);
 
         memberRepository.delete(member);
     }
