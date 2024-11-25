@@ -5,14 +5,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomit.web1_2_bumblebee_be.domain.business.entity.Business;
-import roomit.web1_2_bumblebee_be.domain.business.exception.BusinessNotDelete;
-import roomit.web1_2_bumblebee_be.domain.business.exception.BusinessNotFound;
-import roomit.web1_2_bumblebee_be.domain.business.exception.BusinessNotModify;
-import roomit.web1_2_bumblebee_be.domain.business.exception.BusinessNotRegister;
 import roomit.web1_2_bumblebee_be.domain.business.repository.BusinessRepository;
-import roomit.web1_2_bumblebee_be.domain.business.request.BusinessRegisterRequest;
-import roomit.web1_2_bumblebee_be.domain.business.request.BusinessUpdateRequest;
-import roomit.web1_2_bumblebee_be.domain.business.response.BusinessResponse;
+import roomit.web1_2_bumblebee_be.domain.business.dto.request.BusinessRegisterRequest;
+import roomit.web1_2_bumblebee_be.domain.business.dto.request.BusinessUpdateRequest;
+import roomit.web1_2_bumblebee_be.domain.business.dto.response.BusinessResponse;
+import roomit.web1_2_bumblebee_be.global.error.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +24,7 @@ public class BusinessService {
         try {
             businessRepository.save(registerRequest.toEntity(passwordEncoder));
         }catch (Exception e) {
-            throw new BusinessNotRegister();
+            throw ErrorCode.BUSINESS_NOT_REGISTER.commonException();
         }
     }
 
@@ -35,7 +32,7 @@ public class BusinessService {
     @Transactional(readOnly = true)
     public BusinessResponse readBusinessInfo(Long businessId) {
         Business business = businessRepository.findById(businessId)
-                .orElseThrow(BusinessNotFound::new);
+                .orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
 
         return new BusinessResponse(business);
     }
@@ -45,14 +42,14 @@ public class BusinessService {
     @Transactional
     public void updateBusinessInfo(Long businessId, BusinessUpdateRequest updateRequest) {
         Business business = businessRepository.findById(businessId)
-                .orElseThrow(BusinessNotFound::new);
+                .orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
 
         try {
             business.updateBusiness(updateRequest);
 
             businessRepository.save(business);
         }catch (Exception e){
-            throw new BusinessNotModify();
+            throw ErrorCode.BUSINESS_NOT_MODIFY.commonException();
         }
     }
 
@@ -61,12 +58,12 @@ public class BusinessService {
     @Transactional
     public void deleteBusiness(Long businessId) {
         businessRepository.findById(businessId)
-                .orElseThrow(BusinessNotFound::new);
+                .orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
 
         try {
             businessRepository.deleteById(businessId);
         }catch (Exception e){
-            throw new BusinessNotDelete();
+            throw ErrorCode.BUSINESS_NOT_DELETE.commonException();
         }
     }
 }

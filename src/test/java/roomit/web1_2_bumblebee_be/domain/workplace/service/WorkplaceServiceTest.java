@@ -4,29 +4,29 @@ import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.ActiveProfiles;
+import roomit.web1_2_bumblebee_be.domain.business.dto.request.BusinessRegisterRequest;
 import roomit.web1_2_bumblebee_be.domain.business.entity.Business;
 import roomit.web1_2_bumblebee_be.domain.business.repository.BusinessRepository;
-import roomit.web1_2_bumblebee_be.domain.business.request.BusinessRegisterRequest;
 import roomit.web1_2_bumblebee_be.domain.business.service.BusinessService;
 import roomit.web1_2_bumblebee_be.domain.workplace.dto.WorkplaceRequest;
 import roomit.web1_2_bumblebee_be.domain.workplace.dto.WorkplaceResponse;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplaceName;
-import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkplaceInvalidRequest;
-import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkplaceNotFound;
-import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkplaceNotRegistered;
-import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkspaceNotModified;
 import roomit.web1_2_bumblebee_be.domain.workplace.repository.WorkplaceRepository;
+import roomit.web1_2_bumblebee_be.global.error.ErrorCode;
+import roomit.web1_2_bumblebee_be.global.exception.CommonException;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@TestPropertySource(locations = "classpath:/application-test.properties")
+@ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class WorkplaceServiceTest {
 
@@ -46,9 +46,6 @@ class WorkplaceServiceTest {
 
     @BeforeEach
     void setUp() {
-        // 기존 데이터를 모두 삭제하여 중복 방지
-        businessRepository.deleteAll();
-
         workplaceRepository.deleteAll();
         businessRepository.deleteAll();
 
@@ -76,7 +73,7 @@ class WorkplaceServiceTest {
         // Given
         Workplace workplace = Workplace.builder()
                 .workplaceName("사업장 넘버원")
-                .workplacePhoneNumber("010-1234-1234")
+                .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("대한민국 서울시")
                 .imageUrl("http://image.url")
@@ -92,9 +89,9 @@ class WorkplaceServiceTest {
 
         // Then
         assertNotNull(findWorkplace);
-        assertEquals("사업장 넘버원", findWorkplace.getWorkplaceName());
-        assertEquals("010-1234-1234", findWorkplace.getWorkplacePhoneNumber());
-        assertEquals("대한민국 서울시", findWorkplace.getWorkplaceAddress());
+        assertEquals("사업장 넘버원", findWorkplace.workplaceName());
+        assertEquals("0507-1234-5678", findWorkplace.workplacePhoneNumber());
+        assertEquals("대한민국 서울시", findWorkplace.workplaceAddress());
     }
 
 
@@ -106,7 +103,7 @@ class WorkplaceServiceTest {
         // Given
         WorkplaceRequest workplace = WorkplaceRequest.builder()
                 .workplaceName("사업장1")
-                .workplacePhoneNumber("010-1234-1234")
+                .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("대한민국 서울시")
                 .imageUrl("http://image.url")
@@ -120,7 +117,7 @@ class WorkplaceServiceTest {
 
         // Then
         assertEquals("사업장1", findWorkplace.getWorkplaceName().getValue());
-        assertEquals("010-1234-1234", findWorkplace.getWorkplacePhoneNumber().getValue());
+        assertEquals("0507-1234-5678", findWorkplace.getWorkplacePhoneNumber().getValue());
         assertEquals("대한민국 서울시", findWorkplace.getWorkplaceAddress().getValue());
     }
 
@@ -130,8 +127,8 @@ class WorkplaceServiceTest {
     void createWorkplaceFailed() {
         // Given
         WorkplaceRequest workplace = WorkplaceRequest.builder()
-                .workplaceName("사")
-                .workplacePhoneNumber("010-1234-1234")
+                .workplaceName("사업장@") // '@' 특수문자는 허용되지 않음
+                .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("대한민국 서울시")
                 .imageUrl("http://image.url")
@@ -139,12 +136,13 @@ class WorkplaceServiceTest {
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .build();
 
+
         // When & Then
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             workplaceService.createWorkplace(workplace);
         });
 
-        assertEquals("사업장명은 특수문자를 제외한 2~30자리여야 하며, 띄워쓰기가 가능합니다.", exception.getMessage());
+        assertEquals("사업장명은 특수문자를 제외한 1~20자리여야 하며, 띄워쓰기가 가능합니다.", exception.getMessage());
     }
 
 
@@ -155,9 +153,11 @@ class WorkplaceServiceTest {
     void readWorkplaceFailed() {
 
         // When & Then
-        assertThrows(WorkplaceNotFound.class, () -> {
+        CommonException exception = assertThrows(CommonException.class, () -> {
             workplaceService.readWorkplace(10000L);
         });
+
+        assertEquals(ErrorCode.WORKPLACE_NOT_FOUND.getMessage(), exception.getMessage());
     }
 
     @Test
@@ -167,7 +167,7 @@ class WorkplaceServiceTest {
         // Given
         Workplace workplace = Workplace.builder()
                 .workplaceName("기존 사업장")
-                .workplacePhoneNumber("010-1234-1234")
+                .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("기존 설명")
                 .workplaceAddress("대한민국 서울시")
                 .imageUrl("http://image.url")
@@ -180,7 +180,7 @@ class WorkplaceServiceTest {
 
         WorkplaceRequest updatedworkplace = WorkplaceRequest.builder()
                 .workplaceName("사업장 수정")
-                .workplacePhoneNumber("010-1234-1230")
+                .workplacePhoneNumber("0507-1234-5670")
                 .workplaceDescription("사업장 설명 수정")
                 .workplaceAddress("대한민국 서울시 수정")
                 .imageUrl("http://image.url")
@@ -194,8 +194,8 @@ class WorkplaceServiceTest {
         // Then
         WorkplaceResponse findWorkplace = workplaceService.readWorkplace(workplace.getWorkplaceId());
         assertNotNull(findWorkplace);
-        assertEquals(findWorkplace.getWorkplaceName(), "사업장 수정");
-        assertEquals(findWorkplace.getWorkplaceDescription(), "사업장 설명 수정");
+        assertEquals(findWorkplace.workplaceName(), "사업장 수정");
+        assertEquals(findWorkplace.workplaceDescription(), "사업장 설명 수정");
     }
 
     @Test
@@ -205,7 +205,7 @@ class WorkplaceServiceTest {
         // Given
         Workplace workplace = Workplace.builder()
                 .workplaceName("사업장")
-                .workplacePhoneNumber("010-1234-1234")
+                .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("대한민국 서울시")
                 .imageUrl("http://image.url")
@@ -216,7 +216,7 @@ class WorkplaceServiceTest {
 
         // Given: 필수 필드 중 일부 누락된 요청
         WorkplaceRequest request = WorkplaceRequest.builder()
-                .workplacePhoneNumber("010-1234-5678")
+                .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("수정된 설명")
                 .workplaceAddress("대한민국 서울시 수정")
                 .workplaceStartTime(LocalDateTime.of(2023, 2, 1, 9, 0))
@@ -225,11 +225,11 @@ class WorkplaceServiceTest {
 
 
         // When & Then: WorkplaceInvalidRequest 예외 발생 확인
-        WorkspaceNotModified exception = assertThrows(WorkspaceNotModified.class, () -> {
+        CommonException exception = assertThrows(CommonException.class, () -> {
             workplaceService.updateWorkplace(workplace.getWorkplaceId(), request);
         });
 
-        assertEquals("사업장 수정에 실패하였습니다.", exception.getMessage());
+        assertEquals(ErrorCode.WORKPLACE_NOT_MODIFIED.getMessage(), exception.getMessage());
     }
 
     @Test
@@ -240,7 +240,7 @@ class WorkplaceServiceTest {
         // Given
         Workplace workplace = Workplace.builder()
                 .workplaceName("사업장")
-                .workplacePhoneNumber("010-1234-1234")
+                .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("대한민국 서울시")
                 .imageUrl("http://image.url")
@@ -254,9 +254,10 @@ class WorkplaceServiceTest {
         workplaceService.deleteWorkplace(workplaceId);
 
         // When & Then: 삭제된 Workplace를 조회하면 예외 발생
-        assertThrows(WorkplaceNotFound.class, () -> {
+        assertThrows(CommonException.class, () -> {
             workplaceService.readWorkplace(workplaceId);
-        });}
+        });
+    }
 
     @Test
     @DisplayName("사업장 목록 조회")
@@ -268,7 +269,7 @@ class WorkplaceServiceTest {
         for (int i = 1; i <= 100; i++) {
             Workplace workplace = Workplace.builder()
                     .workplaceName("사업장 " + i)
-                    .workplacePhoneNumber("010-1234-" + String.format("%04d", i))
+                    .workplacePhoneNumber("0507-1234-" + String.format("%04d", i))
                     .workplaceDescription("테스트 사업장 " + i)
                     .workplaceAddress("테스트 주소 " + i)
                     .imageUrl("http://image.url")
@@ -296,7 +297,7 @@ class WorkplaceServiceTest {
         for (int i = 1; i <= 3; i++) {
             Workplace workplace = Workplace.builder()
                     .workplaceName("사업장 " + i)
-                    .workplacePhoneNumber("010-1234-" + String.format("%04d", i))
+                    .workplacePhoneNumber("0507-1234-" + String.format("%04d", i))
                     .workplaceDescription("테스트 사업장 " + i)
                     .workplaceAddress("테스트 주소 " + i)
                     .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
@@ -313,11 +314,91 @@ class WorkplaceServiceTest {
 
         // Then
         assertThat(workplaces).hasSize(3);
-        assertThat(workplaces.get(0).getBusinessId()).isEqualTo(savedBusiness.getBusinessId());
-        assertThat(workplaces.get(0).getWorkplaceName()).isEqualTo("사업장 1");
+        assertThat(workplaces.get(0).businessId()).isEqualTo(savedBusiness.getBusinessId());
+        assertThat(workplaces.get(0).workplaceName()).isEqualTo("사업장 1");
     }
 
-//    @Test
-//    void uploadImage() {
-//    }
+    @Test
+    @DisplayName("유효하지 않은 주소로 좌표 변환 실패")
+    @Order(9)
+    void testGeoCordingFailed() {
+        // Given: 유효하지 않은 주소 입력
+        WorkplaceRequest workplaceRequest = WorkplaceRequest.builder()
+                .workplaceName("유효하지 않은 사업장")
+                .workplaceAddress("Invalid Address") // 잘못된 주소
+                .workplacePhoneNumber("0507-1234-5678")
+                .build();
+
+        // When & Then: WORKPLACE_INVALID_ADDRESS 예외 발생
+        CommonException exception = assertThrows(CommonException.class, () -> {
+            workplaceService.getStringBigDecimalMap(workplaceRequest);
+        });
+
+        assertEquals(ErrorCode.WORKPLACE_INVALID_ADDRESS.getMessage(), exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("유효한 주소로 좌표 변환 성공")
+    @Order(10)
+    void testGeoCordingSuccess() {
+        // Given: 유효한 주소 입력
+        WorkplaceRequest workplaceRequest = WorkplaceRequest.builder()
+                .workplaceName("유효한 사업장")
+                .workplaceAddress("서울특별시 강남구 역삼동") // 유효한 주소
+                .workplacePhoneNumber("0507-1234-5678")
+                .build();
+
+        // When: 좌표 변환 시도
+        Map<String, BigDecimal> coordinates = workplaceService.getStringBigDecimalMap(workplaceRequest);
+
+        // Then: 좌표가 반환되는지 검증
+        assertNotNull(coordinates);
+        assertTrue(coordinates.containsKey("latitude"));
+        assertTrue(coordinates.containsKey("longitude"));
+        assertEquals(new BigDecimal("37.566535"), coordinates.get("latitude")); // 예시값
+        assertEquals(new BigDecimal("126.9779692"), coordinates.get("longitude")); // 예시값
+    }
+
+    @Test
+    @DisplayName("주소 변경 시 좌표 업데이트")
+    @Order(11)
+    void testUpdateWorkplaceWithCoordinatesChange() {
+        // Given: 기존 사업장 등록
+        Workplace workplace = Workplace.builder()
+                .workplaceName("기존 사업장")
+                .workplacePhoneNumber("0507-1234-5678")
+                .workplaceDescription("기존 설명")
+                .workplaceAddress("서울특별시 강남구 역삼동") // 초기 주소
+                .imageUrl("http://image.url")
+                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
+                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                .business(savedBusiness)
+                .build();
+
+        Workplace savedWorkplace = workplaceRepository.save(workplace);
+
+        // Updated Request
+        WorkplaceRequest updatedRequest = WorkplaceRequest.builder()
+                .workplaceName("수정된 사업장")
+                .workplacePhoneNumber("0507-9876-5432")
+                .workplaceDescription("수정된 설명")
+                .workplaceAddress("서울특별시 중구 정동") // 주소 변경
+                .imageUrl("http://updated.image.url")
+                .workplaceStartTime(LocalDateTime.of(2023, 2, 1, 9, 0))
+                .workplaceEndTime(LocalDateTime.of(2023, 2, 1, 18, 0))
+                .build();
+
+        // When: 사업장 수정
+        workplaceService.updateWorkplace(savedWorkplace.getWorkplaceId(), updatedRequest);
+
+        // Then: 좌표가 업데이트되었는지 확인
+        WorkplaceResponse updatedWorkplace = workplaceService.readWorkplace(savedWorkplace.getWorkplaceId());
+        assertEquals("수정된 사업장", updatedWorkplace.workplaceName());
+        assertEquals("서울특별시 중구 정동", updatedWorkplace.workplaceAddress());
+
+        // 좌표 검증 (예시 값)
+        assertEquals(new BigDecimal("37.5642135"), updatedWorkplace.latitude()); // 예상 위도
+        assertEquals(new BigDecimal("126.975575"), updatedWorkplace.longitude()); // 예상 경도
+    }
+
 }

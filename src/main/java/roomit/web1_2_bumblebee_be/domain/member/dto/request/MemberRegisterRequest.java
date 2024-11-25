@@ -1,42 +1,27 @@
 package roomit.web1_2_bumblebee_be.domain.member.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
-import lombok.Getter;
-import roomit.web1_2_bumblebee_be.domain.member.entity.Age;
-import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
+import org.springframework.format.annotation.DateTimeFormat;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
+import roomit.web1_2_bumblebee_be.domain.member.entity.value.MemberEmail;
+import roomit.web1_2_bumblebee_be.domain.member.entity.value.MemberNickname;
+import roomit.web1_2_bumblebee_be.domain.member.entity.value.MemberPassword;
+import roomit.web1_2_bumblebee_be.domain.member.entity.value.MemberPhoneNumber;
 
-@Getter
-public class MemberRegisterRequest {
+import java.time.LocalDate;
 
-    @NotBlank(message = "닉네임을 입력해주세요.")
-    private String nickName;
 
-    @NotBlank(message = "휴대번호를 입력해주세요.")
-    private String phoneNumber;
-
-    @NotNull(message = "나이대를 입력해주세요")
-    private Age age;
-
-    @NotNull(message = "성별을 입력해주세요.")
-    private Sex sex;
-
-    @NotNull(message = "이메일을 입력해주세요.")
-    private String email;
-
-    @NotNull(message = "비밀번호를 입력해주세요.")
-    private String pwd;
+public record MemberRegisterRequest(@Pattern(regexp = MemberNickname.REGEX, message = MemberNickname.ERR_MSG) String nickName,
+                                    @Pattern(regexp = MemberPhoneNumber.REGEX, message = MemberPhoneNumber.ERR_MSG) String phoneNumber,
+                                    @Pattern(regexp = MemberEmail.REGEX, message = MemberEmail.ERR_MSG) String email,
+                                    @Pattern(regexp = MemberPassword.REGEX, message = MemberPassword.ERR_MSG) String pwd,
+                                    @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate birthDay,
+                                    @NotNull(message = "성별 입력해주세요") Sex sex) {
 
     @Builder
-    public MemberRegisterRequest(String nickName, String phoneNumber, Age age, Sex sex, String email, String pwd, Role role) {
-        this.nickName = nickName;
-        this.phoneNumber = phoneNumber;
-        this.age = age;
-        this.sex = sex;
-        this.email = email;
-        this.pwd = pwd;
+    public MemberRegisterRequest {
     }
 
 }

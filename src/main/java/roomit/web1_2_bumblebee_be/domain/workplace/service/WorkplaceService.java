@@ -1,21 +1,28 @@
 package roomit.web1_2_bumblebee_be.domain.workplace.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 import roomit.web1_2_bumblebee_be.domain.workplace.dto.WorkplaceRequest;
 import roomit.web1_2_bumblebee_be.domain.workplace.dto.WorkplaceResponse;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplaceAddress;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplaceName;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplacePhoneNumber;
-import roomit.web1_2_bumblebee_be.domain.workplace.exception.*;
 import roomit.web1_2_bumblebee_be.domain.workplace.repository.WorkplaceRepository;
+import roomit.web1_2_bumblebee_be.global.error.ErrorCode;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +30,8 @@ import java.util.List;
 public class WorkplaceService {
 
     private final WorkplaceRepository workplaceRepository;
+
+    private final WebClient webClient;
 
     public List<WorkplaceResponse> readAllWorkplaces() {
         List<Workplace> workplaceList = workplaceRepository.findAll();
@@ -32,7 +41,7 @@ public class WorkplaceService {
 
     public WorkplaceResponse readWorkplace(Long workplaceId) {
         Workplace workplace = workplaceRepository.findById(workplaceId)
-                .orElseThrow(WorkplaceNotFound::new);
+                .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
 
         return new WorkplaceResponse(workplace);
     }
@@ -40,59 +49,61 @@ public class WorkplaceService {
     @Transactional
     public void createWorkplace(WorkplaceRequest workplaceDto) {
 
-        if (workplaceRepository.getWorkplaceByWorkplaceName(new WorkplaceName(workplaceDto.getWorkplaceName())) != null ||
-                workplaceRepository.getWorkplaceByWorkplacePhoneNumber(new WorkplacePhoneNumber(workplaceDto.getWorkplacePhoneNumber())) != null ||
-                workplaceRepository.getWorkplaceByWorkplaceAddress(new WorkplaceAddress(workplaceDto.getWorkplaceAddress())) != null) {
-            throw new RuntimeException("이미 존재합니다");
+        if (workplaceRepository.getWorkplaceByWorkplaceName(new WorkplaceName(workplaceDto.workplaceName())) != null ||
+                workplaceRepository.getWorkplaceByWorkplacePhoneNumber(new WorkplacePhoneNumber(workplaceDto.workplacePhoneNumber())) != null ||
+                workplaceRepository.getWorkplaceByWorkplaceAddress(new WorkplaceAddress(workplaceDto.workplaceAddress())) != null) {
+            throw ErrorCode.WORKPLACE_NOT_REGISTERED.commonException();
         }
 
+        Map<String, BigDecimal> coordinates = getStringBigDecimalMap(workplaceDto);
+
         try {
-            Workplace workplace = workplaceDto.toEntity();
+            Workplace workplace = workplaceDto.toEntity(coordinates.get("latitude"), coordinates.get("longitude"));
             workplace.changeStarSum(0L);
             workplaceRepository.save(workplace);
         } catch (InvalidDataAccessApiUsageException e) {
-            throw new WorkplaceInvalidRequest(); // 예외 감싸기
+            throw ErrorCode.WORKPLACE_INVALID_REQUEST.commonException();
         } catch (Exception e) {
-            throw new WorkplaceNotRegistered();
+            throw ErrorCode.WORKPLACE_NOT_REGISTERED.commonException();
         }
     }
 
     @Transactional
     public void updateWorkplace(Long workplaceId, WorkplaceRequest workplaceDto) {
-        if (workplaceDto == null) {
-            throw new WorkplaceInvalidRequest();
+
+        if (workplaceDto == null && !workplaceDto.workplaceStartTime().isBefore(workplaceDto.workplaceEndTime())) {
+            throw ErrorCode.WORKPLACE_INVALID_REQUEST.commonException();
         }
 
-        // 필수 필드 검증
-        if (!workplaceDto.getWorkplaceStartTime().isBefore(workplaceDto.getWorkplaceEndTime())) {
-            throw new WorkplaceInvalidRequest();
-        }
+        Map<String, BigDecimal> coordinates = getStringBigDecimalMap(workplaceDto);
 
         Workplace workplace = workplaceRepository.findById(workplaceId)
-                .orElseThrow(WorkplaceNotFound::new);
+                .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
 
         try {
-            workplace.changeWorkplaceName(new WorkplaceName(workplaceDto.getWorkplaceName()));
-            workplace.changeWorkplaceDescription(workplaceDto.getWorkplaceDescription());
-            workplace.changeWorkplaceAddress(new WorkplaceAddress(workplaceDto.getWorkplaceAddress()));
-            workplace.changeWorkplacePhoneNumber(new WorkplacePhoneNumber(workplaceDto.getWorkplacePhoneNumber()));
-            workplace.changeWorkplaceStartTime(workplaceDto.getWorkplaceStartTime());
-            workplace.changeWorkplaceEndTime(workplaceDto.getWorkplaceEndTime());
+            workplace.changeWorkplaceName(new WorkplaceName(workplaceDto.workplaceName()));
+            workplace.changeWorkplaceDescription(workplaceDto.workplaceDescription());
+            workplace.changeWorkplaceAddress(new WorkplaceAddress(workplaceDto.workplaceAddress()));
+            workplace.changeWorkplacePhoneNumber(new WorkplacePhoneNumber(workplaceDto.workplacePhoneNumber()));
+            workplace.changeWorkplaceStartTime(workplaceDto.workplaceStartTime());
+            workplace.changeWorkplaceEndTime(workplaceDto.workplaceEndTime());
+            workplace.changeLatitude(coordinates.get("latitude"));
+            workplace.changeLongitude(coordinates.get("longitude"));
             workplaceRepository.save(workplace);
         } catch (Exception e) {
-            throw new WorkspaceNotModified();
+            throw ErrorCode.WORKPLACE_NOT_MODIFIED.commonException();
         }
     }
 
     @Transactional
     public void deleteWorkplace(Long workplaceId) {
         Workplace workplace = workplaceRepository.findById(workplaceId)
-                .orElseThrow(WorkplaceNotFound::new);
+                .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
 
         try {
             workplaceRepository.delete(workplace);
         } catch (Exception e) {
-            throw new WorkplaceNotDelete();
+            throw ErrorCode.BUSINESS_NOT_DELETE.commonException();
         }
     }
 
@@ -100,7 +111,7 @@ public class WorkplaceService {
         List<Workplace> workplaces = workplaceRepository.findByBusiness_BusinessId(businessId);
 
         if (workplaces.isEmpty()) {
-            throw new WorkplaceNotFound();
+            throw ErrorCode.STUDYROOM_NOT_FOUND.commonException();
         }
 
         return toResponseDto(workplaces);
@@ -114,33 +125,34 @@ public class WorkplaceService {
         return workplaceDtoList;
     }
 
+    protected Map<String, BigDecimal> getStringBigDecimalMap(WorkplaceRequest workplaceDto) {
+        try {
+            return geoCording(workplaceDto.workplaceAddress());
+        } catch (Exception e) {
+            throw ErrorCode.WORKPLACE_INVALID_ADDRESS.commonException();
+        }
+    }
 
-    //사진 업로드 및 수정
-//    @Transactional
-//    public WorkplaceResponse uploadImage(MultipartFile file, Long workplaceId) {
-//        if (file == null || file.isEmpty()) {
-//            throw WorkplaceException.NOT_UPLOAD_IMAGE.getWorkplaceTaskException();
-//        }
-//
-//        try {
-//            // Workplace 조회
-//            Workplace workplace = workplaceRepository.findById(workplaceId)
-//                    .orElseThrow(() -> WorkplaceException.MEMBER_NOT_FOUND.getWorkplaceTaskException());
-//
-//            // 파일 데이터 저장
-//            workplace.changeProfileImage(file.getBytes());
-//            workplace.changeImageType(file.getContentType());
-//
-//            log.info("Profile image updated successfully for memberId: {}", workplaceId);
-//
-//            // 저장 후 DTO 반환
-//            return new WorkplaceResponse(workplaceRepository.save(workplace));
-//        } catch (IOException e) {
-//            log.error("Error while processing file upload: {}", e.getMessage(), e);
-//            throw WorkplaceException.NOT_UPLOAD_IMAGE.getWorkplaceTaskException();
-//        } catch (Exception e) {
-//            log.error("Unexpected error: {}", e.getMessage(), e);
-//            throw WorkplaceException.NOT_UPLOAD_IMAGE.getWorkplaceTaskException();
-//        }
-//    }
+    private Map<String, BigDecimal> geoCording(String address) {
+        try {
+            String response = webClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/v2/local/search/address.json")
+                            .queryParam("query", address)
+                            .build())
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block(); // 동기식 호출
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode document = objectMapper.readTree(response).path("documents").get(0);
+
+            return Map.of(
+                    "latitude", new BigDecimal(document.path("y").asText()),
+                    "longitude", new BigDecimal(document.path("x").asText())
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to extract coordinates from response", e);
+        }
+    }
 }

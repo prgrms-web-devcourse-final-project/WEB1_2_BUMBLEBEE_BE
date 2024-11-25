@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import roomit.web1_2_bumblebee_be.domain.business.dto.request.BusinessRegisterRequest;
 import roomit.web1_2_bumblebee_be.domain.business.entity.Business;
 import roomit.web1_2_bumblebee_be.domain.business.repository.BusinessRepository;
-import roomit.web1_2_bumblebee_be.domain.business.request.BusinessRegisterRequest;
 import roomit.web1_2_bumblebee_be.domain.business.service.BusinessService;
 import roomit.web1_2_bumblebee_be.domain.member.service.MemberService;
 import roomit.web1_2_bumblebee_be.domain.workplace.dto.WorkplaceRequest;
@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:/application-test.properties")
+@ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class WorkplaceControllerTest {
 
@@ -81,7 +81,7 @@ public class WorkplaceControllerTest {
         // Given
         WorkplaceRequest workplace = WorkplaceRequest.builder()
                 .workplaceName("사업장")
-                .workplacePhoneNumber("010-1234-1234")
+                .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("대한민국 서울시")
                 .imageUrl("http://image.url")
@@ -109,7 +109,7 @@ public class WorkplaceControllerTest {
         // Given
         Workplace workplace = Workplace.builder()
                 .workplaceName("사업장")
-                .workplacePhoneNumber("010-1234-1234")
+                .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("대한민국 서울시")
                 .imageUrl("http://image.url")
@@ -128,7 +128,7 @@ public class WorkplaceControllerTest {
         // Then
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.workplaceName").value("사업장"))
-                .andExpect(jsonPath("$.workplacePhoneNumber").value("010-1234-1234"))
+                .andExpect(jsonPath("$.workplacePhoneNumber").value("0507-1234-5678"))
                 .andExpect(jsonPath("$.workplaceDescription").value("사업장 설명"))
                 .andExpect(jsonPath("$.workplaceAddress").value("대한민국 서울시"))
                 .andExpect(jsonPath("$.workplaceStartTime").value("2023-01-01T09:00:00"))
@@ -143,7 +143,7 @@ public class WorkplaceControllerTest {
         // Given
         Workplace workplace = Workplace.builder()
                 .workplaceName("사업장")
-                .workplacePhoneNumber("010-1234-1234")
+                .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("대한민국 서울시")
                 .imageUrl("http://image.url")
@@ -155,7 +155,7 @@ public class WorkplaceControllerTest {
 
         WorkplaceRequest updatedWorkplace = WorkplaceRequest.builder()
                 .workplaceName("사업장 수정")
-                .workplacePhoneNumber("010-1234-1230")
+                .workplacePhoneNumber("0507-1234-5670")
                 .workplaceDescription("사업장 설명 수정")
                 .workplaceAddress("중국 상하이")
                 .imageUrl("http://image.url")
@@ -185,7 +185,7 @@ public class WorkplaceControllerTest {
         // Given
         Workplace workplace = Workplace.builder()
                 .workplaceName("사업장")
-                .workplacePhoneNumber("010-1234-1234")
+                .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("대한민국 서울시")
                 .imageUrl("http://image.url")
@@ -216,7 +216,7 @@ public class WorkplaceControllerTest {
         for (int i = 1; i <= 100; i++) {
             Workplace workplace = Workplace.builder()
                     .workplaceName("사업장 " + i)
-                    .workplacePhoneNumber("010-1234-" + String.format("%04d", i))
+                    .workplacePhoneNumber("0507-1234-" + String.format("%04d", i))
                     .workplaceDescription("사업장 설명 " + i)
                     .workplaceAddress("대한민국 서울시 " + i)
                     .imageUrl("http://image.url")
@@ -239,4 +239,6 @@ public class WorkplaceControllerTest {
                 .andExpect(jsonPath("$[99].workplaceName").value("사업장 100")) // 마지막 데이터 확인
                 .andDo(print());
     }
+
+
 }

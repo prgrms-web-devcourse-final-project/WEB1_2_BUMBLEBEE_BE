@@ -12,7 +12,7 @@ import roomit.web1_2_bumblebee_be.domain.business.entity.value.BusinessEmail;
 import roomit.web1_2_bumblebee_be.domain.business.entity.value.BusinessNickname;
 import roomit.web1_2_bumblebee_be.domain.business.entity.value.BusinessNum;
 import roomit.web1_2_bumblebee_be.domain.business.entity.value.BusinessPassword;
-import roomit.web1_2_bumblebee_be.domain.business.request.BusinessUpdateRequest;
+import roomit.web1_2_bumblebee_be.domain.business.dto.request.BusinessUpdateRequest;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
 
@@ -27,7 +27,6 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 public class Business {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "business_id")
@@ -87,9 +86,9 @@ public class Business {
 
 
     public void updateBusiness(final BusinessUpdateRequest businessUpdateRequest) {
-        this.businessName = new BusinessNickname(businessUpdateRequest.getBusinessName());
-        this.businessEmail = new BusinessEmail(businessUpdateRequest.getBusinessEmail());
-        this.businessNum = new BusinessNum(businessUpdateRequest.getBusinessNum());
+        this.businessName = new BusinessNickname(businessUpdateRequest.businessName());
+        this.businessEmail = new BusinessEmail(businessUpdateRequest.businessEmail());
+        this.businessNum = new BusinessNum(businessUpdateRequest.businessNum());
     }
 
 }
