@@ -4,13 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import roomit.main.domain.business.entity.Business;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 @RequiredArgsConstructor
-public class CustomBusinessDetails implements UserDetails {
+public class CustomBusinessDetails implements UserDetails, OAuth2User {
 
     private final Business business;
 
@@ -30,7 +32,7 @@ public class CustomBusinessDetails implements UserDetails {
         return business.getBusinessPwd().getValue();
     }
 
-    public Long getId(){ //member의 id값 가져오기
+    public Long getId(){ //business id값 가져오기
 
         return business.getBusinessId();
     }
@@ -63,5 +65,16 @@ public class CustomBusinessDetails implements UserDetails {
     public boolean isEnabled() {
 
         return true;
+    }
+
+    // OAuth2User //
+    @Override
+    public Map<String, Object> getAttributes() {
+        return null;
+    }
+
+    @Override
+    public String getName() {
+        return business.getBusinessName();
     }
 }
