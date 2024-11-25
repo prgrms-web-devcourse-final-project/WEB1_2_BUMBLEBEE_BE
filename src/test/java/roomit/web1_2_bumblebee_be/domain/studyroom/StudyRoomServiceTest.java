@@ -44,6 +44,7 @@
 //    @BeforeEach
 //    void setUp() {
 //        mockWorkplace = Workplace.builder()
+//                .workplaceId(1L)
 //                .workplaceName("Test Workplace")
 //                .workplaceAddress("123 Test Address")
 //                .build();

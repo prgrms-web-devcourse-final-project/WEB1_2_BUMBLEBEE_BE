@@ -1,30 +1,34 @@
 package roomit.web1_2_bumblebee_be.domain.studyroom.dto.response;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import roomit.web1_2_bumblebee_be.domain.review.entity.Review;
+import roomit.web1_2_bumblebee_be.domain.studyroom.entity.StudyRoom;
+import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
+import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.ImageUrl;
+import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplaceAddress;
+import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplaceName;
 
-@Getter
-@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-public class FindPossibleStudyRoomResponse {
-    private String workplaceName;
-    private String workplaceAddress;
-    private String studyRoomTitle;
-    private Integer studyRoomCapacity;
-    private Integer studyRoomPrice;
-    private Double averageReviewScore;
-    private String imageUrl;
+public record FindPossibleStudyRoomResponse(
+    WorkplaceName workplaceName,
+    Double averageReviewScore,
+    String studyRoomTitle,
+    double reviewScore,
+    WorkplaceAddress workplaceAddress,
+    Integer studyRoomCapacity,
+    Integer studyRoomPrice,
+    ImageUrl imageUrl){
 
 
-    @Builder
-    public FindPossibleStudyRoomResponse(String workplaceName, String workplaceAddress, String studyRoomTitle,
-                                         Integer studyRoomCapacity, Integer studyRoomPrice, Double averageReviewScore,String imageUrl) {
-        this.workplaceName = workplaceName;
-        this.workplaceAddress = workplaceAddress;
-        this.studyRoomTitle = studyRoomTitle;
-        this.studyRoomCapacity = studyRoomCapacity;
-        this.studyRoomPrice = studyRoomPrice;
-        this.averageReviewScore = averageReviewScore;
-        this.imageUrl = imageUrl;
+    public static FindPossibleStudyRoomResponse from(Workplace workplace, StudyRoom studyRoom, Review review){
+        return new FindPossibleStudyRoomResponse(
+                workplace.getWorkplaceName(),
+                review.getReviewRating(),
+                studyRoom.getTitle(),
+                review.getReviewRating(),
+                workplace.getWorkplaceAddress(),
+                studyRoom.getCapacity(),
+                studyRoom.getPrice(),
+                workplace.getImageUrl()
+        );
     }
+
 }
