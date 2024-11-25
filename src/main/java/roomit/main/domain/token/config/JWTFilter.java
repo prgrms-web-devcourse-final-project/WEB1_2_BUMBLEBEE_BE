@@ -1,4 +1,4 @@
-package roomit.web1_2_bumblebee_be.domain.token.config;
+package roomit.main.domain.token.config;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -8,19 +8,18 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.filter.OncePerRequestFilter;
-import roomit.web1_2_bumblebee_be.domain.business.dto.CustomBusinessDetails;
-import roomit.web1_2_bumblebee_be.domain.business.entity.Business;
-import roomit.web1_2_bumblebee_be.domain.business.service.CustomBusinessDetailsService;
-import roomit.web1_2_bumblebee_be.domain.member.dto.CustomMemberDetails;
-import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
-import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
-import roomit.web1_2_bumblebee_be.domain.member.service.CustomMemberDetailsService;
+import roomit.main.domain.business.entity.Business;
+import roomit.main.domain.business.service.CustomBusinessDetailsService;
+import roomit.main.domain.member.entity.Member;
+import roomit.main.domain.member.entity.Role;
+import roomit.main.domain.member.service.CustomMemberDetailsService;
+import roomit.main.domain.token.config.JWTUtil;
+
 
 
 import java.io.IOException;

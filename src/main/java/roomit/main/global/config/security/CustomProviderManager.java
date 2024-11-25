@@ -1,4 +1,4 @@
-package roomit.web1_2_bumblebee_be.global.config.security;
+package roomit.main.global.config.security;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;

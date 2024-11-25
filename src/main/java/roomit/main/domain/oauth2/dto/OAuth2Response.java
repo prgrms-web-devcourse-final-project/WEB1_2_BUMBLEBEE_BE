@@ -1,4 +1,4 @@
-package roomit.web1_2_bumblebee_be.domain.oauth2.dto;
+package roomit.main.domain.oauth2.dto;
 
 public interface OAuth2Response {
     //제공자 (네이버인지,카카오인지

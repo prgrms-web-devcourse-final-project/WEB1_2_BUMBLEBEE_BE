@@ -1,4 +1,4 @@
-package roomit.web1_2_bumblebee_be.global.config.security;
+package roomit.main.global.config.security;
 
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,10 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,15 +20,17 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import roomit.web1_2_bumblebee_be.domain.business.service.CustomBusinessDetailsService;
-import roomit.web1_2_bumblebee_be.domain.member.service.CustomMemberDetailsService;
-import roomit.web1_2_bumblebee_be.domain.oauth2.config.CustomSuccessHandler;
-import roomit.web1_2_bumblebee_be.domain.oauth2.service.CustomOAuth2UserService;
-import roomit.web1_2_bumblebee_be.domain.token.config.JWTFilter;
-import roomit.web1_2_bumblebee_be.domain.token.config.JWTUtil;
-import roomit.web1_2_bumblebee_be.domain.token.config.LoginFilter;
-import roomit.web1_2_bumblebee_be.domain.token.config.LogoutFilter;
-import roomit.web1_2_bumblebee_be.domain.token.repository.RefreshRepository;
+import roomit.main.domain.business.service.CustomBusinessDetailsService;
+import roomit.main.domain.member.service.CustomMemberDetailsService;
+import roomit.main.domain.oauth2.config.CustomSuccessHandler;
+import roomit.main.domain.oauth2.service.CustomOAuth2UserService;
+import roomit.main.domain.token.config.JWTFilter;
+import roomit.main.domain.token.config.JWTUtil;
+import roomit.main.domain.token.config.LoginFilter;
+import roomit.main.domain.token.config.LogoutFilter;
+import roomit.main.domain.token.repository.RefreshRepository;
+import roomit.web1_2_bumblebee_be.global.config.security.CustomProviderManager;
+
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -60,7 +59,8 @@ public class SpringSecurityConfig {
         businessProvider.setUserDetailsService(businessDetailsService);
         businessProvider.setPasswordEncoder(bCryptPasswordEncoder());
 
-        return new CustomProviderManager(Arrays.asList(memberProvider, businessProvider));
+        CustomProviderManager customProviderManager = new CustomProviderManager(Arrays.asList(memberProvider, businessProvider));
+        return customProviderManager;
     }
 
     @Bean

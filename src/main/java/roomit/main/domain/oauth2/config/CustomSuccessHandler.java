@@ -1,4 +1,4 @@
-package roomit.web1_2_bumblebee_be.domain.oauth2.config;
+package roomit.main.domain.oauth2.config;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,9 +8,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import roomit.web1_2_bumblebee_be.domain.member.dto.CustomMemberDetails;
-import roomit.web1_2_bumblebee_be.domain.token.config.JWTUtil;
-import roomit.web1_2_bumblebee_be.global.config.security.util.CookieUtil;
+import roomit.main.domain.member.dto.CustomMemberDetails;
+import roomit.main.domain.token.config.JWTUtil;
+import roomit.main.global.config.security.util.CookieUtil;
 
 import java.io.IOException;
 import java.util.Collection;
