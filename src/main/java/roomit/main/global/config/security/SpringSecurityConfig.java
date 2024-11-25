@@ -29,7 +29,6 @@ import roomit.main.domain.token.config.JWTUtil;
 import roomit.main.domain.token.config.LoginFilter;
 import roomit.main.domain.token.config.LogoutFilter;
 import roomit.main.domain.token.repository.RefreshRepository;
-import roomit.web1_2_bumblebee_be.global.config.security.CustomProviderManager;
 
 
 import java.util.Arrays;
@@ -59,8 +58,7 @@ public class SpringSecurityConfig {
         businessProvider.setUserDetailsService(businessDetailsService);
         businessProvider.setPasswordEncoder(bCryptPasswordEncoder());
 
-        CustomProviderManager customProviderManager = new CustomProviderManager(Arrays.asList(memberProvider, businessProvider));
-        return customProviderManager;
+        return new CustomProviderManager(Arrays.asList(memberProvider, businessProvider));
     }
 
     @Bean
