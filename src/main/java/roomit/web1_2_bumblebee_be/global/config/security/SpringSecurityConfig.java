@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -32,6 +33,7 @@ import roomit.web1_2_bumblebee_be.domain.token.config.LoginFilter;
 import roomit.web1_2_bumblebee_be.domain.token.config.LogoutFilter;
 import roomit.web1_2_bumblebee_be.domain.token.repository.RefreshRepository;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 @Configuration
@@ -49,11 +51,16 @@ public class SpringSecurityConfig {
     private final CustomSuccessHandler customSuccessHandler;
 
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .authenticationProvider(memberAuthenticationProvider())
-                .authenticationProvider(businessAuthenticationProvider())
-                .build();
+    public AuthenticationManager authenticationManager() {
+        DaoAuthenticationProvider memberProvider = new DaoAuthenticationProvider();
+        memberProvider.setUserDetailsService(memberDetailsService);
+        memberProvider.setPasswordEncoder(bCryptPasswordEncoder());
+
+        DaoAuthenticationProvider businessProvider = new DaoAuthenticationProvider();
+        businessProvider.setUserDetailsService(businessDetailsService);
+        businessProvider.setPasswordEncoder(bCryptPasswordEncoder());
+
+        return new CustomProviderManager(Arrays.asList(memberProvider, businessProvider));
     }
 
     @Bean
@@ -68,22 +75,6 @@ public class SpringSecurityConfig {
                 ROLE_ADMIN > ROLE_BUSINESS
                 ROLE_BUSINESS > ROLE_USER
                 """);
-    }
-
-    @Bean
-    public DaoAuthenticationProvider memberAuthenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(memberDetailsService);
-        provider.setPasswordEncoder(bCryptPasswordEncoder());
-        return provider;
-    }
-
-    @Bean
-    public DaoAuthenticationProvider businessAuthenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(businessDetailsService);
-        provider.setPasswordEncoder(bCryptPasswordEncoder());
-        return provider;
     }
 
     @Bean
@@ -130,11 +121,7 @@ public class SpringSecurityConfig {
                         .requestMatchers("/reissue").permitAll()
                         .requestMatchers("/api/v1/member/signup").permitAll()
                         .requestMatchers("/api/v1/business/signup").permitAll()
-                        .requestMatchers("/oauth").permitAll()//oauth 테스트
-                        .requestMatchers("/oauth/user").hasRole("USER")
-                        .requestMatchers("/oauth/business").hasRole("BUSINESS")
-                        .requestMatchers("/oauth/my").permitAll()
-                        .anyRequest().permitAll()); // permitAll()로 할시 모두 허용
+                        .anyRequest().authenticated()); // permitAll()로 할시 모두 허용
 
 
         http
@@ -142,7 +129,7 @@ public class SpringSecurityConfig {
 
         http
                 //커스텀 로그인 필터 추가
-                .addFilterAt(new LoginFilter(authenticationManager(http), jwtUtil,refreshRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginFilter(authenticationManager(), jwtUtil,refreshRepository), UsernamePasswordAuthenticationFilter.class);
         http
                 //커스텀 로그아웃 필터
                 .addFilterBefore(new LogoutFilter(jwtUtil, refreshRepository), UsernamePasswordAuthenticationFilter.class);

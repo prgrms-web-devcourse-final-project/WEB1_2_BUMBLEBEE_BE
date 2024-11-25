@@ -22,6 +22,7 @@ import roomit.web1_2_bumblebee_be.domain.token.entity.RefreshEntity;
 import roomit.web1_2_bumblebee_be.domain.token.repository.RefreshRepository;
 import roomit.web1_2_bumblebee_be.global.config.security.util.CookieUtil;
 
+import java.util.Collections;
 import java.util.Date;
 
 @RestController
@@ -38,7 +39,7 @@ public class LoginController {
     public ResponseEntity<?> memberLogin(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         try {
             UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
+                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword(),Collections.emptyList());
 
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
             CustomMemberDetails memberDetails = (CustomMemberDetails) authentication.getPrincipal();
@@ -70,14 +71,14 @@ public class LoginController {
     public ResponseEntity<?> businessLogin(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         try {
             UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
+                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword(), Collections.emptyList());
 
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
             CustomBusinessDetails businessDetails = (CustomBusinessDetails) authentication.getPrincipal();
             String username = authentication.getName();
 
             // Access Token 생성
-            String accessToken = jwtUtil.createJwt("access", businessDetails.getUsername(), "ROLE_BUSINESS", 60 * 1000L); // 60초 유효
+            String accessToken = jwtUtil.createJwt("access", businessDetails.getUsername(), "ROLE_BUSINESS", 60 * 1000L); // 60 유효
             // Refresh Token 생성
             String refreshToken = jwtUtil.createJwt("refresh", businessDetails.getUsername(), "ROLE_BUSINESS", 1000 * 60 * 60 * 24L); // 24시간 유효
 

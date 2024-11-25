@@ -9,7 +9,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import roomit.web1_2_bumblebee_be.domain.member.dto.CustomMemberDetails;
-import roomit.web1_2_bumblebee_be.domain.oauth2.dto.CustomOAuth2User;
 import roomit.web1_2_bumblebee_be.domain.token.config.JWTUtil;
 import roomit.web1_2_bumblebee_be.global.config.security.util.CookieUtil;
 
@@ -36,7 +35,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String role = auth.getAuthority();
 
         String access = jwtUtil.createJwt("access",username, role, 60*60*60L);
-        String refresh = jwtUtil.createJwt("refresh",username,role, 60*60*60L);
+        String refresh = jwtUtil.createJwt("refresh",username,role, 24*60*60*60L);
 
         CookieUtil.addCookie(response,"refresh", refresh,60*60);
 
