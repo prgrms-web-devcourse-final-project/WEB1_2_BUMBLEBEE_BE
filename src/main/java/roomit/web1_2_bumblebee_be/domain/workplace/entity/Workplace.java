@@ -14,6 +14,7 @@ import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplaceAddress
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplaceName;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplacePhoneNumber;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -38,6 +39,12 @@ public class Workplace {
 
     @Embedded
     private WorkplaceAddress workplaceAddress;
+
+    @Column(name = "workplace_latitude")
+    private BigDecimal latitude;
+
+    @Column(name = "workplace_longitude")
+    private BigDecimal longitude;
 
     @Column(name = "workplace_start_time", nullable = false)
     private LocalDateTime workplaceStartTime;
@@ -78,6 +85,8 @@ public class Workplace {
                      final String imageUrl,
                      final LocalDateTime workplaceStartTime,
                      final LocalDateTime workplaceEndTime,
+                     final BigDecimal latitude,
+                     final BigDecimal longitude,
                      final Business business) {
         this.workplaceName = new WorkplaceName(workplaceName);
         this.workplacePhoneNumber = new WorkplacePhoneNumber(workplacePhoneNumber);
@@ -86,9 +95,10 @@ public class Workplace {
         this.imageUrl = new ImageUrl(imageUrl);
         this.workplaceStartTime = workplaceStartTime;
         this.workplaceEndTime = workplaceEndTime;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.business = business;
     }
-
 
 
     public void changeWorkplaceName(WorkplaceName workplaceName) {
@@ -117,6 +127,14 @@ public class Workplace {
 
     public void changeStarSum(Long starSum) {
         this.starSum = starSum;
+    }
+
+    public void changeLongitude(BigDecimal longitude) {
+        this.longitude = longitude;
+    }
+
+    public void changeLatitude(BigDecimal latitude) {
+        this.latitude = latitude;
     }
 
     public void changeImageUrl(ImageUrl imageUrl) {

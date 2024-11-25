@@ -1,3 +1,4 @@
+
 package roomit.web1_2_bumblebee_be.domain.review.service;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -257,3 +258,4 @@ class ReviewServiceTest {
         assertTrue(lastPage.isEmpty()); // 데이터가 더 이상 없음을 확인
     }
 }
+

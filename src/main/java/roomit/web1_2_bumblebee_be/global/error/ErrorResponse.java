@@ -6,10 +6,15 @@ import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.http.HttpStatus;
+
 
 
 public record ErrorResponse (ErrorCode errorCode,Map<String, String> validation){
-
+    private final String code;
+    private final String message;
+    private final HttpStatus status;
+    private final Map<String, String> validation;
     @Builder
     public ErrorResponse {
     }
