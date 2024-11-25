@@ -3,6 +3,7 @@ package roomit.web1_2_bumblebee_be.domain.review.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomit.web1_2_bumblebee_be.domain.review.dto.request.ReviewRegisterRequest;
@@ -22,7 +23,7 @@ public class ReviewController {
     @PostMapping("/api/v1/review/register")
     public ResponseEntity<?> register(@RequestBody @Valid ReviewRegisterRequest request) {
         reviewService.register(request);
-        return ResponseEntity.ok("리뷰등록 완료");
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PutMapping("/api/v1/review/update/{reviewId}")
@@ -64,6 +65,6 @@ public class ReviewController {
     @DeleteMapping("/api/v1/review/{reviewId}")
     public ResponseEntity<?> remove(@PathVariable Long reviewId) {
         reviewService.remove(reviewId);
-        return ResponseEntity.ok("리뷰 삭제 성공");
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
