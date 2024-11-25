@@ -1,36 +1,36 @@
 package roomit.web1_2_bumblebee_be.domain.workplace.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Getter
-public class WorkplaceResponse {
-
-    private final Long businessId;
-
-    private final String workplaceName;
-    private final String workplacePhoneNumber;
-    private final String workplaceDescription;
-    private final String workplaceAddress;
-
-    private final String imageUrl;
-    private final LocalDateTime workplaceStartTime;
-    private final LocalDateTime workplaceEndTime;
-    private final LocalDateTime createdAt;
-
+public record WorkplaceResponse (
+        Long businessId,
+        String workplaceName,
+        String workplacePhoneNumber,
+        String workplaceDescription,
+        String workplaceAddress,
+        String imageUrl,
+        LocalDateTime workplaceStartTime,
+        LocalDateTime workplaceEndTime,
+        LocalDateTime createdAt,
+        BigDecimal longitude,
+        BigDecimal latitude
+){
     public WorkplaceResponse(Workplace workplace) {
-        this.businessId = workplace.getBusiness().getBusinessId();
-        this.workplaceName = workplace.getWorkplaceName().getValue();
-        this.workplacePhoneNumber = workplace.getWorkplacePhoneNumber().getValue();
-        this.workplaceDescription = workplace.getWorkplaceDescription();
-        this.workplaceAddress = workplace.getWorkplaceAddress().getValue();
-        this.imageUrl = workplace.getImageUrl().getValue();
-        this.workplaceStartTime = workplace.getWorkplaceStartTime();
-        this.workplaceEndTime = workplace.getWorkplaceEndTime();
-        this.createdAt = workplace.getCreatedAt();
+        this(
+                workplace.getBusiness().getBusinessId(),
+                workplace.getWorkplaceName().getValue(),
+                workplace.getWorkplacePhoneNumber().getValue(),
+                workplace.getWorkplaceDescription(),
+                workplace.getWorkplaceAddress().getValue(),
+                workplace.getImageUrl().getValue(),
+                workplace.getWorkplaceStartTime(),
+                workplace.getWorkplaceEndTime(),
+                workplace.getCreatedAt(),
+                workplace.getLongitude(),
+                workplace.getLatitude()
+        );
     }
 }
