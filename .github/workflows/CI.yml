@@ -29,11 +29,21 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
+      - name: Create application.properties from secrets
+        run: |
+          echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.properties
+          echo "${{ secrets.APPLICATION_TEST_PROPERTIES }}" > ./src/test/resources/application-test.properties
+
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
         with:
           arguments: check
           cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
+
+      - name: Run tests with test profile
+        env:
+          SPRING_PROFILES_ACTIVE: test  # 'test' 프로파일을 활성화하여 application-test.properties 사용
+        run: ./gradlew test --info --stacktrace
 
       - name: SonarCloud scan
         env:
