@@ -19,6 +19,7 @@ import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberUpdateRequest;
 import roomit.web1_2_bumblebee_be.domain.member.dto.response.MemberResponse;
 import roomit.web1_2_bumblebee_be.domain.review.repository.ReviewRepository;
 import roomit.web1_2_bumblebee_be.domain.workplace.repository.WorkplaceRepository;
+import roomit.web1_2_bumblebee_be.global.error.ErrorCode;
 
 import java.time.LocalDate;
 import java.util.NoSuchElementException;
@@ -108,7 +109,7 @@ class MemberServiceTest {
 
 
         memberRepository.save(member);
-        assertThrows( MemberNotFound.class, () -> memberService.read(member.getMemberId() + 1));
+        assertThrows(ErrorCode.MEMBER_NOT_FOUND.commonException().getClass(), () -> memberService.read(member.getMemberId() + 1));
 
 
     }
@@ -154,7 +155,7 @@ class MemberServiceTest {
 
         memberRepository.save(member);
 
-        assertThrows(MemberNotFound.class, () -> memberService.delete(member.getMemberId() + 1));
+        assertThrows(ErrorCode.MEMBER_NOT_FOUND.commonException().getClass(), () -> memberService.delete(member.getMemberId() + 1));
 
     }
 }
