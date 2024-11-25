@@ -1,3 +1,4 @@
+
 package roomit.web1_2_bumblebee_be.domain.review.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,16 +14,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import roomit.web1_2_bumblebee_be.domain.member.entity.Age;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
 import roomit.web1_2_bumblebee_be.domain.member.repository.MemberRepository;
 import roomit.web1_2_bumblebee_be.domain.review.dto.request.ReviewRegisterRequest;
-import roomit.web1_2_bumblebee_be.domain.review.dto.request.ReviewSearch;
 import roomit.web1_2_bumblebee_be.domain.review.entity.Review;
 import roomit.web1_2_bumblebee_be.domain.review.repository.ReviewRepository;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
@@ -147,8 +143,8 @@ class ReviewControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)
                         ))
-                .andExpect(jsonPath("$.reviewContent").value(request.getReviewContent()))
-                .andExpect(jsonPath("$.reviewRating").value(request.getReviewRating()))
+                .andExpect(jsonPath("$.reviewContent").value(request.reviewContent()))
+                .andExpect(jsonPath("$.reviewRating").value(request.reviewRating()))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
@@ -286,3 +282,4 @@ class ReviewControllerTest {
 
     }
 }
+

@@ -1,3 +1,4 @@
+
 package roomit.web1_2_bumblebee_be.domain.member.service;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -12,13 +13,13 @@ import roomit.web1_2_bumblebee_be.domain.member.entity.Age;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
-import roomit.web1_2_bumblebee_be.domain.member.exception.MemberNotFound;
 import roomit.web1_2_bumblebee_be.domain.member.repository.MemberRepository;
 import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberRegisterRequest;
 import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberUpdateRequest;
 import roomit.web1_2_bumblebee_be.domain.member.dto.response.MemberResponse;
 import roomit.web1_2_bumblebee_be.domain.review.repository.ReviewRepository;
 import roomit.web1_2_bumblebee_be.domain.workplace.repository.WorkplaceRepository;
+import roomit.web1_2_bumblebee_be.global.error.ErrorCode;
 
 import java.time.LocalDate;
 import java.util.NoSuchElementException;
@@ -71,7 +72,6 @@ class MemberServiceTest {
                 .sex(Sex.FEMALE)
                 .pwd("Business1!")
                 .email("sdsd@naver.com")
-                .role(Role.ROLE_ADMIN)
                 .phoneNumber("010-3323-2323")
                 .nickName("치킨유저")
                 .build();
@@ -98,8 +98,8 @@ class MemberServiceTest {
         MemberResponse myDate = memberService.read(member.getMemberId());
 
         assertEquals("2024-11-22",member.getBirthDay().toString());
-        assertTrue(bCryptPasswordEncoder.matches("Business1!",myDate.getPwd()));
-        assertEquals("치킨유저",myDate.getNickName());
+        assertTrue(bCryptPasswordEncoder.matches("Business1!",myDate.pwd()));
+        assertEquals("치킨유저",myDate.nickName());
     }
 
     @Test
@@ -108,7 +108,7 @@ class MemberServiceTest {
 
 
         memberRepository.save(member);
-        assertThrows( MemberNotFound.class, () -> memberService.read(member.getMemberId() + 1));
+        assertThrows(ErrorCode.MEMBER_NOT_FOUND.commonException().getClass(), () -> memberService.read(member.getMemberId() + 1));
 
 
     }
@@ -124,14 +124,14 @@ class MemberServiceTest {
                 .pwd("Business2!")
                 .email("sdsd@naver.com")
                 .phoneNumber("010-3323-2323")
-                .memberNickName("이이")
+                .nickName("이이")
                 .build();
 
 
 
         MemberResponse myDate = memberService.update(member.getMemberId(), memberRequest);
 
-        assertTrue(bCryptPasswordEncoder.matches("Business2!", myDate.getPwd()));
+        assertTrue(bCryptPasswordEncoder.matches("Business2!", myDate.pwd()));
 
     }
 
@@ -154,7 +154,7 @@ class MemberServiceTest {
 
         memberRepository.save(member);
 
-        assertThrows(MemberNotFound.class, () -> memberService.delete(member.getMemberId() + 1));
+        assertThrows(ErrorCode.MEMBER_NOT_FOUND.commonException().getClass(), () -> memberService.delete(member.getMemberId() + 1));
 
     }
 }

@@ -12,26 +12,18 @@ import roomit.web1_2_bumblebee_be.domain.member.entity.value.MemberNickname;
 import roomit.web1_2_bumblebee_be.domain.member.entity.value.MemberPassword;
 import roomit.web1_2_bumblebee_be.domain.member.entity.value.MemberPhoneNumber;
 
-@Getter
-public class MemberUpdateRequest {
 
-    @Pattern(regexp = MemberNickname.REGEX, message = MemberNickname.ERR_MSG)
-    private final String nickName;
-
-    @Pattern(regexp = MemberPhoneNumber.REGEX, message = MemberPhoneNumber.ERR_MSG)
-    private final String phoneNumber;
-
-    @Pattern(regexp = MemberEmail.REGEX, message = MemberEmail.ERR_MSG)
-    private final String email;
-
-    @Pattern(regexp = MemberPassword.REGEX, message = MemberPassword.ERR_MSG)
-    private final String pwd;
-
+public record MemberUpdateRequest(
+        @Pattern(regexp = MemberNickname.REGEX, message = MemberNickname.ERR_MSG)
+        String nickName,
+        @Pattern(regexp = MemberPhoneNumber.REGEX, message = MemberPhoneNumber.ERR_MSG)
+        String phoneNumber,
+        @Pattern(regexp = MemberEmail.REGEX, message = MemberEmail.ERR_MSG)
+        String email,
+        @Pattern(regexp = MemberPassword.REGEX, message = MemberPassword.ERR_MSG)
+        String pwd
+) {
     @Builder
-    public MemberUpdateRequest( String email, String phoneNumber, String pwd, String memberNickName) {
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.pwd = pwd;
-        this.nickName = memberNickName;
+    public MemberUpdateRequest {
     }
 }
