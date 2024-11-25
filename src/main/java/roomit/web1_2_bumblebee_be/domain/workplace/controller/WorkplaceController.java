@@ -32,19 +32,19 @@ public class WorkplaceController {
     @PostMapping("/api/v1/workplace/create")
     public ResponseEntity<?> create(@Valid @RequestBody WorkplaceRequest workplaceDto) {
         workplaceService.createWorkplace(workplaceDto);
-        return ResponseEntity.status(201).body(Map.of("message", "workplace created"));
+        return ResponseEntity.status(201).build();
     }
 
     @PutMapping("/api/v1/workplace/{workplaceId}")
     public ResponseEntity<?> update(@PathVariable Long workplaceId, @Valid @RequestBody WorkplaceRequest workplaceDto) {
         workplaceService.updateWorkplace(workplaceId, workplaceDto);
-        return ResponseEntity.ok().body(Map.of("message", "workplace updated"));
+        return ResponseEntity.status(204).build();
     }
 
     @DeleteMapping("/api/v1/workplace/{workplaceId}")
     public ResponseEntity<?> delete(@PathVariable Long workplaceId) {
         workplaceService.deleteWorkplace(workplaceId);
-        return ResponseEntity.status(204).body(Map.of("message", "workplace deleted"));
+        return ResponseEntity.status(204).build();
     }
 
 //    @GetMapping("/api/v1/business/workplace") // 사업자ID로 사업장 조회

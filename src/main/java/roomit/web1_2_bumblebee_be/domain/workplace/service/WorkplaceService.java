@@ -13,6 +13,7 @@ import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplaceName;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplacePhoneNumber;
 import roomit.web1_2_bumblebee_be.domain.workplace.exception.*;
 import roomit.web1_2_bumblebee_be.domain.workplace.repository.WorkplaceRepository;
+import roomit.web1_2_bumblebee_be.global.error.ErrorCode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ public class WorkplaceService {
 
     public WorkplaceResponse readWorkplace(Long workplaceId) {
         Workplace workplace = workplaceRepository.findById(workplaceId)
-                .orElseThrow(WorkplaceNotFound::new);
+                .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
 
         return new WorkplaceResponse(workplace);
     }
@@ -43,7 +44,7 @@ public class WorkplaceService {
         if (workplaceRepository.getWorkplaceByWorkplaceName(new WorkplaceName(workplaceDto.getWorkplaceName())) != null ||
                 workplaceRepository.getWorkplaceByWorkplacePhoneNumber(new WorkplacePhoneNumber(workplaceDto.getWorkplacePhoneNumber())) != null ||
                 workplaceRepository.getWorkplaceByWorkplaceAddress(new WorkplaceAddress(workplaceDto.getWorkplaceAddress())) != null) {
-            throw new RuntimeException("이미 존재합니다");
+            throw ErrorCode.WORKPLACE_NOT_REGISTERED.commonException();
         }
 
         try {
@@ -51,25 +52,25 @@ public class WorkplaceService {
             workplace.changeStarSum(0L);
             workplaceRepository.save(workplace);
         } catch (InvalidDataAccessApiUsageException e) {
-            throw new WorkplaceInvalidRequest(); // 예외 감싸기
+            throw ErrorCode.WORKPLACE_INVALID_REQUEST.commonException();
         } catch (Exception e) {
-            throw new WorkplaceNotRegistered();
+            throw ErrorCode.WORKPLACE_NOT_REGISTERED.commonException();
         }
     }
 
     @Transactional
     public void updateWorkplace(Long workplaceId, WorkplaceRequest workplaceDto) {
         if (workplaceDto == null) {
-            throw new WorkplaceInvalidRequest();
+            throw ErrorCode.WORKPLACE_INVALID_REQUEST.commonException();
         }
 
         // 필수 필드 검증
         if (!workplaceDto.getWorkplaceStartTime().isBefore(workplaceDto.getWorkplaceEndTime())) {
-            throw new WorkplaceInvalidRequest();
+            throw ErrorCode.WORKPLACE_INVALID_REQUEST.commonException();
         }
 
         Workplace workplace = workplaceRepository.findById(workplaceId)
-                .orElseThrow(WorkplaceNotFound::new);
+                .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
 
         try {
             workplace.changeWorkplaceName(new WorkplaceName(workplaceDto.getWorkplaceName()));
@@ -80,19 +81,19 @@ public class WorkplaceService {
             workplace.changeWorkplaceEndTime(workplaceDto.getWorkplaceEndTime());
             workplaceRepository.save(workplace);
         } catch (Exception e) {
-            throw new WorkspaceNotModified();
+            throw ErrorCode.WORKPLACE_NOT_MODIFIED.commonException();
         }
     }
 
     @Transactional
     public void deleteWorkplace(Long workplaceId) {
         Workplace workplace = workplaceRepository.findById(workplaceId)
-                .orElseThrow(WorkplaceNotFound::new);
+                .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
 
         try {
             workplaceRepository.delete(workplace);
         } catch (Exception e) {
-            throw new WorkplaceNotDelete();
+            throw ErrorCode.BUSINESS_NOT_DELETE.commonException();
         }
     }
 
@@ -100,7 +101,7 @@ public class WorkplaceService {
         List<Workplace> workplaces = workplaceRepository.findByBusiness_BusinessId(businessId);
 
         if (workplaces.isEmpty()) {
-            throw new WorkplaceNotFound();
+            throw ErrorCode.STUDYROOM_NOT_FOUND.commonException();
         }
 
         return toResponseDto(workplaces);
