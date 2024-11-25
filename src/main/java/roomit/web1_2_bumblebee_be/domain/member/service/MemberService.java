@@ -9,9 +9,8 @@ import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberRegisterReques
 import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberUpdateRequest;
 import roomit.web1_2_bumblebee_be.domain.member.dto.response.MemberResponse;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
-import roomit.web1_2_bumblebee_be.domain.member.exception.MemberNotFound;
-import roomit.web1_2_bumblebee_be.domain.member.exception.MemberUpdateException;
 import roomit.web1_2_bumblebee_be.domain.member.repository.MemberRepository;
+import roomit.web1_2_bumblebee_be.global.error.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -36,14 +35,14 @@ public class MemberService {
 
     public MemberResponse read(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(MemberNotFound::new);
+                .orElseThrow(ErrorCode.MEMBER_NOT_FOUND::commonException);
 
         return new MemberResponse(member);
     }
 
     public MemberResponse update(Long memberId, MemberUpdateRequest request) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(MemberNotFound::new);
+                .orElseThrow(ErrorCode.MEMBER_NOT_FOUND::commonException);
 
         try {
             member.changeEmail(request.getEmail());
@@ -52,8 +51,8 @@ public class MemberService {
             member.changePwd(request.getPwd());
             memberRepository.save(member);
 
-        }catch (MemberUpdateException e){
-            throw new MemberUpdateException();
+        }catch (Exception e){
+            throw ErrorCode.MEMBER_UPDATE_EXCEPTION.commonException();
         }
 
         return new MemberResponse(member);
@@ -61,7 +60,7 @@ public class MemberService {
 
     public void delete(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(MemberNotFound::new);
+                .orElseThrow(ErrorCode.MEMBER_NOT_FOUND::commonException);
 
         memberRepository.delete(member);
     }
