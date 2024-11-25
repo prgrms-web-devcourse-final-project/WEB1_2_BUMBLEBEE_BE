@@ -15,7 +15,7 @@ public class StudyRoom extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "studyroom_id", unique = true, updatable = false, columnDefinition = "BIGINT")
-    private Long studyroomId;
+    private Long studyRoomId;
 
     @Column(name = "studyroom_title", nullable = false , columnDefinition = "VARCHAR(255)")
     private String title;
