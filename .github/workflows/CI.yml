@@ -42,10 +42,10 @@ jobs:
           arguments: check
           cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
 
-      - name: Run tests with test profile
-        env:
-          SPRING_PROFILES_ACTIVE: test  # 'test' 프로파일을 활성화하여 application-test.properties 사용
-        run: ./gradlew test --info --stacktrace
+#      - name: Run tests with test profile
+#        env:
+#          SPRING_PROFILES_ACTIVE: test  # 'test' 프로파일을 활성화하여 application-test.properties 사용
+#        run: ./gradlew test --info --stacktrace
 
       - name: SonarCloud scan
         env:
