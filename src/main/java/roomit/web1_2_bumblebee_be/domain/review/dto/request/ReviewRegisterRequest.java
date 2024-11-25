@@ -11,10 +11,6 @@ public record ReviewRegisterRequest(@NotNull(message = "회원 아이디는 필�
                                     @NotBlank(message = "리뷰 내용을 적어주세요.") String reviewContent,
                                     @NotBlank(message = "별점 입력해 주세요.") String reviewRating) {
     @Builder
-    public ReviewRegisterRequest(Long memberId, Long workplaceId, String reviewContent, String reviewRating) {
-        this.memberId = memberId;
-        this.workplaceId = workplaceId;
-        this.reviewContent = reviewContent;
-        this.reviewRating = reviewRating;
+    public ReviewRegisterRequest{
     }
 }

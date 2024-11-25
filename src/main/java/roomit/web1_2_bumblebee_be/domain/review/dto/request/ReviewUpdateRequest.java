@@ -14,11 +14,6 @@ public record ReviewUpdateRequest(@NotNull(message = "회원 아이디는 필수
                                   @NotBlank(message = "별점 입력해 주세요.") String reviewRating,
                                   LocalDateTime reviewUpdateTime) {
     @Builder
-    public ReviewUpdateRequest(Long memberId, Long workplaceId, String reviewContent, String reviewRating, LocalDateTime reviewUpdateTime) {
-        this.memberId = memberId;
-        this.workplaceId = workplaceId;
-        this.reviewContent = reviewContent;
-        this.reviewRating = reviewRating;
-        this.reviewUpdateTime = LocalDateTime.now();
+    public ReviewUpdateRequest  {
     }
 }
