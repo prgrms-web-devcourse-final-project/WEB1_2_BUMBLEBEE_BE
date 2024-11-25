@@ -28,7 +28,7 @@ public enum ErrorCode {
     WORKPLACE_NOT_DELETE(HttpStatus.FORBIDDEN,"W003","사업장 삭제에 실패하였습니다."),
     WORKPLACE_NOT_FOUND(HttpStatus.NOT_FOUND,"W004","존재하지 않는 사업장 입니다"),
     WORKPLACE_INVALID_REQUEST(HttpStatus.BAD_REQUEST,"W001-2","잘못된 입력입니다."),
-
+    WORKPLACE_INVALID_ADDRESS(HttpStatus.BAD_REQUEST,"W001-3","잘못된 주소입니다."),
 
     /*Review*/
     REVIEW_NOT_FOUND(HttpStatus.BAD_REQUEST,"V003","존재 하지 않는 리뷰입니다."),
