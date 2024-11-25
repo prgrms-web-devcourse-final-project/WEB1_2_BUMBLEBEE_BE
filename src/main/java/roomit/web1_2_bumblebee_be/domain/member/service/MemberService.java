@@ -21,12 +21,12 @@ public class MemberService {
 
     public void signupMember(MemberRegisterRequest memberRequest) {
         Member member = Member.builder()
-                .birthDay(memberRequest.getBirthDay())
-                .memberSex(memberRequest.getSex())
-                .memberPwd(memberRequest.getPwd()) //암호화
-                .memberEmail(memberRequest.getEmail())
-                .memberPhoneNumber(memberRequest.getPhoneNumber())
-                .memberNickName(memberRequest.getNickName())
+                .birthDay(memberRequest.birthDay())
+                .memberSex(memberRequest.sex())
+                .memberPwd(memberRequest.pwd()) //암호화
+                .memberEmail(memberRequest.email())
+                .memberPhoneNumber(memberRequest.phoneNumber())
+                .memberNickName(memberRequest.nickName())
                 .passwordEncoder(bCryptPasswordEncoder)
                 .build();
 
@@ -45,10 +45,10 @@ public class MemberService {
                 .orElseThrow(ErrorCode.MEMBER_NOT_FOUND::commonException);
 
         try {
-            member.changeEmail(request.getEmail());
-            member.changeNickName(request.getNickName());
-            member.changePhoneNumber(request.getPhoneNumber());
-            member.changePwd(request.getPwd());
+            member.changeEmail(request.email());
+            member.changeNickName(request.nickName());
+            member.changePhoneNumber(request.phoneNumber());
+            member.changePwd(request.pwd());
             memberRepository.save(member);
 
         }catch (Exception e){

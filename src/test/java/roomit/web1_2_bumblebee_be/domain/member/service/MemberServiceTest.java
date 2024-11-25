@@ -12,7 +12,6 @@ import roomit.web1_2_bumblebee_be.domain.member.entity.Age;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
-import roomit.web1_2_bumblebee_be.domain.member.exception.MemberNotFound;
 import roomit.web1_2_bumblebee_be.domain.member.repository.MemberRepository;
 import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberRegisterRequest;
 import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberUpdateRequest;
@@ -72,7 +71,6 @@ class MemberServiceTest {
                 .sex(Sex.FEMALE)
                 .pwd("Business1!")
                 .email("sdsd@naver.com")
-                .role(Role.ROLE_ADMIN)
                 .phoneNumber("010-3323-2323")
                 .nickName("치킨유저")
                 .build();
@@ -99,8 +97,8 @@ class MemberServiceTest {
         MemberResponse myDate = memberService.read(member.getMemberId());
 
         assertEquals("2024-11-22",member.getBirthDay().toString());
-        assertTrue(bCryptPasswordEncoder.matches("Business1!",myDate.getPwd()));
-        assertEquals("치킨유저",myDate.getNickName());
+        assertTrue(bCryptPasswordEncoder.matches("Business1!",myDate.pwd()));
+        assertEquals("치킨유저",myDate.nickName());
     }
 
     @Test
@@ -125,14 +123,14 @@ class MemberServiceTest {
                 .pwd("Business2!")
                 .email("sdsd@naver.com")
                 .phoneNumber("010-3323-2323")
-                .memberNickName("이이")
+                .nickName("이이")
                 .build();
 
 
 
         MemberResponse myDate = memberService.update(member.getMemberId(), memberRequest);
 
-        assertTrue(bCryptPasswordEncoder.matches("Business2!", myDate.getPwd()));
+        assertTrue(bCryptPasswordEncoder.matches("Business2!", myDate.pwd()));
 
     }
 
