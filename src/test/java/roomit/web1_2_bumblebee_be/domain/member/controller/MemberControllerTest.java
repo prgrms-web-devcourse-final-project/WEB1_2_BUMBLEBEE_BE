@@ -10,25 +10,21 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberRegisterRequest;
 import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberUpdateRequest;
-import roomit.web1_2_bumblebee_be.domain.member.entity.Age;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
-import roomit.web1_2_bumblebee_be.domain.member.exception.MemberNotFound;
 import roomit.web1_2_bumblebee_be.domain.member.repository.MemberRepository;
-
-import java.time.LocalDate;
+import roomit.web1_2_bumblebee_be.global.error.ErrorCode;
 
 import java.time.LocalDate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
@@ -133,7 +129,7 @@ class MemberControllerTest {
 
 
         Member member1 = memberRepository.findByMemberEmail("sdsd@naver.com")
-                .orElseThrow(MemberNotFound::new);
+                .orElseThrow(ErrorCode.MEMBER_NOT_FOUND::commonException);
 
         Assertions.assertTrue(bCryptPasswordEncoder.matches("Business1!",member1.getMemberPwd()));
     }
@@ -166,7 +162,7 @@ class MemberControllerTest {
                 .andDo(print());
 
         Member member1 = memberRepository.findByMemberEmail("sdsd@naver.com")
-                .orElseThrow(MemberNotFound::new);
+                .orElseThrow(ErrorCode.MEMBER_NOT_FOUND::commonException);
 
         Assertions.assertTrue(bCryptPasswordEncoder.matches("Business2!",member1.getMemberPwd()));
     }

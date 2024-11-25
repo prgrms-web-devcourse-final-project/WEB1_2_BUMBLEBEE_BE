@@ -16,13 +16,12 @@ public class MemberController {
 
     private final MemberService memberService;
 
-
     // 회원 등록
     @PostMapping("/api/v1/member/signup")
-    public ResponseEntity<String> signup(@RequestBody @Valid MemberRegisterRequest request) {
+    public ResponseEntity<?> signup(@RequestBody @Valid MemberRegisterRequest request) {
         memberService.signupMember(request);
 
-        return ResponseEntity.status(HttpStatus.OK).body("회원 등록 완료.");
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     // 내 정보 조회
@@ -40,7 +39,9 @@ public class MemberController {
 
     // 내 정보 삭제
     @DeleteMapping("/api/v1/member/{memberId}")
-    public void delete(@PathVariable Long memberId) {
+    public ResponseEntity<?> delete(@PathVariable Long memberId) {
         memberService.delete(memberId);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
