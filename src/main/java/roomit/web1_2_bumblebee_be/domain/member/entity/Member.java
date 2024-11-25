@@ -8,8 +8,14 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.format.annotation.DateTimeFormat;
+import roomit.web1_2_bumblebee_be.domain.member.entity.value.MemberEmail;
+import roomit.web1_2_bumblebee_be.domain.member.entity.value.MemberNickname;
+import roomit.web1_2_bumblebee_be.domain.member.entity.value.MemberPassword;
+import roomit.web1_2_bumblebee_be.domain.member.entity.value.MemberPhoneNumber;
 import roomit.web1_2_bumblebee_be.domain.review.entity.Review;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,30 +33,29 @@ public class Member {
     @Column(name = "member_id", nullable = false)
     private Long memberId;
 
-    @Column(name = "member_nickname", nullable = false)
-    private String memberNickName;
+    @Embedded
+    private MemberNickname memberNickname;
 
-    @Column(name = "member_phonenumber", nullable = false)
-    private String memberPhoneNumber;
+    @Embedded
+    private MemberPhoneNumber memberPhonenumber;
 
-    @Column(name = "member_age", nullable = false)
-    @Enumerated(value = EnumType.STRING)
-    private Age memberAge;
+    @Embedded
+    private MemberEmail memberEmail;
+
+    @Embedded
+    private MemberPassword memberPwd;
 
     @Column(name = "member_sex", nullable = false)
     @Enumerated(value = EnumType.STRING)
     private Sex memberSex;
 
-    @Column(name = "member_email", nullable = false, unique = true)
-    @Email
-    private String memberEmail;
-
-    @Column(name = "member_pwd", nullable = false)
-    private String memberPwd;
-
     @Column(name = "member_role", nullable = false)
     @Enumerated(value = EnumType.STRING)
     private Role memberRole;
+
+    @Column(name = "birth_day", nullable = false)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate birthDay;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -65,28 +70,40 @@ public class Member {
 //    private List<Reservation> reservations = new ArrayList();
 
     @Builder
-    public Member(String memberNickName, String memberPhoneNumber, Age memberAge, Sex memberSex, String memberEmail, String memberPwd, Role memberRole ,Review review /*Reservation reservation*/) {
-        this.memberNickName = memberNickName;
-        this.memberPhoneNumber = memberPhoneNumber;
-        this.memberAge = memberAge;
+    public Member(String memberNickName, String memberPhoneNumber, LocalDate birthDay, Sex memberSex, String memberEmail, String memberPwd, Role memberRole , PasswordEncoder passwordEncoder /*Reservation reservation*/) {
+        this.memberNickname = new MemberNickname(memberNickName);
+        this.memberPhonenumber = new MemberPhoneNumber(memberPhoneNumber);
+        this.memberEmail = new MemberEmail(memberEmail);
+        this.memberPwd = new MemberPassword(memberPwd, passwordEncoder);
+        this.birthDay = birthDay;
         this.memberSex = memberSex;
-        this.memberEmail = memberEmail;
-        this.memberPwd = memberPwd;
         this.memberRole = Role.ROLE_USER;
-//        this.reviews = (List<Review>) review;
 //        this.reservation = reservation;
     }
 
-    public void changePwd(String newPwd) {
-        this.memberPwd = newPwd;
+    public String getMemberNickName(){
+        return this.memberNickname.getValue();
     }
+    public String getMemberPhoneNumber(){
+        return this.memberPhonenumber.getValue();
+    }
+    public String getMemberEmail(){
+        return this.memberEmail.getValue();
+    }
+    public String getMemberPwd(){
+        return this.memberPwd.getValue();
+    }
+
     public void changeEmail(String newEmail) {
-        this.memberEmail = newEmail;
+        this.memberEmail = new MemberEmail(newEmail);
     }
     public void changePhoneNumber(String newPhoneNumber) {
-        this.memberPhoneNumber = newPhoneNumber;
+        this.memberPhonenumber = new MemberPhoneNumber(newPhoneNumber);
     }
     public void changeNickName(String newNickName) {
-        this.memberNickName = newNickName;
+        this.memberNickname = new MemberNickname(newNickName);
+    }
+    public void changePwd(String newPwd) {
+        this.memberPwd = new MemberPassword(newPwd, new BCryptPasswordEncoder());
     }
 }

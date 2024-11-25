@@ -5,9 +5,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-import roomit.web1_2_bumblebee_be.domain.member.entity.Age;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
@@ -21,11 +21,13 @@ import roomit.web1_2_bumblebee_be.domain.review.repository.ReviewRepository;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
 import roomit.web1_2_bumblebee_be.domain.workplace.repository.WorkplaceRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -43,80 +45,48 @@ class ReviewServiceTest {
     @Autowired
     private WorkplaceRepository workplaceRepository;
 
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    private LocalDate date = LocalDate.of(2024, 11, 22);
+
+    private Workplace workplace;
+
+    private Member member;
     @BeforeEach
     void setUp() {
         reviewRepository.deleteAll();
         memberRepository.deleteAll();
         workplaceRepository.deleteAll();
-    }
 
-    //    @Test
-//    @DisplayName("리뷰 등록하기")
-//    @Transactional
-//    void test0() {
-//        Member member = Member.builder()
-//                .memberAge(Age.TEN)
-//                .memberSex(Sex.FEMALE)
-//                .memberRole(Role.ROLE_USER)
-//                .memberPwd("1111")
-//                .memberEmail("이시현@Naver.com")
-//                .memberPhoneNumber("010-33230-23")
-//                .memberNickName("치킨유저")
-//                .build();
-//
-//        memberRepository.save(member);
-//
-//        Workplace workplace = Workplace.builder()
-//                .workplaceName("사업장")
-//                .workplacePhoneNumber("010-1234-1234")
-//                .workplaceDescription("사업장 설명")
-//                .workplaceAddress("대한민국")
-//                .profileImage(null)
-//                .imageType(null)
-//                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
-//                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
-//                .build();
-//        workplaceRepository.save(workplace);
-//
-//        ReviewRegisterRequest request = ReviewRegisterRequest.builder()
-//                .reviewContent("좋은 장소네요")
-//                .reviewRating("별점2개")
-//                .memberId(member.getMemberId())
-//                .workplaceId(workplace.getWorkplaceId())
-//                .build();
-//
-//        reviewService.register(request);
-//
-//        List<Review> all = reviewRepository.findAll();
-//        assertEquals("좋은 장소네요", all.get(0).getReviewContent());
-//
-//    }
+        workplace = Workplace.builder()
+                .workplaceName("사업장")
+                .workplacePhoneNumber("010-1234-1234")
+                .workplaceDescription("사업장 설명")
+                .workplaceAddress("대한민국sa")
+                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
+                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                .build();
+
+        member = Member.builder()
+                .birthDay(date)
+                .memberSex(Sex.FEMALE)
+                .memberRole(Role.ROLE_USER)
+                .memberPwd("Bass!1123")
+                .memberEmail("asd@naver.com")
+                .memberPhoneNumber("010-3323-2323")
+                .memberNickName("치킨유저")
+                .passwordEncoder(bCryptPasswordEncoder)
+                .build();
+
+    }
     @Test
     @DisplayName("리뷰 등록하기")
     @Transactional
     void test1() {
-        Member member = Member.builder()
-                .memberAge(Age.TEN)
-                .memberSex(Sex.FEMALE)
-                .memberRole(Role.ROLE_USER)
-                .memberPwd("1111")
-                .memberEmail("이시현@Naver.com")
-                .memberPhoneNumber("010-33230-23")
-                .memberNickName("치킨유저")
-                .build();
 
         memberRepository.save(member);
 
-        Workplace workplace = Workplace.builder()
-                .workplaceName("사업장")
-                .workplacePhoneNumber("010-1234-1234")
-                .workplaceDescription("사업장 설명")
-                .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
-                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
-                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
-                .build();
         workplaceRepository.save(workplace);
 
         ReviewRegisterRequest request = ReviewRegisterRequest.builder()
@@ -138,28 +108,11 @@ class ReviewServiceTest {
     @Transactional
     void test2() {
 
-        Member member = Member.builder()
-                .memberAge(Age.TEN)
-                .memberSex(Sex.FEMALE)
-                .memberRole(Role.ROLE_USER)
-                .memberPwd("1111")
-                .memberEmail("이시현@Naver.com")
-                .memberPhoneNumber("010-33230-23")
-                .memberNickName("치킨유저")
-                .build();
+
 
         memberRepository.save(member);
 
-        Workplace workplace = Workplace.builder()
-                .workplaceName("사업장")
-                .workplacePhoneNumber("010-1234-1234")
-                .workplaceDescription("사업장 설명")
-                .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
-                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
-                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
-                .build();
+
         workplaceRepository.save(workplace);
 
         Review review = Review.builder()
@@ -193,28 +146,11 @@ class ReviewServiceTest {
     @Transactional
     void test3() {
 
-        Member member = Member.builder()
-                .memberAge(Age.TEN)
-                .memberSex(Sex.FEMALE)
-                .memberRole(Role.ROLE_USER)
-                .memberPwd("1111")
-                .memberEmail("이시현@Naver.com")
-                .memberPhoneNumber("010-33230-23")
-                .memberNickName("치킨유저")
-                .build();
+
 
         memberRepository.save(member);
 
-        Workplace workplace = Workplace.builder()
-                .workplaceName("사업장")
-                .workplacePhoneNumber("010-1234-1234")
-                .workplaceDescription("사업장 설명")
-                .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
-                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
-                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
-                .build();
+
         workplaceRepository.save(workplace);
 
         Review review = Review.builder()
@@ -239,28 +175,10 @@ class ReviewServiceTest {
     @Transactional
     void test4() {
 
-        Member member = Member.builder()
-                .memberAge(Age.TEN)
-                .memberSex(Sex.FEMALE)
-                .memberRole(Role.ROLE_USER)
-                .memberPwd("1111")
-                .memberEmail("이시현@Naver.com")
-                .memberPhoneNumber("010-33230-23")
-                .memberNickName("치킨유저")
-                .build();
+
 
         memberRepository.save(member);
 
-        Workplace workplace = Workplace.builder()
-                .workplaceName("사업장")
-                .workplacePhoneNumber("010-1234-1234")
-                .workplaceDescription("사업장 설명")
-                .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
-                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
-                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
-                .build();
         workplaceRepository.save(workplace);
 
         Review review = Review.builder()
@@ -279,53 +197,63 @@ class ReviewServiceTest {
     }
 
     @Test
-    @DisplayName("리뷰 페이징")
+    @DisplayName("리뷰 커서 기반 페이징")
     @Transactional
-    void test5() {
+    void testCursorPagination() {
 
-        Member member = Member.builder()
-                .memberAge(Age.TEN)
-                .memberSex(Sex.FEMALE)
-                .memberRole(Role.ROLE_USER)
-                .memberPwd("1111")
-                .memberEmail("이시현@Naver.com")
-                .memberPhoneNumber("010-33230-23")
-                .memberNickName("치킨유저")
-                .build();
+        // 1. 테스트 데이터 생성
 
         memberRepository.save(member);
 
-        Workplace workplace = Workplace.builder()
-                .workplaceName("사업장")
-                .workplacePhoneNumber("010-1234-1234")
-                .workplaceDescription("사업장 설명")
-                .workplaceAddress("대한민국")
-                .profileImage(null)
-                .imageType(null)
-                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
-                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
-                .build();
+
         workplaceRepository.save(workplace);
 
-        List<Review> list = IntStream.rangeClosed(0, 19).mapToObj(i -> Review.builder()
+        // 리뷰 데이터 20개 저장
+        List<Review> reviews = IntStream.rangeClosed(1, 20).mapToObj(i -> Review.builder()
                 .reviewContent("치킨이 안보이네요.." + i)
                 .reviewRating("별점4개" + i)
                 .member(member)
                 .workplace(workplace)
                 .build()).toList();
-        ReviewSearch reviewSearch = ReviewSearch.builder()
-                .page(0)
+
+        reviewRepository.saveAll(reviews);
+
+        // 2. 첫 번째 요청: 첫 10개의 리뷰 가져오기
+        ReviewSearch firstPageSearch = ReviewSearch.builder()
+                .lastId(null) // 첫 페이지이므로 lastId는 null
                 .size(10)
                 .build();
 
-        reviewRepository.saveAll(list);
+        List<ReviewResponse> firstPage = reviewService.getList(firstPageSearch);
 
-        List<ReviewResponse> list1 = reviewService.getList(reviewSearch);
+        assertEquals(10, firstPage.size());
+        assertEquals("치킨이 안보이네요..20", firstPage.get(0).getReviewContent()); // 최신순 검증
+        assertEquals("치킨이 안보이네요..11", firstPage.get(9).getReviewContent()); // 마지막 항목 검증
 
-        assertEquals(10, list1.size());
-        assertEquals("치킨이 안보이네요..19", list1.get(0).getReviewContent());
+        // 3. 두 번째 요청: 첫 페이지의 마지막 ID를 커서로 사용
+        Long lastId = firstPage.get(firstPage.size() - 1).getReviewId(); // 첫 페이지의 마지막 ID
 
+        ReviewSearch secondPageSearch = ReviewSearch.builder()
+                .lastId(lastId)
+                .size(10)
+                .build();
 
+        List<ReviewResponse> secondPage = reviewService.getList(secondPageSearch);
 
+        assertEquals(10, secondPage.size());
+        assertEquals("치킨이 안보이네요..10", secondPage.get(0).getReviewContent()); // 다음 페이지 첫 항목 검증
+        assertEquals("치킨이 안보이네요..1", secondPage.get(9).getReviewContent()); // 다음 페이지 마지막 항목 검증
+
+        // 4. 끝 페이지 요청: 두 번째 페이지의 마지막 ID를 커서로 사용
+        lastId = secondPage.get(secondPage.size() - 1).getReviewId();
+
+        ReviewSearch lastPageSearch = ReviewSearch.builder()
+                .lastId(lastId)
+                .size(10)
+                .build();
+
+        List<ReviewResponse> lastPage = reviewService.getList(lastPageSearch);
+
+        assertTrue(lastPage.isEmpty()); // 데이터가 더 이상 없음을 확인
     }
 }

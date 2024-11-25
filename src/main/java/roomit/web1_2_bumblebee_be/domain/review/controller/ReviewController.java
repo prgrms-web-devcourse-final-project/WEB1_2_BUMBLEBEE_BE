@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import roomit.web1_2_bumblebee_be.domain.review.dto.request.ReviewRegisterRequest;
 import roomit.web1_2_bumblebee_be.domain.review.dto.request.ReviewSearch;
 import roomit.web1_2_bumblebee_be.domain.review.dto.request.ReviewUpdateRequest;
+import roomit.web1_2_bumblebee_be.domain.review.dto.response.CursorResponse;
 import roomit.web1_2_bumblebee_be.domain.review.dto.response.ReviewResponse;
 import roomit.web1_2_bumblebee_be.domain.review.service.ReviewService;
 
@@ -38,9 +39,26 @@ public class ReviewController {
 
     // 리뷰 페이징
     @GetMapping("/api/v1/review")
-    public ResponseEntity<List<ReviewResponse>> readAll(ReviewSearch reviewSearch) {
-        return ResponseEntity.ok(reviewService.getList(reviewSearch));
+    public ResponseEntity<CursorResponse> getReviews(
+            @RequestParam(required = false) Long lastId,
+            @RequestParam(defaultValue = "10") int size) {
 
+        ReviewSearch reviewSearch = ReviewSearch.builder()
+                .lastId(lastId) // 커서를 사용
+                .size(size)
+                .build();
+
+        List<ReviewResponse> reviews = reviewService.getList(reviewSearch);
+
+        Long nextCursor = reviews.isEmpty()
+                ? null
+                : reviews.get(reviews.size() - 1).getReviewId();
+
+        return ResponseEntity.ok(CursorResponse
+                .builder()
+                .data(reviews)
+                .nextCursor(nextCursor)
+                .build());
     }
 
     @DeleteMapping("/api/v1/review/{reviewId}")
