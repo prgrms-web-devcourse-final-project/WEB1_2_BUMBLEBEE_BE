@@ -133,11 +133,12 @@ public class SpringSecurityConfig {
                         .requestMatchers("/oauth").permitAll()//oauth 테스트
                         .requestMatchers("/oauth/user").hasRole("USER")
                         .requestMatchers("/oauth/business").hasRole("BUSINESS")
+                        .requestMatchers("/oauth/my").permitAll()
                         .anyRequest().permitAll()); // permitAll()로 할시 모두 허용
 
 
         http
-                .addFilterBefore(new JWTFilter(jwtUtil,bCryptPasswordEncoder()), LoginFilter.class);
+                .addFilterBefore(new JWTFilter(jwtUtil,bCryptPasswordEncoder(),memberDetailsService,businessDetailsService), LoginFilter.class);
 
         http
                 //커스텀 로그인 필터 추가

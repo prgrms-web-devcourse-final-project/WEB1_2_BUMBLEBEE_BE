@@ -77,7 +77,7 @@ public class LoginController {
             String username = authentication.getName();
 
             // Access Token 생성
-            String accessToken = jwtUtil.createJwt("access", businessDetails.getUsername(), "ROLE_BUSINESS", 60 * 1000L); // 60분 유효
+            String accessToken = jwtUtil.createJwt("access", businessDetails.getUsername(), "ROLE_BUSINESS", 60 * 1000L); // 60초 유효
             // Refresh Token 생성
             String refreshToken = jwtUtil.createJwt("refresh", businessDetails.getUsername(), "ROLE_BUSINESS", 1000 * 60 * 60 * 24L); // 24시간 유효
 
