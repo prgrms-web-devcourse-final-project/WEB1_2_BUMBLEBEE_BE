@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomit.web1_2_bumblebee_be.global.error.ErrorResponse;
-import roomit.web1_2_bumblebee_be.global.exception.commonException;
+import roomit.web1_2_bumblebee_be.global.exception.CommonException;
 
 @RestControllerAdvice
 public class ExceptionController {
 
-    @ExceptionHandler(commonException.class)
-    public ResponseEntity<ErrorResponse> commonException(commonException e) {
+    @ExceptionHandler(CommonException.class)
+    public ResponseEntity<ErrorResponse> commonException(CommonException e) {
         String statusCode = e.getErrorCode().getCode();
         ErrorResponse response = ErrorResponse.builder()
                 .errorCode(e.getErrorCode())
