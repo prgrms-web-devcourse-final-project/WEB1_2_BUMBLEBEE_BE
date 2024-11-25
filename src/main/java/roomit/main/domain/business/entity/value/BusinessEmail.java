@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BusinessEmail {
-    public static final String REGEX = "^(?=.{1,100}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
+    public static final String REGEX = "^(?=.{1,100}$)[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
     public static final String ERR_MSG = "이메일 형식이 올바르지 않습니다.";
     private static final Pattern PATTERN = Pattern.compile(REGEX);
 
