@@ -4,15 +4,28 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
-@RequiredArgsConstructor
-public class CustomMemberDetails implements UserDetails {
+public class CustomMemberDetails implements UserDetails, OAuth2User {
 
     private final Member member;
+
+    private Map<String, Object> attributes;
+
+    // 일반 로그인
+    public CustomMemberDetails(Member member){
+        this.member=member;
+    }
+    // OAuth 로그인
+    public CustomMemberDetails(Member member, Map<String, Object> attributes){
+        this.member=member;
+        this.attributes = attributes;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -64,5 +77,16 @@ public class CustomMemberDetails implements UserDetails {
     public boolean isEnabled() {
 
         return true;
+    }
+
+    // OAuth2User //
+    @Override
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
+
+    @Override
+    public String getName() {
+        return null;
     }
 }

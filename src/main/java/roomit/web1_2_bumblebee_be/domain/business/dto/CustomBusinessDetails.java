@@ -30,7 +30,7 @@ public class CustomBusinessDetails implements UserDetails {
         return business.getBusinessPwd().getValue();
     }
 
-    public Long getId(){ //member의 id값 가져오기
+    public Long getId(){ //business id값 가져오기
 
         return business.getBusinessId();
     }

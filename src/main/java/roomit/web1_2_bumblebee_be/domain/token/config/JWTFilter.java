@@ -37,15 +37,13 @@ public class JWTFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String headerAuth = request.getHeader("Authorization");
 
-        String accessToken = headerAuth.substring(7);
-
-        // 토큰이 없으면 다음 필터로
-        if (accessToken == null) {
-
+        // 헤더 값이 없거나, 토큰 값이 "Bearer "로 시작하지 않으면 다음 필터로 넘김
+        if (headerAuth == null || !headerAuth.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
-
             return;
         }
+
+        String accessToken = headerAuth.substring(7);
 
         // 토큰 만료 여부 확인
         try {

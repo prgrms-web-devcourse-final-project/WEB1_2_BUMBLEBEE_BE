@@ -9,6 +9,7 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -23,6 +24,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import roomit.web1_2_bumblebee_be.domain.business.service.CustomBusinessDetailsService;
 import roomit.web1_2_bumblebee_be.domain.member.service.CustomMemberDetailsService;
+import roomit.web1_2_bumblebee_be.domain.oauth2.config.CustomSuccessHandler;
+import roomit.web1_2_bumblebee_be.domain.oauth2.service.CustomOAuth2UserService;
 import roomit.web1_2_bumblebee_be.domain.token.config.JWTFilter;
 import roomit.web1_2_bumblebee_be.domain.token.config.JWTUtil;
 import roomit.web1_2_bumblebee_be.domain.token.config.LoginFilter;
@@ -42,6 +45,8 @@ public class SpringSecurityConfig {
     private final CustomMemberDetailsService memberDetailsService;
     private final CustomBusinessDetailsService businessDetailsService;
     private final RefreshRepository refreshRepository;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomSuccessHandler customSuccessHandler;
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
@@ -109,6 +114,15 @@ public class SpringSecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable); //form 로그인 비활성화
         http
                 .logout(AbstractHttpConfigurer::disable); //form 로그아웃 비활성화
+                //HTTP Basic 인증 방식 disable
+        http
+                .httpBasic(AbstractHttpConfigurer::disable);
+        //oauth2
+        http
+                .oauth2Login((oauth2) -> oauth2
+                        .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
+                                .userService(customOAuth2UserService))
+                        .successHandler(customSuccessHandler));
         http
                 // 경로별 인가 작업
                 .authorizeHttpRequests((auth) -> auth
@@ -116,8 +130,9 @@ public class SpringSecurityConfig {
                         .requestMatchers("/reissue").permitAll()
                         .requestMatchers("/api/v1/member/signup").permitAll()
                         .requestMatchers("/api/v1/business/signup").permitAll()
-                        .requestMatchers("/user").hasRole("USER")
-                        .requestMatchers("/business").hasRole("BUSINESS")
+                        .requestMatchers("/oauth").permitAll()//oauth 테스트
+                        .requestMatchers("/oauth/user").hasRole("USER")
+                        .requestMatchers("/oauth/business").hasRole("BUSINESS")
                         .anyRequest().permitAll()); // permitAll()로 할시 모두 허용
 
 
