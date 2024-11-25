@@ -1,7 +1,7 @@
 package roomit.web1_2_bumblebee_be.domain.studyroom.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import roomit.web1_2_bumblebee_be.domain.studyroom.dto.request.CreateStudyRoomRequest;
 import roomit.web1_2_bumblebee_be.domain.studyroom.dto.request.FindAvailableStudyRoomRequest;
@@ -22,53 +22,56 @@ public class StudyRoomController {
 
     private final StudyRoomService studyRoomService;
 
+
     //스터디룸 만들기
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/api/v1/studyroom")
-    public ResponseEntity<StudyRoomResponse> createStudyRoom(@RequestBody CreateStudyRoomRequest request) {
-        StudyRoomResponse response = studyRoomService.createStudyRoom(request);
-        return ResponseEntity.ok(response);
+    public StudyRoomResponse createStudyRoom(@RequestBody CreateStudyRoomRequest request) {
+        return studyRoomService.createStudyRoom(request);
     }
 
     // 사업장으로 스터디룸 찾기
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/api/v1/workplace/{workplaceId}")
-    public ResponseEntity<List<StudyRoom>> findStudyRoomsByWorkplace(@PathVariable Long workplaceId) {
+    public void findStudyRoomsByWorkplace(@PathVariable Long workplaceId) {
         List<StudyRoom> studyRooms = studyRoomService.findStudyRoomsByWorkplace(workplaceId);
-        return ResponseEntity.ok(studyRooms);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/api/v1/studyroom")
-    public ResponseEntity<List<StudyRoom>> getAllStudyRooms() {
+    public void getAllStudyRooms() {
         List<StudyRoom> studyRooms = studyRoomService.getAllStudyRooms();
-        return ResponseEntity.ok(studyRooms);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/api/v1/studyroom/{studyRoomId}")
-    public ResponseEntity<StudyRoom> getStudyRoom(@PathVariable Long studyRoomId) {
+    public void getStudyRoom(@PathVariable Long studyRoomId) {
         StudyRoom studyRoom = studyRoomService.getStudyRoom(studyRoomId);
-        return ResponseEntity.ok(studyRoom);
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/api/v1/studyroom")
-    public ResponseEntity<Void> updateStudyRoom(@RequestBody UpdateStudyRoomRequest request) {
+    public void updateStudyRoom(@RequestBody UpdateStudyRoomRequest request) {
         studyRoomService.updateStudyRoom(request);
-        return ResponseEntity.noContent().build();
     }
 
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/api/v1/studyroom/{studyRoomId}")
-    public ResponseEntity<Void> deleteStudyRoom(@PathVariable Long studyRoomId) {
+    public void deleteStudyRoom(@PathVariable Long studyRoomId) {
         studyRoomService.deleteStudyRoom(studyRoomId);
-        return ResponseEntity.noContent().build();
     }
 
+
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/api/v1/studyroom/recent/{memberId}")
-    public ResponseEntity<Optional<RecentStudyRoomResponse>> findRecentReservation(@PathVariable Long memberId) {
-        Optional<RecentStudyRoomResponse> response = studyRoomService.findRecentReservation(memberId);
-        return ResponseEntity.ok(response);
+    public Optional<RecentStudyRoomResponse> findRecentReservation(@PathVariable Long memberId) {
+        return studyRoomService.findRecentReservation(memberId);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/api/v1/studyroom/available")
-    public ResponseEntity<List<FindPossibleStudyRoomResponse>> findAvailableStudyRooms(FindAvailableStudyRoomRequest request) {
-        List<FindPossibleStudyRoomResponse> response = studyRoomService.findAvailableStudyRooms(request);
-        return ResponseEntity.ok(response);
+    public List<FindPossibleStudyRoomResponse> findAvailableStudyRooms(FindAvailableStudyRoomRequest request) {
+        return studyRoomService.findAvailableStudyRooms(request);
     }
 }

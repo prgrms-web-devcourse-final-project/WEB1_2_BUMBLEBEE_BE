@@ -13,11 +13,10 @@ import roomit.web1_2_bumblebee_be.domain.studyroom.dto.response.FindPossibleStud
 import roomit.web1_2_bumblebee_be.domain.studyroom.dto.response.RecentStudyRoomResponse;
 import roomit.web1_2_bumblebee_be.domain.studyroom.dto.response.StudyRoomResponse;
 import roomit.web1_2_bumblebee_be.domain.studyroom.entity.StudyRoom;
-import roomit.web1_2_bumblebee_be.domain.studyroom.exception.StudyRoomNotFound;
 import roomit.web1_2_bumblebee_be.domain.studyroom.repository.StudyRoomRepository;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
-import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkplaceNotFound;
 import roomit.web1_2_bumblebee_be.domain.workplace.repository.WorkplaceRepository;
+import roomit.web1_2_bumblebee_be.global.error.ErrorCode;
 
 import java.util.List;
 import java.util.Optional;
@@ -57,7 +56,7 @@ public class StudyRoomService {
     @Transactional(readOnly = true)
     public StudyRoom getStudyRoom(Long studyRoomid) {
         return studyRoomRepository.findById(studyRoomid)
-                .orElseThrow(StudyRoomNotFound::new);
+                .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
     }
 
     // 스터디룸 수정 메서드
@@ -72,7 +71,7 @@ public class StudyRoomService {
     @Transactional
     public void deleteStudyRoom(Long studyRoomId) {
         StudyRoom studyRoom = studyRoomRepository.findById(studyRoomId)
-                .orElseThrow(StudyRoomNotFound::new);
+                .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
 
         studyRoomRepository.delete(studyRoom);
     }
@@ -90,13 +89,13 @@ public class StudyRoomService {
         if (recentReservationOpt.isPresent()) {
             Reservation recentReservation = recentReservationOpt.get();
 
-            Long studyRoomId = recentReservation.getStudyRoomId().getStudyRoomId();
+            Long studyRoomId = recentReservation.getStudyRoom().getStudyRoomId();
             StudyRoom studyRoom = studyRoomRepository.findById(studyRoomId)
-                    .orElseThrow(StudyRoomNotFound::new);
+                    .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
 
             Long workplaceId = studyRoom.getWorkPlaceId().getWorkplaceId();
             Workplace workplace = workplaceRepository.findById(workplaceId)
-                    .orElseThrow(WorkplaceNotFound::new);
+                    .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
             return Optional.of(RecentStudyRoomResponse.from(workplace, recentReservation, studyRoom));
         } else {
             return Optional.empty();
