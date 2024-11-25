@@ -2,6 +2,8 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.5'
     id 'io.spring.dependency-management' version '1.1.6'
+    id 'jacoco'
+    id 'org.sonarqube' version '6.0.0.5145'
 }
 
 group = 'roomIt'
@@ -42,7 +44,6 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     // 쿼리DSL
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
     annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
@@ -51,6 +52,30 @@ dependencies {
     // WebClient
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
+
+def jacocoDir = layout.buildDirectory.dir("reports/")
+jacocoTestReport {
+    dependsOn test // 테스트 작업이 완료된 후 실행
+    reports {
+        xml.required.set(true)  // XML 리포트 생성
+        html.required.set(true) // HTML 리포트 생성
+        csv.required.set(false) // CSV는 필요하지 않으면 false
+        html.destination jacocoDir.get().file("jacoco/index.html").asFile
+        xml.destination jacocoDir.get().file("jacoco/index.xml").asFile
+    }
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "prgrms-web-devcourse-final-project_WEB1_2_BUMBLEBEE_BE"  // SonarCloud 프로젝트 키
+        property "sonar.organization", "prgrms-web-devcourse-final-project"                 // SonarCloud 조직 이름
+        property "sonar.host.url", "https://sonarcloud.io"                                 // SonarCloud URL
+        property "sonar.login", System.getenv("SONAR_TOKEN")                                // 토큰은 환경 변수로 관리
+        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"  // JaCoCo 커버리지 경로
+    }
+}
+
+
 
 tasks.named('test') {
     useJUnitPlatform()
