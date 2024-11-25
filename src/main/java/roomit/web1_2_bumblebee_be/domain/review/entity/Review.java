@@ -26,7 +26,7 @@ public class Review {
     private String reviewContent;
 
     @Column(name = "review_rating", nullable = false)
-    private String reviewRating;
+    private Double reviewRating;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false)
@@ -47,7 +47,7 @@ public class Review {
     private Workplace workplace;
 
     @Builder
-    public Review(String reviewContent, String reviewRating, Member member, Workplace workplace) {
+    public Review(String reviewContent, Double reviewRating, Member member, Workplace workplace) {
         this.reviewContent = reviewContent;
         this.reviewRating = reviewRating;
         this.createdAt = LocalDateTime.now();
@@ -55,7 +55,7 @@ public class Review {
         this.workplace = workplace;
     }
 
-    public void changeReviewRating(String reviewRating) {
+    public void changeReviewRating(Double reviewRating) {
         this.reviewRating = reviewRating;
     }
     public void changeReviewContent(String reviewContent) {

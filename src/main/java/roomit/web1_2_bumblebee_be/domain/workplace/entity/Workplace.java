@@ -140,4 +140,6 @@ public class Workplace {
     public void changeImageUrl(ImageUrl imageUrl) {
         this.imageUrl = imageUrl;
     }
+
+
 }
