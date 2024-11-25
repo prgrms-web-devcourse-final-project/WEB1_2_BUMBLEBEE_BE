@@ -8,7 +8,6 @@ import roomit.web1_2_bumblebee_be.domain.studyroom.dto.response.FindPossibleStud
 import roomit.web1_2_bumblebee_be.domain.studyroom.entity.StudyRoom;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface StudyRoomRepository extends JpaRepository<StudyRoom,Long> {
