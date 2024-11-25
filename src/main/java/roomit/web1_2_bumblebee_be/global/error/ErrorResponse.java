@@ -5,13 +5,14 @@ import lombok.Getter;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.http.HttpStatus;
 
 @Getter
 public class ErrorResponse {
 
     private final String code;
     private final String message;
-    private final int status;
+    private final HttpStatus status;
     private final Map<String, String> validation;
 
     @Builder

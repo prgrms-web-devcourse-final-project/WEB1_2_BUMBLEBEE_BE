@@ -13,8 +13,6 @@ import roomit.web1_2_bumblebee_be.domain.workplace.dto.WorkplaceRequest;
 import roomit.web1_2_bumblebee_be.domain.workplace.dto.WorkplaceResponse;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplaceName;
-import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkplaceNotFound;
-import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkspaceNotModified;
 import roomit.web1_2_bumblebee_be.domain.workplace.repository.WorkplaceRepository;
 import roomit.web1_2_bumblebee_be.global.error.ErrorCode;
 import roomit.web1_2_bumblebee_be.global.exception.CommonException;
@@ -89,9 +87,9 @@ class WorkplaceServiceTest {
 
         // Then
         assertNotNull(findWorkplace);
-        assertEquals("사업장 넘버원", findWorkplace.getWorkplaceName());
-        assertEquals("0507-1234-5678", findWorkplace.getWorkplacePhoneNumber());
-        assertEquals("대한민국 서울시", findWorkplace.getWorkplaceAddress());
+        assertEquals("사업장 넘버원", findWorkplace.workplaceName());
+        assertEquals("0507-1234-5678", findWorkplace.workplacePhoneNumber());
+        assertEquals("대한민국 서울시", findWorkplace.workplaceAddress());
     }
 
 
@@ -194,8 +192,8 @@ class WorkplaceServiceTest {
         // Then
         WorkplaceResponse findWorkplace = workplaceService.readWorkplace(workplace.getWorkplaceId());
         assertNotNull(findWorkplace);
-        assertEquals(findWorkplace.getWorkplaceName(), "사업장 수정");
-        assertEquals(findWorkplace.getWorkplaceDescription(), "사업장 설명 수정");
+        assertEquals(findWorkplace.workplaceName(), "사업장 수정");
+        assertEquals(findWorkplace.workplaceDescription(), "사업장 설명 수정");
     }
 
     @Test
@@ -314,8 +312,8 @@ class WorkplaceServiceTest {
 
         // Then
         assertThat(workplaces).hasSize(3);
-        assertThat(workplaces.get(0).getBusinessId()).isEqualTo(savedBusiness.getBusinessId());
-        assertThat(workplaces.get(0).getWorkplaceName()).isEqualTo("사업장 1");
+        assertThat(workplaces.get(0).businessId()).isEqualTo(savedBusiness.getBusinessId());
+        assertThat(workplaces.get(0).workplaceName()).isEqualTo("사업장 1");
     }
 
 //    @Test

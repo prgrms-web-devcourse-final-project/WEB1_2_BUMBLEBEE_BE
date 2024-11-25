@@ -2,8 +2,10 @@ package roomit.web1_2_bumblebee_be.domain.business.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import roomit.web1_2_bumblebee_be.domain.business.dto.CustomBusinessDetails;
 import roomit.web1_2_bumblebee_be.domain.business.dto.request.BusinessRegisterRequest;
 import roomit.web1_2_bumblebee_be.domain.business.dto.request.BusinessUpdateRequest;
 import roomit.web1_2_bumblebee_be.domain.business.dto.response.BusinessResponse;
@@ -17,39 +19,34 @@ public class BusinessController {
     private final BusinessService businessService;
 
     //사업자 회원 가입
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/api/v1/business/signup")
-    public ResponseEntity<String> signup(@RequestBody @Valid BusinessRegisterRequest request) {
+    public void signup(@RequestBody @Valid BusinessRegisterRequest request) {
         businessService.signUpBusiness(request);
-
-        return ResponseEntity.status(200).body("사업자 회원 등록이 완료되었습니다.");
     }
 
     //사업자 정보 수정
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("api/v1/business/update")
-    public ResponseEntity<String> businessModify(@RequestBody @Valid BusinessUpdateRequest businessUpdateRequest
-                                                 /*,@AuthenticationPrincipal CustomMemberDetails customMember*/){
-
-        businessService.updateBusinessInfo(1L /* customMember.userId */, businessUpdateRequest);
-
-        return ResponseEntity.status(200).body("사업자 정보 수정이 성공적으로 완료되었습니다.");
+    public void businessModify(@RequestBody @Valid BusinessUpdateRequest businessUpdateRequest
+                               ,@AuthenticationPrincipal CustomBusinessDetails customBusinessDetails){
+        businessService.updateBusinessInfo(customBusinessDetails.getId(), businessUpdateRequest);
     }
 
 
     //사업자 정보 조회
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("api/v1/business")
-    public ResponseEntity<BusinessResponse> businessRead(/*@AuthenticationPrincipal CustomUserDetails customUser*/){
-
-        return ResponseEntity.status(200).body(businessService.readBusinessInfo(1L));
+    public BusinessResponse businessRead(@AuthenticationPrincipal CustomBusinessDetails customBusinessDetails){
+        return businessService.readBusinessInfo(customBusinessDetails.getId());
     }
 
 
     //사업자 탈퇴
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("api/v1/business")
-    public ResponseEntity<String> businessDelete(/*@AuthenticationPrincipal CustomMemberDetails customMember*/){
-
-        businessService.deleteBusiness(1L);
-
-        return ResponseEntity.status(200).body("사업자가 성공적으로 탈퇴되었습니다.");
+    public void businessDelete(@AuthenticationPrincipal CustomBusinessDetails customBusinessDetails){
+        businessService.deleteBusiness(customBusinessDetails.getId());
     }
 
 }
