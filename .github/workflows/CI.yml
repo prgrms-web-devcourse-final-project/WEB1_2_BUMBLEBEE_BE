@@ -31,7 +31,9 @@ jobs:
 
       - name: Create application.properties from secrets
         run: |
+          mkdir -p ./src/main/resources  # 경로가 없다면 디렉터리 생성
           echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.properties
+          mkdir -p ./src/test/resources  # 테스트 파일 경로 생성
           echo "${{ secrets.APPLICATION_TEST_PROPERTIES }}" > ./src/test/resources/application-test.properties
 
       - name: Setup Gradle
