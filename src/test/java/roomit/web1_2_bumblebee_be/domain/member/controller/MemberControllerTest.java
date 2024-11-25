@@ -69,7 +69,6 @@ class MemberControllerTest {
                 .birthDay(date)
                 .pwd("")
                 .email("sdsd@naver.com")
-                .role(Role.ROLE_ADMIN)
                 .phoneNumber("010-3323-2323")
                 .nickName("치킨유저")
                 .build();
@@ -92,7 +91,6 @@ class MemberControllerTest {
                 .sex(Sex.FEMALE)
                 .pwd("Business1!")
                 .email("sdsd@naver.com")
-                .role(Role.ROLE_ADMIN)
                 .phoneNumber("010-3323-2323")
                 .nickName("치킨유저")
                 .build();
@@ -146,7 +144,7 @@ class MemberControllerTest {
                 .pwd("Business2!")
                 .email("sdsd@naver.com")
                 .phoneNumber("010-3323-2323")
-                .memberNickName("이이")
+                .nickName("이이")
                 .build();
 
         String json = objectMapper.writeValueAsString(memberRequest);
