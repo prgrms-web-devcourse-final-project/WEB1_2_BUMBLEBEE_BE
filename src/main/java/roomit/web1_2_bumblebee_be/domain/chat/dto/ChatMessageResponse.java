@@ -1,4 +1,6 @@
 package roomit.web1_2_bumblebee_be.domain.chat.dto;
 
-public record ChatMessageResponse(String username, String content) {
+import java.time.LocalDateTime;
+
+public record ChatMessageResponse(Long messageId, Long roomId, String sender, String content, LocalDateTime timestamp) {
 }
