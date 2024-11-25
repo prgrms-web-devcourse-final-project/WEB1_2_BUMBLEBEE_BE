@@ -3,22 +3,18 @@ package roomit.web1_2_bumblebee_be.domain.review.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
-import roomit.web1_2_bumblebee_be.domain.member.exception.MemberNotFound;
 import roomit.web1_2_bumblebee_be.domain.member.repository.MemberRepository;
 import roomit.web1_2_bumblebee_be.domain.review.dto.request.ReviewRegisterRequest;
 import roomit.web1_2_bumblebee_be.domain.review.dto.request.ReviewSearch;
 import roomit.web1_2_bumblebee_be.domain.review.dto.request.ReviewUpdateRequest;
 import roomit.web1_2_bumblebee_be.domain.review.dto.response.ReviewResponse;
 import roomit.web1_2_bumblebee_be.domain.review.entity.Review;
-import roomit.web1_2_bumblebee_be.domain.review.exception.ReviewNotFound;
-import roomit.web1_2_bumblebee_be.domain.review.exception.ReviewUpdateException;
 import roomit.web1_2_bumblebee_be.domain.review.repository.ReviewRepository;
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
-import roomit.web1_2_bumblebee_be.domain.workplace.exception.WorkplaceNotFound;
 import roomit.web1_2_bumblebee_be.domain.workplace.repository.WorkplaceRepository;
+import roomit.web1_2_bumblebee_be.global.error.ErrorCode;
 
 import java.util.List;
-import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -30,15 +26,15 @@ public class ReviewService {
 
     public void register(ReviewRegisterRequest request) {
 
-        Member member = memberRepository.findById(request.getMemberId())
-                .orElseThrow(MemberNotFound::new);
+        Member member = memberRepository.findById(request.memberId())
+                .orElseThrow(ErrorCode.MEMBER_NOT_FOUND::commonException);
 
-        Workplace workplace = workplaceRepository.findById(request.getWorkplaceId())
-                .orElseThrow(WorkplaceNotFound::new);
+        Workplace workplace = workplaceRepository.findById(request.workplaceId())
+                .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
 
         Review review = Review.builder()
-                .reviewContent(request.getReviewContent())
-                .reviewRating(request.getReviewRating())
+                .reviewContent(request.reviewContent())
+                .reviewRating(request.reviewRating())
                 .member(member)
                 .workplace(workplace)
                 .build();
@@ -49,12 +45,12 @@ public class ReviewService {
     public ReviewResponse update(Long reviewId, ReviewUpdateRequest request) {
 
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(ReviewNotFound::new);
+                .orElseThrow(ErrorCode.REVIEW_NOT_FOUND::commonException);
         try {
-            review.changeReviewContent(request.getReviewContent());
-            review.changeReviewRating(request.getReviewRating());
+            review.changeReviewContent(request.reviewContent());
+            review.changeReviewRating(request.reviewRating());
         } catch (Exception e) {
-            throw new ReviewUpdateException();
+            throw ErrorCode.REVIEW_UPDATE_EXCEPTION.commonException();
         }
 
         return new ReviewResponse(review);
@@ -62,14 +58,14 @@ public class ReviewService {
 
     public ReviewResponse read(Long reviewId) {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(ReviewNotFound::new);
+                .orElseThrow(ErrorCode.REVIEW_NOT_FOUND::commonException);
 
         return new ReviewResponse(review);
     }
 
     public void remove(Long reviewId) {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(ReviewNotFound::new);
+                .orElseThrow(ErrorCode.REVIEW_NOT_FOUND::commonException);
 
         reviewRepository.delete(review);
     }
