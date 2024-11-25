@@ -1,4 +1,4 @@
-//package roomit.web1_2_bumblebee_be.domain.workplace.controller;
+//package roomit.main.domain.workplace.controller;
 //
 //import com.fasterxml.jackson.databind.ObjectMapper;
 //import org.junit.jupiter.api.*;
@@ -8,14 +8,14 @@
 //import org.springframework.http.MediaType;
 //import org.springframework.test.context.ActiveProfiles;
 //import org.springframework.test.web.servlet.MockMvc;
-//import roomit.web1_2_bumblebee_be.domain.business.dto.request.BusinessRegisterRequest;
-//import roomit.web1_2_bumblebee_be.domain.business.entity.Business;
-//import roomit.web1_2_bumblebee_be.domain.business.repository.BusinessRepository;
-//import roomit.web1_2_bumblebee_be.domain.business.service.BusinessService;
-//import roomit.web1_2_bumblebee_be.domain.member.service.MemberService;
-//import roomit.web1_2_bumblebee_be.domain.workplace.dto.WorkplaceRequest;
-//import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
-//import roomit.web1_2_bumblebee_be.domain.workplace.repository.WorkplaceRepository;
+//import roomit.main.domain.business.dto.request.BusinessRegisterRequest;
+//import roomit.main.domain.business.entity.Business;
+//import roomit.main.domain.business.repository.BusinessRepository;
+//import roomit.main.domain.business.service.BusinessService;
+//import roomit.main.domain.member.service.MemberService;
+//import roomit.main.domain.workplace.dto.WorkplaceRequest;
+//import roomit.main.domain.workplace.entity.Workplace;
+//import roomit.main.domain.workplace.repository.WorkplaceRepository;
 //
 //import java.time.LocalDateTime;
 //
@@ -24,10 +24,13 @@
 //import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 //import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 //import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.test.context.ActiveProfiles;
+
+
 //
 //@SpringBootTest
-//@AutoConfigureMockMvc
 //@ActiveProfiles("test")
+//@AutoConfigureMockMvc
 //@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 //public class WorkplaceControllerTest {
 //

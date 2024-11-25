@@ -1,23 +1,23 @@
-//package roomit.web1_2_bumblebee_be.domain.workplace.service;
+//package roomit.main.domain.workplace.service;
 //
-//import jakarta.transaction.Transactional;
 //import org.junit.jupiter.api.*;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.test.context.SpringBootTest;
 //import org.springframework.test.context.ActiveProfiles;
-//import roomit.web1_2_bumblebee_be.domain.business.dto.request.BusinessRegisterRequest;
-//import roomit.web1_2_bumblebee_be.domain.business.entity.Business;
-//import roomit.web1_2_bumblebee_be.domain.business.repository.BusinessRepository;
-//import roomit.web1_2_bumblebee_be.domain.business.service.BusinessService;
-//import roomit.web1_2_bumblebee_be.domain.workplace.dto.WorkplaceRequest;
-//import roomit.web1_2_bumblebee_be.domain.workplace.dto.WorkplaceResponse;
-//import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
-//import roomit.web1_2_bumblebee_be.domain.workplace.entity.value.WorkplaceName;
-//import roomit.web1_2_bumblebee_be.domain.workplace.repository.WorkplaceRepository;
-//import roomit.web1_2_bumblebee_be.global.error.ErrorCode;
-//import roomit.web1_2_bumblebee_be.global.exception.CommonException;
+//import roomit.main.domain.business.dto.request.BusinessRegisterRequest;
+//import roomit.main.domain.business.entity.Business;
+//import roomit.main.domain.business.repository.BusinessRepository;
+//import roomit.main.domain.business.service.BusinessService;
+//import roomit.main.domain.workplace.dto.WorkplaceRequest;
+//import roomit.main.domain.workplace.dto.WorkplaceResponse;
+//import roomit.main.domain.workplace.entity.Workplace;
+//import roomit.main.domain.workplace.entity.value.WorkplaceName;
+//import roomit.main.domain.workplace.repository.WorkplaceRepository;
+//import roomit.main.global.error.ErrorCode;
+//import roomit.main.global.exception.CommonException;
 //
 //import java.math.BigDecimal;
+//import java.math.RoundingMode;
 //import java.time.LocalDateTime;
 //import java.util.List;
 //import java.util.Map;
@@ -75,7 +75,7 @@
 //                .workplaceName("사업장 넘버원")
 //                .workplacePhoneNumber("0507-1234-5678")
 //                .workplaceDescription("사업장 설명")
-//                .workplaceAddress("대한민국 서울시")
+//                .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
 //                .imageUrl("http://image.url")
 //                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
 //                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
@@ -91,7 +91,7 @@
 //        assertNotNull(findWorkplace);
 //        assertEquals("사업장 넘버원", findWorkplace.workplaceName());
 //        assertEquals("0507-1234-5678", findWorkplace.workplacePhoneNumber());
-//        assertEquals("대한민국 서울시", findWorkplace.workplaceAddress());
+//        assertEquals("서울 중구 장충단로 247 굿모닝시티 8층", findWorkplace.workplaceAddress());
 //    }
 //
 //
@@ -105,7 +105,7 @@
 //                .workplaceName("사업장1")
 //                .workplacePhoneNumber("0507-1234-5678")
 //                .workplaceDescription("사업장 설명")
-//                .workplaceAddress("대한민국 서울시")
+//                .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
 //                .imageUrl("http://image.url")
 //                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
 //                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
@@ -118,7 +118,7 @@
 //        // Then
 //        assertEquals("사업장1", findWorkplace.getWorkplaceName().getValue());
 //        assertEquals("0507-1234-5678", findWorkplace.getWorkplacePhoneNumber().getValue());
-//        assertEquals("대한민국 서울시", findWorkplace.getWorkplaceAddress().getValue());
+//        assertEquals("서울 중구 장충단로 247 굿모닝시티 8층", findWorkplace.getWorkplaceAddress().getValue());
 //    }
 //
 //    @Test
@@ -130,7 +130,7 @@
 //                .workplaceName("사업장@") // '@' 특수문자는 허용되지 않음
 //                .workplacePhoneNumber("0507-1234-5678")
 //                .workplaceDescription("사업장 설명")
-//                .workplaceAddress("대한민국 서울시")
+//                .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
 //                .imageUrl("http://image.url")
 //                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
 //                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
@@ -169,7 +169,7 @@
 //                .workplaceName("기존 사업장")
 //                .workplacePhoneNumber("0507-1234-5678")
 //                .workplaceDescription("기존 설명")
-//                .workplaceAddress("대한민국 서울시")
+//                .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
 //                .imageUrl("http://image.url")
 //                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
 //                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
@@ -182,7 +182,7 @@
 //                .workplaceName("사업장 수정")
 //                .workplacePhoneNumber("0507-1234-5670")
 //                .workplaceDescription("사업장 설명 수정")
-//                .workplaceAddress("대한민국 서울시 수정")
+//                .workplaceAddress("서울 중구 을지로 227 훈련원공원")
 //                .imageUrl("http://image.url")
 //                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
 //                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
@@ -207,7 +207,7 @@
 //                .workplaceName("사업장")
 //                .workplacePhoneNumber("0507-1234-5678")
 //                .workplaceDescription("사업장 설명")
-//                .workplaceAddress("대한민국 서울시")
+//                .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
 //                .imageUrl("http://image.url")
 //                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
 //                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
@@ -218,7 +218,7 @@
 //        WorkplaceRequest request = WorkplaceRequest.builder()
 //                .workplacePhoneNumber("0507-1234-5678")
 //                .workplaceDescription("수정된 설명")
-//                .workplaceAddress("대한민국 서울시 수정")
+//                .workplaceAddress("서울 중구 을지로 227 훈련원공원")
 //                .workplaceStartTime(LocalDateTime.of(2023, 2, 1, 9, 0))
 //                .workplaceEndTime(LocalDateTime.of(2023, 2, 1, 18, 0))
 //                .build();
@@ -233,7 +233,6 @@
 //    }
 //
 //    @Test
-//    @Transactional
 //    @DisplayName("사업장 삭제")
 //    @Order(6)
 //    void deleteWorkplace() {
@@ -242,7 +241,7 @@
 //                .workplaceName("사업장")
 //                .workplacePhoneNumber("0507-1234-5678")
 //                .workplaceDescription("사업장 설명")
-//                .workplaceAddress("대한민국 서울시")
+//                .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
 //                .imageUrl("http://image.url")
 //                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
 //                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
@@ -271,7 +270,7 @@
 //                    .workplaceName("사업장 " + i)
 //                    .workplacePhoneNumber("0507-1234-" + String.format("%04d", i))
 //                    .workplaceDescription("테스트 사업장 " + i)
-//                    .workplaceAddress("테스트 주소 " + i)
+//                    .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
 //                    .imageUrl("http://image.url")
 //                    .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
 //                    .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
@@ -299,7 +298,7 @@
 //                    .workplaceName("사업장 " + i)
 //                    .workplacePhoneNumber("0507-1234-" + String.format("%04d", i))
 //                    .workplaceDescription("테스트 사업장 " + i)
-//                    .workplaceAddress("테스트 주소 " + i)
+//                    .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
 //                    .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
 //                    .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
 //                    .imageUrl("http://image.url")
@@ -344,7 +343,7 @@
 //        // Given: 유효한 주소 입력
 //        WorkplaceRequest workplaceRequest = WorkplaceRequest.builder()
 //                .workplaceName("유효한 사업장")
-//                .workplaceAddress("서울특별시 강남구 역삼동") // 유효한 주소
+//                .workplaceAddress("서울 중구 장충단로 247 굿모닝시티몰 8층") // 유효한 주소
 //                .workplacePhoneNumber("0507-1234-5678")
 //                .build();
 //
@@ -355,8 +354,8 @@
 //        assertNotNull(coordinates);
 //        assertTrue(coordinates.containsKey("latitude"));
 //        assertTrue(coordinates.containsKey("longitude"));
-//        assertEquals(new BigDecimal("37.566535"), coordinates.get("latitude")); // 예시값
-//        assertEquals(new BigDecimal("126.9779692"), coordinates.get("longitude")); // 예시값
+//        assertEquals(new BigDecimal("37.5668021171335"), coordinates.get("latitude")); // 예시값
+//        assertEquals(new BigDecimal("127.007358177138"), coordinates.get("longitude")); // 예시값
 //    }
 //
 //    @Test
@@ -368,7 +367,7 @@
 //                .workplaceName("기존 사업장")
 //                .workplacePhoneNumber("0507-1234-5678")
 //                .workplaceDescription("기존 설명")
-//                .workplaceAddress("서울특별시 강남구 역삼동") // 초기 주소
+//                .workplaceAddress("서울 중구 장충단로 247 굿모닝시티몰 8층") // 초기 주소
 //                .imageUrl("http://image.url")
 //                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
 //                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
@@ -382,7 +381,7 @@
 //                .workplaceName("수정된 사업장")
 //                .workplacePhoneNumber("0507-9876-5432")
 //                .workplaceDescription("수정된 설명")
-//                .workplaceAddress("서울특별시 중구 정동") // 주소 변경
+//                .workplaceAddress("서울 중구 장충단로13길 20") // 주소 변경
 //                .imageUrl("http://updated.image.url")
 //                .workplaceStartTime(LocalDateTime.of(2023, 2, 1, 9, 0))
 //                .workplaceEndTime(LocalDateTime.of(2023, 2, 1, 18, 0))
@@ -394,11 +393,17 @@
 //        // Then: 좌표가 업데이트되었는지 확인
 //        WorkplaceResponse updatedWorkplace = workplaceService.readWorkplace(savedWorkplace.getWorkplaceId());
 //        assertEquals("수정된 사업장", updatedWorkplace.workplaceName());
-//        assertEquals("서울특별시 중구 정동", updatedWorkplace.workplaceAddress());
+//        assertEquals("서울 중구 장충단로13길 20", updatedWorkplace.workplaceAddress());
 //
 //        // 좌표 검증 (예시 값)
-//        assertEquals(new BigDecimal("37.5642135"), updatedWorkplace.latitude()); // 예상 위도
-//        assertEquals(new BigDecimal("126.975575"), updatedWorkplace.longitude()); // 예상 경도
+//        assertEquals(
+//                new BigDecimal("37.568734553218").setScale(2, RoundingMode.HALF_UP),
+//                updatedWorkplace.latitude().setScale(2, RoundingMode.HALF_UP)
+//        );
+//        assertEquals(
+//                new BigDecimal("127.007666479829").setScale(2, RoundingMode.HALF_UP),
+//                updatedWorkplace.longitude().setScale(2, RoundingMode.HALF_UP)
+//        );
 //    }
 //
 //}

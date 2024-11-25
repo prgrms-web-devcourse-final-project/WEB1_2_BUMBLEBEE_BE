@@ -1,5 +1,6 @@
 package roomit.main.domain.workplace.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
@@ -145,12 +146,18 @@ public class WorkplaceService {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode document = objectMapper.readTree(response).path("documents").get(0);
 
+            BigDecimal latitude = new BigDecimal(document.path("y").asText());
+            BigDecimal longitude = new BigDecimal(document.path("x").asText());
+
             return Map.of(
-                    "latitude", new BigDecimal(document.path("y").asText()),
-                    "longitude", new BigDecimal(document.path("x").asText())
+                    "latitude", latitude,
+                    "longitude", longitude
             );
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error parsing JSON response", e);
         } catch (Exception e) {
             throw new RuntimeException("Failed to extract coordinates from response", e);
         }
     }
 }
+
