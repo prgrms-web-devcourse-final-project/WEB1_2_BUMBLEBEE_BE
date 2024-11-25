@@ -38,7 +38,9 @@ jobs:
 
       - name: Debug generated properties files
         run: |
+          echo "application.properties content:"
           cat ./src/main/resources/application.properties
+          echo "application-test.properties content:"
           cat ./src/test/resources/application-test.properties
 
       - name: Setup Gradle
