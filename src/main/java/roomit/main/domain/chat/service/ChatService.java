@@ -1,13 +1,13 @@
-package roomit.web1_2_bumblebee_be.domain.chat.service;
+package roomit.main.domain.chat.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomit.web1_2_bumblebee_be.domain.chat.dto.ChatMessageRequest;
-import roomit.web1_2_bumblebee_be.domain.chat.dto.ChatMessageResponse;
-import roomit.web1_2_bumblebee_be.domain.chat.entity.ChatMessage;
-import roomit.web1_2_bumblebee_be.domain.chat.repository.ChatMessageRepository;
-import roomit.web1_2_bumblebee_be.domain.chatroom.entity.ChatRoom;
-import roomit.web1_2_bumblebee_be.domain.chatroom.repositoroy.ChatRoomRepository;
+import roomit.main.domain.chat.dto.ChatMessageRequest;
+import roomit.main.domain.chat.dto.ChatMessageResponse;
+import roomit.main.domain.chat.entity.ChatMessage;
+import roomit.main.domain.chat.repository.ChatMessageRepository;
+import roomit.main.domain.chatroom.entity.ChatRoom;
+import roomit.main.domain.chatroom.repositoroy.ChatRoomRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;

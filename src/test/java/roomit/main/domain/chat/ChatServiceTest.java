@@ -1,17 +1,17 @@
-package roomit.web1_2_bumblebee_be.domain.chat;
+package roomit.main.domain.chat;
 
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import roomit.web1_2_bumblebee_be.domain.chat.dto.ChatMessageRequest;
-import roomit.web1_2_bumblebee_be.domain.chat.dto.ChatMessageResponse;
-import roomit.web1_2_bumblebee_be.domain.chat.entity.ChatMessage;
-import roomit.web1_2_bumblebee_be.domain.chat.repository.ChatMessageRepository;
-import roomit.web1_2_bumblebee_be.domain.chat.service.ChatService;
-import roomit.web1_2_bumblebee_be.domain.chatroom.entity.ChatRoom;
-import roomit.web1_2_bumblebee_be.domain.chatroom.repositoroy.ChatRoomRepository;
+import roomit.main.domain.chat.dto.ChatMessageRequest;
+import roomit.main.domain.chat.dto.ChatMessageResponse;
+import roomit.main.domain.chat.entity.ChatMessage;
+import roomit.main.domain.chat.repository.ChatMessageRepository;
+import roomit.main.domain.chat.service.ChatService;
+import roomit.main.domain.chatroom.entity.ChatRoom;
+import roomit.main.domain.chatroom.repositoroy.ChatRoomRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest
-@ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ChatServiceTest {
 

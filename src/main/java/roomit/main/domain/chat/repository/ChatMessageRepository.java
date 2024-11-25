@@ -1,8 +1,8 @@
-package roomit.web1_2_bumblebee_be.domain.chat.repository;
+package roomit.main.domain.chat.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import roomit.web1_2_bumblebee_be.domain.chat.entity.ChatMessage;
+import roomit.main.domain.chat.entity.ChatMessage;
 
 import java.time.LocalDateTime;
 import java.util.List;

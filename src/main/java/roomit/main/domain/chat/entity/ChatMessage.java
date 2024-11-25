@@ -1,9 +1,9 @@
-package roomit.web1_2_bumblebee_be.domain.chat.entity;
+package roomit.main.domain.chat.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import roomit.web1_2_bumblebee_be.domain.chatroom.entity.ChatRoom;
+import roomit.main.domain.chatroom.entity.ChatRoom;
 
 import java.time.LocalDateTime;
 

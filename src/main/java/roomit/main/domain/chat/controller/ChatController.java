@@ -1,4 +1,4 @@
-package roomit.web1_2_bumblebee_be.domain.chat.controller;
+package roomit.main.domain.chat.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -7,9 +7,9 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import roomit.web1_2_bumblebee_be.domain.chat.dto.ChatMessageRequest;
-import roomit.web1_2_bumblebee_be.domain.chat.dto.ChatMessageResponse;
-import roomit.web1_2_bumblebee_be.domain.chat.service.ChatService;
+import roomit.main.domain.chat.dto.ChatMessageRequest;
+import roomit.main.domain.chat.dto.ChatMessageResponse;
+import roomit.main.domain.chat.service.ChatService;
 
 import java.util.List;
 

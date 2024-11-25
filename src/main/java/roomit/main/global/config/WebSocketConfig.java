@@ -1,4 +1,4 @@
-package roomit.web1_2_bumblebee_be.global.config;
+package roomit.main.global.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

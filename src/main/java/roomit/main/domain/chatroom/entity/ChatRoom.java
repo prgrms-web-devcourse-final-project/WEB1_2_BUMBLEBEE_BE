@@ -1,4 +1,4 @@
-package roomit.web1_2_bumblebee_be.domain.chatroom.entity;
+package roomit.main.domain.chatroom.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
