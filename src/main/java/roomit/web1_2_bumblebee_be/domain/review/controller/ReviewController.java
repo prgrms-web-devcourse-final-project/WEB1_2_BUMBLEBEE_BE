@@ -20,22 +20,24 @@ import java.util.List;
 public class ReviewController {
     private final ReviewService reviewService;
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/api/v1/review/register")
-    public ResponseEntity<?> register(@RequestBody @Valid ReviewRegisterRequest request) {
+    public void register(@RequestBody @Valid ReviewRegisterRequest request) {
         reviewService.register(request);
-        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/api/v1/review/update/{reviewId}")
-    public ResponseEntity<ReviewResponse> update(@RequestBody @Valid ReviewUpdateRequest request
+    public ReviewResponse update(@RequestBody @Valid ReviewUpdateRequest request
     ,@PathVariable Long reviewId) {
-         return ResponseEntity.ok(reviewService.update(reviewId, request));
+         return reviewService.update(reviewId, request);
     }
 
     // 단건 리뷰 조회
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/api/v1/review/{reviewId}")
-    public ResponseEntity<ReviewResponse> read(@PathVariable Long reviewId) {
-        return ResponseEntity.ok(reviewService.read(reviewId));
+    public ReviewResponse read(@PathVariable Long reviewId) {
+       return reviewService.read(reviewId);
     }
 
     // 리뷰 페이징
@@ -53,7 +55,7 @@ public class ReviewController {
 
         Long nextCursor = reviews.isEmpty()
                 ? null
-                : reviews.get(reviews.size() - 1).getReviewId();
+                : reviews.get(reviews.size() - 1).reviewId();
 
         return ResponseEntity.ok(CursorResponse
                 .builder()
@@ -62,9 +64,9 @@ public class ReviewController {
                 .build());
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/api/v1/review/{reviewId}")
-    public ResponseEntity<?> remove(@PathVariable Long reviewId) {
+    public void remove(@PathVariable Long reviewId) {
         reviewService.remove(reviewId);
-        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
