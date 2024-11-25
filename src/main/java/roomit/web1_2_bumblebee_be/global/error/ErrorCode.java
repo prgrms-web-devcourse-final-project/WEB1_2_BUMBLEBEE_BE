@@ -2,7 +2,6 @@ package roomit.web1_2_bumblebee_be.global.error;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import roomit.web1_2_bumblebee_be.domain.review.exception.ReviewNotFound;
 import roomit.web1_2_bumblebee_be.global.exception.CommonException;
 
 @Getter
