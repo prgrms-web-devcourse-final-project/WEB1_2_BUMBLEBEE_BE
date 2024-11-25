@@ -36,6 +36,13 @@ jobs:
           mkdir -p ./src/test/resources  # 테스트 파일 경로 생성
           echo "${{ secrets.APPLICATION_TEST_PROPERTIES }}" > ./src/test/resources/application-test.properties
 
+      - name: Debug generated properties files
+        run: |
+          echo "application.properties content:"
+          cat ./src/main/resources/application.properties
+          echo "application-test.properties content:"
+          cat ./src/test/resources/application-test.properties
+
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
         with:
