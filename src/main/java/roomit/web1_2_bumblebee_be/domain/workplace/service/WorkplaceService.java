@@ -125,7 +125,7 @@ public class WorkplaceService {
         return workplaceDtoList;
     }
 
-    private Map<String, BigDecimal> getStringBigDecimalMap(WorkplaceRequest workplaceDto) {
+    protected Map<String, BigDecimal> getStringBigDecimalMap(WorkplaceRequest workplaceDto) {
         try {
             return geoCording(workplaceDto.workplaceAddress());
         } catch (Exception e) {

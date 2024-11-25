@@ -239,4 +239,6 @@ public class WorkplaceControllerTest {
                 .andExpect(jsonPath("$[99].workplaceName").value("사업장 100")) // 마지막 데이터 확인
                 .andDo(print());
     }
+
+
 }

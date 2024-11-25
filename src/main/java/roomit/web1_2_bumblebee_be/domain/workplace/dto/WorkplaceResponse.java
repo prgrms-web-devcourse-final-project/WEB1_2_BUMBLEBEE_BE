@@ -2,6 +2,7 @@ package roomit.web1_2_bumblebee_be.domain.workplace.dto;
 
 import roomit.web1_2_bumblebee_be.domain.workplace.entity.Workplace;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record WorkplaceResponse (
@@ -13,7 +14,9 @@ public record WorkplaceResponse (
         String imageUrl,
         LocalDateTime workplaceStartTime,
         LocalDateTime workplaceEndTime,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        BigDecimal longitude,
+        BigDecimal latitude
 ){
     public WorkplaceResponse(Workplace workplace) {
         this(
@@ -25,7 +28,9 @@ public record WorkplaceResponse (
                 workplace.getImageUrl().getValue(),
                 workplace.getWorkplaceStartTime(),
                 workplace.getWorkplaceEndTime(),
-                workplace.getCreatedAt()
+                workplace.getCreatedAt(),
+                workplace.getLongitude(),
+                workplace.getLatitude()
         );
     }
 }

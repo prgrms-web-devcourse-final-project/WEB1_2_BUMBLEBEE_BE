@@ -17,8 +17,10 @@ import roomit.web1_2_bumblebee_be.domain.workplace.repository.WorkplaceRepositor
 import roomit.web1_2_bumblebee_be.global.error.ErrorCode;
 import roomit.web1_2_bumblebee_be.global.exception.CommonException;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -316,7 +318,87 @@ class WorkplaceServiceTest {
         assertThat(workplaces.get(0).workplaceName()).isEqualTo("사업장 1");
     }
 
-//    @Test
-//    void uploadImage() {
-//    }
+    @Test
+    @DisplayName("유효하지 않은 주소로 좌표 변환 실패")
+    @Order(9)
+    void testGeoCordingFailed() {
+        // Given: 유효하지 않은 주소 입력
+        WorkplaceRequest workplaceRequest = WorkplaceRequest.builder()
+                .workplaceName("유효하지 않은 사업장")
+                .workplaceAddress("Invalid Address") // 잘못된 주소
+                .workplacePhoneNumber("0507-1234-5678")
+                .build();
+
+        // When & Then: WORKPLACE_INVALID_ADDRESS 예외 발생
+        CommonException exception = assertThrows(CommonException.class, () -> {
+            workplaceService.getStringBigDecimalMap(workplaceRequest);
+        });
+
+        assertEquals(ErrorCode.WORKPLACE_INVALID_ADDRESS.getMessage(), exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("유효한 주소로 좌표 변환 성공")
+    @Order(10)
+    void testGeoCordingSuccess() {
+        // Given: 유효한 주소 입력
+        WorkplaceRequest workplaceRequest = WorkplaceRequest.builder()
+                .workplaceName("유효한 사업장")
+                .workplaceAddress("서울특별시 강남구 역삼동") // 유효한 주소
+                .workplacePhoneNumber("0507-1234-5678")
+                .build();
+
+        // When: 좌표 변환 시도
+        Map<String, BigDecimal> coordinates = workplaceService.getStringBigDecimalMap(workplaceRequest);
+
+        // Then: 좌표가 반환되는지 검증
+        assertNotNull(coordinates);
+        assertTrue(coordinates.containsKey("latitude"));
+        assertTrue(coordinates.containsKey("longitude"));
+        assertEquals(new BigDecimal("37.566535"), coordinates.get("latitude")); // 예시값
+        assertEquals(new BigDecimal("126.9779692"), coordinates.get("longitude")); // 예시값
+    }
+
+    @Test
+    @DisplayName("주소 변경 시 좌표 업데이트")
+    @Order(11)
+    void testUpdateWorkplaceWithCoordinatesChange() {
+        // Given: 기존 사업장 등록
+        Workplace workplace = Workplace.builder()
+                .workplaceName("기존 사업장")
+                .workplacePhoneNumber("0507-1234-5678")
+                .workplaceDescription("기존 설명")
+                .workplaceAddress("서울특별시 강남구 역삼동") // 초기 주소
+                .imageUrl("http://image.url")
+                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
+                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                .business(savedBusiness)
+                .build();
+
+        Workplace savedWorkplace = workplaceRepository.save(workplace);
+
+        // Updated Request
+        WorkplaceRequest updatedRequest = WorkplaceRequest.builder()
+                .workplaceName("수정된 사업장")
+                .workplacePhoneNumber("0507-9876-5432")
+                .workplaceDescription("수정된 설명")
+                .workplaceAddress("서울특별시 중구 정동") // 주소 변경
+                .imageUrl("http://updated.image.url")
+                .workplaceStartTime(LocalDateTime.of(2023, 2, 1, 9, 0))
+                .workplaceEndTime(LocalDateTime.of(2023, 2, 1, 18, 0))
+                .build();
+
+        // When: 사업장 수정
+        workplaceService.updateWorkplace(savedWorkplace.getWorkplaceId(), updatedRequest);
+
+        // Then: 좌표가 업데이트되었는지 확인
+        WorkplaceResponse updatedWorkplace = workplaceService.readWorkplace(savedWorkplace.getWorkplaceId());
+        assertEquals("수정된 사업장", updatedWorkplace.workplaceName());
+        assertEquals("서울특별시 중구 정동", updatedWorkplace.workplaceAddress());
+
+        // 좌표 검증 (예시 값)
+        assertEquals(new BigDecimal("37.5642135"), updatedWorkplace.latitude()); // 예상 위도
+        assertEquals(new BigDecimal("126.975575"), updatedWorkplace.longitude()); // 예상 경도
+    }
+
 }
