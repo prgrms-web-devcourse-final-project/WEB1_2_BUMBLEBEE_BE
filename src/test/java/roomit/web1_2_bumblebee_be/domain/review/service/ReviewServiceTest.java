@@ -227,11 +227,11 @@ class ReviewServiceTest {
         List<ReviewResponse> firstPage = reviewService.getList(firstPageSearch);
 
         assertEquals(10, firstPage.size());
-        assertEquals("치킨이 안보이네요..20", firstPage.get(0).getReviewContent()); // 최신순 검증
-        assertEquals("치킨이 안보이네요..11", firstPage.get(9).getReviewContent()); // 마지막 항목 검증
+        assertEquals("치킨이 안보이네요..20", firstPage.get(0).reviewContent()); // 최신순 검증
+        assertEquals("치킨이 안보이네요..11", firstPage.get(9).reviewContent()); // 마지막 항목 검증
 
         // 3. 두 번째 요청: 첫 페이지의 마지막 ID를 커서로 사용
-        Long lastId = firstPage.get(firstPage.size() - 1).getReviewId(); // 첫 페이지의 마지막 ID
+        Long lastId = firstPage.get(firstPage.size() - 1).reviewId(); // 첫 페이지의 마지막 ID
 
         ReviewSearch secondPageSearch = ReviewSearch.builder()
                 .lastId(lastId)
@@ -241,11 +241,11 @@ class ReviewServiceTest {
         List<ReviewResponse> secondPage = reviewService.getList(secondPageSearch);
 
         assertEquals(10, secondPage.size());
-        assertEquals("치킨이 안보이네요..10", secondPage.get(0).getReviewContent()); // 다음 페이지 첫 항목 검증
-        assertEquals("치킨이 안보이네요..1", secondPage.get(9).getReviewContent()); // 다음 페이지 마지막 항목 검증
+        assertEquals("치킨이 안보이네요..10", secondPage.get(0).reviewContent()); // 다음 페이지 첫 항목 검증
+        assertEquals("치킨이 안보이네요..1", secondPage.get(9).reviewContent()); // 다음 페이지 마지막 항목 검증
 
         // 4. 끝 페이지 요청: 두 번째 페이지의 마지막 ID를 커서로 사용
-        lastId = secondPage.get(secondPage.size() - 1).getReviewId();
+        lastId = secondPage.get(secondPage.size() - 1).reviewId();
 
         ReviewSearch lastPageSearch = ReviewSearch.builder()
                 .lastId(lastId)
