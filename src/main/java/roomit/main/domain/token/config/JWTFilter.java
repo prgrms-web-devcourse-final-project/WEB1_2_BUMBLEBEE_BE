@@ -6,17 +6,20 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.filter.OncePerRequestFilter;
-import roomit.main.domain.business.dto.CustomBusinessDetails;
 import roomit.main.domain.business.entity.Business;
-import roomit.main.domain.member.dto.CustomMemberDetails;
+import roomit.main.domain.business.service.CustomBusinessDetailsService;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.member.entity.Role;
+import roomit.main.domain.member.service.CustomMemberDetailsService;
+import roomit.main.domain.token.config.JWTUtil;
+
 
 
 import java.io.IOException;
@@ -25,10 +28,13 @@ import java.util.Arrays;
 import java.util.Map;
 
 @RequiredArgsConstructor
+@Log4j2
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final CustomMemberDetailsService customMemberDetailsService;
+    private final CustomBusinessDetailsService customBusinessDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -37,15 +43,13 @@ public class JWTFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String headerAuth = request.getHeader("Authorization");
 
-        String accessToken = headerAuth.substring(7);
-
-        // 토큰이 없으면 다음 필터로
-        if (accessToken == null) {
-
+        // 헤더 값이 없거나, 토큰 값이 "Bearer "로 시작하지 않으면 다음 필터로 넘김
+        if (headerAuth == null || !headerAuth.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
-
             return;
         }
+
+        String accessToken = headerAuth.substring(7);
 
         // 토큰 만료 여부 확인
         try {
@@ -81,7 +85,7 @@ public class JWTFilter extends OncePerRequestFilter {
             String email = claims.get("username").toString();
             String role = claims.get("role").toString();
 
-            Object principal;
+            UserDetails principal;
 
             if ("ROLE_USER".equals(role)) {
                 Member member = Member.builder()
@@ -89,7 +93,7 @@ public class JWTFilter extends OncePerRequestFilter {
                         .memberPwd("dummy")
                         .memberRole(Role.ROLE_USER)
                         .build();
-                principal = new CustomMemberDetails(member);
+                principal = customMemberDetailsService.loadUserByUsername(member.getMemberEmail());
             } else if ("ROLE_BUSINESS".equals(role)) { //모든 정보가 들어가는 문제가 있음
                 Business business = Business.builder()
                         .businessEmail(email)
@@ -98,7 +102,7 @@ public class JWTFilter extends OncePerRequestFilter {
                         .passwordEncoder(passwordEncoder)
                         .businessNum("321-12-74312")
                         .build();
-                principal = new CustomBusinessDetails(business);
+                principal = customBusinessDetailsService.loadUserByUsername(business.getBusinessEmail());
             } else {
                 throw new RuntimeException("잘못된 역할 정보: " + role); // 어드민 역할과 사용자 정의 예외 추가
             }
@@ -113,7 +117,7 @@ public class JWTFilter extends OncePerRequestFilter {
             // SecurityContext에 인증/인가 정보 저장
             SecurityContextHolder.getContext().setAuthentication(authToken);
 
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            log.info("Security Context Authentication: {}", authToken);
 
             filterChain.doFilter(request, response);
         } catch (Exception e) {
