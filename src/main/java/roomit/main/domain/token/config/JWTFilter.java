@@ -146,6 +146,9 @@ public class JWTFilter extends OncePerRequestFilter {
 
             return true;
         }
+        if(request.getRequestURI().startsWith("/api/generate-presigned-url")){
+            return true;
+        }
         if (request.getRequestURI().startsWith("/reissue")) {
 
             return true;
