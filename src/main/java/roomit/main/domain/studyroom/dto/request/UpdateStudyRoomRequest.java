@@ -10,16 +10,7 @@ public record UpdateStudyRoomRequest(
     @NotBlank (message = "스터디룸 수용인원은 필수입니다.") Integer capacity,
     @NotBlank (message = "스터디룸 가격은 필수입니다.") Integer price
 ) {
-    public StudyRoom toEntity() {
-        return StudyRoom.builder()
-                .title(title)
-                .description(description)
-                .capacity(capacity)
-                .price(price)
-                .build();
-    }
-
-    public void updaedStudyRoom(StudyRoom studyRoom) {
+    public void updatedStudyRoom(StudyRoom studyRoom) {
         studyRoom.setTitle(title);
         studyRoom.setDescription(description);
         studyRoom.setCapacity(capacity);

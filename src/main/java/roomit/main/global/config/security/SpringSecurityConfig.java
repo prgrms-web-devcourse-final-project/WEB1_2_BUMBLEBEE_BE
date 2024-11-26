@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -118,7 +119,9 @@ public class SpringSecurityConfig {
                         .requestMatchers("/login/**","/").permitAll()
                         .requestMatchers("/reissue").permitAll()
                         .requestMatchers("/api/v1/member/signup").permitAll()
+                        .requestMatchers("/api/v1/member/**").hasRole("USER")
                         .requestMatchers("/api/v1/business/signup").permitAll()
+                        .requestMatchers("/api/v1/member/**").hasRole("BUSINESS")
                         .anyRequest().authenticated()); // permitAll()로 할시 모두 허용
 
 
