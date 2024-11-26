@@ -1,11 +1,11 @@
-name: develop(pull_request) Check Style And Test
-on:
-  pull_request:
-    branches:
-      - develop
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:latest
+        ports:
+          - 6379:6379
     strategy:
       matrix:
         java-version: [ 17 ]
