@@ -27,7 +27,7 @@ public class BusinessController {
 
     //사업자 정보 수정
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PutMapping("api/v1/business/update")
+    @PutMapping("api/v1/business")
     public void businessModify(@RequestBody @Valid BusinessUpdateRequest businessUpdateRequest
                                ,@AuthenticationPrincipal CustomBusinessDetails customBusinessDetails){
         businessService.updateBusinessInfo(customBusinessDetails.getId(), businessUpdateRequest);
