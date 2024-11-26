@@ -12,8 +12,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic", "/queue");
-        registry.setApplicationDestinationPrefixes("/app");
+        // Simple Broker를 사용하여 메시지를 브로커 없이 전달
+        registry.enableSimpleBroker("/sub");
+        registry.setApplicationDestinationPrefixes("/pub");
     }
 
     @Override
@@ -23,3 +24,4 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .withSockJS();
     }
 }
+
