@@ -21,10 +21,6 @@ public class ChatService {
     private final ChatMessageRepository messageRepository;
 
     public void sendMessage(ChatMessageRequest request) {
-
-        System.out.println("Sending message to /sub/chat/room/" + request.roomId());
-        System.out.println("Message content: " + request);
-
         // Redis Pub/Sub 발행
         String topic = "/sub/chat/room/" + request.roomId();
         redisPublisher.publish(topic, request);
@@ -55,7 +51,7 @@ public class ChatService {
                         message.getContent(),
                         message.getTimestamp()
                 ))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public void deleteOldMessages() {
