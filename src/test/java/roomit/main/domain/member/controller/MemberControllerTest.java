@@ -1,5 +1,5 @@
 //
-//package roomit.web1_2_bumblebee_be.domain.member.controller;
+//package roomit.main.domain.member.controller;
 //
 //import com.fasterxml.jackson.databind.ObjectMapper;
 //import org.junit.jupiter.api.Assertions;
@@ -13,13 +13,15 @@
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 //import org.springframework.test.context.ActiveProfiles;
 //import org.springframework.test.web.servlet.MockMvc;
-//import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberRegisterRequest;
-//import roomit.web1_2_bumblebee_be.domain.member.dto.request.MemberUpdateRequest;
-//import roomit.web1_2_bumblebee_be.domain.member.entity.Member;
-//import roomit.web1_2_bumblebee_be.domain.member.entity.Role;
-//import roomit.web1_2_bumblebee_be.domain.member.entity.Sex;
-//import roomit.web1_2_bumblebee_be.domain.member.repository.MemberRepository;
-//import roomit.web1_2_bumblebee_be.global.error.ErrorCode;
+//import org.springframework.test.web.servlet.MvcResult;
+//import roomit.main.domain.member.dto.request.MemberRegisterRequest;
+//import roomit.main.domain.member.dto.request.MemberUpdateRequest;
+//import roomit.main.domain.member.entity.Member;
+//import roomit.main.domain.member.entity.Sex;
+//import roomit.main.domain.member.repository.MemberRepository;
+//import roomit.main.domain.token.dto.LoginRequest;
+//import roomit.main.domain.token.dto.LoginResponse;
+//import roomit.main.global.error.ErrorCode;
 //
 //import java.time.LocalDate;
 //
@@ -50,7 +52,7 @@
 //    @BeforeEach
 //    void setUp() {
 //        memberRepository.deleteAll();
-//        date  = LocalDate.of(2024, 11, 22);
+//        date = LocalDate.of(2024, 11, 22);
 //        member = Member.builder()
 //                .birthDay(date)
 //                .memberSex(Sex.FEMALE)
@@ -61,9 +63,10 @@
 //                .passwordEncoder(bCryptPasswordEncoder)
 //                .build();
 //    }
+//
 //    @Test
 //    @DisplayName("성별, 비밀번호 없을떄 등록시 필요한 검증값 나오게끔 테스트")
-//    void test() throws Exception{
+//    void test() throws Exception {
 //
 //
 //        MemberRegisterRequest 치킨유저 = MemberRegisterRequest.builder()
@@ -86,7 +89,7 @@
 //
 //    @Test
 //    @DisplayName("회원 등록")
-//    void test1() throws Exception{
+//    void test1() throws Exception {
 //        MemberRegisterRequest memberRequest = MemberRegisterRequest.builder()
 //                .birthDay(date)
 //                .sex(Sex.FEMALE)
@@ -100,25 +103,43 @@
 //        String json = objectMapper.writeValueAsString(memberRequest);
 //
 //        mockMvc.perform(post("/api/v1/member/signup")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(json)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(json)
 //                )
-//                .andExpect(status().isOk())
+//                .andExpect(status().isCreated())
 //                .andDo(print());
 //    }
 //
 //    @Test
 //    @DisplayName("회원 정보")
-//    void test2() throws Exception{
+//    void test2() throws Exception {
+//
+//        LoginRequest loginRequest = LoginRequest.builder()
+//                .email("sdsd@naver.com")
+//                .password("Business1!")
+//                        .build();
+//
+//        String json = objectMapper.writeValueAsString(loginRequest);
+//
+//        MvcResult loginResult = mockMvc.perform(post("/login/member")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(json))
+//                .andExpect(status().isOk())
+//                .andReturn();
+//
+//        LoginResponse loginResponse = objectMapper.readValue(loginResult.getResponse().getContentAsString(), LoginResponse.class);
+//        String token = loginResponse.getToken();
+//        System.out.println(token);
 //
 //
 //        memberRepository.save(member);
 //
-//        mockMvc.perform(get("/api/v1/member/{memberId}", member.getMemberId())
+//        mockMvc.perform(get("/api/v1/member/")
 //                        .contentType(MediaType.APPLICATION_JSON)
+//                        .header("Authorization", "Bearer " + token)
 //
 //                )
-//                .andExpect(status().isOk())
+//                .andExpect(status().isCreated())
 //                .andExpect(jsonPath("$.birthDay").value("2024-11-22"))
 //                .andExpect(jsonPath("$.sex").value(Sex.FEMALE.name()))
 //                .andExpect(jsonPath("$.email").value("sdsd@naver.com"))
@@ -130,12 +151,12 @@
 //        Member member1 = memberRepository.findByMemberEmail("sdsd@naver.com")
 //                .orElseThrow(ErrorCode.MEMBER_NOT_FOUND::commonException);
 //
-//        Assertions.assertTrue(bCryptPasswordEncoder.matches("Business1!",member1.getMemberPwd()));
+//        Assertions.assertTrue(bCryptPasswordEncoder.matches("Business1!", member1.getMemberPwd()));
 //    }
 //
 //    @Test
 //    @DisplayName("회원 정보 수정")
-//    void test3() throws Exception{
+//    void test3() throws Exception {
 //
 //
 //        memberRepository.save(member);
@@ -163,16 +184,15 @@
 //        Member member1 = memberRepository.findByMemberEmail("sdsd@naver.com")
 //                .orElseThrow(ErrorCode.MEMBER_NOT_FOUND::commonException);
 //
-//        Assertions.assertTrue(bCryptPasswordEncoder.matches("Business2!",member1.getMemberPwd()));
+//        Assertions.assertTrue(bCryptPasswordEncoder.matches("Business2!", member1.getMemberPwd()));
 //    }
 //
 //    @Test
 //    @DisplayName("회원 정보 삭제")
-//    void test4() throws Exception{
+//    void test4() throws Exception {
 //
 //
 //        memberRepository.save(member);
-//
 //
 //
 //        mockMvc.perform(delete("/api/v1/member/{memberId}", member.getMemberId())
