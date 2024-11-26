@@ -7,7 +7,9 @@ import roomit.main.domain.member.repository.MemberRepository;
 import roomit.main.domain.reservation.entity.Reservation;
 import roomit.main.domain.reservation.repository.ReservationRepository;
 import roomit.main.domain.studyroom.dto.request.CreateStudyRoomRequest;
+import roomit.main.domain.studyroom.dto.request.FindAvailableStudyRoomRequest;
 import roomit.main.domain.studyroom.dto.request.UpdateStudyRoomRequest;
+import roomit.main.domain.studyroom.dto.response.FindPossibleStudyRoomResponse;
 import roomit.main.domain.studyroom.dto.response.RecentStudyRoomResponse;
 import roomit.main.domain.studyroom.dto.response.StudyRoomResponse;
 import roomit.main.domain.studyroom.entity.StudyRoom;
@@ -38,12 +40,6 @@ public class StudyRoomService {
         return StudyRoomResponse.from(savedStudyRoom);
     }
 
-    // 작업장의 스터디룸 조회
-    @Transactional(readOnly = true)
-    public List<StudyRoom> findStudyRoomsByWorkplace(Long workplaceId) {
-        return studyRoomRepository.findStudyRoomsByWorkPlaceId(workplaceId);
-    }
-
     // 스터디룸 전체 조회
     @Transactional(readOnly = true)
     public List<StudyRoom> getAllStudyRooms() {
@@ -61,7 +57,7 @@ public class StudyRoomService {
     @Transactional
     public void updateStudyRoom(UpdateStudyRoomRequest request) {
         StudyRoom studyRoom = getStudyRoom(request.studyRoomId());
-        request.updaedStudyRoom(studyRoom);
+        request.updatedStudyRoom(studyRoom);
         studyRoomRepository.save(studyRoom);
     }
 
@@ -74,40 +70,22 @@ public class StudyRoomService {
         studyRoomRepository.delete(studyRoom);
     }
 
-    // 사업장ID에 따른 스터디룸 리스트 조회 v
+    // 사업장ID에 따른 스터디룸 리스트 조회 ( 스터디룸 상세페이지 - 룸 선택 탭 )
     @Transactional(readOnly = true)
-    public List<StudyRoom> findStudyRoomsByWorkPlaceId(Long workplaceId) {
+    public List<StudyRoomResponse> findStudyRoomsByWorkPlaceId(Long workplaceId) {
         return studyRoomRepository.findStudyRoomsByWorkPlaceId(workplaceId);
     }
 
-    // 최근 예약한 스터디룸 보여주기
-    public Optional<RecentStudyRoomResponse> findRecentReservation(Long memberId){
-        Optional<Reservation> recentReservationOpt = reservationRepository.findRecentReservationByMemberId(memberId);
 
-        if (recentReservationOpt.isPresent()) {
-            Reservation recentReservation = recentReservationOpt.get();
 
-            Long studyRoomId = recentReservation.getStudyRoom().getStudyRoomId();
-            StudyRoom studyRoom = studyRoomRepository.findById(studyRoomId)
-                    .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
-
-            Long workplaceId = studyRoom.getWorkPlaceId().getWorkplaceId();
-            Workplace workplace = workplaceRepository.findById(workplaceId)
-                    .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
-            return Optional.of(RecentStudyRoomResponse.from(workplace, recentReservation, studyRoom));
-        } else {
-            return Optional.empty();
-        }
+    // 사용 가능한 스터디룸 목록 조회
+    @Transactional(readOnly = true)
+    public List<FindPossibleStudyRoomResponse> findAvailableStudyRooms(FindAvailableStudyRoomRequest request) {
+        return studyRoomRepository.findAvailableStudyRooms(
+                request.workplaceAddress(),
+                request.startTime(),
+                request.endTime(),
+                request.capacity()
+        );
     }
-
-//    // 사용 가능한 스터디룸 목록 조회
-//    @Transactional(readOnly = true)
-//    public List<FindPossibleStudyRoomResponse> findAvailableStudyRooms(FindAvailableStudyRoomRequest request) {
-//        return studyRoomRepository.findAvailableStudyRooms(
-//                request.workplaceAddress(),
-//                request.startTime(),
-//                request.endTime(),
-//                request.capacity()
-//        );
-//    }
 }
