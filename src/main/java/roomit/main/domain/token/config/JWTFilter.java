@@ -17,6 +17,7 @@ import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.business.service.CustomBusinessDetailsService;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.member.entity.Role;
+import roomit.main.domain.member.entity.Sex;
 import roomit.main.domain.member.service.CustomMemberDetailsService;
 import roomit.main.domain.token.config.JWTUtil;
 
@@ -24,6 +25,7 @@ import roomit.main.domain.token.config.JWTUtil;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -90,8 +92,13 @@ public class JWTFilter extends OncePerRequestFilter {
             if ("ROLE_USER".equals(role)) {
                 Member member = Member.builder()
                         .memberEmail(email)
-                        .memberPwd("dummy")
+                        .birthDay(LocalDate.now())
+                        .memberNickName("멤버테스트")
+                        .memberPwd("Dummy1423!")
+                        .memberSex(Sex.MALE)
                         .memberRole(Role.ROLE_USER)
+                        .memberPhoneNumber("010-1111-2222")
+                        .passwordEncoder(passwordEncoder)
                         .build();
                 principal = customMemberDetailsService.loadUserByUsername(member.getMemberEmail());
             } else if ("ROLE_BUSINESS".equals(role)) { //모든 정보가 들어가는 문제가 있음
@@ -136,6 +143,10 @@ public class JWTFilter extends OncePerRequestFilter {
             return true;
         }
         if (request.getRequestURI().startsWith("/api/v1/business/signup")) {
+
+            return true;
+        }
+        if (request.getRequestURI().startsWith("/reissue")) {
 
             return true;
         }
