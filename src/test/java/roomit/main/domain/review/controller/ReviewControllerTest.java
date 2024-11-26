@@ -85,7 +85,10 @@ class ReviewControllerTest {
                 .memberPhoneNumber("010-2421-2315")
                 .memberNickName("치킨유저1")
                 .passwordEncoder(bCryptPasswordEncoder)
-                .build();;
+                .build();
+
+
+        memberRepository.save(member);
 
         workplace = Workplace.builder()
                 .workplaceName("사업장")
@@ -95,12 +98,12 @@ class ReviewControllerTest {
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                 .build();
-        memberRepository.save(member);
+
 
         workplaceRepository.save(workplace);
 
         LoginRequest loginRequest = LoginRequest.builder()
-                .email("sdsd@naver.com")
+                .email("qwdfasdf@naver.com")
                 .password("Business1!")
                 .build();
 
@@ -145,11 +148,6 @@ class ReviewControllerTest {
     @DisplayName("리뷰 수정")
     void test2() throws Exception{
 
-
-
-
-
-
         Review review = Review.builder()
                 .reviewContent("치킨이 안보이네요..")
                 .reviewRating(1.3)
@@ -160,7 +158,6 @@ class ReviewControllerTest {
 
 
         ReviewUpdateRequest request = ReviewUpdateRequest.builder()
-                .memberId(member.getMemberId())
                 .reviewContent("좋은 장소네요")
                 .reviewRating(2.4)
                 .workplaceId(workplace.getWorkplaceId())

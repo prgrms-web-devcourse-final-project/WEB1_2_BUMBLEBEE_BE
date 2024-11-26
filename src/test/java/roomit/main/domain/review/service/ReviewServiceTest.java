@@ -130,7 +130,6 @@ class ReviewServiceTest {
                 .reviewContent("치킨이 보이네요??")
                 .reviewRating(4.1)
                 .workplaceId(workplace.getWorkplaceId())
-                .memberId(member.getMemberId())
                 .build();
 
         reviewService.update(review.getReviewId(), reviewUpdateRequest);
@@ -185,7 +184,6 @@ class ReviewServiceTest {
         reviewRepository.save(review);
 
         reviewService.remove(review.getReviewId());
-
         assertEquals(0, reviewRepository.findAll().size());
 
     }

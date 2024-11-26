@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 import roomit.main.domain.member.dto.request.MemberRegisterRequest;
 import roomit.main.domain.member.dto.request.MemberUpdateRequest;
 import roomit.main.domain.member.dto.response.MemberResponse;
