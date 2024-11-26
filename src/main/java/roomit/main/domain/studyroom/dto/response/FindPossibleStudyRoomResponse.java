@@ -9,9 +9,8 @@ import roomit.main.domain.workplace.entity.value.WorkplaceName;
 
 public record FindPossibleStudyRoomResponse(
     WorkplaceName workplaceName,
-    Double averageReviewScore,
     String studyRoomTitle,
-    double reviewScore,
+    Double reviewScore,
     WorkplaceAddress workplaceAddress,
     Integer studyRoomCapacity,
     Integer studyRoomPrice,
@@ -21,7 +20,6 @@ public record FindPossibleStudyRoomResponse(
     public static FindPossibleStudyRoomResponse from(Workplace workplace, StudyRoom studyRoom, Review review){
         return new FindPossibleStudyRoomResponse(
                 workplace.getWorkplaceName(),
-                review.getReviewRating(),
                 studyRoom.getTitle(),
                 review.getReviewRating(),
                 workplace.getWorkplaceAddress(),
