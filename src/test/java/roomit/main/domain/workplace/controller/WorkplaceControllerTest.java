@@ -56,6 +56,8 @@ public class WorkplaceControllerTest {
 
     @BeforeAll
     void setUp() throws Exception {
+        businessRepository.deleteAll();
+        workplaceRepository.deleteAll();
 
         //회원 가입
         BusinessRegisterRequest businessRegisterRequest = BusinessRegisterRequest.builder()
