@@ -18,16 +18,14 @@ import java.util.List;
 public class ChatController {
 
     private final ChatService chatService;
-    private final SimpMessagingTemplate messagingTemplate;
 
     @MessageMapping("/chat.sendMessage")
     public void sendMessage(@Payload ChatMessageRequest request) {
-        ChatMessageResponse response = chatService.saveMessage(request);
-        messagingTemplate.convertAndSend("/topic/" + response.roomId(), response);
+        chatService.sendMessage(request); // Redis 발행 + MySQL 저장
     }
 
     @GetMapping("/chat/room/{roomId}")
     public List<ChatMessageResponse> getMessages(@PathVariable Long roomId) {
-        return chatService.getMessagesByRoomId(roomId);
+        return chatService.getMessagesByRoomId(roomId); // MySQL에서 메시지 조회
     }
 }

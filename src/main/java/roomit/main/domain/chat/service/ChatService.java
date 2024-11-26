@@ -16,10 +16,24 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ChatService {
+    private final RedisPublisher redisPublisher;
     private final ChatRoomRepository roomRepository;
     private final ChatMessageRepository messageRepository;
 
-    public ChatMessageResponse saveMessage(ChatMessageRequest request) {
+    public void sendMessage(ChatMessageRequest request) {
+
+        System.out.println("Sending message to /sub/chat/room/" + request.roomId());
+        System.out.println("Message content: " + request);
+
+        // Redis Pub/Sub 발행
+        String topic = "/sub/chat/room/" + request.roomId();
+        redisPublisher.publish(topic, request);
+
+        // MySQL에 저장
+        saveMessageToDatabase(request);
+    }
+
+    private void saveMessageToDatabase(ChatMessageRequest request) {
         ChatRoom room = roomRepository.findById(request.roomId())
                 .orElseThrow(() -> new IllegalArgumentException("Room not found"));
 
@@ -29,16 +43,7 @@ public class ChatService {
                 request.content(),
                 LocalDateTime.now()
         );
-
-        ChatMessage savedMessage = messageRepository.save(message);
-
-        return new ChatMessageResponse(
-                savedMessage.getMessageId(),
-                savedMessage.getRoom().getRoomId(),
-                savedMessage.getSender(),
-                savedMessage.getContent(),
-                savedMessage.getTimestamp()
-        );
+        messageRepository.save(message);
     }
 
     public List<ChatMessageResponse> getMessagesByRoomId(Long roomId) {
@@ -57,4 +62,5 @@ public class ChatService {
         LocalDateTime cutoffDate = LocalDateTime.now().minusDays(30);
         messageRepository.deleteByTimestampBefore(cutoffDate);
     }
+
 }
