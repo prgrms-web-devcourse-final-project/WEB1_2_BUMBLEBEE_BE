@@ -1,84 +1,88 @@
-//package roomit.web1_2_bumblebee_be.domain.business.service;
-//
-//import org.junit.jupiter.api.*;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.test.context.ActiveProfiles;
-//import roomit.web1_2_bumblebee_be.domain.business.entity.Business;
-//import roomit.web1_2_bumblebee_be.domain.business.repository.BusinessRepository;
-//import roomit.web1_2_bumblebee_be.domain.business.dto.request.BusinessRegisterRequest;
-//import roomit.web1_2_bumblebee_be.domain.business.dto.request.BusinessUpdateRequest;
-//import java.util.NoSuchElementException;
-//import java.util.stream.IntStream;
-//
-//import static org.junit.jupiter.api.Assertions.*;
-//@SpringBootTest
-//@ActiveProfiles("test")
-//@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-//public class BusinessServiceTest {
-//
-//    @Autowired
-//    private BusinessService businessService;
-//
-//    @Autowired
-//    private BusinessRepository businessRepository;
-//
-//    @BeforeAll
-//    static void setUp(BusinessService businessService, BusinessRepository businessRepository) {
-//        businessRepository.deleteAll(); // 전체 데이터 삭제
-//
-//        IntStream.rangeClosed(1, 9).forEach(i -> {
-//            BusinessRegisterRequest businessRegisterRequest = BusinessRegisterRequest.builder()
-//                    .businessName("테스트사업자" + i)
-//                    .businessEmail("business" + i + "@gmail.com")
-//                    .businessPwd("Business1!")
-//                    .businessNum("123-12-1234" + i)
-//                    .build();
-//
-//            businessService.signUpBusiness(businessRegisterRequest); // 데이터 생성
-//
-//        });
-//    }
-//
-//    @Test
-//    @Order(1)
-//    @DisplayName("사업자 수정")
-//    void testModify(){
-//        //given
-//        BusinessUpdateRequest businessUpdateRequest = BusinessUpdateRequest.builder()
-//                .businessEmail("businessModify@gmail.com")
-//                .businessName("ModifyTest")
-//                .businessNum("999-99-99999")
-//                .build();
-//
-//        Long businessId = 1L;
-//
-//        //When
-//        businessService.updateBusinessInfo(businessId, businessUpdateRequest);
-//
-//        Business business = businessRepository.findByBusinessEmail("businessModify@gmail.com")
-//                .orElseThrow(NoSuchElementException::new);
-//
-//        //Then
-//        assertEquals("ModifyTest",business.getBusinessName());
-//        assertEquals("999-99-99999",business.getBusinessNum());
-//    }
-//
-//    @Test
-//    @Order(2)
-//    @DisplayName("사업자 삭제")
-//    void testDelete(){
-//        //Given
-//        Long businessId = 2L;
-//
-//        //When
-//        businessService.deleteBusiness(businessId);
-//
-//
-//        //Then
-//        assertThrows(NoSuchElementException.class, () -> {
-//            businessRepository.findById(businessId).orElseThrow(NoSuchElementException::new); // 이미 삭제된 비즈니스 조회
-//        });
-//    }
-//
-//}
+package roomit.main.domain.business.service;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import roomit.main.domain.business.dto.request.BusinessRegisterRequest;
+import roomit.main.domain.business.dto.request.BusinessUpdateRequest;
+import roomit.main.domain.business.entity.Business;
+import roomit.main.domain.business.repository.BusinessRepository;
+
+import java.util.NoSuchElementException;
+import java.util.stream.IntStream;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@SpringBootTest
+@ActiveProfiles("test")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS) // 클래스 인스턴스를 하나만 생성하도록 설정
+public class BusinessServiceTest {
+
+    @Autowired
+    private BusinessService businessService;
+
+    @Autowired
+    private BusinessRepository businessRepository;
+
+    private static long businessId;
+
+    @BeforeAll
+    void setUp() {
+        IntStream.rangeClosed(1, 5).forEach(i -> {
+            BusinessRegisterRequest businessRegisterRequest = BusinessRegisterRequest.builder()
+                .businessName("테스트사업자" + i)
+                .businessEmail("business" + i + "@gmail.com")
+                .businessPwd("Business1!")
+                .businessNum("123-12-1234" + i)
+                .build();
+
+            businessService.signUpBusiness(businessRegisterRequest); // 데이터 생성
+
+            businessId = businessRepository.findByBusinessEmail("business" + i + "@gmail.com").orElseThrow(NoSuchElementException::new).getBusinessId();
+        }
+        );
+    }
+
+    @Test
+    @Order(1)
+    @DisplayName("사업자 수정")
+    void testModify() {
+        // Given
+        BusinessUpdateRequest businessUpdateRequest = BusinessUpdateRequest.builder()
+            .businessEmail("businessModify@gmail.com")
+            .businessName("ModifyTest")
+            .businessNum("999-99-99999")
+            .build();
+
+        // When
+        businessService.updateBusinessInfo(businessId, businessUpdateRequest);
+
+        Business business = businessRepository.findByBusinessEmail("businessModify@gmail.com")
+            .orElseThrow(NoSuchElementException::new);
+
+        // Then
+        assertEquals("ModifyTest", business.getBusinessName());
+        assertEquals("999-99-99999", business.getBusinessNum());
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("사업자 삭제")
+    void testDelete() {
+        // When
+        businessService.deleteBusiness(businessId);
+
+        // Then
+        assertThrows(NoSuchElementException.class, () -> {
+            businessRepository.findById(businessId).orElseThrow(NoSuchElementException::new); // 이미 삭제된 비즈니스 조회
+        });
+    }
+}
