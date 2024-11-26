@@ -1,9 +1,7 @@
 package roomit.main.domain.reservation.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.studyroom.entity.BaseEntity;
 import roomit.main.domain.studyroom.entity.StudyRoom;
@@ -13,6 +11,7 @@ import java.time.LocalDateTime;
 @Table(name = "Reservation")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Setter
 @Entity
 public class Reservation extends BaseEntity{
 
@@ -39,9 +38,20 @@ public class Reservation extends BaseEntity{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member member;
+    private Member memberId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "studyroom_id")
-    private StudyRoom studyRoom;
+    private StudyRoom studyRoomId;
+
+    @Builder
+    public Reservation(String reservationName, String reservationPhoneNumber, ReservationState reservationState, LocalDateTime startTime, LocalDateTime endTime, Member memberId, StudyRoom studyRoomId) {
+        this.reservationName = reservationName;
+        this.reservationPhoneNumber = reservationPhoneNumber;
+        this.reservationState = reservationState;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.memberId = memberId;
+        this.studyRoomId = studyRoomId;
+    }
 }
