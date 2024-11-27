@@ -41,24 +41,26 @@ public class ReviewController {
 
     // 단건 리뷰 조회
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/api/v1/review/{reviewId}")
-    public ReviewResponse read(
-            @PathVariable Long reviewId) {
-       return reviewService.read(reviewId);
+    @GetMapping("/api/v1/review/me")
+    public List<ReviewResponse> read(
+            @AuthenticationPrincipal CustomMemberDetails customMemberDetails) {
+
+       return reviewService.read(customMemberDetails.getId());
     }
 
     // 리뷰 페이징
-    @GetMapping("/api/v1/review")
+    @GetMapping("api/v1/review/workplace/{workplaceId}")
     public ResponseEntity<CursorResponse> getReviews(
             @RequestParam(required = false) Long lastId,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @PathVariable Long workplaceId) {
 
         ReviewSearch reviewSearch = ReviewSearch.builder()
                 .lastId(lastId) // 커서를 사용
                 .size(size)
                 .build();
 
-        List<ReviewResponse> reviews = reviewService.getList(reviewSearch);
+        List<ReviewResponse> reviews = reviewService.getList(reviewSearch, workplaceId);
 
         Long nextCursor = reviews.isEmpty()
                 ? null

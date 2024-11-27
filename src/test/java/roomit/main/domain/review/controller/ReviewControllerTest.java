@@ -185,13 +185,13 @@ class ReviewControllerTest {
                 .build();
         reviewRepository.save(review);
 
-        mockMvc.perform(get("/api/v1/review/{reviewId}",review.getReviewId())
+        mockMvc.perform(get("/api/v1/review/me")
                         .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + token)
                         )
-                .andExpect(jsonPath("$.reviewContent").value(review.getReviewContent()))
-                .andExpect(jsonPath("$.reviewRating").value(review.getReviewRating()))
-                .andExpect(jsonPath("$.workplaceName").value(review.getWorkplace().getWorkplaceName().getValue()))
+                .andExpect(jsonPath("$[0].reviewContent").value("치킨이 안보이네요.."))
+                .andExpect(jsonPath("$[0].reviewRating").value(review.getReviewRating()))
+                .andExpect(jsonPath("$[0].workplaceName").value(review.getWorkplace().getWorkplaceName().getValue()))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
@@ -232,7 +232,7 @@ class ReviewControllerTest {
 
         reviewRepository.saveAll(list);
 
-        mockMvc.perform(get("/api/v1/review")
+        mockMvc.perform(get("/api/v1/review/workplace/{workplaceId}",workplace.getWorkplaceId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token)
                 )
@@ -256,7 +256,7 @@ class ReviewControllerTest {
 
         reviewRepository.saveAll(list);
 
-        MvcResult mvcResult = mockMvc.perform(get("/api/v1/review")
+        MvcResult mvcResult = mockMvc.perform(get("/api/v1/review/workplace/{workplaceId}", workplace.getWorkplaceId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token)
 
@@ -266,7 +266,7 @@ class ReviewControllerTest {
         String json = mvcResult.getResponse().getContentAsString();
         Long nestCursor = JsonPath.parse(json).read("$.nextCursor", Long.class);
 
-        mockMvc.perform(get("/api/v1/review?lastId="+nestCursor)
+        mockMvc.perform(get("/api/v1/review/workplace/{workplaceId}?lastId="+nestCursor, workplace.getWorkplaceId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token)
                 )
@@ -291,7 +291,7 @@ class ReviewControllerTest {
 
         reviewRepository.saveAll(list);
 
-        mockMvc.perform(get("/api/v1/review?lastId=232")
+        mockMvc.perform(get("/api/v1/review/workplace/{workplaceId}?lastId=232",workplace.getWorkplaceId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token)
                 )

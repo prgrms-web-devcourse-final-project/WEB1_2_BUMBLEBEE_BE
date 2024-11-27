@@ -9,6 +9,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import roomit.main.domain.business.entity.Business;
+import roomit.main.domain.review.entity.Review;
 import roomit.main.domain.workplace.entity.value.ImageUrl;
 import roomit.main.domain.workplace.entity.value.WorkplaceAddress;
 import roomit.main.domain.workplace.entity.value.WorkplaceName;
@@ -16,6 +17,8 @@ import roomit.main.domain.workplace.entity.value.WorkplacePhoneNumber;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "workplace")
@@ -73,8 +76,8 @@ public class Workplace {
 //    @OneToMany(mappedBy = "workplace", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
 //    private List<StudyRoom> studyRoom = new ArrayList<>();
 
-//    @OneToMany(mappedBy = "workplace", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-//    private List<Review> review = new ArrayList<>();
+    @OneToMany(mappedBy = "workplace", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<Review> review = new ArrayList<>();
 
 
     @Builder
