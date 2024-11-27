@@ -41,10 +41,11 @@ public class ReviewController {
 
     // 단건 리뷰 조회
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/api/v1/review/{reviewId}")
-    public ReviewResponse read(
-            @PathVariable Long reviewId) {
-       return reviewService.read(reviewId);
+    @GetMapping("/api/v1/review/me")
+    public List<ReviewResponse> read(
+            @AuthenticationPrincipal CustomMemberDetails customMemberDetails) {
+
+       return reviewService.read(customMemberDetails.getId());
     }
 
     // 리뷰 페이징
