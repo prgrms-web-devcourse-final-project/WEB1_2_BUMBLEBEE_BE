@@ -20,7 +20,7 @@ public class MemberPhoneNumber {
     public static final String ERR_MSG = "멤버 번호는 10자리 번호로 이루어져야합니다";
     private static final Pattern PATTERN = Pattern.compile(REGEX);
 
-    @Column(name = "member_phonenumber", nullable = false, length = 30, unique = true)
+    @Column(name = "member_phonenumber", nullable = false, length = 30)
     private String value;
 
     public MemberPhoneNumber(final String nickname) {

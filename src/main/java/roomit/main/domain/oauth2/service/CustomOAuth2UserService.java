@@ -1,6 +1,10 @@
 package roomit.main.domain.oauth2.service;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -47,18 +51,20 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         String username = oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();
-        Member existData = memberRepository.findByMemberNickName(username);
+        String provider = username.substring(0,5)+oAuth2Response.getNickname();
+        Member existData = memberRepository.findByMemberNickName(provider);
+
 
         if (existData == null){
-            //username == nickname
             Member data = Member.builder()
                     .memberRole(Role.ROLE_USER)
                     .birthDay(LocalDate.now())
                     .memberSex(Sex.MALE)
-                    .memberPhoneNumber("010-1111-2222")
-                    .memberPwd("1111")
+                    .memberPhoneNumber("010-1212-3232")
+                    .memberPwd("TestPwd12!")
                     .memberEmail(oAuth2Response.getEmail())
-                    .memberNickName(username)
+                    .memberNickName(provider)
+                    .passwordEncoder(new BCryptPasswordEncoder())
                     .build();
 
             Member member = memberRepository.save(data);

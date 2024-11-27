@@ -109,28 +109,66 @@ public class SpringSecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable);
         //oauth2
         http
-                .oauth2Login((oauth2) -> oauth2
-                        .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
-                                .userService(customOAuth2UserService))
-                        .successHandler(customSuccessHandler));
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/noauth") // 로그인 페이지 설정
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)) // 사용자 정보 로드
+                        .successHandler(customSuccessHandler) // 성공 핸들러
+                );
         http
                 // 경로별 인가 작업
                 .authorizeHttpRequests((auth) -> auth
+                        //모두 허용
                         .requestMatchers("/login/**","/").permitAll()
                         .requestMatchers("/reissue").permitAll()
                         .requestMatchers("/api/v1/member/signup").permitAll()
-                        .requestMatchers("/api/v1/member/**").hasRole("USER")
                         .requestMatchers("/api/v1/business/signup").permitAll()
-                        .requestMatchers("/api/v1/review/**").hasRole("USER")
-                        .requestMatchers("/api/generate-presigned-url").permitAll()
-                        .requestMatchers("/api/v1/member/**").hasRole("BUSINESS")
-                        .requestMatchers(HttpMethod.GET, "api/v1/review").permitAll()
-                        .requestMatchers(HttpMethod.GET, "api/v1/review/me").hasRole("USER")
-                        .requestMatchers(HttpMethod.POST,"api/v1/review/register").hasAnyRole("BUSINESS", "USER")
-                        .requestMatchers(HttpMethod.PUT, "api/v1/review/update/**").hasAnyRole("BUSINESS", "USER")
-                        .requestMatchers(HttpMethod.DELETE, "api/v1/review/**").hasAnyRole("BUSINESS", "USER")
-                        .anyRequest().authenticated()); // permitAll()로 할시 모두 허용
 
+                        //멤버 권한 설정
+                        .requestMatchers("/api/v1/member").hasRole("USER")
+
+                        //비즈니스 권한 설정
+                        .requestMatchers("/api/v1/business").hasRole("BUSINESS")
+
+                        //스터디룸 권한 설정
+                        .requestMatchers(HttpMethod.GET,"/api/v1/studyroom/workplace/**").permitAll() //사업장의 스터디룸 찾기
+                        .requestMatchers(HttpMethod.GET,"/api/v1/studyroom/search").permitAll() //예약가능한 스터디룸 찾기
+                        .requestMatchers(HttpMethod.GET,"/api/v1/studyroom/**").hasRole("USER") //최근 예약한 스터디룸 보여주기
+                        .requestMatchers(HttpMethod.POST,"/api/v1/studyroom").hasRole("BUSINESS") //스터디룸 등록
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/studyroom").hasRole("BUSINESS") //스터디룸 수정
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/studyroom/**").hasRole("BUSINESS") //스터디룸 삭제
+
+                        //사업장 권한 설정
+                        .requestMatchers(HttpMethod.GET,"/api/v1/workplace/info/**").permitAll() //사업장 정보 조회
+                        .requestMatchers(HttpMethod.GET,"/api/v1/workplace").permitAll() //사업장 조회
+                        .requestMatchers(HttpMethod.GET,"/api/v1/workplace/business").permitAll() //사업자 사업장 조회
+                        .requestMatchers(HttpMethod.GET,"/api/v1/workplace/distance").permitAll() //위치 기반 주변 사업장
+                        .requestMatchers(HttpMethod.POST,"/api/v1/workplace").hasRole("BUSINESS") //사업장 등록
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/workplace/**").hasRole("BUSINESS") //사업장 정보 수정
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/workplace/**").hasRole("BUSINESS") //사업장 삭제
+
+                        //예약 권한 설정
+                        .requestMatchers(HttpMethod.POST,"/api/v1/reservation").hasAnyRole("BUSINESS","USER") //예약 등록
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/reservation/**").hasAnyRole("BUSINESS","USER") //예약 수정
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/reservation/**").hasAnyRole("BUSINESS","USER") //예약 삭제
+                        .requestMatchers(HttpMethod.GET,"/api/v1/all/reservations/member/**").hasAnyRole("BUSINESS","USER") //특정 멤버의 최근 예약 단건 조회
+                        .requestMatchers(HttpMethod.GET,"/api/v1/reservation/**").hasAnyRole("BUSINESS","USER") //특정 멤버의 최근 예약 전체 조회
+                        .requestMatchers(HttpMethod.GET,"/api/v1/reservation/workplace/**").hasAnyRole("BUSINESS","USER") //특정 사업장의 예약 찾기
+
+                        //결제 권한 설정
+
+                        //알림 권한 설정
+                        .requestMatchers(HttpMethod.GET,"/api/v1/notification/member").hasRole("USER") //회원 알림 내역 조회
+                        .requestMatchers(HttpMethod.GET,"/api/v1/notification/business").hasRole("BUSINESS") //사업자 알림 내역 조회
+
+                        //리뷰 권한 설정
+                        .requestMatchers(HttpMethod.GET,"/api/v1/review/workplace/**").permitAll() //후기 전체 조회<페이징 >
+                        .requestMatchers(HttpMethod.GET,"/api/v1/review/me").hasAnyRole("BUSINESS","USER") //본인이 작성한 후기 조회
+                        .requestMatchers(HttpMethod.POST,"/api/v1/review/register").hasAnyRole("BUSINESS","USER") //후기 등록
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/review/update/**").hasAnyRole("BUSINESS","USER") //후기 수정
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/review/**").hasAnyRole("BUSINESS","USER") //후기 삭제
+
+                        .anyRequest().authenticated());
 
         http
                 .addFilterBefore(new JWTFilter(jwtUtil,bCryptPasswordEncoder(),memberDetailsService,businessDetailsService), LoginFilter.class);
