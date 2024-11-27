@@ -140,6 +140,7 @@ public class JWTFilter extends OncePerRequestFilter {
         List<String> excludedPaths = List.of(
                 "/",
                 "/login/**",
+                "/toss/**",
                 "/api/v1/member/signup",
                 "/api/v1/business/signup",
                 "/reissue",

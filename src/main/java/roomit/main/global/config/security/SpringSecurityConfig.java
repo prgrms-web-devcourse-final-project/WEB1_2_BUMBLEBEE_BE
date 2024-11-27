@@ -121,8 +121,11 @@ public class SpringSecurityConfig {
                         //모두 허용
                         .requestMatchers("/login/**","/").permitAll()
                         .requestMatchers("/reissue").permitAll()
+                        .requestMatchers("/noauth").permitAll()
                         .requestMatchers("/api/v1/member/signup").permitAll()
                         .requestMatchers("/api/v1/business/signup").permitAll()
+                        .requestMatchers("/toss/**").permitAll()
+
 
                         //멤버 권한 설정
                         .requestMatchers("/api/v1/member").hasRole("USER")
