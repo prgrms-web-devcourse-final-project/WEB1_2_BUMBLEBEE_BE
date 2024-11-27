@@ -24,6 +24,7 @@ import roomit.main.domain.token.dto.LoginResponse;
 import roomit.main.global.error.ErrorCode;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -177,10 +178,11 @@ class MemberControllerTest {
 
 
         MemberUpdateRequest memberRequest = MemberUpdateRequest.builder()
-                .pwd("Business2!")
+                .sex(Sex.MALE)
                 .email("sdsd@naver.com")
                 .phoneNumber("010-3323-2323")
                 .nickName("이이")
+                .birthDay(LocalDate.parse("1999-01-01"))
                 .build();
 
         String json = objectMapper.writeValueAsString(memberRequest);
@@ -199,7 +201,6 @@ class MemberControllerTest {
         Member member1 = memberRepository.findByMemberEmail("sdsd@naver.com")
                 .orElseThrow(ErrorCode.MEMBER_NOT_FOUND::commonException);
 
-        Assertions.assertTrue(bCryptPasswordEncoder.matches("Business2!", member1.getMemberPwd()));
     }
 
     @Test

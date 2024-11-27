@@ -58,7 +58,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if (existData == null){
             Member data = Member.builder()
                     .memberRole(Role.ROLE_USER)
-                    .birthDay(LocalDate.now())
                     .memberSex(Sex.MALE)
                     .memberPhoneNumber("010-1212-3232")
                     .memberPwd("TestPwd12!")

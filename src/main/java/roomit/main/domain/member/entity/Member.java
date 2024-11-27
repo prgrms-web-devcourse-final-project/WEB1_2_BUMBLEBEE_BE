@@ -53,14 +53,13 @@ public class Member {
     @Enumerated(value = EnumType.STRING)
     private Role memberRole;
 
-    @Column(name = "birth_day", nullable = false)
+    @Column(name = "birth_day")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDay;
 
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @LastModifiedDate
     private LocalDateTime deleteAt;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -105,5 +104,11 @@ public class Member {
     }
     public void changePwd(String newPwd) {
         this.memberPwd = new MemberPassword(newPwd, new BCryptPasswordEncoder());
+    }
+    public void changeSex(Sex newSex) {
+        this.memberSex = newSex;
+    }
+    public void changeBirthDay(LocalDate newBirthDay){
+        this.birthDay = newBirthDay;
     }
 }
