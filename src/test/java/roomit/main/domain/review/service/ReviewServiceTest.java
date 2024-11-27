@@ -148,31 +148,32 @@ class ReviewServiceTest {
     void test3() {
 
 
+        CustomMemberDetails customMemberDetails = new CustomMemberDetails(member);
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(customMemberDetails, null, customMemberDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        Review review = Review.builder()
-                .reviewContent("치킨이 안보이네요..")
-                .reviewRating(1.3)
+        List<Review> list = IntStream.rangeClosed(1, 20).mapToObj(i -> Review.builder()
+                .reviewContent("치킨이 안보이네요.." + i)
+                .reviewRating(3.1 + i)
                 .member(member)
                 .workplace(workplace)
-                .build();
+                .build()).toList();
 
 
-        reviewRepository.save(review);
+        reviewRepository.saveAll(list);
 
-        reviewService.read(review.getReviewId());
+        reviewService.read(customMemberDetails.getId());
 
         List<Review> all = reviewRepository.findAll();
-        assertEquals("치킨이 안보이네요..", all.get(0).getReviewContent());
-        assertEquals(1.3, all.get(0).getReviewRating());
-
+        assertEquals("치킨이 안보이네요..1", all.get(0).getReviewContent());
+        assertEquals(20,all.size());
     }
 
     @Test
     @DisplayName("리뷰 조회")
     @Transactional
     void test4() {
-
-
 
         Review review = Review.builder()
                 .reviewContent("치킨이 안보이네요..")

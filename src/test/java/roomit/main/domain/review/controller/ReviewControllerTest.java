@@ -185,13 +185,13 @@ class ReviewControllerTest {
                 .build();
         reviewRepository.save(review);
 
-        mockMvc.perform(get("/api/v1/review/{reviewId}",review.getReviewId())
+        mockMvc.perform(get("/api/v1/review/me")
                         .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + token)
                         )
-                .andExpect(jsonPath("$.reviewContent").value(review.getReviewContent()))
-                .andExpect(jsonPath("$.reviewRating").value(review.getReviewRating()))
-                .andExpect(jsonPath("$.workplaceName").value(review.getWorkplace().getWorkplaceName().getValue()))
+                .andExpect(jsonPath("$[0].reviewContent").value("치킨이 안보이네요.."))
+                .andExpect(jsonPath("$[0].reviewRating").value(review.getReviewRating()))
+                .andExpect(jsonPath("$[0].workplaceName").value(review.getWorkplace().getWorkplaceName().getValue()))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
