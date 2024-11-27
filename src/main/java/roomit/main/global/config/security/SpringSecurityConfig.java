@@ -137,7 +137,7 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/studyroom/**").hasRole("BUSINESS") //스터디룸 삭제
 
                         //사업장 권한 설정
-                        .requestMatchers(HttpMethod.GET,"/api/v1/workplace/**").permitAll() //사업장 정보 조회 !!수정
+                        .requestMatchers(HttpMethod.GET,"/api/v1/workplace/info/**").permitAll() //사업장 정보 조회
                         .requestMatchers(HttpMethod.GET,"/api/v1/workplace").permitAll() //사업장 조회
                         .requestMatchers(HttpMethod.GET,"/api/v1/workplace/business").permitAll() //사업자 사업장 조회
                         .requestMatchers(HttpMethod.GET,"/api/v1/workplace/distance").permitAll() //위치 기반 주변 사업장
@@ -160,7 +160,8 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/v1/notification/business").hasRole("BUSINESS") //사업자 알림 내역 조회
 
                         //리뷰 권한 설정
-                        .requestMatchers(HttpMethod.GET,"/api/v1/review/**").permitAll() //후기 조회 !!수정
+                        .requestMatchers(HttpMethod.GET,"/api/v1/review/workplace/**").permitAll() //후기 전체 조회<페이징 >
+                        .requestMatchers(HttpMethod.GET,"/api/v1/review/me").hasAnyRole("BUSINESS","USER") //본인이 작성한 후기 조회
                         .requestMatchers(HttpMethod.POST,"/api/v1/review/register").hasAnyRole("BUSINESS","USER") //후기 등록
                         .requestMatchers(HttpMethod.PUT,"/api/v1/review/update/**").hasAnyRole("BUSINESS","USER") //후기 수정
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/review/**").hasAnyRole("BUSINESS","USER") //후기 삭제
