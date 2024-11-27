@@ -194,7 +194,7 @@ class ReviewServiceTest {
     @Transactional
     void test5() {
 
-
+        Long workplaceId = workplace.getWorkplaceId();
         // 리뷰 데이터 20개 저장
         List<Review> reviews = IntStream.rangeClosed(1, 20).mapToObj(i -> Review.builder()
                 .reviewContent("치킨이 안보이네요.." + i)
@@ -211,7 +211,7 @@ class ReviewServiceTest {
                 .size(10)
                 .build();
 
-        List<ReviewResponse> firstPage = reviewService.getList(firstPageSearch);
+        List<ReviewResponse> firstPage = reviewService.getList(firstPageSearch, workplaceId);
 
         assertEquals(10, firstPage.size());
         assertEquals("치킨이 안보이네요..20", firstPage.get(0).reviewContent()); // 최신순 검증
@@ -225,7 +225,7 @@ class ReviewServiceTest {
                 .size(10)
                 .build();
 
-        List<ReviewResponse> secondPage = reviewService.getList(secondPageSearch);
+        List<ReviewResponse> secondPage = reviewService.getList(secondPageSearch,workplaceId);
 
         assertEquals(10, secondPage.size());// 다음 페이지 첫 항목 검증
         assertEquals("치킨이 안보이네요..1", secondPage.get(9).reviewContent()); // 다음 페이지 마지막 항목 검증
@@ -238,7 +238,7 @@ class ReviewServiceTest {
                 .size(10)
                 .build();
 
-        List<ReviewResponse> lastPage = reviewService.getList(lastPageSearch);
+        List<ReviewResponse> lastPage = reviewService.getList(lastPageSearch,workplaceId);
 
         assertTrue(lastPage.isEmpty()); // 데이터가 더 이상 없음을 확인
 
