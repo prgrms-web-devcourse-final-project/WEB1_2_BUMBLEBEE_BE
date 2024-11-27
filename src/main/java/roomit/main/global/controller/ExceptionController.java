@@ -15,12 +15,12 @@ public class ExceptionController {
 
     @ExceptionHandler(CommonException.class)
     public ResponseEntity<ErrorResponse> commonException(CommonException e) {
-        String statusCode = e.getErrorCode().getCode();
+        HttpStatus statusCode = e.getErrorCode().getStatus(); // 에러코드 W001-3 익셉션 ?
         ErrorResponse response = ErrorResponse.builder()
                 .errorCode(e.getErrorCode())
                 .build();
 
-        return ResponseEntity.status(Integer.parseInt(statusCode)).body(response);
+        return ResponseEntity.status(statusCode).body(response);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

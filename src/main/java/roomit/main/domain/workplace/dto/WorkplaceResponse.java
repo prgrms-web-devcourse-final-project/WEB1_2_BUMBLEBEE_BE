@@ -20,7 +20,7 @@ public record WorkplaceResponse (
 ){
     public WorkplaceResponse(Workplace workplace) {
         this(
-                workplace.getBusiness().getBusinessId(),
+                workplace.getWorkplaceId(),
                 workplace.getWorkplaceName().getValue(),
                 workplace.getWorkplacePhoneNumber().getValue(),
                 workplace.getWorkplaceDescription(),
