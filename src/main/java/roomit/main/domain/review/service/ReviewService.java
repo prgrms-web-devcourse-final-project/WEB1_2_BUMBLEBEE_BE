@@ -24,9 +24,9 @@ public class ReviewService {
     private final MemberRepository memberRepository;
     private final WorkplaceRepository workplaceRepository;
 
-    public void register(ReviewRegisterRequest request) {
+    public void register(ReviewRegisterRequest request, Long memberId) {
 
-        Member member = memberRepository.findById(request.memberId())
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(ErrorCode.MEMBER_NOT_FOUND::commonException);
 
         Workplace workplace = workplaceRepository.findById(request.workplaceId())
@@ -46,6 +46,7 @@ public class ReviewService {
 
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(ErrorCode.REVIEW_NOT_FOUND::commonException);
+
         try {
             review.changeReviewContent(request.reviewContent());
             review.changeReviewRating(request.reviewRating());

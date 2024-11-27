@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
+import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.entity.value.ImageUrl;
 import roomit.main.domain.workplace.entity.value.WorkplaceAddress;
@@ -23,7 +24,7 @@ public record WorkplaceRequest(
         @NotNull(message = "사업장 시작 시간을 입력해주세요.") LocalDateTime workplaceStartTime,
         @NotNull(message = "사업장 종료 시간을 입력해주세요.") LocalDateTime workplaceEndTime
 ) {
-    public Workplace toEntity(BigDecimal latitude, BigDecimal longitude) {
+    public Workplace toEntity(BigDecimal latitude, BigDecimal longitude, Business business) {
         return Workplace.builder()
                 .workplaceName(workplaceName)
                 .workplaceDescription(workplaceDescription)
@@ -34,6 +35,7 @@ public record WorkplaceRequest(
                 .workplaceEndTime(workplaceEndTime)
                 .latitude(latitude)
                 .longitude(longitude)
+                .business(business)
                 .build();
     }
 }
