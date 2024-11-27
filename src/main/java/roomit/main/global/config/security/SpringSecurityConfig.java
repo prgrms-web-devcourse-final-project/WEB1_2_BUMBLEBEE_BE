@@ -160,7 +160,7 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/v1/notification/business").hasRole("BUSINESS") //사업자 알림 내역 조회
 
                         //리뷰 권한 설정
-                        .requestMatchers(HttpMethod.GET,"/api/v1/review/**").permitAll() //후기 조회 !!문제
+                        .requestMatchers(HttpMethod.GET,"/api/v1/review/**").permitAll() //후기 조회 !!수정
                         .requestMatchers(HttpMethod.POST,"/api/v1/review/register").hasAnyRole("BUSINESS","USER") //후기 등록
                         .requestMatchers(HttpMethod.PUT,"/api/v1/review/update/**").hasAnyRole("BUSINESS","USER") //후기 수정
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/review/**").hasAnyRole("BUSINESS","USER") //후기 삭제
