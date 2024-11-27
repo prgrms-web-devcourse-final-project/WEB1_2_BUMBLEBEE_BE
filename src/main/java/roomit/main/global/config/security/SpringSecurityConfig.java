@@ -121,6 +121,8 @@ public class SpringSecurityConfig {
                         .requestMatchers("/api/v1/member/signup").permitAll()
                         .requestMatchers("/api/v1/member/**").hasRole("USER")
                         .requestMatchers("/api/v1/business/signup").permitAll()
+                        .requestMatchers("/api/v1/review/**").hasRole("USER")
+                        .requestMatchers("/api/generate-presigned-url").permitAll()
                         .requestMatchers("/api/v1/member/**").hasRole("BUSINESS")
                         .anyRequest().authenticated()); // permitAll()로 할시 모두 허용
 
