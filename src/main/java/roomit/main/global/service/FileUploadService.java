@@ -1,29 +1,53 @@
 package roomit.main.global.service;
 
-import com.amazonaws.HttpMethod;
-import com.amazonaws.services.s3.AmazonS3;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
+import java.time.Duration;
 import java.util.Calendar;
 import java.util.Date;
 
 @Service
 public class FileUploadService {
 
-    @Autowired
-    private AmazonS3 amazonS3;
+    private final S3Presigner s3Presigner;
 
+    @Value("${amazon.aws.bucket}")
+    private String bucketName;
 
-    public String generatePreSignUrl(String filePath,
-                                     String bucketName,
-                                     HttpMethod httpMethod){
+    public FileUploadService(@Value("${amazon.aws.accessKey}") String accessKey,
+                             @Value("${amazon.aws.secretKey}") String secretKey,
+                             @Value("${amazon.aws.region}") String region) {
+        AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(accessKey, secretKey);
 
-        Calendar calendar= Calendar.getInstance();
-        calendar.setTime(new Date());
-        calendar.add(Calendar.MINUTE,10); //validfy of 10 minutes
-        return amazonS3.generatePresignedUrl(bucketName, filePath, calendar.getTime(),httpMethod).toString();
-
+        this.s3Presigner = S3Presigner.builder()
+                .region(Region.of(region))
+                .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
+                .build();
     }
 
+    public String generatePreSignUrl(String filePath, HttpMethod method) {
+        if (method == HttpMethod.PUT) {
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(filePath)
+                    .build();
+
+            PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
+                    .putObjectRequest(putObjectRequest)
+                    .signatureDuration(Duration.ofMinutes(10))
+                    .build();
+
+            return s3Presigner.presignPutObject(presignRequest).url().toString();
+        }
+
+        throw new IllegalArgumentException("Unsupported HTTP method");
+    }
 }
