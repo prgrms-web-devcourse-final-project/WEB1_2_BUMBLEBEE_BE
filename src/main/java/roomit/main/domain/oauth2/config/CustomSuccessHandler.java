@@ -25,24 +25,28 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
-        CustomMemberDetails customUserDetails = (CustomMemberDetails) authentication.getPrincipal();
 
-        String username = customUserDetails.getUsername();
+        try {
+            CustomMemberDetails customUserDetails = (CustomMemberDetails) authentication.getPrincipal();
 
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-        GrantedAuthority auth = iterator.next();
-        String role = auth.getAuthority();
+            String username = customUserDetails.getUsername();
 
-        String access = jwtUtil.createJwt("access",username, role, 60*60*60L);
-        String refresh = jwtUtil.createJwt("refresh",username,role, 24*60*60*60L);
+            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+            Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
+            GrantedAuthority auth = iterator.next();
+            String role = auth.getAuthority();
 
-        CookieUtil.addCookie(response,"refresh", refresh,60*60);
+            String access = jwtUtil.createJwt("access", username, role, 60 * 60 * 60L);
+            String refresh = jwtUtil.createJwt("refresh", username, role, 24 * 60 * 60 * 60L);
 
-        // Redirect URL
-        String redirectUrl = "http://localhost:3000/courses?accessToken=" + access; //프론트의 특정 페이지로 리다이렉션
+            CookieUtil.addCookie(response, "refresh", refresh, 60 * 60);
 
-        response.sendRedirect(redirectUrl);
+            // Redirect URL
+            String redirectUrl = "http://localhost:3000/courses?accessToken=" + access; //프론트의 특정 페이지로 리다이렉션
+
+            response.sendRedirect(redirectUrl);
+        } catch (Exception e){
+            throw e;
+        }
     }
-
 }

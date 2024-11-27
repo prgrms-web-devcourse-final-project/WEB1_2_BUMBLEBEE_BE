@@ -109,10 +109,12 @@ public class SpringSecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable);
         //oauth2
         http
-                .oauth2Login((oauth2) -> oauth2
-                        .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
-                                .userService(customOAuth2UserService))
-                        .successHandler(customSuccessHandler));
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/noauth") // 로그인 페이지 설정
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)) // 사용자 정보 로드
+                        .successHandler(customSuccessHandler) // 성공 핸들러
+                );
         http
                 // 경로별 인가 작업
                 .authorizeHttpRequests((auth) -> auth
