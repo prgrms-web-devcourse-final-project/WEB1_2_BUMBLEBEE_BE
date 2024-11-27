@@ -46,7 +46,8 @@ public class MemberService {
             member.changeEmail(request.email());
             member.changeNickName(request.nickName());
             member.changePhoneNumber(request.phoneNumber());
-            member.changePwd(request.pwd());
+            member.changeSex(request.sex());
+            member.changeBirthDay(request.birthDay());
             memberRepository.save(member);
 
         }catch (Exception e){
