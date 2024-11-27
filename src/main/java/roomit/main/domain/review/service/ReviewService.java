@@ -78,11 +78,13 @@ public class ReviewService {
         reviewRepository.delete(review);
     }
 
-    public List<ReviewResponse> getList(ReviewSearch reviewSearch) {
+    public List<ReviewResponse> getList(ReviewSearch reviewSearch, Long workId) {
 
-        return reviewRepository.getList(reviewSearch)
+        Workplace workplace = workplaceRepository.findById(workId)
+                .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
+        return reviewRepository.getList(reviewSearch, workId)
                 .stream()
-                .map(ReviewResponse::new)
+                .map(review -> new ReviewResponse(review, workplace))
                 .toList();
     }
 }
