@@ -17,5 +17,4 @@ public class Oauth2Controller {
         body.put("message", "unauthorized");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
     }
-
 }
