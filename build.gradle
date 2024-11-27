@@ -44,7 +44,7 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk
-    implementation 'com.amazonaws:aws-java-sdk:1.12.777'
+    implementation 'software.amazon.awssdk:s3:2.20.23' // 최신 버전 확인 필요
 
 
     // 쿼리DSL

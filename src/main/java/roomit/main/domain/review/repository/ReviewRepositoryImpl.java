@@ -21,7 +21,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom{
 
 
     @Override
-    public List<Review> getList(ReviewSearch reviewSearch) {
+    public List<Review> getList(ReviewSearch reviewSearch, Long workId) {
         QReview review = QReview.review;
         if (reviewSearch.getLastId() != null) {
             boolean exists = jpaQueryFactory.selectOne()
@@ -37,9 +37,16 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom{
         BooleanExpression cursorCondition = reviewSearch.getLastId() == null
                 ? null
                 : review.reviewId.lt(reviewSearch.getLastId());
+        // Workplace 조건
+        BooleanExpression workplaceCondition = review.workplace.workplaceId.eq(workId);
+
+        // 최종 조건
+        BooleanExpression finalCondition = cursorCondition == null
+                ? workplaceCondition
+                : cursorCondition.and(workplaceCondition);
 
         return jpaQueryFactory.selectFrom(review)
-                .where(cursorCondition)
+                .where(finalCondition)
                 .limit(reviewSearch.getSize())
                 .orderBy(review.reviewId.desc()) // 최신순으로 정렬
                 .fetch();

@@ -124,6 +124,11 @@ public class SpringSecurityConfig {
                         .requestMatchers("/api/v1/review/**").hasRole("USER")
                         .requestMatchers("/api/generate-presigned-url").permitAll()
                         .requestMatchers("/api/v1/member/**").hasRole("BUSINESS")
+                        .requestMatchers(HttpMethod.GET, "api/v1/review").permitAll()
+                        .requestMatchers(HttpMethod.GET, "api/v1/review/me").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST,"api/v1/review/register").hasAnyRole("BUSINESS", "USER")
+                        .requestMatchers(HttpMethod.PUT, "api/v1/review/update/**").hasAnyRole("BUSINESS", "USER")
+                        .requestMatchers(HttpMethod.DELETE, "api/v1/review/**").hasAnyRole("BUSINESS", "USER")
                         .anyRequest().authenticated()); // permitAll()로 할시 모두 허용
 
 

@@ -14,6 +14,7 @@ import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -57,11 +58,17 @@ public class ReviewService {
         return new ReviewResponse(review);
     }
 
-    public ReviewResponse read(Long reviewId) {
-        Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(ErrorCode.REVIEW_NOT_FOUND::commonException);
+    public List<ReviewResponse> read(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(ErrorCode.MEMBER_NOT_FOUND::commonException);
 
-        return new ReviewResponse(review);
+        List<Review> reviews = member.getReviews();
+        List<ReviewResponse> responses = new ArrayList<>();
+
+        for(Review review : reviews) {
+           responses.add(new ReviewResponse(review));
+        }
+        return responses;
     }
 
     public void remove(Long reviewId) {
@@ -71,11 +78,13 @@ public class ReviewService {
         reviewRepository.delete(review);
     }
 
-    public List<ReviewResponse> getList(ReviewSearch reviewSearch) {
+    public List<ReviewResponse> getList(ReviewSearch reviewSearch, Long workId) {
 
-        return reviewRepository.getList(reviewSearch)
+        Workplace workplace = workplaceRepository.findById(workId)
+                .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
+        return reviewRepository.getList(reviewSearch, workId)
                 .stream()
-                .map(ReviewResponse::new)
+                .map(review -> new ReviewResponse(review, workplace))
                 .toList();
     }
 }
