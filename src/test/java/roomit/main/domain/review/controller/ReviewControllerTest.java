@@ -232,7 +232,7 @@ class ReviewControllerTest {
 
         reviewRepository.saveAll(list);
 
-        mockMvc.perform(get("/api/v1/review")
+        mockMvc.perform(get("/api/v1/review/workplace/{workplaceId}",workplace.getWorkplaceId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token)
                 )
@@ -256,7 +256,7 @@ class ReviewControllerTest {
 
         reviewRepository.saveAll(list);
 
-        MvcResult mvcResult = mockMvc.perform(get("/api/v1/review")
+        MvcResult mvcResult = mockMvc.perform(get("/api/v1/review/workplace/{workplaceId}", workplace.getWorkplaceId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token)
 
@@ -266,7 +266,7 @@ class ReviewControllerTest {
         String json = mvcResult.getResponse().getContentAsString();
         Long nestCursor = JsonPath.parse(json).read("$.nextCursor", Long.class);
 
-        mockMvc.perform(get("/api/v1/review?lastId="+nestCursor)
+        mockMvc.perform(get("/api/v1/review/workplace/{workplaceId}?lastId="+nestCursor, workplace.getWorkplaceId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token)
                 )
@@ -291,7 +291,7 @@ class ReviewControllerTest {
 
         reviewRepository.saveAll(list);
 
-        mockMvc.perform(get("/api/v1/review?lastId=232")
+        mockMvc.perform(get("/api/v1/review/workplace/{workplaceId}?lastId=232",workplace.getWorkplaceId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token)
                 )
