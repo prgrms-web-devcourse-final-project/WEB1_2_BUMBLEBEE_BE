@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.format.annotation.DateTimeFormat;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.workplace.entity.value.ImageUrl;
 import roomit.main.domain.workplace.entity.value.WorkplaceAddress;
@@ -46,9 +47,11 @@ public class Workplace {
     @Column(name = "workplace_longitude")
     private BigDecimal longitude;
 
+    @DateTimeFormat(pattern = "HH:mm")
     @Column(name = "workplace_start_time", nullable = false)
     private LocalDateTime workplaceStartTime;
 
+    @DateTimeFormat(pattern = "HH:mm")
     @Column(name = "workplace_end_time", nullable = false)
     private LocalDateTime workplaceEndTime;
 

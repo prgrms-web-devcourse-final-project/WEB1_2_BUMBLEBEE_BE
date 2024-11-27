@@ -11,8 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.business.repository.BusinessRepository;
-import roomit.main.domain.workplace.dto.WorkplaceRequest;
-import roomit.main.domain.workplace.dto.WorkplaceResponse;
+import roomit.main.domain.workplace.dto.reponse.WorkplaceGetRequest;
+import roomit.main.domain.workplace.dto.reponse.WorkplaceRequest;
+import roomit.main.domain.workplace.dto.request.WorkplaceGetResponse;
+import roomit.main.domain.workplace.dto.request.WorkplaceResponse;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.entity.value.WorkplaceAddress;
 import roomit.main.domain.workplace.entity.value.WorkplaceName;
@@ -21,6 +23,8 @@ import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,14 +36,34 @@ public class WorkplaceService {
 
     private final WorkplaceRepository workplaceRepository;
     private final BusinessRepository businessRepository;
-
     private final WebClient webClient;
 
-    public List<WorkplaceResponse> readAllWorkplaces() {
-        List<Workplace> workplaceList = workplaceRepository.findAll();
+    public List<WorkplaceGetResponse> readAllWorkplaces(WorkplaceGetRequest request, double myLat, double myLon) {
+        List<Object[]> results = workplaceRepository.findAllByLatitudeAndLongitudeWithDistance(
+                myLat, myLon,
+                request.bottomRight().getLatitude().doubleValue(),
+                request.topLeft().getLatitude().doubleValue(),
+                request.topLeft().getLongitude().doubleValue(),
+                request.bottomRight().getLongitude().doubleValue());
 
-        return toResponseDto(workplaceList);
+        return results.stream()
+                .map(result -> new WorkplaceGetResponse(
+                        ((Number) result[0]).longValue(),
+                        (String) result[1],
+                        (String) result[2],
+                        (String) result[3],
+                        (String) result[4],
+                        (String) result[5],
+                        ((Timestamp) result[6]).toLocalDateTime(),
+                        ((Timestamp) result[7]).toLocalDateTime(),
+                        ((Timestamp) result[8]).toLocalDateTime(),
+                        (BigDecimal) result[9],
+                        (BigDecimal) result[10],
+                        ((Number) result[11]).doubleValue()
+                ))
+                .toList();
     }
+
 
     public WorkplaceResponse readWorkplace(Long workplaceId) {
         Workplace workplace = workplaceRepository.findById(workplaceId)
@@ -72,16 +96,20 @@ public class WorkplaceService {
     }
 
     @Transactional
-    public void updateWorkplace(Long workplaceId, WorkplaceRequest workplaceDto) {
+    public void updateWorkplace(Long workplaceId, WorkplaceRequest workplaceDto, Long businessId) {
 
         if (workplaceDto == null && !workplaceDto.workplaceStartTime().isBefore(workplaceDto.workplaceEndTime())) {
             throw ErrorCode.WORKPLACE_INVALID_REQUEST.commonException();
         }
 
-        Map<String, BigDecimal> coordinates = getStringBigDecimalMap(workplaceDto);
-
         Workplace workplace = workplaceRepository.findById(workplaceId)
                 .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
+
+        if (!workplace.getBusiness().getBusinessId().equals(businessId)) {
+            throw ErrorCode.BUSINESS_NOT_AUTHORIZED.commonException();
+        }
+
+        Map<String, BigDecimal> coordinates = getStringBigDecimalMap(workplaceDto);
 
         try {
             workplace.changeWorkplaceName(new WorkplaceName(workplaceDto.workplaceName()));
@@ -99,9 +127,13 @@ public class WorkplaceService {
     }
 
     @Transactional
-    public void deleteWorkplace(Long workplaceId) {
+    public void deleteWorkplace(Long workplaceId, Long businessId) {
         Workplace workplace = workplaceRepository.findById(workplaceId)
                 .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
+
+        if (!workplace.getBusiness().getBusinessId().equals(businessId)) {
+            throw ErrorCode.BUSINESS_NOT_AUTHORIZED.commonException();
+        }
 
         try {
             workplaceRepository.delete(workplace);

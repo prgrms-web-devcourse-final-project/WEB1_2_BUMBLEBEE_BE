@@ -2,8 +2,6 @@ package roomit.main.domain.workplace.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,10 +14,14 @@ import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.business.repository.BusinessRepository;
 import roomit.main.domain.token.dto.LoginRequest;
 import roomit.main.domain.token.dto.LoginResponse;
-import roomit.main.domain.workplace.dto.WorkplaceRequest;
+import roomit.main.domain.workplace.dto.reponse.WorkplaceGetRequest;
+import roomit.main.domain.workplace.dto.reponse.WorkplaceRequest;
 import roomit.main.domain.workplace.entity.Workplace;
+import roomit.main.domain.workplace.entity.value.Coordinate;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
+import roomit.main.domain.workplace.service.WorkplaceService;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -49,6 +51,9 @@ public class WorkplaceControllerTest {
 
     @Autowired
     private WorkplaceRepository workplaceRepository;
+
+    @Autowired
+    private WorkplaceService workplaceService;
 
     private static String token;
 
@@ -132,11 +137,11 @@ public class WorkplaceControllerTest {
 
         // When
         mockMvc.perform(post("/api/v1/workplace")
-                .header("Authorization", "Bearer " + token) // 토큰 추가
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
+                        .header("Authorization", "Bearer " + token) // 토큰 추가
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
 
-        // Then
+                // Then
                 .andExpect(status().isCreated())
                 .andDo(print());
     }
@@ -152,11 +157,11 @@ public class WorkplaceControllerTest {
 
         // When
         mockMvc.perform(get("/api/v1/workplace/{workplaceId}", workplaceId)
-                .header("Authorization", "Bearer " + token) // 토큰 추가
-                .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + token) // 토큰 추가
+                        .contentType(MediaType.APPLICATION_JSON)
                 )
 
-        // Then
+                // Then
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.workplaceName").value("사업장"))
                 .andDo(print());
@@ -199,7 +204,7 @@ public class WorkplaceControllerTest {
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
-        // Then
+                // Then
                 .andExpect(status().isNoContent())
                 .andDo(print());
     }
@@ -226,9 +231,9 @@ public class WorkplaceControllerTest {
         mockMvc.perform(delete("/api/v1/workplace/{workplaceId}", workplace.getWorkplaceId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token)) // 토큰 추가
-        // Then
-        .andExpect(status().isNoContent())
-        .andDo(print());
+                // Then
+                .andExpect(status().isNoContent())
+                .andDo(print());
     }
 
     @Order(5)
@@ -237,33 +242,61 @@ public class WorkplaceControllerTest {
     void getWorkplaces() throws Exception {
         // Given
         workplaceRepository.deleteAll();
-        for (int i = 1; i <= 100; i++) {
-            Workplace workplace = Workplace.builder()
+        List<String> addresses = Arrays.asList(
+                "서울특별시 중구 세종대로 110 서울시청",
+                "서울특별시 중구 을지로 30 시그니처타워",
+                "서울특별시 용산구 이태원로 29 서울드래곤시티",
+                "서울특별시 강남구 테헤란로 152 강남파이낸스센터",
+                "서울특별시 영등포구 국제금융로 10 서울국제금융센터",
+                "서울특별시 송파구 올림픽로 300 롯데월드타워",
+                "서울특별시 마포구 월드컵북로 396 상암동 DMC타워",
+                "서울특별시 강서구 마곡중앙로 161-8 LG사이언스파크",
+                "서울특별시 성동구 아차산로 113 성수동 헤이그라운드",
+                "서울특별시 서초구 서초대로 411 GT타워",
+                "서울 중구 장충단로 247 굿모닝시티 8층"
+        );
+
+        for (int i = 1; i <= addresses.size(); i++) {
+            WorkplaceRequest workplace = WorkplaceRequest.builder()
                     .workplaceName("사업장 " + i)
                     .workplacePhoneNumber("0507-1234-" + String.format("%04d", i))
                     .workplaceDescription("사업장 설명 " + i)
-                    .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
+                    .workplaceAddress(addresses.get(i - 1))
                     .imageUrl("http://image.url")
                     .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                     .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
                     .build();
 
-            workplaceRepository.save(workplace);
+            workplaceService.createWorkplace(workplace, business.getBusinessId());
         }
 
-        // When
-        mockMvc.perform(get("/api/v1/workplace")
-                        .header("Authorization", "Bearer " + token) // 토큰 추가
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
+        WorkplaceGetRequest request = WorkplaceGetRequest.builder()
+                .topLeft(Coordinate.builder()
+                        .latitude(BigDecimal.valueOf(38.56))
+                        .longitude(BigDecimal.valueOf(126.97))
+                        .build())
+                .bottomRight(Coordinate.builder()
+                        .latitude(BigDecimal.valueOf(36.56))
+                        .longitude(BigDecimal.valueOf(127.97))
+                        .build())
+                .build();
 
-        // Then
+        String requestBody = objectMapper.writeValueAsString(request);
+
+        // When & Then
+        mockMvc.perform(post("/api/v1/workplace")
+                        .param("latitude", "37.56")
+                        .param("longitude", "127.00")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(100))
-                .andExpect(jsonPath("$[0].workplaceName").value("사업장 1"))
-                .andExpect(jsonPath("$[1].workplaceName").value("사업장 2"))
+                .andExpect(jsonPath("$.length()").value(addresses.size())) // 전체 개수 확인
+                .andExpect(jsonPath("$[0].workplaceName").value("사업장 1")) // 첫 번째 사업장 이름 확인
                 .andDo(print());
-    }
+
+
+}
 
     @Order(6)
     @Test

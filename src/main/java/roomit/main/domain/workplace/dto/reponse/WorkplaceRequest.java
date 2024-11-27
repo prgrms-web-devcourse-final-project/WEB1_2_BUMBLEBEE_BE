@@ -1,4 +1,4 @@
-package roomit.main.domain.workplace.dto;
+package roomit.main.domain.workplace.dto.reponse;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

@@ -7,9 +7,12 @@ import roomit.main.domain.business.dto.request.BusinessRegisterRequest;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.business.repository.BusinessRepository;
 import roomit.main.domain.business.service.BusinessService;
-import roomit.main.domain.workplace.dto.WorkplaceRequest;
-import roomit.main.domain.workplace.dto.WorkplaceResponse;
+import roomit.main.domain.workplace.dto.reponse.WorkplaceGetRequest;
+import roomit.main.domain.workplace.dto.reponse.WorkplaceRequest;
+import roomit.main.domain.workplace.dto.request.WorkplaceGetResponse;
+import roomit.main.domain.workplace.dto.request.WorkplaceResponse;
 import roomit.main.domain.workplace.entity.Workplace;
+import roomit.main.domain.workplace.entity.value.Coordinate;
 import roomit.main.domain.workplace.entity.value.WorkplaceName;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
@@ -18,6 +21,7 @@ import roomit.main.global.exception.CommonException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -93,7 +97,6 @@ class WorkplaceServiceTest {
     }
 
 
-
     @Test
     @DisplayName("사업장 등록")
     @Order(2)
@@ -144,7 +147,6 @@ class WorkplaceServiceTest {
     }
 
 
-
     @Test
     @DisplayName("사업장 조회 실패")
     @Order(3)
@@ -187,7 +189,9 @@ class WorkplaceServiceTest {
                 .build();
 
         // When
-        workplaceService.updateWorkplace(savedWorkplace.getWorkplaceId(), updatedworkplace);
+        System.out.println(savedWorkplace.getBusiness().getBusinessId());
+        System.out.println(savedBusiness.getBusinessId());
+        workplaceService.updateWorkplace(savedWorkplace.getWorkplaceId(), updatedworkplace, savedBusiness.getBusinessId());
 
         // Then
         WorkplaceResponse findWorkplace = workplaceService.readWorkplace(workplace.getWorkplaceId());
@@ -209,6 +213,7 @@ class WorkplaceServiceTest {
                 .imageUrl("http://image.url")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                .business(savedBusiness)
                 .build();
         workplaceRepository.save(workplace);
 
@@ -224,7 +229,7 @@ class WorkplaceServiceTest {
 
         // When & Then: WorkplaceInvalidRequest 예외 발생 확인
         CommonException exception = assertThrows(CommonException.class, () -> {
-            workplaceService.updateWorkplace(workplace.getWorkplaceId(), request);
+            workplaceService.updateWorkplace(workplace.getWorkplaceId(), request, savedBusiness.getBusinessId());
         });
 
         assertEquals(ErrorCode.WORKPLACE_NOT_MODIFIED.getMessage(), exception.getMessage());
@@ -243,12 +248,13 @@ class WorkplaceServiceTest {
                 .imageUrl("http://image.url")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                .business(savedBusiness)
                 .build();
 
         Long workplaceId = workplaceRepository.save(workplace).getWorkplaceId();
 
         // Delete
-        workplaceService.deleteWorkplace(workplaceId);
+        workplaceService.deleteWorkplace(workplaceId, savedBusiness.getBusinessId());
 
         // When & Then: 삭제된 Workplace를 조회하면 예외 발생
         assertThrows(CommonException.class, () -> {
@@ -262,28 +268,65 @@ class WorkplaceServiceTest {
     void readAllWorkplaces() {
         // Given
         workplaceRepository.deleteAll();
+        List<String> addresses = Arrays.asList(
+                "서울특별시 중구 세종대로 110 서울시청",
+                "서울특별시 중구 을지로 30 시그니처타워",
+                "서울특별시 용산구 이태원로 29 서울드래곤시티",
+                "서울특별시 강남구 테헤란로 152 강남파이낸스센터",
+                "서울특별시 영등포구 국제금융로 10 서울국제금융센터",
+                "서울특별시 송파구 올림픽로 300 롯데월드타워",
+                "서울특별시 마포구 월드컵북로 396 상암동 DMC타워",
+                "서울특별시 강서구 마곡중앙로 161-8 LG사이언스파크",
+                "서울특별시 성동구 아차산로 113 성수동 헤이그라운드",
+                "서울특별시 서초구 서초대로 411 GT타워",
+                "서울 중구 장충단로 247 굿모닝시티 8층"
+        );
 
-        for (int i = 1; i <= 100; i++) {
-            Workplace workplace = Workplace.builder()
-                    .workplaceName("사업장 " + i)
+        int cnt=0;
+
+        for (int i = 1; i <= 11; i++) {
+            WorkplaceRequest workplace = WorkplaceRequest.builder()
+                    .workplaceName("사업장" + i)
                     .workplacePhoneNumber("0507-1234-" + String.format("%04d", i))
-                    .workplaceDescription("테스트 사업장 " + i)
-                    .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
+                    .workplaceDescription("사업장 설명")
+                    .workplaceAddress(addresses.get(i - 1))
                     .imageUrl("http://image.url")
                     .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                     .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
-//                    .businessId(savedBusiness.getBusinessId())
                     .build();
 
-            workplaceRepository.save(workplace);
+            // When
+            workplaceService.createWorkplace(workplace, savedBusiness.getBusinessId());
+            Workplace findWorkplace = workplaceRepository.getWorkplaceByWorkplaceName(new WorkplaceName("사업장" + i));
+
+            if (findWorkplace.getLatitude().compareTo(BigDecimal.valueOf(38.56)) <= 0 &&
+                    findWorkplace.getLatitude().compareTo(BigDecimal.valueOf(36.56)) >= 0 &&
+                    findWorkplace.getLongitude().compareTo(BigDecimal.valueOf(126.97)) >= 0 &&
+                    findWorkplace.getLongitude().compareTo(BigDecimal.valueOf(127.97)) <= 0) {
+                cnt++;
+            }
         }
 
         // When
-        List<WorkplaceResponse> workplaces = workplaceService.readAllWorkplaces();
+        WorkplaceGetRequest request = WorkplaceGetRequest.builder()
+                .topLeft(Coordinate.builder()
+                        .latitude(BigDecimal.valueOf(38.56))
+                        .longitude(BigDecimal.valueOf(126.97)).build())
+                .bottomRight(Coordinate.builder()
+                        .latitude(BigDecimal.valueOf(36.56))
+                        .longitude(BigDecimal.valueOf(127.97)).build()).build();
+
+        List<WorkplaceGetResponse> workplaces = workplaceService.readAllWorkplaces(request, 127.00,37.56 );
 
         // Then
         assertThat(workplaces).isNotNull();
-        assertThat(workplaces.size()).isEqualTo(100);
+        assertThat(workplaces.size()).isEqualTo(cnt);
+
+        // 거리값이 오름차순으로 정렬되었는지 확인
+        for (int i = 0; i < workplaces.size() - 1; i++) {
+            assertThat(workplaces.get(i).distance())
+                    .isLessThanOrEqualTo(workplaces.get(i + 1).distance());
+        }
     }
 
     @Test
@@ -369,7 +412,7 @@ class WorkplaceServiceTest {
                 .imageUrl("http://image.url")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
-//                .businessId(savedBusiness.getBusinessId())
+                .business(savedBusiness)
                 .build();
 
         Workplace savedWorkplace = workplaceRepository.save(workplace);
@@ -386,7 +429,7 @@ class WorkplaceServiceTest {
                 .build();
 
         // When: 사업장 수정
-        workplaceService.updateWorkplace(savedWorkplace.getWorkplaceId(), updatedRequest);
+        workplaceService.updateWorkplace(savedWorkplace.getWorkplaceId(), updatedRequest, savedBusiness.getBusinessId());
 
         // Then: 좌표가 업데이트되었는지 확인
         WorkplaceResponse updatedWorkplace = workplaceService.readWorkplace(savedWorkplace.getWorkplaceId());
