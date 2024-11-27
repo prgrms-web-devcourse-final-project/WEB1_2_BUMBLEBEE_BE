@@ -8,7 +8,7 @@ public record BusinessResponse (
     String businessName,
     String businessEmail,
     String businessNum,
-    LocalDateTime createAt
+    LocalDateTime createdAt
 ){
 
     public BusinessResponse(Business business) {
