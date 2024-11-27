@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.Date;
 
 @RestController
-@RequestMapping("/login")
 @RequiredArgsConstructor
 public class LoginController {
 
@@ -35,7 +34,7 @@ public class LoginController {
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
 
-    @PostMapping("/member")
+    @PostMapping("/login/member")
     public ResponseEntity<?> memberLogin(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         try {
             UsernamePasswordAuthenticationToken authenticationToken =
@@ -67,7 +66,7 @@ public class LoginController {
         }
     }
 
-    @PostMapping("/business")
+    @PostMapping("/login/business")
     public ResponseEntity<?> businessLogin(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         try {
             UsernamePasswordAuthenticationToken authenticationToken =
