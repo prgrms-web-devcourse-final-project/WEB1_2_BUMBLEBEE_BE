@@ -170,7 +170,6 @@ public class SpringSecurityConfig {
 
                         .anyRequest().authenticated());
 
-
         http
                 .addFilterBefore(new JWTFilter(jwtUtil,bCryptPasswordEncoder(),memberDetailsService,businessDetailsService), LoginFilter.class);
 
