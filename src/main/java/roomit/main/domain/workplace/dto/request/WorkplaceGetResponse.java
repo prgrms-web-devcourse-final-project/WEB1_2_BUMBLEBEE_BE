@@ -19,21 +19,5 @@ public record WorkplaceGetResponse(
         BigDecimal longitude,
         BigDecimal latitude,
         Double distance
-) {
-    public WorkplaceGetResponse(Workplace workplace, Double distance) {
-        this(
-                workplace.getWorkplaceId(),
-                workplace.getWorkplaceName().getValue(),
-                workplace.getWorkplacePhoneNumber().getValue(),
-                workplace.getWorkplaceDescription(),
-                workplace.getWorkplaceAddress().getValue(),
-                workplace.getImageUrl().getValue(),
-                workplace.getWorkplaceStartTime(),
-                workplace.getWorkplaceEndTime(),
-                workplace.getCreatedAt(),
-                workplace.getLongitude(),
-                workplace.getLatitude(),
-                distance
-        );
-    }
-}
+) {}
+

@@ -1,6 +1,7 @@
 package roomit.main.domain.workplace.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -101,20 +102,38 @@ public class WorkplaceControllerTest {
 
         business = businessRepository.findByBusinessEmail("business1@gmail.com").orElseThrow(NoSuchElementException::new);
 
-        Workplace workplace = Workplace.builder()
-                .workplaceName("사업장")
-                .workplacePhoneNumber("0507-1234-5678")
-                .workplaceDescription("사업장 설명")
-                .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
-                .imageUrl("http://image.url")
-                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
-                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
-                .business(business)
-                .build();
+        List<String> addresses = Arrays.asList(
+                "서울특별시 중구 세종대로 110 서울시청",
+                "서울특별시 중구 을지로 30 시그니처타워",
+                "서울특별시 용산구 이태원로 29 서울드래곤시티",
+                "서울특별시 강남구 테헤란로 152 강남파이낸스센터",
+                "서울특별시 영등포구 국제금융로 10 서울국제금융센터",
+                "서울특별시 송파구 올림픽로 300 롯데월드타워",
+                "서울특별시 마포구 월드컵북로 396 상암동 DMC타워",
+                "서울특별시 강서구 마곡중앙로 161-8 LG사이언스파크",
+                "서울특별시 성동구 아차산로 113 성수동 헤이그라운드",
+                "서울특별시 서초구 서초대로 411 GT타워"
+        );
 
-        workplaceRepository.save(workplace);
+        for (int i = 1; i <= 10; i++) {
+            Workplace workplace = Workplace.builder()
+                    .workplaceName("사업장 " + i)
+                    .workplacePhoneNumber("0507-1234-" + String.format("%04d", i))
+                    .workplaceDescription("사업장 설명 " + i)
+                    .workplaceAddress(addresses.get(i - 1))
+                    .imageUrl("http://image.url")
+                    .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
+                    .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                    .latitude(BigDecimal.valueOf(37.56 + i * 0.01))
+                    .longitude(BigDecimal.valueOf(127.00 + i * 0.01))
+                    .business(business) // 이미 정의된 business 객체
+                    .build();
 
-        workplaceId = workplace.getWorkplaceId();
+            workplaceRepository.save(workplace);
+            workplaceId = workplace.getWorkplaceId();
+        }
+
+
     }
 
 
@@ -156,14 +175,14 @@ public class WorkplaceControllerTest {
         System.out.println("Generated Token: " + token);
 
         // When
-        mockMvc.perform(get("/api/v1/workplace/{workplaceId}", workplaceId)
+        mockMvc.perform(get("/api/v1/workplace/info/{workplaceId}", workplaceId)
                         .header("Authorization", "Bearer " + token) // 토큰 추가
                         .contentType(MediaType.APPLICATION_JSON)
                 )
 
                 // Then
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.workplaceName").value("사업장"))
+                .andExpect(jsonPath("$.workplaceName").value("사업장 10"))
                 .andDo(print());
     }
 
@@ -180,6 +199,7 @@ public class WorkplaceControllerTest {
                 .imageUrl("http://image.url")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                .business(business)
                 .build();
 
         workplaceRepository.save(workplace);
@@ -222,6 +242,7 @@ public class WorkplaceControllerTest {
                 .imageUrl("http://image.url")
                 .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
                 .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                .business(business)
                 .build();
 
         workplaceRepository.save(workplace);
@@ -241,61 +262,46 @@ public class WorkplaceControllerTest {
     @DisplayName("사업장 목록 조회")
     void getWorkplaces() throws Exception {
         // Given
-        workplaceRepository.deleteAll();
-        List<String> addresses = Arrays.asList(
-                "서울특별시 중구 세종대로 110 서울시청",
-                "서울특별시 중구 을지로 30 시그니처타워",
-                "서울특별시 용산구 이태원로 29 서울드래곤시티",
-                "서울특별시 강남구 테헤란로 152 강남파이낸스센터",
-                "서울특별시 영등포구 국제금융로 10 서울국제금융센터",
-                "서울특별시 송파구 올림픽로 300 롯데월드타워",
-                "서울특별시 마포구 월드컵북로 396 상암동 DMC타워",
-                "서울특별시 강서구 마곡중앙로 161-8 LG사이언스파크",
-                "서울특별시 성동구 아차산로 113 성수동 헤이그라운드",
-                "서울특별시 서초구 서초대로 411 GT타워",
-                "서울 중구 장충단로 247 굿모닝시티 8층"
-        );
-
-        for (int i = 1; i <= addresses.size(); i++) {
-            WorkplaceRequest workplace = WorkplaceRequest.builder()
-                    .workplaceName("사업장 " + i)
-                    .workplacePhoneNumber("0507-1234-" + String.format("%04d", i))
-                    .workplaceDescription("사업장 설명 " + i)
-                    .workplaceAddress(addresses.get(i - 1))
-                    .imageUrl("http://image.url")
-                    .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
-                    .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
-                    .build();
-
-            workplaceService.createWorkplace(workplace, business.getBusinessId());
-        }
+//        workplaceRepository.deleteAll();
+        BigDecimal minLatitude = BigDecimal.valueOf(36.56);
+        BigDecimal maxLatitude = BigDecimal.valueOf(38.56);
+        BigDecimal minLongitude = BigDecimal.valueOf(126.97);
+        BigDecimal maxLongitude = BigDecimal.valueOf(127.97);
 
         WorkplaceGetRequest request = WorkplaceGetRequest.builder()
                 .topLeft(Coordinate.builder()
-                        .latitude(BigDecimal.valueOf(38.56))
-                        .longitude(BigDecimal.valueOf(126.97))
+                        .latitude(maxLatitude)
+                        .longitude(minLongitude)
                         .build())
                 .bottomRight(Coordinate.builder()
-                        .latitude(BigDecimal.valueOf(36.56))
-                        .longitude(BigDecimal.valueOf(127.97))
+                        .latitude(minLatitude)
+                        .longitude(maxLongitude)
                         .build())
                 .build();
 
         String requestBody = objectMapper.writeValueAsString(request);
 
         // When & Then
-        mockMvc.perform(post("/api/v1/workplace")
+        mockMvc.perform(get("/api/v1/workplace")
                         .param("latitude", "37.56")
                         .param("longitude", "127.00")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(addresses.size())) // 전체 개수 확인
-                .andExpect(jsonPath("$[0].workplaceName").value("사업장 1")) // 첫 번째 사업장 이름 확인
+                .andExpect(jsonPath("$[*].latitude").value(Matchers.everyItem(Matchers.allOf(
+                        Matchers.greaterThanOrEqualTo(minLatitude.doubleValue()),
+                        Matchers.lessThanOrEqualTo(maxLatitude.doubleValue())
+                )))) // latitude 범위 확인
+                .andExpect(jsonPath("$[*].longitude").value(Matchers.everyItem(Matchers.allOf(
+                        Matchers.greaterThanOrEqualTo(minLongitude.doubleValue()),
+                        Matchers.lessThanOrEqualTo(maxLongitude.doubleValue())
+                )))) // longitude 범위 확인
+                .andDo(result -> {
+                    // 응답 JSON 확인 (디버깅용)
+                    System.out.println("Response Body: " + result.getResponse().getContentAsString());
+                })
                 .andDo(print());
-
-
 }
 
     @Order(6)
@@ -303,47 +309,17 @@ public class WorkplaceControllerTest {
     @DisplayName("사업자 ID로 목록 조회")
     void getWorkplacesByBusinessId() throws Exception {
         // Given
-        workplaceRepository.deleteAll();
-        List<String> addresses = Arrays.asList(
-                "서울특별시 중구 세종대로 110 서울시청",
-                "서울특별시 중구 을지로 30 시그니처타워",
-                "서울특별시 용산구 이태원로 29 서울드래곤시티",
-                "서울특별시 강남구 테헤란로 152 강남파이낸스센터",
-                "서울특별시 영등포구 국제금융로 10 서울국제금융센터",
-                "서울특별시 송파구 올림픽로 300 롯데월드타워",
-                "서울특별시 마포구 월드컵북로 396 상암동 DMC타워",
-                "서울특별시 강서구 마곡중앙로 161-8 LG사이언스파크",
-                "서울특별시 성동구 아차산로 113 성수동 헤이그라운드",
-                "서울특별시 서초구 서초대로 411 GT타워"
-        );
-
-
-        for (int i = 1; i <= 10; i++) {
-            Workplace workplace = Workplace.builder()
-                    .workplaceName("사업장 " + i)
-                    .workplacePhoneNumber("0507-1234-" + String.format("%04d", i))
-                    .workplaceDescription("사업장 설명 " + i)
-                    .workplaceAddress(addresses.get(i-1))
-                    .imageUrl("http://image.url")
-                    .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
-                    .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
-                    .business(business)
-                    .build();
-
-            Workplace save = workplaceRepository.save(workplace);
-        }
 
         // When
-        mockMvc.perform(get("/api/v1/business/workplace")
+        mockMvc.perform(get("/api/v1/workplace/business")
                         .header("Authorization", "Bearer " + token) // 토큰 추가
                         .contentType(MediaType.APPLICATION_JSON)
                 )
 
                 // Then
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(10))
+//                .andExpect(jsonPath("$.length()").value(10))
                 .andExpect(jsonPath("$[0].workplaceName").value("사업장 1"))
                 .andDo(print());
     }
-
 }

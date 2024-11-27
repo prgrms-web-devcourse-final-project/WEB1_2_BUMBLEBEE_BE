@@ -57,8 +57,8 @@ public class WorkplaceService {
                         ((Timestamp) result[6]).toLocalDateTime(),
                         ((Timestamp) result[7]).toLocalDateTime(),
                         ((Timestamp) result[8]).toLocalDateTime(),
-                        (BigDecimal) result[9],
                         (BigDecimal) result[10],
+                        (BigDecimal) result[9],
                         ((Number) result[11]).doubleValue()
                 ))
                 .toList();

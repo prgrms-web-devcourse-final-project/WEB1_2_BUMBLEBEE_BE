@@ -52,13 +52,15 @@ public class WorkplaceController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/api/v1/workplace/{workplaceId}")
-    public void delete(@PathVariable Long workplaceId, @AuthenticationPrincipal CustomBusinessDetails customBusinessDetails) {
+    public void delete(@PathVariable Long workplaceId,
+                       @AuthenticationPrincipal CustomBusinessDetails customBusinessDetails) {
         workplaceService.deleteWorkplace(workplaceId, customBusinessDetails.getId());
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/api/v1/workplace/business") // 사업자ID로 사업장 조회
     public List<WorkplaceResponse> getWorkplacesByBusinessId(@AuthenticationPrincipal CustomBusinessDetails customBusinessDetails) {
+        System.out.println(customBusinessDetails);
         return workplaceService.findWorkplacesByBusinessId(customBusinessDetails.getId());
     }
 }
