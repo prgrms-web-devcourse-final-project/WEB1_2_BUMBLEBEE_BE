@@ -148,31 +148,32 @@ class ReviewServiceTest {
     void test3() {
 
 
+        CustomMemberDetails customMemberDetails = new CustomMemberDetails(member);
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(customMemberDetails, null, customMemberDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        Review review = Review.builder()
-                .reviewContent("치킨이 안보이네요..")
-                .reviewRating(1.3)
+        List<Review> list = IntStream.rangeClosed(1, 20).mapToObj(i -> Review.builder()
+                .reviewContent("치킨이 안보이네요.." + i)
+                .reviewRating(3.1 + i)
                 .member(member)
                 .workplace(workplace)
-                .build();
+                .build()).toList();
 
 
-        reviewRepository.save(review);
+        reviewRepository.saveAll(list);
 
-        reviewService.read(review.getReviewId());
+        reviewService.read(customMemberDetails.getId());
 
         List<Review> all = reviewRepository.findAll();
-        assertEquals("치킨이 안보이네요..", all.get(0).getReviewContent());
-        assertEquals(1.3, all.get(0).getReviewRating());
-
+        assertEquals("치킨이 안보이네요..1", all.get(0).getReviewContent());
+        assertEquals(20,all.size());
     }
 
     @Test
     @DisplayName("리뷰 조회")
     @Transactional
     void test4() {
-
-
 
         Review review = Review.builder()
                 .reviewContent("치킨이 안보이네요..")
@@ -193,7 +194,7 @@ class ReviewServiceTest {
     @Transactional
     void test5() {
 
-
+        Long workplaceId = workplace.getWorkplaceId();
         // 리뷰 데이터 20개 저장
         List<Review> reviews = IntStream.rangeClosed(1, 20).mapToObj(i -> Review.builder()
                 .reviewContent("치킨이 안보이네요.." + i)
@@ -210,7 +211,7 @@ class ReviewServiceTest {
                 .size(10)
                 .build();
 
-        List<ReviewResponse> firstPage = reviewService.getList(firstPageSearch);
+        List<ReviewResponse> firstPage = reviewService.getList(firstPageSearch, workplaceId);
 
         assertEquals(10, firstPage.size());
         assertEquals("치킨이 안보이네요..20", firstPage.get(0).reviewContent()); // 최신순 검증
@@ -224,7 +225,7 @@ class ReviewServiceTest {
                 .size(10)
                 .build();
 
-        List<ReviewResponse> secondPage = reviewService.getList(secondPageSearch);
+        List<ReviewResponse> secondPage = reviewService.getList(secondPageSearch,workplaceId);
 
         assertEquals(10, secondPage.size());// 다음 페이지 첫 항목 검증
         assertEquals("치킨이 안보이네요..1", secondPage.get(9).reviewContent()); // 다음 페이지 마지막 항목 검증
@@ -237,7 +238,7 @@ class ReviewServiceTest {
                 .size(10)
                 .build();
 
-        List<ReviewResponse> lastPage = reviewService.getList(lastPageSearch);
+        List<ReviewResponse> lastPage = reviewService.getList(lastPageSearch,workplaceId);
 
         assertTrue(lastPage.isEmpty()); // 데이터가 더 이상 없음을 확인
 

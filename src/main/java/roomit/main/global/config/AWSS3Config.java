@@ -1,34 +1,32 @@
 package roomit.main.global.config;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
 
 @Configuration
 public class AWSS3Config {
+
     @Value("${amazon.aws.accessKey}")
     private String accessKeyId;
 
     @Value("${amazon.aws.secretKey}")
-    private String accessKeySecret;
+    private String secretKey;
 
     @Value("${amazon.aws.region}")
-    private String s3RegionName;
+    private String region;
 
     @Bean
-    public AmazonS3 getAmazonS3Client(){
-        final BasicAWSCredentials basicAWSCredentials =new BasicAWSCredentials(accessKeyId, accessKeySecret);
-        // Get Amazon S3 client and return the s3 client object
+    public S3Client s3Client() {
+        AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(accessKeyId, secretKey);
 
-        return AmazonS3ClientBuilder
-                .standard()
-                .withCredentials(new AWSStaticCredentialsProvider(basicAWSCredentials))
-                .withRegion(s3RegionName)
+        return S3Client.builder()
+                .region(Region.of(region))
+                .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
                 .build();
     }
-
 }
