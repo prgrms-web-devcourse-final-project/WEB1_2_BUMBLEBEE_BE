@@ -12,6 +12,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.business.service.CustomBusinessDetailsService;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -134,23 +136,22 @@ public class JWTFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        if (request.getRequestURI().startsWith("/login")) {
+        // 예외적으로 필터링하지 않을 경로들
+        List<String> excludedPaths = List.of(
+                "/",
+                "/login/**",
+                "/api/v1/member/signup",
+                "/api/v1/business/signup",
+                "/reissue",
+                "/api/v1/studyroom/workplace/**",
+                "/api/v1/studyroom/search",
+                "/api/v1/workplace",
+                "/api/v1/workplace/business",
+                "/api/v1/workplace/distance"
+        );
 
-            return true;
-        }
-        if (request.getRequestURI().startsWith("/api/v1/member/signup")) {
-
-            return true;
-        }
-        if (request.getRequestURI().startsWith("/api/v1/business/signup")) {
-
-            return true;
-        }
-        if (request.getRequestURI().startsWith("/reissue")) {
-
-            return true;
-        }
-        return false;
+        AntPathMatcher pathMatcher = new AntPathMatcher();
+        return excludedPaths.stream().anyMatch(pattern -> pathMatcher.match(pattern, request.getRequestURI()));
     }
 
     public void handleException(HttpServletResponse response, Exception e) throws IOException {

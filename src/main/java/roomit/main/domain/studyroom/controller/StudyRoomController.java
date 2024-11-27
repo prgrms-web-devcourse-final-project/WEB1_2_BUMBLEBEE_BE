@@ -32,7 +32,7 @@ public class StudyRoomController {
 
     // 사업장으로 스터디룸 찾기
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/api/v1/studyroom/{workplaceId}")
+    @GetMapping("/api/v1/studyroom/workplace/{workplaceId}")
     public void findStudyRoomsByWorkplace(@PathVariable Long workplaceId) {
         List<StudyRoomResponse> studyRooms = studyRoomService.findStudyRoomsByWorkPlaceId(workplaceId);
     }
