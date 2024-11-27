@@ -1,5 +1,6 @@
 package roomit.main.domain.workplace.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
@@ -8,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import roomit.main.domain.business.entity.Business;
+import roomit.main.domain.business.repository.BusinessRepository;
 import roomit.main.domain.workplace.dto.WorkplaceRequest;
 import roomit.main.domain.workplace.dto.WorkplaceResponse;
 import roomit.main.domain.workplace.entity.Workplace;
@@ -28,6 +31,7 @@ import java.util.Map;
 public class WorkplaceService {
 
     private final WorkplaceRepository workplaceRepository;
+    private final BusinessRepository businessRepository;
 
     private final WebClient webClient;
 
@@ -45,7 +49,7 @@ public class WorkplaceService {
     }
 
     @Transactional
-    public void createWorkplace(WorkplaceRequest workplaceDto) {
+    public void createWorkplace(WorkplaceRequest workplaceDto, Long id) {
 
         if (workplaceRepository.getWorkplaceByWorkplaceName(new WorkplaceName(workplaceDto.workplaceName())) != null ||
                 workplaceRepository.getWorkplaceByWorkplacePhoneNumber(new WorkplacePhoneNumber(workplaceDto.workplacePhoneNumber())) != null ||
@@ -56,7 +60,8 @@ public class WorkplaceService {
         Map<String, BigDecimal> coordinates = getStringBigDecimalMap(workplaceDto);
 
         try {
-            Workplace workplace = workplaceDto.toEntity(coordinates.get("latitude"), coordinates.get("longitude"));
+            Business business = businessRepository.findById(id).orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
+            Workplace workplace = workplaceDto.toEntity(coordinates.get("latitude"), coordinates.get("longitude"), business);
             workplace.changeStarSum(0L);
             workplaceRepository.save(workplace);
         } catch (InvalidDataAccessApiUsageException e) {
@@ -145,12 +150,18 @@ public class WorkplaceService {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode document = objectMapper.readTree(response).path("documents").get(0);
 
+            BigDecimal latitude = new BigDecimal(document.path("y").asText());
+            BigDecimal longitude = new BigDecimal(document.path("x").asText());
+
             return Map.of(
-                    "latitude", new BigDecimal(document.path("y").asText()),
-                    "longitude", new BigDecimal(document.path("x").asText())
+                    "latitude", latitude,
+                    "longitude", longitude
             );
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error parsing JSON response", e);
         } catch (Exception e) {
             throw new RuntimeException("Failed to extract coordinates from response", e);
         }
     }
 }
+
