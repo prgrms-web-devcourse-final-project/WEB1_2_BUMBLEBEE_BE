@@ -24,6 +24,7 @@ import roomit.main.domain.workplace.service.WorkplaceService;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -52,9 +53,6 @@ public class WorkplaceControllerTest {
 
     @Autowired
     private WorkplaceRepository workplaceRepository;
-
-    @Autowired
-    private WorkplaceService workplaceService;
 
     private static String token;
 
@@ -122,8 +120,8 @@ public class WorkplaceControllerTest {
                     .workplaceDescription("사업장 설명 " + i)
                     .workplaceAddress(addresses.get(i - 1))
                     .imageUrl("http://image.url")
-                    .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
-                    .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                    .workplaceStartTime(LocalTime.of(9, 0))
+                    .workplaceEndTime(LocalTime.of(18, 0))
                     .latitude(BigDecimal.valueOf(37.56 + i * 0.01))
                     .longitude(BigDecimal.valueOf(127.00 + i * 0.01))
                     .business(business) // 이미 정의된 business 객체
@@ -148,8 +146,8 @@ public class WorkplaceControllerTest {
                 .workplaceDescription("사업장 설명1")
                 .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 7층")
                 .imageUrl("http://image.url")
-                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
-                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                .workplaceStartTime(LocalTime.of(9, 0))
+                .workplaceEndTime(LocalTime.of(18, 0))
                 .build();
 
         String json = objectMapper.writeValueAsString(workplace);
@@ -197,8 +195,8 @@ public class WorkplaceControllerTest {
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
                 .imageUrl("http://image.url")
-                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
-                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                .workplaceStartTime(LocalTime.of(9, 0))
+                .workplaceEndTime(LocalTime.of(18, 0))
                 .business(business)
                 .build();
 
@@ -210,8 +208,8 @@ public class WorkplaceControllerTest {
                 .workplaceDescription("사업장 설명 수정")
                 .workplaceAddress("서울 중구 장충단로13길 20")
                 .imageUrl("http://image.url")
-                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 8, 0))
-                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 19, 0))
+                .workplaceStartTime(LocalTime.of(9, 0))
+                .workplaceEndTime(LocalTime.of(18, 0))
                 .build();
 
         String json = objectMapper.writeValueAsString(updatedWorkplace);
@@ -240,8 +238,8 @@ public class WorkplaceControllerTest {
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
                 .imageUrl("http://image.url")
-                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
-                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                .workplaceStartTime(LocalTime.of(9, 0))
+                .workplaceEndTime(LocalTime.of(18, 0))
                 .business(business)
                 .build();
 
@@ -309,6 +307,7 @@ public class WorkplaceControllerTest {
     @DisplayName("사업자 ID로 목록 조회")
     void getWorkplacesByBusinessId() throws Exception {
         // Given
+
 
         // When
         mockMvc.perform(get("/api/v1/workplace/business")

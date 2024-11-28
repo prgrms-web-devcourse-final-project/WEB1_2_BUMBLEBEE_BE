@@ -21,6 +21,7 @@ import roomit.main.global.exception.CommonException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -79,8 +80,8 @@ class WorkplaceServiceTest {
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
                 .imageUrl("http://image.url")
-                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
-                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                .workplaceStartTime(LocalTime.of(9, 0))
+                .workplaceEndTime(LocalTime.of(18, 0))
                 .business(savedBusiness)
                 .build();
 
@@ -108,8 +109,8 @@ class WorkplaceServiceTest {
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
                 .imageUrl("http://image.url")
-                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
-                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                .workplaceStartTime(LocalTime.of(9, 0))
+                .workplaceEndTime(LocalTime.of(18, 0))
                 .build();
 
         // When
@@ -133,8 +134,8 @@ class WorkplaceServiceTest {
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
                 .imageUrl("http://image.url")
-                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
-                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                .workplaceStartTime(LocalTime.of(9, 0))
+                .workplaceEndTime(LocalTime.of(18, 0))
                 .build();
 
 
@@ -171,8 +172,8 @@ class WorkplaceServiceTest {
                 .workplaceDescription("기존 설명")
                 .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
                 .imageUrl("http://image.url")
-                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
-                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                .workplaceStartTime(LocalTime.of(9, 0))
+                .workplaceEndTime(LocalTime.of(18, 0))
                 .business(savedBusiness)
                 .build();
 
@@ -184,8 +185,8 @@ class WorkplaceServiceTest {
                 .workplaceDescription("사업장 설명 수정")
                 .workplaceAddress("서울 중구 을지로 227 훈련원공원")
                 .imageUrl("http://image.url")
-                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
-                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                .workplaceStartTime(LocalTime.of(9, 0))
+                .workplaceEndTime(LocalTime.of(18, 0))
                 .build();
 
         // When
@@ -211,8 +212,8 @@ class WorkplaceServiceTest {
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
                 .imageUrl("http://image.url")
-                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
-                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                .workplaceStartTime(LocalTime.of(9, 0))
+                .workplaceEndTime(LocalTime.of(18, 0))
                 .business(savedBusiness)
                 .build();
         workplaceRepository.save(workplace);
@@ -222,8 +223,8 @@ class WorkplaceServiceTest {
                 .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("수정된 설명")
                 .workplaceAddress("서울 중구 을지로 227 훈련원공원")
-                .workplaceStartTime(LocalDateTime.of(2023, 2, 1, 9, 0))
-                .workplaceEndTime(LocalDateTime.of(2023, 2, 1, 18, 0))
+                .workplaceStartTime(LocalTime.of(9, 0))
+                .workplaceEndTime(LocalTime.of(18, 0))
                 .build();
 
 
@@ -246,8 +247,8 @@ class WorkplaceServiceTest {
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
                 .imageUrl("http://image.url")
-                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
-                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                .workplaceStartTime(LocalTime.of(9, 0))
+                .workplaceEndTime(LocalTime.of(18, 0))
                 .business(savedBusiness)
                 .build();
 
@@ -291,8 +292,8 @@ class WorkplaceServiceTest {
                     .workplaceDescription("사업장 설명")
                     .workplaceAddress(addresses.get(i - 1))
                     .imageUrl("http://image.url")
-                    .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
-                    .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                    .workplaceStartTime(LocalTime.of(9, 0))
+                    .workplaceEndTime(LocalTime.of(18, 0))
                     .build();
 
             // When
@@ -340,8 +341,8 @@ class WorkplaceServiceTest {
                     .workplacePhoneNumber("0507-1234-" + String.format("%04d", i))
                     .workplaceDescription("테스트 사업장 " + i)
                     .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
-                    .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
-                    .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                    .workplaceStartTime(LocalTime.of(9, 0))
+                    .workplaceEndTime(LocalTime.of(18, 0))
                     .imageUrl("http://image.url")
                     .business(savedBusiness) // Set the businessId
                     .build();
@@ -410,8 +411,8 @@ class WorkplaceServiceTest {
                 .workplaceDescription("기존 설명")
                 .workplaceAddress("서울 중구 장충단로 247 굿모닝시티몰 8층") // 초기 주소
                 .imageUrl("http://image.url")
-                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
-                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                .workplaceStartTime(LocalTime.of(9, 0))
+                .workplaceEndTime(LocalTime.of(18, 0))
                 .business(savedBusiness)
                 .build();
 
@@ -424,8 +425,8 @@ class WorkplaceServiceTest {
                 .workplaceDescription("수정된 설명")
                 .workplaceAddress("서울 중구 장충단로13길 20") // 주소 변경
                 .imageUrl("http://updated.image.url")
-                .workplaceStartTime(LocalDateTime.of(2023, 2, 1, 9, 0))
-                .workplaceEndTime(LocalDateTime.of(2023, 2, 1, 18, 0))
+                .workplaceStartTime(LocalTime.of(9, 0))
+                .workplaceEndTime(LocalTime.of(18, 0))
                 .build();
 
         // When: 사업장 수정

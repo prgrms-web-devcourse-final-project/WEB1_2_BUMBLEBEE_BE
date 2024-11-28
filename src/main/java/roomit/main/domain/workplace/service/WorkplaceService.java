@@ -23,8 +23,8 @@ import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
 
 import java.math.BigDecimal;
+import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -54,8 +54,8 @@ public class WorkplaceService {
                         (String) result[3],
                         (String) result[4],
                         (String) result[5],
-                        ((Timestamp) result[6]).toLocalDateTime(),
-                        ((Timestamp) result[7]).toLocalDateTime(),
+                        ((Time) result[6]).toLocalTime(),
+                        ((Time) result[7]).toLocalTime(),
                         ((Timestamp) result[8]).toLocalDateTime(),
                         (BigDecimal) result[10],
                         (BigDecimal) result[9],

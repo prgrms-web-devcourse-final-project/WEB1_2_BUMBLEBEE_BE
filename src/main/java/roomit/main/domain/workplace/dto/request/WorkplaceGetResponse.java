@@ -5,6 +5,7 @@ import roomit.main.domain.workplace.entity.Workplace;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public record WorkplaceGetResponse(
         Long workplaceId,
@@ -13,8 +14,8 @@ public record WorkplaceGetResponse(
         String workplaceDescription,
         String workplaceAddress,
         String imageUrl,
-        @JsonFormat(pattern = "HH:mm") LocalDateTime workplaceStartTime,
-        @JsonFormat(pattern = "HH:mm") LocalDateTime workplaceEndTime,
+        @JsonFormat(pattern = "HH:mm") LocalTime workplaceStartTime,
+        @JsonFormat(pattern = "HH:mm") LocalTime workplaceEndTime,
         LocalDateTime createdAt,
         BigDecimal longitude,
         BigDecimal latitude,
