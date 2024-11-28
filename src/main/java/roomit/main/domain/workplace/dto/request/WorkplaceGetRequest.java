@@ -1,4 +1,4 @@
-package roomit.main.domain.workplace.dto.reponse;
+package roomit.main.domain.workplace.dto.request;
 
 import lombok.Builder;
 import roomit.main.domain.workplace.entity.value.Coordinate;
