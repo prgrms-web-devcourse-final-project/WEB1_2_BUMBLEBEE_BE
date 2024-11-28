@@ -27,6 +27,7 @@ import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -77,8 +78,8 @@ class ReviewServiceTest {
                 .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("대한민국입니다")
-                .workplaceStartTime(LocalDateTime.of(2023, 1, 1, 9, 0))
-                .workplaceEndTime(LocalDateTime.of(2023, 1, 1, 18, 0))
+                .workplaceStartTime(LocalTime.of(9, 0))
+                .workplaceEndTime(LocalTime.of(18, 0))
                 .build();
         memberRepository.save(member);
 
