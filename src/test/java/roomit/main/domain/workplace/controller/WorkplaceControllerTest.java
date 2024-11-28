@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import roomit.main.domain.business.dto.request.BusinessRegisterRequest;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.business.repository.BusinessRepository;
+import roomit.main.domain.studyroom.dto.request.CreateStudyRoomRequest;
 import roomit.main.domain.token.dto.LoginRequest;
 import roomit.main.domain.token.dto.LoginResponse;
 import roomit.main.domain.workplace.dto.request.WorkplaceGetRequest;
@@ -136,7 +137,7 @@ public class WorkplaceControllerTest {
     @Order(1)
     @Test
     @DisplayName("사업장 등록")
-    void create() throws Exception {
+    void createWithMockMvc() throws Exception {
         // Given
         WorkplaceRequest workplace = WorkplaceRequest.builder()
                 .workplaceName("사업장1")
@@ -146,20 +147,36 @@ public class WorkplaceControllerTest {
                 .imageUrl("http://image.url")
                 .workplaceStartTime(LocalTime.of(9, 0))
                 .workplaceEndTime(LocalTime.of(18, 0))
+                .studyRoomList(Arrays.asList(
+                        new CreateStudyRoomRequest(
+                                "Room A",
+                                "작은 룸",
+                                "http://default-image.url",
+                                7000,
+                                4
+                        ),
+                        new CreateStudyRoomRequest(
+                                "Room B",
+                                "큰 룸",
+                                "http://default-image.url",
+                                8000,
+                                6
+                        )
+                ))
                 .build();
 
         String json = objectMapper.writeValueAsString(workplace);
 
         // When
         mockMvc.perform(post("/api/v1/workplace")
-                        .header("Authorization", "Bearer " + token) // 토큰 추가
+                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-
                 // Then
                 .andExpect(status().isCreated())
                 .andDo(print());
     }
+
 
     @Order(2)
     @Test

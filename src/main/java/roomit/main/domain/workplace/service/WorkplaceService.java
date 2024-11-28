@@ -79,31 +79,35 @@ public class WorkplaceService {
     @Transactional
     public void createWorkplace(WorkplaceRequest workplaceDto, Long id) {
 
-        if (workplaceRepository.getWorkplaceByWorkplaceName(new WorkplaceName(workplaceDto.workplaceName())) != null ||
-                workplaceRepository.getWorkplaceByWorkplacePhoneNumber(new WorkplacePhoneNumber(workplaceDto.workplacePhoneNumber())) != null ||
-                workplaceRepository.getWorkplaceByWorkplaceAddress(new WorkplaceAddress(workplaceDto.workplaceAddress())) != null) {
-            throw ErrorCode.WORKPLACE_NOT_REGISTERED.commonException();
-        }
+        Business business = businessRepository.findById(id).orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
 
         Map<String, BigDecimal> coordinates = getStringBigDecimalMap(workplaceDto);
 
-        try {
-            Business business = businessRepository.findById(id).orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
+        Workplace savedWorkplace;
 
+        try {
             Workplace workplace = workplaceDto.toEntity(coordinates.get("latitude"), coordinates.get("longitude"), business);
             workplace.changeStarSum(0L);
-            Workplace savedWorkplace = workplaceRepository.save(workplace);
-
-            for (CreateStudyRoomRequest studyRoomRequest : workplaceDto.studyRoomList()) {
-                StudyRoom studyRoom = studyRoomRequest.toEntity();
-                studyRoom.setWorkPlaceId(savedWorkplace); // 스터디룸에 사업장 연결
-                studyRoomRepository.save(studyRoom);
-            }
+            savedWorkplace = workplaceRepository.save(workplace);
 
         } catch (InvalidDataAccessApiUsageException e) {
             throw ErrorCode.WORKPLACE_INVALID_REQUEST.commonException();
         } catch (Exception e) {
             throw ErrorCode.WORKPLACE_NOT_REGISTERED.commonException();
+        }
+
+        saveStudyrooms(workplaceDto, savedWorkplace);
+    }
+
+    private void saveStudyrooms(WorkplaceRequest workplaceDto, Workplace savedWorkplace) {
+        try {
+            for (CreateStudyRoomRequest studyRoomRequest : workplaceDto.studyRoomList()) {
+                StudyRoom studyRoom = studyRoomRequest.toEntity();
+                studyRoom.setWorkPlaceId(savedWorkplace); // 스터디룸에 사업장 연결
+                studyRoomRepository.save(studyRoom);
+            }
+        } catch (Exception e) {
+            throw ErrorCode.STYDYROOM_NOT_REGISTERD.commonException();
         }
     }
 
@@ -150,7 +154,7 @@ public class WorkplaceService {
         try {
             workplaceRepository.delete(workplace);
         } catch (Exception e) {
-            throw ErrorCode.BUSINESS_NOT_DELETE.commonException();
+            throw ErrorCode.WORKPLACE_NOT_DELETE.commonException();
         }
     }
 
@@ -158,7 +162,7 @@ public class WorkplaceService {
         List<Workplace> workplaces = workplaceRepository.findByBusiness_BusinessId(businessId);
 
         if (workplaces.isEmpty()) {
-            throw ErrorCode.STUDYROOM_NOT_FOUND.commonException();
+            throw ErrorCode.WORKPLACE_NOT_FOUND.commonException();
         }
 
         return toResponseDto(workplaces);
