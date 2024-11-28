@@ -139,6 +139,7 @@ public class JWTFilter extends OncePerRequestFilter {
         // 예외적으로 필터링하지 않을 경로들
         List<String> excludedPaths = List.of(
                 "/",
+                "/index.html",
                 "/static/**",
                 "/css/**",
                 "/js/**",
@@ -153,7 +154,11 @@ public class JWTFilter extends OncePerRequestFilter {
                 "/api/v1/workplace/info/**",
                 "/api/v1/review/workplace/**",
                 "/api/v1/workplace/business",
-                "/api/v1/workplace/distance"
+                "/api/v1/workplace/distance",
+                //결제
+                "/success",
+                "/fail",
+                "/confirm"
         );
 
         AntPathMatcher pathMatcher = new AntPathMatcher();

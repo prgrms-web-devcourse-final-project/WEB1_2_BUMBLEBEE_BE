@@ -119,7 +119,7 @@ public class SpringSecurityConfig {
                 // 경로별 인가 작업
                 .authorizeHttpRequests((auth) -> auth
                         //정적 리소스 허용
-                        .requestMatchers("/css/**", "/js/**", "/images/**", "/static/**").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/static/**", "/index.html").permitAll()
                         //모두 허용
                         .requestMatchers("/login/**","/").permitAll()
                         .requestMatchers("/reissue").permitAll()
@@ -161,6 +161,9 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/v1/reservation/workplace/**").hasAnyRole("BUSINESS","USER") //특정 사업장의 예약 찾기
 
                         //결제 권한 설정
+                        .requestMatchers("/confirm").permitAll()
+                        .requestMatchers("/fail").permitAll()
+                        .requestMatchers("/success").permitAll()
 
                         //알림 권한 설정
                         .requestMatchers(HttpMethod.GET,"/api/v1/notification/member").hasRole("USER") //회원 알림 내역 조회

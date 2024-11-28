@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import roomit.main.domain.payments.dto.response.PaymentsResponse;
 import roomit.main.domain.reservation.entity.Reservation;
 
 import java.time.LocalDateTime;
@@ -16,57 +17,82 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 public class Payments {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "payments_id")
-    private Long paymentsId; //결제 id
+    @Column(name = "payments_id", nullable = false, unique = true)
+    private Long paymentsId; // 결제 ID
 
-    @Column(name = "order_id")
-    private String orderId; //
+    @Column(name = "order_id", nullable = false)
+    private String orderId;
 
-    @Column(name = "order_name")
+    @Column(name = "order_name", nullable = false)
     private String orderName;
 
-    @Column(name = "tossPayments_kay")
-    private String tossPaymentsKay;
+    @Column(name = "toss_payments_key", nullable = false)
+    private String tossPaymentsKey;
 
-    @Column(name = "total_amount")
+    @Column(name = "total_amount", nullable = false)
     private int totalAmount;
 
-    @Enumerated(value = EnumType.STRING)
-    @Column(name = "tosspaymentMethod", nullable = false)
-    private TossPaymentMethod tosspaymentMethod;
+    @Column(name = "member_name", nullable = false)
+    private String memberName;
 
-    @Column(name = "tossPaymentStatus", nullable = false)
+    @Column(name = "member_phone_num", nullable = false)
+    private String memberPhoneNum;
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "toss_payment_method", nullable = false)
+    private TossPaymentMethod tossPaymentMethod;
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "toss_payment_status", nullable = false)
     private TossPaymentStatus tossPaymentStatus;
 
-    @Column(nullable = false)
-    private LocalDateTime requestedAt;
+    @Column(name = "requested_at", nullable = false)
+    private LocalDateTime requestedAt; //결제 시작
 
-    private LocalDateTime approvedAt;
+    @Column(name = "approved_at")
+    private LocalDateTime approvedAt; // 결제 승인
 
-    @OneToOne
-    @JoinColumn(name = "reservation_id" , nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reservation_id", nullable = false)
     private Reservation reservation;
 
     @Builder
     public Payments(String orderId,
                     String orderName,
-                    String tossPaymentsKay,
+                    String tossPaymentsKey,
                     int totalAmount,
-                    TossPaymentMethod tosspaymentMethod,
+                    String memberName,
+                    String memberPhoneNum,
+                    TossPaymentMethod tossPaymentMethod,
                     TossPaymentStatus tossPaymentStatus,
-                    LocalDateTime requestedAt,
-                    LocalDateTime approvedAt,
-                    Reservation reservation) {
+                    Reservation reservation,
+                    LocalDateTime approvedAt) {
         this.orderId = orderId;
         this.orderName = orderName;
-        this.tossPaymentsKay = tossPaymentsKay;
+        this.tossPaymentsKey = tossPaymentsKey;
         this.totalAmount = totalAmount;
-        this.tosspaymentMethod = tosspaymentMethod;
+        this.memberName = memberName;
+        this.memberPhoneNum = memberPhoneNum;
+        this.tossPaymentMethod = tossPaymentMethod;
         this.tossPaymentStatus = tossPaymentStatus;
-        this.requestedAt = requestedAt;
-        this.approvedAt = approvedAt;
         this.reservation = reservation;
+        this.approvedAt = approvedAt;
+        this.requestedAt = LocalDateTime.now();
+    }
+    public PaymentsResponse toDto(){
+        return new PaymentsResponse (
+                tossPaymentMethod,
+                totalAmount,
+                orderName,
+                orderId,
+                memberName,
+                memberPhoneNum,
+                "",
+                "",
+                approvedAt,
+                "y");
     }
 }
