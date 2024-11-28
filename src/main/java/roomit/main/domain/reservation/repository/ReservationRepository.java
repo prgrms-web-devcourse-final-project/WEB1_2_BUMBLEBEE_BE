@@ -17,7 +17,7 @@ public interface ReservationRepository extends JpaRepository<Reservation,Long> {
     Optional<ReservationResponse> findRecentReservationByMemberId(@Param("memberId") Long memberId);
 
     // 내 최근순으로 예약 리스트 출력
-    @Query("SELECT r FROM Reservation r WHERE r.memberId =: memberId ORDER BY  r.createdAt DESC")
+    @Query("SELECT r FROM Reservation r WHERE r.memberId =: memberId ORDER BY  r.createdAt DESC LIMIT 10")
     List<ReservationResponse> findReservationsByMemberId(Long memberId);
 
     // 내 작업장의 예약 리스트 출력

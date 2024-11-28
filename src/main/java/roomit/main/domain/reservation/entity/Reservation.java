@@ -54,4 +54,11 @@ public class Reservation extends BaseEntity{
         this.memberId = memberId;
         this.studyRoomId = studyRoomId;
     }
+
+    @PrePersist
+    public void prePersist() {
+        if (this.reservationState == null) {
+            this.reservationState = ReservationState.RESERVABLE;
+        }
+    }
 }

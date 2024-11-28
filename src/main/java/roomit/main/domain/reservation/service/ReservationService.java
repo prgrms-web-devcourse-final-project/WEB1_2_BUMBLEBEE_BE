@@ -8,6 +8,7 @@ import roomit.main.domain.reservation.dto.request.UpdateReservationRequest;
 import roomit.main.domain.reservation.dto.response.MyWorkPlaceReservationResponse;
 import roomit.main.domain.reservation.dto.response.ReservationResponse;
 import roomit.main.domain.reservation.entity.Reservation;
+import roomit.main.domain.reservation.entity.ReservationState;
 import roomit.main.domain.reservation.repository.ReservationRepository;
 import roomit.main.domain.studyroom.dto.response.StudyRoomResponse;
 import roomit.main.domain.studyroom.entity.StudyRoom;
@@ -30,7 +31,7 @@ public class ReservationService {
     @Transactional(readOnly = true)
     public ReservationResponse findByMemberId(Long memberId) {
         return reservationRepository.findRecentReservationByMemberId(memberId)
-                .orElseThrow(()-> new IllegalArgumentException("예약한적이 없습니다"));
+                .orElseThrow(()-> new IllegalArgumentException("예약 이력이 없습니다."));
     }
 
     // memberId를 이용하여 나의 예약 전체 조회
