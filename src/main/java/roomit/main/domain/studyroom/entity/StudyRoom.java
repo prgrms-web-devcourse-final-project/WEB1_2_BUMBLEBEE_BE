@@ -6,7 +6,7 @@ import roomit.main.domain.workplace.entity.Workplace;
 
 @Entity
 @Table(name = "StudyRoom")
-@NoArgsConstructor( access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
