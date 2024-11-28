@@ -1,4 +1,4 @@
-package roomit.main.domain.workplace.dto;
+package roomit.main.domain.workplace.dto.reponse;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,6 +13,7 @@ import roomit.main.domain.workplace.entity.value.WorkplacePhoneNumber;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Builder
 public record WorkplaceRequest(
@@ -21,8 +22,8 @@ public record WorkplaceRequest(
         @NotBlank(message = "사업장 세부사항을 입력해주세요") String workplaceDescription,
         @Pattern(regexp = WorkplaceAddress.REGEX, message = WorkplaceAddress.ERR_MSG) String workplaceAddress,
         @Pattern(regexp = ImageUrl.REGEX, message = ImageUrl.ERR_MSG) String imageUrl,
-        @NotNull(message = "사업장 시작 시간을 입력해주세요.") LocalDateTime workplaceStartTime,
-        @NotNull(message = "사업장 종료 시간을 입력해주세요.") LocalDateTime workplaceEndTime
+        @NotNull(message = "사업장 시작 시간을 입력해주세요.") LocalTime workplaceStartTime,
+        @NotNull(message = "사업장 종료 시간을 입력해주세요.") LocalTime workplaceEndTime
 ) {
     public Workplace toEntity(BigDecimal latitude, BigDecimal longitude, Business business) {
         return Workplace.builder()

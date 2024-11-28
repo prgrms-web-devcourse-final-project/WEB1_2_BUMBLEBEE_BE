@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.format.annotation.DateTimeFormat;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.review.entity.Review;
 import roomit.main.domain.workplace.entity.value.ImageUrl;
@@ -17,6 +18,7 @@ import roomit.main.domain.workplace.entity.value.WorkplacePhoneNumber;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,11 +51,13 @@ public class Workplace {
     @Column(name = "workplace_longitude")
     private BigDecimal longitude;
 
+    @DateTimeFormat(pattern = "HH:mm")
     @Column(name = "workplace_start_time", nullable = false)
-    private LocalDateTime workplaceStartTime;
+    private LocalTime workplaceStartTime;
 
+    @DateTimeFormat(pattern = "HH:mm")
     @Column(name = "workplace_end_time", nullable = false)
-    private LocalDateTime workplaceEndTime;
+    private LocalTime workplaceEndTime;
 
     @Column(name = "star_sum")
     private Long starSum;
@@ -86,8 +90,8 @@ public class Workplace {
                      final String workplaceDescription,
                      final String workplaceAddress,
                      final String imageUrl,
-                     final LocalDateTime workplaceStartTime,
-                     final LocalDateTime workplaceEndTime,
+                     final LocalTime workplaceStartTime,
+                     final LocalTime workplaceEndTime,
                      final BigDecimal latitude,
                      final BigDecimal longitude,
                      final Business business) {
@@ -120,11 +124,11 @@ public class Workplace {
         this.workplaceAddress = workplaceAddress;
     }
 
-    public void changeWorkplaceStartTime(LocalDateTime workplaceStartTime) {
+    public void changeWorkplaceStartTime(LocalTime workplaceStartTime) {
         this.workplaceStartTime = workplaceStartTime;
     }
 
-    public void changeWorkplaceEndTime(LocalDateTime workplaceEndTime) {
+    public void changeWorkplaceEndTime(LocalTime workplaceEndTime) {
         this.workplaceEndTime = workplaceEndTime;
     }
 
