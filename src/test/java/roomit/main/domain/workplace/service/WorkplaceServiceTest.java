@@ -8,10 +8,10 @@ import roomit.main.domain.business.dto.request.BusinessRegisterRequest;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.business.repository.BusinessRepository;
 import roomit.main.domain.business.service.BusinessService;
-import roomit.main.domain.workplace.dto.reponse.WorkplaceGetRequest;
-import roomit.main.domain.workplace.dto.reponse.WorkplaceRequest;
-import roomit.main.domain.workplace.dto.request.WorkplaceGetResponse;
-import roomit.main.domain.workplace.dto.request.WorkplaceResponse;
+import roomit.main.domain.workplace.dto.request.WorkplaceGetRequest;
+import roomit.main.domain.workplace.dto.request.WorkplaceRequest;
+import roomit.main.domain.workplace.dto.response.WorkplaceGetResponse;
+import roomit.main.domain.workplace.dto.response.WorkplaceResponse;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.entity.value.Coordinate;
 import roomit.main.domain.workplace.entity.value.WorkplaceName;
@@ -21,7 +21,6 @@ import roomit.main.global.exception.CommonException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
@@ -387,7 +386,7 @@ class WorkplaceServiceTest {
         // Given: 유효한 주소 입력
         WorkplaceRequest workplaceRequest = WorkplaceRequest.builder()
                 .workplaceName("유효한 사업장")
-                .workplaceAddress("서울 중구 장충단로 247 굿모닝시티몰 8층") // 유효한 주소
+                .workplaceAddress("서울 중구 장충단로 247, 굿모닝시티몰 8층") // 유효한 주소
                 .workplacePhoneNumber("0507-1234-5678")
                 .build();
 

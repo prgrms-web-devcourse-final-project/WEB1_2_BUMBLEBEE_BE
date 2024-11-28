@@ -15,15 +15,13 @@ import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.business.repository.BusinessRepository;
 import roomit.main.domain.token.dto.LoginRequest;
 import roomit.main.domain.token.dto.LoginResponse;
-import roomit.main.domain.workplace.dto.reponse.WorkplaceGetRequest;
-import roomit.main.domain.workplace.dto.reponse.WorkplaceRequest;
+import roomit.main.domain.workplace.dto.request.WorkplaceGetRequest;
+import roomit.main.domain.workplace.dto.request.WorkplaceRequest;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.entity.value.Coordinate;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
-import roomit.main.domain.workplace.service.WorkplaceService;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;

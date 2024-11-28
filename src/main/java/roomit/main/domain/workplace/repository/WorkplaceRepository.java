@@ -3,14 +3,11 @@ package roomit.main.domain.workplace.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import roomit.main.domain.workplace.dto.request.WorkplaceGetResponse;
 import roomit.main.domain.workplace.entity.Workplace;
-import roomit.main.domain.workplace.entity.value.Coordinate;
 import roomit.main.domain.workplace.entity.value.WorkplaceAddress;
 import roomit.main.domain.workplace.entity.value.WorkplaceName;
 import roomit.main.domain.workplace.entity.value.WorkplacePhoneNumber;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public interface WorkplaceRepository extends JpaRepository<Workplace, Long> {

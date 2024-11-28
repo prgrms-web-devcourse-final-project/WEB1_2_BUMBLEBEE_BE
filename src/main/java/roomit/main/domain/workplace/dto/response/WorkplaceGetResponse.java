@@ -1,7 +1,6 @@
-package roomit.main.domain.workplace.dto.request;
+package roomit.main.domain.workplace.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import roomit.main.domain.workplace.entity.Workplace;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

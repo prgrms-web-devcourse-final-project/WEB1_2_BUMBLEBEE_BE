@@ -11,10 +11,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.business.repository.BusinessRepository;
-import roomit.main.domain.workplace.dto.reponse.WorkplaceGetRequest;
-import roomit.main.domain.workplace.dto.reponse.WorkplaceRequest;
-import roomit.main.domain.workplace.dto.request.WorkplaceGetResponse;
-import roomit.main.domain.workplace.dto.request.WorkplaceResponse;
+import roomit.main.domain.studyroom.dto.request.CreateStudyRoomRequest;
+import roomit.main.domain.studyroom.entity.StudyRoom;
+import roomit.main.domain.studyroom.repository.StudyRoomRepository;
+import roomit.main.domain.workplace.dto.request.WorkplaceGetRequest;
+import roomit.main.domain.workplace.dto.request.WorkplaceRequest;
+import roomit.main.domain.workplace.dto.response.WorkplaceGetResponse;
+import roomit.main.domain.workplace.dto.response.WorkplaceResponse;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.entity.value.WorkplaceAddress;
 import roomit.main.domain.workplace.entity.value.WorkplaceName;
@@ -36,6 +39,7 @@ public class WorkplaceService {
 
     private final WorkplaceRepository workplaceRepository;
     private final BusinessRepository businessRepository;
+    private final StudyRoomRepository studyRoomRepository;
     private final WebClient webClient;
 
     public List<WorkplaceGetResponse> readAllWorkplaces(WorkplaceGetRequest request, double myLat, double myLon) {
@@ -85,9 +89,17 @@ public class WorkplaceService {
 
         try {
             Business business = businessRepository.findById(id).orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
+
             Workplace workplace = workplaceDto.toEntity(coordinates.get("latitude"), coordinates.get("longitude"), business);
             workplace.changeStarSum(0L);
-            workplaceRepository.save(workplace);
+            Workplace savedWorkplace = workplaceRepository.save(workplace);
+
+            for (CreateStudyRoomRequest studyRoomRequest : workplaceDto.studyRoomList()) {
+                StudyRoom studyRoom = studyRoomRequest.toEntity();
+                studyRoom.setWorkPlaceId(savedWorkplace); // 스터디룸에 사업장 연결
+                studyRoomRepository.save(studyRoom);
+            }
+
         } catch (InvalidDataAccessApiUsageException e) {
             throw ErrorCode.WORKPLACE_INVALID_REQUEST.commonException();
         } catch (Exception e) {
@@ -162,7 +174,10 @@ public class WorkplaceService {
 
     protected Map<String, BigDecimal> getStringBigDecimalMap(WorkplaceRequest workplaceDto) {
         try {
-            return geoCording(workplaceDto.workplaceAddress());
+            String[] parts = workplaceDto.workplaceAddress().split(",", 2);
+            String roadAddress = parts[0].trim();
+            String detailAddress = (parts.length > 1) ? parts[1].trim() : "";
+            return geoCording(roadAddress);
         } catch (Exception e) {
             throw ErrorCode.WORKPLACE_INVALID_ADDRESS.commonException();
         }
