@@ -118,6 +118,8 @@ public class SpringSecurityConfig {
         http
                 // 경로별 인가 작업
                 .authorizeHttpRequests((auth) -> auth
+                        //정적 리소스 허용
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/static/**").permitAll()
                         //모두 허용
                         .requestMatchers("/login/**","/").permitAll()
                         .requestMatchers("/reissue").permitAll()
