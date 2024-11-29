@@ -119,7 +119,7 @@ class ReviewServiceTest {
         reservation = Reservation.builder()
                 .reservationName("이시현")
                 .reservationPhoneNumber("010-2314-2512")
-                .reservationState(ReservationState.RESERVED)
+                .reservationState(ReservationState.RESERVABLE)
                 .startTime(LocalDateTime.now())
                 .endTime(LocalDateTime.now())
                 .studyRoomId(studyRoom)
@@ -200,7 +200,7 @@ class ReviewServiceTest {
             Reservation reservation = Reservation.builder()
                     .reservationName("이시현")
                     .reservationPhoneNumber("010-2314-2512")
-                    .reservationState(ReservationState.RESERVED)
+                    .reservationState(ReservationState.RESERVABLE)
                     .startTime(LocalDateTime.now())
                     .endTime(LocalDateTime.now())
                     .studyRoomId(studyRoom)
@@ -237,7 +237,7 @@ class ReviewServiceTest {
                 .reviewRating(1.3)
                 .reservation(reservation)
                 .workplaceName(workplace.getWorkplaceName().getValue())
-                .build();;
+                .build();
 
         reviewRepository.save(review);
 
@@ -255,7 +255,7 @@ class ReviewServiceTest {
             Reservation reservation = Reservation.builder()
                     .reservationName("이시현")
                     .reservationPhoneNumber("010-2314-2512")
-                    .reservationState(ReservationState.RESERVED)
+                    .reservationState(ReservationState.RESERVABLE)
                     .startTime(LocalDateTime.now())
                     .endTime(LocalDateTime.now())
                     .studyRoomId(studyRoom)
