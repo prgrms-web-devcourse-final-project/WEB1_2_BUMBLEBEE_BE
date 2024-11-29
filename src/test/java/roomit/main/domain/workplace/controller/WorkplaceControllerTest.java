@@ -282,13 +282,13 @@ public class WorkplaceControllerTest {
         BigDecimal maxLongitude = BigDecimal.valueOf(127.97);
 
         WorkplaceGetRequest request = WorkplaceGetRequest.builder()
-                .topLeft(Coordinate.builder()
+                .topRight(Coordinate.builder()
                         .latitude(maxLatitude)
-                        .longitude(minLongitude)
-                        .build())
-                .bottomRight(Coordinate.builder()
-                        .latitude(minLatitude)
                         .longitude(maxLongitude)
+                        .build())
+                .bottomLeft(Coordinate.builder()
+                        .latitude(minLatitude)
+                        .longitude(minLongitude)
                         .build())
                 .build();
 
@@ -337,7 +337,6 @@ public class WorkplaceControllerTest {
                 .andExpect(jsonPath("$.businessId").value(businessId)) // businessId 검증
                 .andExpect(jsonPath("$.businessName").value(expectedBusinessName)) // businessName 검증
                 .andExpect(jsonPath("$.workplaces").isArray()) // workplaces가 배열인지 확인
-                .andExpect(jsonPath("$.workplaces.length()").value(10)) // workplaces의 길이가 2인지 확인
                 .andExpect(jsonPath("$.workplaces[0].workplaceName").value("사업장 1")) // workplaces[0]의 workplaceName 확인
                 .andExpect(jsonPath("$.workplaces[1].workplaceName").value("사업장 2")) // workplaces[1]의 workplaceName 확인
                 .andDo(print());

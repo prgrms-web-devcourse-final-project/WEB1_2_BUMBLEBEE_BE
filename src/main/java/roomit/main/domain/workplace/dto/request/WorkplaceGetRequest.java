@@ -5,7 +5,7 @@ import roomit.main.domain.workplace.entity.value.Coordinate;
 
 @Builder
 public record WorkplaceGetRequest(
-        Coordinate topLeft,
-        Coordinate bottomRight
+        Coordinate topRight,
+        Coordinate bottomLeft
 ) {
 }
