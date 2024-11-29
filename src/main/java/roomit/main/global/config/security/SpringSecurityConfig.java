@@ -161,9 +161,9 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/v1/reservations/workplace/**").hasAnyRole("BUSINESS","USER") //특정 사업장의 예약 찾기
 
                         //결제 권한 설정
-                        .requestMatchers("/confirm").permitAll()
-                        .requestMatchers("/fail").permitAll()
-                        .requestMatchers("/success").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/v1/payments/toss").hasRole("USER") //결제 검증 및 서버 저장
+                        .requestMatchers(HttpMethod.GET,"/api/v1/payments/toss/success").permitAll() //결제 성공
+                        .requestMatchers(HttpMethod.GET,"/api/v1/payments/toss/fail").permitAll() //결제 실패
 
                         //알림 권한 설정
                         .requestMatchers(HttpMethod.GET,"/api/v1/notification/member").hasRole("USER") //회원 알림 내역 조회

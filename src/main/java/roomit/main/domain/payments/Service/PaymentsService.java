@@ -127,7 +127,7 @@ public class PaymentsService {
     public void validateReservationForPayment(Long reservationId, Long memberId, PaymentsRequest paymentRequest) {
 
         // 예약 조회 및 소유권 검증
-        Reservation reservation = reservationRepository.findFirstByIdAndMember_IdOrderByIdDesc(reservationId, memberId)
+        Reservation reservation = reservationRepository.findFirstByIdAndMemberId(reservationId, memberId)
                 .orElseThrow(() -> null); // 예외 추가해야함
 
         // 예약 상태 검증
