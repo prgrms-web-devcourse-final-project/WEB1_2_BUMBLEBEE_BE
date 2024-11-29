@@ -22,9 +22,9 @@ public class ReservationController {
 
     // 예약 만들기
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/api/v1/reservations")
-    public void createReservation(@RequestBody @Valid CreateReservationRequest request) {
-        reservationService.createReservation(request);
+    @PostMapping("/api/v1/reservations/{memberId}/{studyRoomId}")
+    public void createReservation(@PathVariable @Positive Long memberId, @PathVariable @Positive Long studyRoomId,@RequestBody @Valid CreateReservationRequest request) {
+        reservationService.createReservation(memberId,studyRoomId,request);
     }
 
     // 예약 삭제
@@ -43,7 +43,7 @@ public class ReservationController {
 
     // 특정 멤버의 예약 찾기
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/api/v1/reservations/member/{memberId}")
+    @PostMapping("/api/v1/reservations/member/{memberId}")
     public ReservationResponse findRecentReservationByMemberId(@PathVariable @Positive Long memberId) {
         return reservationService.findByMemberId(memberId);
     }

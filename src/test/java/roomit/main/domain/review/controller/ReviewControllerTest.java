@@ -126,11 +126,6 @@ class ReviewControllerTest {
     @Transactional
     void test1() throws Exception{
 
-
-
-
-
-
         ReviewRegisterRequest request = ReviewRegisterRequest.builder()
                 .reviewContent("좋은 장소네요")
                 .reviewRating(3.4)
