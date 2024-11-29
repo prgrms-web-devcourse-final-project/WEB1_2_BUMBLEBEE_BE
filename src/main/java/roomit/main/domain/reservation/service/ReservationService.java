@@ -49,7 +49,7 @@ public class ReservationService {
         return reservationRepository.save(reservation).getId();
     }
 
-    // validation startTime & endTime(startTime < endTime = True)
+    // validation startTime & endTime(startTime < endTime = True)22
     @Transactional(readOnly = true)
     public boolean validateReservation(LocalDateTime startTime, LocalDateTime endTime) {
         return startTime.isBefore(endTime);
