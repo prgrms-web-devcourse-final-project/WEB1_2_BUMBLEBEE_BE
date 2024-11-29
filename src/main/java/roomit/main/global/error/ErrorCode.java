@@ -18,6 +18,7 @@ public enum ErrorCode {
 
     /*StudyRoom*/
     STUDYROOM_NOT_FOUND(HttpStatus.BAD_REQUEST,"S001","존재하지 않는 스터디룸입니다."),
+    STYDYROOM_NOT_REGISTERD(HttpStatus.UNAUTHORIZED, "S002","스터디름 등록에 실패하였습니다."),
 
     /*Business*/
     BUSINESS_NOT_FOUND(HttpStatus.BAD_REQUEST, "B003", "존재 하지 않는 사업자입니다."),
@@ -35,8 +36,10 @@ public enum ErrorCode {
 
     /*Review*/
     REVIEW_NOT_FOUND(HttpStatus.BAD_REQUEST,"V003","존재 하지 않는 리뷰입니다."),
-    REVIEW_UPDATE_EXCEPTION(HttpStatus.BAD_REQUEST,"V002","잘못 수정 입니다.");
+    REVIEW_UPDATE_EXCEPTION(HttpStatus.BAD_REQUEST,"V002","잘못 수정 입니다."),
 
+    /*Reservation*/
+    RESERVATIN_NOT_FOUND(HttpStatus.BAD_REQUEST, "R001", "존재 하지 않는 예약입니다.");
     private final String code;
     private final String message;
     private final HttpStatus status;
