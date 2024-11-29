@@ -5,11 +5,13 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import roomit.main.domain.payments.dto.response.PaymentsResponse;
 import roomit.main.domain.reservation.entity.Reservation;
 
 import java.time.LocalDateTime;
+
 
 @Entity
 @Getter
@@ -24,52 +26,60 @@ public class Payments {
     private Long paymentsId; // 결제 ID
 
     @Column(name = "order_id", nullable = false)
-    private String orderId;
+    private String orderId; //주문 ID (고유값)
 
     @Column(name = "order_name", nullable = false)
-    private String orderName;
+    private String orderName; //주문 상품 이름
 
     @Column(name = "toss_payments_key", nullable = false)
-    private String tossPaymentsKey;
+    private String tossPaymentsKey; //페이먼트키
 
     @Column(name = "total_amount", nullable = false)
-    private int totalAmount;
+    private Long totalAmount; //가격
 
     @Column(name = "member_name", nullable = false)
-    private String memberName;
+    private String memberName; //이름
 
     @Column(name = "member_phone_num", nullable = false)
-    private String memberPhoneNum;
+    private String memberPhoneNum; //휴대폰
 
     @Enumerated(value = EnumType.STRING)
     @Column(name = "toss_payment_method", nullable = false)
-    private TossPaymentMethod tossPaymentMethod;
+    private TossPaymentMethod tossPaymentMethod; //결제 타입
 
-    @Enumerated(value = EnumType.STRING)
-    @Column(name = "toss_payment_status", nullable = false)
-    private TossPaymentStatus tossPaymentStatus;
+    @Column(name = "pay_success_yn")
+    private boolean paySuccessYN;
 
-    @Column(name = "requested_at", nullable = false)
-    private LocalDateTime requestedAt; //결제 시작
+    @Column(name = "fail_reason")
+    private String failReason;
 
-    @Column(name = "approved_at")
-    private LocalDateTime approvedAt; // 결제 승인
+    @Column(name = "cancel_yn")
+    private boolean cancelYN;
+    @Column(name = "cancel_reason")
+    private String cancelReason;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_id", nullable = false)
     private Reservation reservation;
 
+    @Column(name = "createdAt")
+    @CreatedDate
+    private LocalDateTime createdAt;
+
     @Builder
     public Payments(String orderId,
                     String orderName,
                     String tossPaymentsKey,
-                    int totalAmount,
+                    Long totalAmount,
                     String memberName,
                     String memberPhoneNum,
                     TossPaymentMethod tossPaymentMethod,
-                    TossPaymentStatus tossPaymentStatus,
+                    boolean paySuccessYN,
+                    String failReason,
+                    boolean cancelYN,
+                    String cancelReason,
                     Reservation reservation,
-                    LocalDateTime approvedAt) {
+                    LocalDateTime createdAt) {
         this.orderId = orderId;
         this.orderName = orderName;
         this.tossPaymentsKey = tossPaymentsKey;
@@ -77,22 +87,23 @@ public class Payments {
         this.memberName = memberName;
         this.memberPhoneNum = memberPhoneNum;
         this.tossPaymentMethod = tossPaymentMethod;
-        this.tossPaymentStatus = tossPaymentStatus;
+        this.paySuccessYN = paySuccessYN;
+        this.failReason = failReason;
+        this.cancelYN = cancelYN;
+        this.cancelReason = cancelReason;
         this.reservation = reservation;
-        this.approvedAt = approvedAt;
-        this.requestedAt = LocalDateTime.now();
+        this.createdAt = createdAt;
     }
-    public PaymentsResponse toDto(){
-        return new PaymentsResponse (
-                tossPaymentMethod,
-                totalAmount,
-                orderName,
-                orderId,
-                memberName,
-                memberPhoneNum,
-                "",
-                "",
-                approvedAt,
-                "y");
+
+    public void changeTossPaymentsKey(String tossPaymentsKey) {
+        this.tossPaymentsKey = tossPaymentsKey;
+    }
+
+    public void changePaySuccessYN(boolean paySuccessYN) {
+        this.paySuccessYN = paySuccessYN;
+    }
+
+    public void changeFailReason(String failReason) {
+        this.failReason = failReason;
     }
 }

@@ -7,21 +7,22 @@ import roomit.main.domain.payments.entity.TossPaymentMethod;
 import java.util.UUID;
 
 public record PaymentsRequest(
-        @NotNull String tossPaymentsKey,
         @NotNull String orderId,
-        @NotNull TossPaymentMethod tossPaymentMethod,
-        @NotNull int totalAmount,
-        @NotNull String orderName, // 스터디룸A
+        @NotNull String orderName,
+        @NotNull Long totalAmount,
         @NotNull String memberName,
-        @NotNull String memberPhoneNum
+        @NotNull String memberPhoneNum,
+        @NotNull TossPaymentMethod tossPaymentMethod
 ) {
 
     public Payments toEntity() {
         return Payments.builder()
+                .orderId(orderId)
                 .tossPaymentMethod(tossPaymentMethod)
                 .totalAmount(totalAmount)
                 .orderName(orderName)
-                .orderId(UUID.randomUUID().toString())
+                .memberName(memberName)
+                .memberPhoneNum(memberPhoneNum)
                 .build();
     }
 }
