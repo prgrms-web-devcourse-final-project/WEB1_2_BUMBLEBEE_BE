@@ -1,14 +1,12 @@
 package roomit.main.domain.reservation.repository;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import roomit.main.domain.reservation.dto.response.MyWorkPlaceReservationResponse;
-import roomit.main.domain.reservation.dto.response.ReservationResponse;
 import roomit.main.domain.reservation.entity.Reservation;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ReservationRepository extends JpaRepository<Reservation,Long> {
 

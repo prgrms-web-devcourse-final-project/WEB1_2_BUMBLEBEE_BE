@@ -76,11 +76,13 @@ public class ReservationServiceTest {
                 .build();
 
         studyRoom = new StudyRoom(1L,"StudyRoomA", "Study Room A good", 10, 50000, "http://example.com/image.jpg", null);
-        reservation = new Reservation("User1","010-2222-2222" ,ReservationState.COMPLETED,LocalDateTime.now(), LocalDateTime.now().plusHours(2),member,studyRoom);
+        reservation = new Reservation("User1","010-2222-2222" ,ReservationState.COMPLETED,10,50000,LocalDateTime.now(), LocalDateTime.now().plusHours(2),member,studyRoom);
 
         createRequest = new CreateReservationRequest(
                 "John Doe",
                 "010-1234-5678",
+                10,
+                50000,
                 LocalDateTime.now().plusDays(1),
                 LocalDateTime.now().plusDays(1).plusHours(2)
         );

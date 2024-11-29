@@ -30,6 +30,12 @@ public class Reservation extends BaseEntity{
     @Column(name = "reservation_state", nullable = false, columnDefinition = "VARCHAR(20)")
     private ReservationState reservationState;
 
+    @Column(name = "reservation_capacity", nullable = false, columnDefinition = "INTEGER")
+    private Integer reservationCapacity;
+
+    @Column(name= "reservation_price", nullable = false, columnDefinition = "INTEGER")
+    private Integer reservationPrice;
+
     @Column(name = "start_time", nullable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime startTime;
 
@@ -45,10 +51,12 @@ public class Reservation extends BaseEntity{
     private StudyRoom studyRoomId;
 
     @Builder
-    public Reservation(String reservationName, String reservationPhoneNumber, ReservationState reservationState, LocalDateTime startTime, LocalDateTime endTime, Member memberId, StudyRoom studyRoomId) {
+    public Reservation(String reservationName, String reservationPhoneNumber, ReservationState reservationState, Integer reservationCapacity,Integer reservationPrice,LocalDateTime startTime, LocalDateTime endTime, Member memberId, StudyRoom studyRoomId) {
         this.reservationName = reservationName;
         this.reservationPhoneNumber = reservationPhoneNumber;
         this.reservationState = reservationState;
+        this.reservationCapacity = reservationCapacity;
+        this.reservationPrice = reservationPrice;
         this.startTime = startTime;
         this.endTime = endTime;
         this.memberId = memberId;

@@ -19,6 +19,7 @@ import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,16 +33,27 @@ public class ReservationService {
 
     // 예약 만드는 메서드
     @Transactional
-    public void createReservation(Long memberId, Long studyRoomId,CreateReservationRequest request) {
+    public Long createReservation(Long memberId,Long studyRoomId,CreateReservationRequest request) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
 
         StudyRoom studyRoom = studyRoomRepository.findById(studyRoomId)
                 .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
 
+        if(!validateReservation(request.startTime(),request.endTime())){
+            throw new IllegalArgumentException("종료 시간이 시작 시간보다 빠를순 없습니다.");
+        }
+
         Reservation reservation = request.toEntity(member,studyRoom);
 
-        reservationRepository.save(reservation);
+        return reservationRepository.save(reservation).getId();
+    }
+
+    // validation startTime & endTime(startTime < endTime = True)
+    @Transactional(readOnly = true)
+    public boolean validateReservation(LocalDateTime startTime, LocalDateTime endTime) {
+        return startTime.isBefore(endTime);
+
     }
 
     // x를 눌러 예약을 삭제하는 메서드

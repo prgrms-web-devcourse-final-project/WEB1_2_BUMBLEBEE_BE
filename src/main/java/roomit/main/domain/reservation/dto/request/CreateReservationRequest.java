@@ -12,16 +12,21 @@ import roomit.main.domain.studyroom.entity.StudyRoom;
 import java.time.LocalDateTime;
 
 public record CreateReservationRequest (
-    @NotBlank String reservationName,
-    @Pattern(regexp = ReservationNum.REGEX, message = ReservationNum.ERR_MSG) String reservationPhoneNumber,
-    @NotNull LocalDateTime startTime,
-    @NotNull LocalDateTime endTime
+
+        @NotBlank String reservationName,
+        @Pattern(regexp = ReservationNum.REGEX, message = ReservationNum.ERR_MSG) String reservationPhoneNumber,
+        @NotNull Integer capacity,
+        @NotNull Integer price,
+        @NotNull LocalDateTime startTime,
+        @NotNull LocalDateTime endTime
 ) {
     public Reservation toEntity(Member member, StudyRoom studyRoom) {
         return Reservation.builder()
                 .reservationName(this.reservationName)
                 .reservationPhoneNumber(this.reservationPhoneNumber)
                 .reservationState(ReservationState.COMPLETED)
+                .reservationCapacity(this.capacity)
+                .reservationPrice(this.price)
                 .startTime(this.startTime)
                 .endTime(this.endTime)
                 .memberId(member)

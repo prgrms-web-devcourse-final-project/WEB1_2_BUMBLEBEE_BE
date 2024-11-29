@@ -47,6 +47,8 @@ public class ReservationControllerTest {
         createRequest = new CreateReservationRequest(
                 "John Doe",
                 "010-1234-5678",
+                10,
+                50000,
                 LocalDateTime.now().plusDays(1),
                 LocalDateTime.now().plusDays(1).plusHours(2)
         );
