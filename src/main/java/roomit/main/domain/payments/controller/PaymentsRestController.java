@@ -1,18 +1,14 @@
 package roomit.main.domain.payments.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.netty.handler.codec.http.HttpResponse;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import roomit.main.domain.member.dto.CustomMemberDetails;
 import roomit.main.domain.payments.Service.PaymentsService;
 import roomit.main.domain.payments.dto.request.PaymentsRequest;
-import roomit.main.domain.payments.dto.request.SaveAmountRequest;
 import roomit.main.domain.payments.dto.response.PaymentsResponse;
 import roomit.main.domain.payments.dto.response.PaymentsFailResponse;
 import roomit.main.domain.payments.dto.response.PaymentsSuccessResponse;
