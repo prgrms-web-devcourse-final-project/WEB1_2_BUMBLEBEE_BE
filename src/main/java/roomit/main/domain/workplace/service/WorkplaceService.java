@@ -61,7 +61,9 @@ public class WorkplaceService {
                             (String) result[3],
                             (reviewCount == 0) ? 0.0 : starSum / reviewCount,
                             reviewCount,
-                            ((Number) result[6]).doubleValue()
+                            BigDecimal.valueOf(((Number) result[6]).doubleValue()),  // latitude
+                            BigDecimal.valueOf(((Number) result[7]).doubleValue()),  // longitude
+                            ((Number) result[8]).doubleValue()
                     );
                 })
                 .toList();

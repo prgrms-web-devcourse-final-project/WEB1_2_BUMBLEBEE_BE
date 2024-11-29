@@ -17,6 +17,7 @@ public interface WorkplaceRepository extends JpaRepository<Workplace, Long> {
         SELECT w.workplace_id, w.workplace_name, 
                w.workplace_address, w.image_url,
                w.star_sum, w.review_count,
+               w.workplace_latitude, w.workplace_longitude,
                (6371 * acos(
                    cos(radians(:latitude)) * cos(radians(w.workplace_latitude)) *
                    cos(radians(w.workplace_longitude) - radians(:longitude)) +
