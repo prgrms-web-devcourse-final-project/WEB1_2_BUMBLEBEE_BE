@@ -5,9 +5,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import roomit.main.domain.workplace.entity.Workplace;
-import roomit.main.domain.workplace.entity.value.WorkplaceAddress;
 import roomit.main.domain.workplace.entity.value.WorkplaceName;
-import roomit.main.domain.workplace.entity.value.WorkplacePhoneNumber;
 
 import java.util.List;
 
