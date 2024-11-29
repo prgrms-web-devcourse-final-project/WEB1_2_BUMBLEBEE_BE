@@ -1,4 +1,4 @@
-package roomit.main.domain.chatroom.entity;
+package roomit.main.domain.chat.chatroom.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

@@ -1,9 +1,9 @@
-package roomit.main.domain.chat.entity;
+package roomit.main.domain.chat.chatmessage.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import roomit.main.domain.chatroom.entity.ChatRoom;
+import roomit.main.domain.chat.chatroom.entity.ChatRoom;
 
 import java.time.LocalDateTime;
 

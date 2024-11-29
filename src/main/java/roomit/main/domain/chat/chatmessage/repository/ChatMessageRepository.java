@@ -1,8 +1,8 @@
-package roomit.main.domain.chat.repository;
+package roomit.main.domain.chat.chatmessage.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import roomit.main.domain.chat.entity.ChatMessage;
+import roomit.main.domain.chat.chatmessage.entity.ChatMessage;
 
 import java.time.LocalDateTime;
 import java.util.List;

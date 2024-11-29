@@ -1,4 +1,4 @@
-package roomit.main.domain.chat.dto;
+package roomit.main.domain.chat.chatmessage.dto;
 
 import java.time.LocalDateTime;
 

@@ -1,21 +1,21 @@
-package roomit.main.domain.chat.service;
+package roomit.main.domain.chat.chatmessage.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import roomit.main.domain.chat.dto.ChatMessageRequest;
-import roomit.main.domain.chat.dto.ChatMessageResponse;
-import roomit.main.domain.chat.entity.ChatMessage;
-import roomit.main.domain.chat.repository.ChatMessageRepository;
-import roomit.main.domain.chatroom.entity.ChatRoom;
-import roomit.main.domain.chatroom.repositoroy.ChatRoomRepository;
+import roomit.main.domain.chat.chatmessage.dto.ChatMessageRequest;
+import roomit.main.domain.chat.chatmessage.dto.ChatMessageResponse;
+import roomit.main.domain.chat.chatmessage.entity.ChatMessage;
+import roomit.main.domain.chat.chatmessage.repository.ChatMessageRepository;
+import roomit.main.domain.chat.chatroom.entity.ChatRoom;
+import roomit.main.domain.chat.chatroom.repositoroy.ChatRoomRepository;
+import roomit.main.domain.chat.redis.service.RedisPublisher;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
