@@ -27,7 +27,6 @@ import java.util.Optional;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final WorkplaceRepository workplaceRepository;
     private final StudyRoomRepository studyRoomRepository;
     private final MemberRepository memberRepository;
 
@@ -40,15 +39,7 @@ public class ReservationService {
         StudyRoom studyRoom = studyRoomRepository.findById(studyRoomId)
                 .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
 
-        Reservation reservation = Reservation.builder()
-                .reservationName(request.reservationName())
-                .reservationPhoneNumber(request.reservationPhoneNumber())
-                .reservationState(ReservationState.COMPLETED)
-                .startTime(request.startTime())
-                .endTime(request.endTime())
-                .memberId(member)
-                .studyRoomId(studyRoom)
-                .build();
+        Reservation reservation = request.toEntity(member,studyRoom);
 
         reservationRepository.save(reservation);
     }
