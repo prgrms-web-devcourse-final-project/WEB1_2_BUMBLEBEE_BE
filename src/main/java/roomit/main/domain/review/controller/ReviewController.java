@@ -26,9 +26,8 @@ public class ReviewController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/api/v1/review/register")
-    public void register( @AuthenticationPrincipal CustomMemberDetails customMemberDetails,
-            @RequestBody @Valid ReviewRegisterRequest request) {
-        reviewService.register(request, customMemberDetails.getId());
+    public void register(@RequestBody @Valid ReviewRegisterRequest request) {
+        reviewService.register(request);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -48,7 +47,7 @@ public class ReviewController {
        return reviewService.read(customMemberDetails.getId());
     }
 
-    // 리뷰 페이징
+
     @GetMapping("api/v1/review/workplace/{workplaceId}")
     public ResponseEntity<CursorResponse> getReviews(
             @RequestParam(required = false) Long lastId,

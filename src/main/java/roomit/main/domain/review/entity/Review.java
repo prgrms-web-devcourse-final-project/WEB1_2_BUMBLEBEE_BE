@@ -6,6 +6,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import roomit.main.domain.member.entity.Member;
+import roomit.main.domain.reservation.entity.Reservation;
 import roomit.main.domain.workplace.entity.Workplace;
 
 import java.time.LocalDateTime;
@@ -28,6 +29,9 @@ public class Review {
     @Column(name = "review_rating", nullable = false)
     private Double reviewRating;
 
+    @Column(name = "workplace_name", nullable = false)
+    private String workplaceName;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -36,23 +40,16 @@ public class Review {
     @Column(name = "update_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
-
-    @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "workplace_id", nullable = false)
-    private Workplace workplace;
+    @OneToOne(mappedBy = "review") // Reservation에서 매핑 관리
+    private Reservation reservation;
 
     @Builder
-    public Review(String reviewContent, Double reviewRating, Member member, Workplace workplace) {
+    public Review(String reviewContent, Double reviewRating, String workplaceName, Reservation reservation) {
         this.reviewContent = reviewContent;
         this.reviewRating = reviewRating;
+        this.workplaceName = workplaceName;
         this.createdAt = LocalDateTime.now();
-        this.member = member;
-        this.workplace = workplace;
+        this.reservation = reservation;
     }
 
     public void changeReviewRating(Double reviewRating) {
@@ -60,5 +57,8 @@ public class Review {
     }
     public void changeReviewContent(String reviewContent) {
         this.reviewContent = reviewContent;
+    }
+    public void setReservation(Reservation reservation) {
+        this.reservation = reservation;
     }
 }

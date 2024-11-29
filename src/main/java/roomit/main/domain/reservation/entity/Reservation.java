@@ -3,6 +3,7 @@ package roomit.main.domain.reservation.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import roomit.main.domain.member.entity.Member;
+import roomit.main.domain.review.entity.Review;
 import roomit.main.domain.studyroom.entity.BaseEntity;
 import roomit.main.domain.studyroom.entity.StudyRoom;
 
@@ -44,6 +45,10 @@ public class Reservation extends BaseEntity{
     @JoinColumn(name = "studyroom_id")
     private StudyRoom studyRoomId;
 
+    @OneToOne(cascade = CascadeType.ALL) // Review와 일대일 관계 설정
+    @JoinColumn(name = "review_id") // 외래 키 이름 설정
+    private Review review;
+
     @Builder
     public Reservation(String reservationName, String reservationPhoneNumber, ReservationState reservationState, LocalDateTime startTime, LocalDateTime endTime, Member memberId, StudyRoom studyRoomId) {
         this.reservationName = reservationName;
@@ -54,4 +59,10 @@ public class Reservation extends BaseEntity{
         this.memberId = memberId;
         this.studyRoomId = studyRoomId;
     }
+    public void addReview(Review review) {
+        this.review = review;
+        review.setReservation(this); // Review에도 역방향 관계 설정
+    }
+
+
 }

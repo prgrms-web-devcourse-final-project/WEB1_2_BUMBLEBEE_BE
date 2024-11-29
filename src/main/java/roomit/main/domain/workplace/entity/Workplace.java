@@ -85,6 +85,7 @@ public class Workplace {
     private List<StudyRoom> studyRoom = new ArrayList<>();
 
 
+
     @Builder
     public Workplace(final String workplaceName,
                      final String workplacePhoneNumber,
@@ -137,6 +138,10 @@ public class Workplace {
 
     public void changeStarSum(Long starSum) {
         this.starSum = starSum;
+    }
+
+    public void changeReviewCount(Long reviewCount) {
+        this.reviewCount = reviewCount;
     }
 
     public void changeLongitude(BigDecimal longitude) {
