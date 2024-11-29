@@ -130,7 +130,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } catch (Exception e) {
-            handleException(response, new Exception("ACCESS TOKEN NOT FOUND"));
+                handleException(response, new Exception("ACCESS TOKEN NOT FOUND"));
         }
     }
 

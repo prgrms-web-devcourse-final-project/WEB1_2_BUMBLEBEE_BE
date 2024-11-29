@@ -14,6 +14,7 @@ import roomit.main.domain.member.entity.value.MemberEmail;
 import roomit.main.domain.member.entity.value.MemberNickname;
 import roomit.main.domain.member.entity.value.MemberPassword;
 import roomit.main.domain.member.entity.value.MemberPhoneNumber;
+import roomit.main.domain.reservation.entity.Reservation;
 import roomit.main.domain.review.entity.Review;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -53,21 +54,17 @@ public class Member {
     @Enumerated(value = EnumType.STRING)
     private Role memberRole;
 
-    @Column(name = "birth_day", nullable = false)
+    @Column(name = "birth_day")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDay;
 
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @LastModifiedDate
     private LocalDateTime deleteAt;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Review> reviews = new ArrayList();
-//
-//    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Reservation> reservations = new ArrayList();
+    @OneToMany(mappedBy = "memberId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reservation> reservations = new ArrayList();
 
     @Builder
     public Member(String memberNickName, String memberPhoneNumber, LocalDate birthDay, Sex memberSex, String memberEmail, String memberPwd, Role memberRole , PasswordEncoder passwordEncoder /*Reservation reservation*/) {
@@ -105,5 +102,11 @@ public class Member {
     }
     public void changePwd(String newPwd) {
         this.memberPwd = new MemberPassword(newPwd, new BCryptPasswordEncoder());
+    }
+    public void changeSex(Sex newSex) {
+        this.memberSex = newSex;
+    }
+    public void changeBirthDay(LocalDate newBirthDay){
+        this.birthDay = newBirthDay;
     }
 }

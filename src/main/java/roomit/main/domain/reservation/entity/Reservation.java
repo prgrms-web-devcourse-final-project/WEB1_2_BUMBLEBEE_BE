@@ -3,6 +3,7 @@ package roomit.main.domain.reservation.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import roomit.main.domain.member.entity.Member;
+import roomit.main.domain.review.entity.Review;
 import roomit.main.domain.studyroom.entity.BaseEntity;
 import roomit.main.domain.studyroom.entity.StudyRoom;
 
@@ -30,6 +31,12 @@ public class Reservation extends BaseEntity{
     @Column(name = "reservation_state", nullable = false, columnDefinition = "VARCHAR(20)")
     private ReservationState reservationState;
 
+    @Column(name = "reservation_capacity", nullable = false, columnDefinition = "INTEGER")
+    private Integer reservationCapacity;
+
+    @Column(name= "reservation_price", nullable = false, columnDefinition = "INTEGER")
+    private Integer reservationPrice;
+
     @Column(name = "start_time", nullable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime startTime;
 
@@ -44,14 +51,26 @@ public class Reservation extends BaseEntity{
     @JoinColumn(name = "studyroom_id")
     private StudyRoom studyRoomId;
 
+    @OneToOne(cascade = CascadeType.ALL) // Review와 일대일 관계 설정
+    @JoinColumn(name = "review_id") // 외래 키 이름 설정
+    private Review review;
+
     @Builder
-    public Reservation(String reservationName, String reservationPhoneNumber, ReservationState reservationState, LocalDateTime startTime, LocalDateTime endTime, Member memberId, StudyRoom studyRoomId) {
+    public Reservation(String reservationName, String reservationPhoneNumber, ReservationState reservationState, Integer reservationCapacity,Integer reservationPrice,LocalDateTime startTime, LocalDateTime endTime, Member memberId, StudyRoom studyRoomId) {
         this.reservationName = reservationName;
         this.reservationPhoneNumber = reservationPhoneNumber;
         this.reservationState = reservationState;
+        this.reservationCapacity = reservationCapacity;
+        this.reservationPrice = reservationPrice;
         this.startTime = startTime;
         this.endTime = endTime;
         this.memberId = memberId;
         this.studyRoomId = studyRoomId;
     }
+
+    public void addReview(Review review) {
+        this.review = review;
+        review.setReservation(this); // Review에도 역방향 관계 설정
+    }
+
 }
