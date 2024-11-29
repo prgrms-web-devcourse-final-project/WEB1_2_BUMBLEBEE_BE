@@ -68,6 +68,13 @@ public class Reservation extends BaseEntity{
         this.studyRoomId = studyRoomId;
     }
 
+    @PrePersist
+    public void prePersist() {
+        if (this.reservationState == null) {
+            this.reservationState = ReservationState.RESERVABLE;
+        }
+    }
+
     public void addReview(Review review) {
         this.review = review;
         review.setReservation(this); // Review에도 역방향 관계 설정
