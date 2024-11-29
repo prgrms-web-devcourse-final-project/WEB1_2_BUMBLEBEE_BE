@@ -146,19 +146,19 @@ public class SpringSecurityConfig {
                         //사업장 권한 설정
                         .requestMatchers(HttpMethod.GET,"/api/v1/workplace/info/**").permitAll() //사업장 정보 조회
                         .requestMatchers(HttpMethod.GET,"/api/v1/workplace").permitAll() //사업장 조회
-                        .requestMatchers(HttpMethod.GET,"/api/v1/workplace/business").permitAll() //사업자 사업장 조회
                         .requestMatchers(HttpMethod.GET,"/api/v1/workplace/distance").permitAll() //위치 기반 주변 사업장
+                        .requestMatchers(HttpMethod.GET,"/api/v1/workplace/business").hasRole("BUSINESS") //접속한 사업자 사업자ID로 사업장 조회**
                         .requestMatchers(HttpMethod.POST,"/api/v1/workplace").hasRole("BUSINESS") //사업장 등록
                         .requestMatchers(HttpMethod.PUT,"/api/v1/workplace/**").hasRole("BUSINESS") //사업장 정보 수정
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/workplace/**").hasRole("BUSINESS") //사업장 삭제
 
                         //예약 권한 설정
-                        .requestMatchers(HttpMethod.POST,"/api/v1/reservation").hasAnyRole("BUSINESS","USER") //예약 등록
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/reservation/**").hasAnyRole("BUSINESS","USER") //예약 수정
-                        .requestMatchers(HttpMethod.DELETE,"/api/v1/reservation/**").hasAnyRole("BUSINESS","USER") //예약 삭제
-                        .requestMatchers(HttpMethod.GET,"/api/v1/all/reservations/member/**").hasAnyRole("BUSINESS","USER") //특정 멤버의 최근 예약 단건 조회
-                        .requestMatchers(HttpMethod.GET,"/api/v1/reservation/**").hasAnyRole("BUSINESS","USER") //특정 멤버의 최근 예약 전체 조회
-                        .requestMatchers(HttpMethod.GET,"/api/v1/reservation/workplace/**").hasAnyRole("BUSINESS","USER") //특정 사업장의 예약 찾기
+                        .requestMatchers(HttpMethod.POST,"/api/v1/reservations").hasAnyRole("USER") //예약 등록
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/reservations/**").hasAnyRole("BUSINESS") //예약 수정
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/reservations/**").hasAnyRole("BUSINESS","USER") //예약 삭제
+                        .requestMatchers(HttpMethod.GET,"/api/v1/all/reservations/member/**").hasAnyRole("USER") //특정 멤버의 최근 예약 단건 조회
+                        .requestMatchers(HttpMethod.GET,"/api/v1/reservations/**").hasAnyRole("USER") //특정 멤버의 최근 예약 전체 조회
+                        .requestMatchers(HttpMethod.GET,"/api/v1/reservations/workplace/**").hasAnyRole("BUSINESS","USER") //특정 사업장의 예약 찾기
 
                         //결제 권한 설정
                         .requestMatchers("/confirm").permitAll()

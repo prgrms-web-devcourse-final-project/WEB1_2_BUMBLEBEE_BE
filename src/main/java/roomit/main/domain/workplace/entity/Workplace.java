@@ -8,8 +8,10 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.format.annotation.DateTimeFormat;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.review.entity.Review;
+import roomit.main.domain.studyroom.entity.StudyRoom;
 import roomit.main.domain.workplace.entity.value.ImageUrl;
 import roomit.main.domain.workplace.entity.value.WorkplaceAddress;
 import roomit.main.domain.workplace.entity.value.WorkplaceName;
@@ -17,6 +19,7 @@ import roomit.main.domain.workplace.entity.value.WorkplacePhoneNumber;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,20 +46,25 @@ public class Workplace {
     @Embedded
     private WorkplaceAddress workplaceAddress;
 
-    @Column(name = "workplace_latitude")
+    @Column(name = "workplace_latitude", precision = 16, scale = 14)
     private BigDecimal latitude;
 
-    @Column(name = "workplace_longitude")
+    @Column(name = "workplace_longitude", precision = 17, scale = 14)
     private BigDecimal longitude;
 
+    @DateTimeFormat(pattern = "HH:mm")
     @Column(name = "workplace_start_time", nullable = false)
-    private LocalDateTime workplaceStartTime;
+    private LocalTime workplaceStartTime;
 
+    @DateTimeFormat(pattern = "HH:mm")
     @Column(name = "workplace_end_time", nullable = false)
-    private LocalDateTime workplaceEndTime;
+    private LocalTime workplaceEndTime;
 
     @Column(name = "star_sum")
-    private Long starSum;
+    private Long starSum = 0L;
+
+    @Column(name = "review_count")
+    private Long reviewCount = 0L;
 
     @Embedded
     private ImageUrl imageUrl;
@@ -73,11 +81,9 @@ public class Workplace {
     @JoinColumn(name = "business_id")
     private Business business;
 
-//    @OneToMany(mappedBy = "workplace", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-//    private List<StudyRoom> studyRoom = new ArrayList<>();
+    @OneToMany(mappedBy = "workPlaceId", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<StudyRoom> studyRoom = new ArrayList<>();
 
-    @OneToMany(mappedBy = "workplace", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<Review> review = new ArrayList<>();
 
 
     @Builder
@@ -86,11 +92,12 @@ public class Workplace {
                      final String workplaceDescription,
                      final String workplaceAddress,
                      final String imageUrl,
-                     final LocalDateTime workplaceStartTime,
-                     final LocalDateTime workplaceEndTime,
+                     final LocalTime workplaceStartTime,
+                     final LocalTime workplaceEndTime,
                      final BigDecimal latitude,
                      final BigDecimal longitude,
-                     final Business business) {
+                     final Business business,
+                     final List<StudyRoom> studyRoomList) {
         this.workplaceName = new WorkplaceName(workplaceName);
         this.workplacePhoneNumber = new WorkplacePhoneNumber(workplacePhoneNumber);
         this.workplaceDescription = workplaceDescription;
@@ -101,6 +108,7 @@ public class Workplace {
         this.latitude = latitude;
         this.longitude = longitude;
         this.business = business;
+        this.studyRoom = studyRoomList;
     }
 
 
@@ -120,16 +128,20 @@ public class Workplace {
         this.workplaceAddress = workplaceAddress;
     }
 
-    public void changeWorkplaceStartTime(LocalDateTime workplaceStartTime) {
+    public void changeWorkplaceStartTime(LocalTime workplaceStartTime) {
         this.workplaceStartTime = workplaceStartTime;
     }
 
-    public void changeWorkplaceEndTime(LocalDateTime workplaceEndTime) {
+    public void changeWorkplaceEndTime(LocalTime workplaceEndTime) {
         this.workplaceEndTime = workplaceEndTime;
     }
 
     public void changeStarSum(Long starSum) {
         this.starSum = starSum;
+    }
+
+    public void changeReviewCount(Long reviewCount) {
+        this.reviewCount = reviewCount;
     }
 
     public void changeLongitude(BigDecimal longitude) {
@@ -143,6 +155,4 @@ public class Workplace {
     public void changeImageUrl(ImageUrl imageUrl) {
         this.imageUrl = imageUrl;
     }
-
-
 }

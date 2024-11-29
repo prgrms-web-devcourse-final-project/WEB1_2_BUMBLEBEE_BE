@@ -33,41 +33,12 @@ public class StudyRoomService {
 
     // 스터디룸 만드는 메서드
     @Transactional
-    public StudyRoomResponse createStudyRoom(CreateStudyRoomRequest request) {
+    public void createStudyRoom(Long workPlaceId,CreateStudyRoomRequest request) {
+        Workplace workplace = workplaceRepository.findById(workPlaceId)
+                .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
         StudyRoom createdStudyRoom = request.toEntity();
-        StudyRoom savedStudyRoom = studyRoomRepository.save(createdStudyRoom);
-
-        return StudyRoomResponse.from(savedStudyRoom);
-    }
-
-    // 스터디룸 전체 조회
-    @Transactional(readOnly = true)
-    public List<StudyRoom> getAllStudyRooms() {
-        return studyRoomRepository.findAll();
-    }
-
-    // 스터디룸 조회 메서드
-    @Transactional(readOnly = true)
-    public StudyRoom getStudyRoom(Long studyRoomid) {
-        return studyRoomRepository.findById(studyRoomid)
-                .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
-    }
-
-    // 스터디룸 수정 메서드
-    @Transactional
-    public void updateStudyRoom(UpdateStudyRoomRequest request) {
-        StudyRoom studyRoom = getStudyRoom(request.studyRoomId());
-        request.updatedStudyRoom(studyRoom);
-        studyRoomRepository.save(studyRoom);
-    }
-
-    // 스터디룸 삭제 (Delete)
-    @Transactional
-    public void deleteStudyRoom(Long studyRoomId) {
-        StudyRoom studyRoom = studyRoomRepository.findById(studyRoomId)
-                .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
-
-        studyRoomRepository.delete(studyRoom);
+        createdStudyRoom.setWorkPlaceId(workplace);
+        studyRoomRepository.save(createdStudyRoom);
     }
 
     // 사업장ID에 따른 스터디룸 리스트 조회 ( 스터디룸 상세페이지 - 룸 선택 탭 )
@@ -76,9 +47,30 @@ public class StudyRoomService {
         return studyRoomRepository.findStudyRoomsByWorkPlaceId(workplaceId);
     }
 
+    // 스터디룸 단건 조회
+    @Transactional(readOnly = true)
+    public StudyRoom getStudyRoom(Long studyRoomid) {
+        return studyRoomRepository.findById(studyRoomid)
+                .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
+    }
 
+    // 스터디룸 업데이트
+    @Transactional
+    public void updateStudyRoom(Long studyRoomId,UpdateStudyRoomRequest request) {
+        StudyRoom existingStudyRoom = studyRoomRepository.findById(studyRoomId)
+                .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
+        request.updatedStudyRoom(existingStudyRoom);
+    }
 
-    // 사용 가능한 스터디룸 목록 조회
+    // 스터디룸 정보 삭제
+    @Transactional
+    public void deleteStudyRoom(Long studyRoomId) {
+        StudyRoom existingStudyRoom = studyRoomRepository.findById(studyRoomId)
+                .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
+        studyRoomRepository.delete(existingStudyRoom);
+    }
+
+    // 예약가능한 스터디룸 조회
     @Transactional(readOnly = true)
     public List<FindPossibleStudyRoomResponse> findAvailableStudyRooms(FindAvailableStudyRoomRequest request) {
         return studyRoomRepository.findAvailableStudyRooms(
