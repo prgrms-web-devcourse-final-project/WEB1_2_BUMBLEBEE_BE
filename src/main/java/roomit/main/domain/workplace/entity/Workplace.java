@@ -81,8 +81,6 @@ public class Workplace {
     @OneToMany(mappedBy = "workPlaceId", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<StudyRoom> studyRoom = new ArrayList<>();
 
-    @OneToMany(mappedBy = "workplace", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<Review> review = new ArrayList<>();
 
 
     @Builder

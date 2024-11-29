@@ -14,6 +14,7 @@ import roomit.main.domain.member.entity.value.MemberEmail;
 import roomit.main.domain.member.entity.value.MemberNickname;
 import roomit.main.domain.member.entity.value.MemberPassword;
 import roomit.main.domain.member.entity.value.MemberPhoneNumber;
+import roomit.main.domain.reservation.entity.Reservation;
 import roomit.main.domain.review.entity.Review;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -62,11 +63,8 @@ public class Member {
 
     private LocalDateTime deleteAt;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Review> reviews = new ArrayList();
-//
-//    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Reservation> reservations = new ArrayList();
+    @OneToMany(mappedBy = "memberId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reservation> reservations = new ArrayList();
 
     @Builder
     public Member(String memberNickName, String memberPhoneNumber, LocalDate birthDay, Sex memberSex, String memberEmail, String memberPwd, Role memberRole , PasswordEncoder passwordEncoder /*Reservation reservation*/) {
