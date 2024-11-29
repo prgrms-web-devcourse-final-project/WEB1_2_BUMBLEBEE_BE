@@ -15,6 +15,7 @@ public enum ErrorCode {
 
     /*StudyRoom*/
     STUDYROOM_NOT_FOUND(HttpStatus.BAD_REQUEST,"S001","존재하지 않는 스터디룸입니다."),
+    STYDYROOM_NOT_REGISTERD(HttpStatus.UNAUTHORIZED, "S002","스터디름 등록에 실패하였습니다."),
 
     /*Business*/
     BUSINESS_NOT_FOUND(HttpStatus.BAD_REQUEST, "B003", "존재 하지 않는 사업자입니다."),
