@@ -1,6 +1,7 @@
 package roomit.main.domain.reservation.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import roomit.main.domain.reservation.entity.Reservation;
 
 import java.time.LocalDateTime;
@@ -11,9 +12,9 @@ public record UpdateReservationRequest (
 
     @NotBlank String reservationPhoneNumber,
 
-    @NotBlank LocalDateTime startTime,
+    @NotNull LocalDateTime startTime,
 
-    @NotBlank LocalDateTime endTime
+    @NotNull LocalDateTime endTime
 ){
     public void updateReservation(Reservation reservation) {
         reservation.setReservationName(this.reservationName);

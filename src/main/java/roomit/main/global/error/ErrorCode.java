@@ -13,6 +13,9 @@ public enum ErrorCode {
     MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "M003-1", "존재 하지 않는 회원입니다."),
     MEMBER_UPDATE_EXCEPTION(HttpStatus.BAD_REQUEST, "M001", "잘못된 회원 수정 입니다."),
 
+    /*Reservation*/
+    RESERVATION_NOT_FOUND(HttpStatus.BAD_REQUEST,"R001","존재하지 않는 예약입니다."),
+
     /*StudyRoom*/
     STUDYROOM_NOT_FOUND(HttpStatus.BAD_REQUEST,"S001","존재하지 않는 스터디룸입니다."),
     STYDYROOM_NOT_REGISTERD(HttpStatus.UNAUTHORIZED, "S002","스터디름 등록에 실패하였습니다."),
