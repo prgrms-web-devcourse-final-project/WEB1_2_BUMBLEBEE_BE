@@ -322,18 +322,24 @@ public class WorkplaceControllerTest {
     @DisplayName("사업자 ID로 목록 조회")
     void getWorkplacesByBusinessId() throws Exception {
         // Given
-
+        Long businessId = 1L; // 테스트할 사업자 ID
+        String expectedBusinessName = "테스트사업자";
 
         // When
         mockMvc.perform(get("/api/v1/workplace/business")
-                        .header("Authorization", "Bearer " + token) // 토큰 추가
+                        .header("Authorization", "Bearer " + token) // 인증 토큰 추가
+                        .param("businessId", businessId.toString()) // 쿼리 파라미터 추가
                         .contentType(MediaType.APPLICATION_JSON)
                 )
 
                 // Then
-                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.length()").value(10))
-                .andExpect(jsonPath("$[0].workplaceName").value("사업장 1"))
+                .andExpect(status().isOk()) // HTTP 200 상태 코드 검증
+                .andExpect(jsonPath("$.businessId").value(businessId)) // businessId 검증
+                .andExpect(jsonPath("$.businessName").value(expectedBusinessName)) // businessName 검증
+                .andExpect(jsonPath("$.workplaces").isArray()) // workplaces가 배열인지 확인
+                .andExpect(jsonPath("$.workplaces.length()").value(10)) // workplaces의 길이가 2인지 확인
+                .andExpect(jsonPath("$.workplaces[0].workplaceName").value("사업장 1")) // workplaces[0]의 workplaceName 확인
+                .andExpect(jsonPath("$.workplaces[1].workplaceName").value("사업장 2")) // workplaces[1]의 workplaceName 확인
                 .andDo(print());
     }
 }

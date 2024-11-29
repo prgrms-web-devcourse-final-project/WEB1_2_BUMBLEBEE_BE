@@ -61,7 +61,10 @@ public class Workplace {
     private LocalTime workplaceEndTime;
 
     @Column(name = "star_sum")
-    private Long starSum;
+    private Long starSum = 0L;
+
+    @Column(name = "review_count")
+    private Long reviewCount = 0L;
 
     @Embedded
     private ImageUrl imageUrl;
@@ -80,9 +83,6 @@ public class Workplace {
 
     @OneToMany(mappedBy = "workPlaceId", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<StudyRoom> studyRoom = new ArrayList<>();
-
-    @OneToMany(mappedBy = "workplace", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<Review> review = new ArrayList<>();
 
 
     @Builder

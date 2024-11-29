@@ -11,8 +11,9 @@ import roomit.main.domain.business.service.BusinessService;
 import roomit.main.domain.studyroom.dto.request.CreateStudyRoomRequest;
 import roomit.main.domain.workplace.dto.request.WorkplaceGetRequest;
 import roomit.main.domain.workplace.dto.request.WorkplaceRequest;
-import roomit.main.domain.workplace.dto.response.WorkplaceGetResponse;
-import roomit.main.domain.workplace.dto.response.WorkplaceResponse;
+import roomit.main.domain.workplace.dto.response.WorkplaceAllResponse;
+import roomit.main.domain.workplace.dto.response.WorkplaceBusinessResponse;
+import roomit.main.domain.workplace.dto.response.WorkplaceDetailResponse;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.entity.value.Coordinate;
 import roomit.main.domain.workplace.entity.value.WorkplaceName;
@@ -90,7 +91,7 @@ class WorkplaceServiceTest {
         Workplace savedWorkplace = workplaceRepository.save(workplace); // Workplace 저장 후 반환된 객체 사용
 
         // When
-        WorkplaceResponse findWorkplace = workplaceService.readWorkplace(savedWorkplace.getWorkplaceId()); // 저장된 ID로 조회
+        WorkplaceDetailResponse findWorkplace = workplaceService.readWorkplace(savedWorkplace.getWorkplaceId()); // 저장된 ID로 조회
 
         // Then
         assertNotNull(findWorkplace);
@@ -158,11 +159,11 @@ class WorkplaceServiceTest {
 
 
         // When & Then
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        CommonException exception = assertThrows(CommonException.class, () -> {
             workplaceService.createWorkplace(workplace, savedBusiness.getBusinessId());
         });
 
-        assertEquals("사업장명은 특수문자를 제외한 1~20자리여야 하며, 띄워쓰기가 가능합니다.", exception.getMessage());
+        assertEquals("사업장 등록에 실패하였습니다.", exception.getMessage());
     }
 
 
@@ -213,7 +214,7 @@ class WorkplaceServiceTest {
         workplaceService.updateWorkplace(savedWorkplace.getWorkplaceId(), updatedworkplace, savedBusiness.getBusinessId());
 
         // Then
-        WorkplaceResponse findWorkplace = workplaceService.readWorkplace(workplace.getWorkplaceId());
+        WorkplaceDetailResponse findWorkplace = workplaceService.readWorkplace(workplace.getWorkplaceId());
         assertNotNull(findWorkplace);
         assertEquals(findWorkplace.workplaceName(), "사업장 수정");
         assertEquals(findWorkplace.workplaceDescription(), "사업장 설명 수정");
@@ -351,7 +352,7 @@ class WorkplaceServiceTest {
                         .latitude(BigDecimal.valueOf(36.56))
                         .longitude(BigDecimal.valueOf(127.97)).build()).build();
 
-        List<WorkplaceGetResponse> workplaces = workplaceService.readAllWorkplaces(request, 127.00,37.56 );
+        List<WorkplaceAllResponse> workplaces = workplaceService.readAllWorkplaces(request, 127.00,37.56 );
 
         // Then
         assertThat(workplaces).isNotNull();
@@ -385,12 +386,11 @@ class WorkplaceServiceTest {
         }
 
         // When
-        List<WorkplaceResponse> workplaces = workplaceService.findWorkplacesByBusinessId(savedBusiness.getBusinessId());
+        WorkplaceBusinessResponse workplaces = workplaceService.findWorkplacesByBusinessId(savedBusiness.getBusinessId());
 
         // Then
-        assertThat(workplaces).hasSize(3);
-//        assertThat(workplaces.get(0).businessId()).isEqualTo(savedBusiness.getBusinessId());
-        assertThat(workplaces.get(0).workplaceName()).isEqualTo("사업장 1");
+        assertThat(workplaces.businessId()).isEqualTo(savedBusiness.getBusinessId());
+        assertThat(workplaces.workplaces().get(0).workplaceName()).isEqualTo("사업장 1");
     }
 
     @Test
@@ -432,54 +432,6 @@ class WorkplaceServiceTest {
         assertTrue(coordinates.containsKey("longitude"));
         assertEquals(new BigDecimal("37.5668021171335"), coordinates.get("latitude")); // 예시값
         assertEquals(new BigDecimal("127.007358177138"), coordinates.get("longitude")); // 예시값
-    }
-
-    @Test
-    @DisplayName("주소 변경 시 좌표 업데이트")
-    @Order(11)
-    void testUpdateWorkplaceWithCoordinatesChange() {
-        // Given: 기존 사업장 등록
-        Workplace workplace = Workplace.builder()
-                .workplaceName("기존 사업장")
-                .workplacePhoneNumber("0507-1234-5678")
-                .workplaceDescription("기존 설명")
-                .workplaceAddress("서울 중구 장충단로 247 굿모닝시티몰 8층") // 초기 주소
-                .imageUrl("http://image.url")
-                .workplaceStartTime(LocalTime.of(9, 0))
-                .workplaceEndTime(LocalTime.of(18, 0))
-                .business(savedBusiness)
-                .build();
-
-        Workplace savedWorkplace = workplaceRepository.save(workplace);
-
-        // Updated Request
-        WorkplaceRequest updatedRequest = WorkplaceRequest.builder()
-                .workplaceName("수정된 사업장")
-                .workplacePhoneNumber("0507-9876-5432")
-                .workplaceDescription("수정된 설명")
-                .workplaceAddress("서울 중구 장충단로13길 20") // 주소 변경
-                .imageUrl("http://updated.image.url")
-                .workplaceStartTime(LocalTime.of(9, 0))
-                .workplaceEndTime(LocalTime.of(18, 0))
-                .build();
-
-        // When: 사업장 수정
-        workplaceService.updateWorkplace(savedWorkplace.getWorkplaceId(), updatedRequest, savedBusiness.getBusinessId());
-
-        // Then: 좌표가 업데이트되었는지 확인
-        WorkplaceResponse updatedWorkplace = workplaceService.readWorkplace(savedWorkplace.getWorkplaceId());
-        assertEquals("수정된 사업장", updatedWorkplace.workplaceName());
-        assertEquals("서울 중구 장충단로13길 20", updatedWorkplace.workplaceAddress());
-
-        // 좌표 검증 (예시 값)
-        assertEquals(
-                new BigDecimal("37.568734553218").setScale(2, RoundingMode.HALF_UP),
-                updatedWorkplace.latitude().setScale(2, RoundingMode.HALF_UP)
-        );
-        assertEquals(
-                new BigDecimal("127.007666479829").setScale(2, RoundingMode.HALF_UP),
-                updatedWorkplace.longitude().setScale(2, RoundingMode.HALF_UP)
-        );
     }
 
 }

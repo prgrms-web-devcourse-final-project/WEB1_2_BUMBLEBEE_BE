@@ -8,8 +8,9 @@ import org.springframework.web.bind.annotation.*;
 import roomit.main.domain.business.dto.CustomBusinessDetails;
 import roomit.main.domain.workplace.dto.request.WorkplaceGetRequest;
 import roomit.main.domain.workplace.dto.request.WorkplaceRequest;
-import roomit.main.domain.workplace.dto.response.WorkplaceGetResponse;
-import roomit.main.domain.workplace.dto.response.WorkplaceResponse;
+import roomit.main.domain.workplace.dto.response.WorkplaceAllResponse;
+import roomit.main.domain.workplace.dto.response.WorkplaceBusinessResponse;
+import roomit.main.domain.workplace.dto.response.WorkplaceDetailResponse;
 import roomit.main.domain.workplace.service.WorkplaceService;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class WorkplaceController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping()
-    public List<WorkplaceGetResponse> getWorkplaces(
+    public List<WorkplaceAllResponse> getWorkplaces(
             @RequestParam("latitude") double latitude,
             @RequestParam("longitude") double longitude,
             @RequestBody WorkplaceGetRequest request) {
@@ -32,7 +33,7 @@ public class WorkplaceController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/info/{workplaceId}")
-    public WorkplaceResponse getWorkplace(@PathVariable Long workplaceId) {
+    public WorkplaceDetailResponse getWorkplace(@PathVariable Long workplaceId) {
         return workplaceService.readWorkplace(workplaceId);
     }
 
@@ -59,7 +60,7 @@ public class WorkplaceController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/business") // 사업자ID로 사업장 조회
-    public List<WorkplaceResponse> getWorkplacesByBusinessId(@AuthenticationPrincipal CustomBusinessDetails customBusinessDetails) {
+    public WorkplaceBusinessResponse getWorkplacesByBusinessId(@AuthenticationPrincipal CustomBusinessDetails customBusinessDetails) {
         System.out.println(customBusinessDetails);
         return workplaceService.findWorkplacesByBusinessId(customBusinessDetails.getId());
     }
