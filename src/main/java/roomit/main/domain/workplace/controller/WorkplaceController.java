@@ -23,7 +23,7 @@ public class WorkplaceController {
     private final WorkplaceService workplaceService;
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping()
+    @PostMapping("/distance")
     public List<WorkplaceAllResponse> getWorkplaces(
             @RequestParam("latitude") double latitude,
             @RequestParam("longitude") double longitude,
