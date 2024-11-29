@@ -43,7 +43,7 @@ public class ReservationController {
 
     // 특정 멤버의 예약 찾기
     @ResponseStatus(HttpStatus.OK)
-    @PostMapping("/api/v1/reservations/member/{memberId}")
+    @GetMapping("/api/v1/reservations/member/{memberId}")
     public ReservationResponse findRecentReservationByMemberId(@PathVariable @Positive Long memberId) {
         return reservationService.findByMemberId(memberId);
     }
