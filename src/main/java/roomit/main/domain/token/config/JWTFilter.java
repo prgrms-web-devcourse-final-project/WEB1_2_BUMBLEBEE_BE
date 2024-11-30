@@ -130,7 +130,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } catch (Exception e) {
-            handleException(response, new Exception("ACCESS TOKEN NOT FOUND"));
+                handleException(response, new Exception("ACCESS TOKEN NOT FOUND"));
         }
     }
 
@@ -139,7 +139,13 @@ public class JWTFilter extends OncePerRequestFilter {
         // 예외적으로 필터링하지 않을 경로들
         List<String> excludedPaths = List.of(
                 "/",
+                "/index.html",
+                "/static/**",
+                "/css/**",
+                "/js/**",
+                "/images/**",
                 "/login/**",
+                "/toss/**",
                 "/api/v1/member/signup",
                 "/api/v1/business/signup",
                 "/reissue",
@@ -147,7 +153,11 @@ public class JWTFilter extends OncePerRequestFilter {
                 "/api/v1/studyroom/search",
                 "/api/v1/workplace/info/**",
                 "/api/v1/review/workplace/**",
-                "/api/v1/workplace/distance"
+                "/api/v1/workplace/business",
+                "/api/v1/workplace/distance",
+                //결제
+                "/api/v1/payments/toss/success",
+                "/api/v1/payments/toss/fail"
         );
 
         AntPathMatcher pathMatcher = new AntPathMatcher();

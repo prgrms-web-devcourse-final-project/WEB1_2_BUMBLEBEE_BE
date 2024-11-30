@@ -15,12 +15,17 @@ import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.member.entity.Role;
 import roomit.main.domain.member.entity.Sex;
 import roomit.main.domain.member.repository.MemberRepository;
+import roomit.main.domain.reservation.entity.Reservation;
+import roomit.main.domain.reservation.entity.ReservationState;
+import roomit.main.domain.reservation.repository.ReservationRepository;
 import roomit.main.domain.review.dto.request.ReviewRegisterRequest;
 import roomit.main.domain.review.dto.request.ReviewSearch;
 import roomit.main.domain.review.dto.request.ReviewUpdateRequest;
 import roomit.main.domain.review.dto.response.ReviewResponse;
 import roomit.main.domain.review.entity.Review;
 import roomit.main.domain.review.repository.ReviewRepository;
+import roomit.main.domain.studyroom.entity.StudyRoom;
+import roomit.main.domain.studyroom.repository.StudyRoomRepository;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 
@@ -28,6 +33,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -48,6 +54,12 @@ class ReviewServiceTest {
     private MemberRepository memberRepository;
 
     @Autowired
+    private ReservationRepository reservationRepository;
+
+    @Autowired
+    private StudyRoomRepository studyRoomRepository;
+
+    @Autowired
     private WorkplaceRepository workplaceRepository;
 
     @Autowired
@@ -57,11 +69,28 @@ class ReviewServiceTest {
 
     private Member member;
 
+    private Reservation reservation;
+
     private Workplace workplace;
+
+    private StudyRoom studyRoom;
     @BeforeAll
     void setUp() {
 
         date = LocalDate.of(2024, 11, 22);
+
+
+        workplace = Workplace.builder()
+                .workplaceName("사업장 넘버원")
+                .workplacePhoneNumber("0507-1234-5678")
+                .workplaceDescription("사업장 설명")
+                .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
+                .imageUrl("http://image.url")
+                .workplaceStartTime(LocalTime.of(9, 0))
+                .workplaceEndTime(LocalTime.of(18, 0))
+                .business(null)
+                .build();
+        workplaceRepository.save(workplace);
 
         member =  Member.builder()
                 .birthDay(date)
@@ -73,40 +102,52 @@ class ReviewServiceTest {
                 .passwordEncoder(bCryptPasswordEncoder)
                 .build();
 
-         workplace = Workplace.builder()
-                .workplaceName("사업장")
-                .workplacePhoneNumber("0507-1234-5678")
-                .workplaceDescription("사업장 설명")
-                .workplaceAddress("대한민국입니다")
-                .workplaceStartTime(LocalTime.of(9, 0))
-                .workplaceEndTime(LocalTime.of(18, 0))
-                .build();
         memberRepository.save(member);
 
-        workplaceRepository.save(workplace);
+        studyRoom = StudyRoom.builder()
+                .title("Test Room")
+                .description("A test room")
+                .capacity(10)
+                .price(100)
+                .imageUrl("sdsd")
+                .workplaceId(workplace)
+                .build();
+
+        studyRoomRepository.save(studyRoom);
+
+
+        reservation = Reservation.builder()
+                .reservationName("이시현")
+                .reservationPhoneNumber("010-2314-2512")
+                .reservationState(ReservationState.RESERVABLE)
+                .startTime(LocalDateTime.now())
+                .endTime(LocalDateTime.now())
+                .studyRoomId(studyRoom)
+                .memberId(member)
+                .build();
+
+
     }
     @Test
     @DisplayName("리뷰 등록하기")
     @Transactional
     void test1() {
 
-
-
-        CustomMemberDetails customMemberDetails = new CustomMemberDetails(member);
-        UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(customMemberDetails, null, customMemberDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
+        reservationRepository.save(reservation);
 
         ReviewRegisterRequest request = ReviewRegisterRequest.builder()
                 .reviewContent("좋은 장소네요")
                 .reviewRating(3.5)
-                .workplaceId(workplace.getWorkplaceId())
+                .reservatinId(reservation.getId())
+                .workPlaceName(workplace.getWorkplaceName().getValue())
                 .build();
 
-        reviewService.register(request, customMemberDetails.getId());
+
+
+        reviewService.register(request);
 
         List<Review> all = reviewRepository.findAll();
+        System.out.println(Arrays.toString(all.toArray()));
         assertEquals("좋은 장소네요", all.get(0).getReviewContent());
 
     }
@@ -116,21 +157,19 @@ class ReviewServiceTest {
     @Transactional
     void test2() {
 
-
+        reservationRepository.save(reservation);
 
         Review review = Review.builder()
                 .reviewContent("치킨이 안보이네요..")
-                .reviewRating(4.2)
-                .member(member)
-                .workplace(workplace)
+                .reviewRating(1.3)
+                .workplaceName(workplace.getWorkplaceName().getValue())
+                .reservation(reservation)
                 .build();
 
         reviewRepository.save(review);
-
         ReviewUpdateRequest reviewUpdateRequest = ReviewUpdateRequest.builder()
                 .reviewContent("치킨이 보이네요??")
                 .reviewRating(4.1)
-                .workplaceId(workplace.getWorkplaceId())
                 .build();
 
         reviewService.update(review.getReviewId(), reviewUpdateRequest);
@@ -138,6 +177,7 @@ class ReviewServiceTest {
         List<Review> all = reviewRepository.findAll();
         assertEquals("치킨이 보이네요??", all.get(0).getReviewContent());
         assertEquals(4.1, all.get(0).getReviewRating());
+        assertEquals("Test Room",all.get(0).getReservation().getStudyRoomId().getTitle());
 //        assertEquals(1L, all.get(0).getMember().getMemberId());
 //        assertEquals(1L, all.get(0).getWorkplace().getWorkplaceId());
 
@@ -154,33 +194,49 @@ class ReviewServiceTest {
                 new UsernamePasswordAuthenticationToken(customMemberDetails, null, customMemberDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        List<Review> list = IntStream.rangeClosed(1, 20).mapToObj(i -> Review.builder()
-                .reviewContent("치킨이 안보이네요.." + i)
-                .reviewRating(3.1 + i)
-                .member(member)
-                .workplace(workplace)
-                .build()).toList();
+        IntStream.rangeClosed(1, 20).forEach(i -> {
 
 
-        reviewRepository.saveAll(list);
+            Reservation reservation = Reservation.builder()
+                    .reservationName("이시현")
+                    .reservationPhoneNumber("010-2314-2512")
+                    .reservationState(ReservationState.RESERVABLE)
+                    .startTime(LocalDateTime.now())
+                    .endTime(LocalDateTime.now())
+                    .studyRoomId(studyRoom)
+                    .memberId(member)
+                    .build();
+
+            Reservation reservation1 = reservationRepository.save(reservation);
+
+            Review review1 = Review.builder()
+                    .reviewContent("치킨이 안보이네요.." + i)
+                    .reviewRating(3.1 + i)
+                    .reservation(reservation1)
+                    .workplaceName(workplace.getWorkplaceName().getValue())
+                    .build();
+            reviewRepository.save(review1);
+
+            reservation1.addReview(review1);
+        });
 
         reviewService.read(customMemberDetails.getId());
 
         List<Review> all = reviewRepository.findAll();
         assertEquals("치킨이 안보이네요..1", all.get(0).getReviewContent());
-        assertEquals(20,all.size());
+        assertEquals(20, all.size());
     }
 
     @Test
-    @DisplayName("리뷰 조회")
+    @DisplayName("리뷰 삭제")
     @Transactional
     void test4() {
 
         Review review = Review.builder()
                 .reviewContent("치킨이 안보이네요..")
-                .reviewRating(1.9)
-                .member(member)
-                .workplace(workplace)
+                .reviewRating(1.3)
+                .reservation(reservation)
+                .workplaceName(workplace.getWorkplaceName().getValue())
                 .build();
 
         reviewRepository.save(review);
@@ -190,60 +246,67 @@ class ReviewServiceTest {
 
     }
 
-    @Test
-    @DisplayName("리뷰 페이징")
     @Transactional
-    void test5() {
+    @Test
+    void test6() {
+        IntStream.rangeClosed(1, 20).forEach(i -> {
 
-        Long workplaceId = workplace.getWorkplaceId();
-        // 리뷰 데이터 20개 저장
-        List<Review> reviews = IntStream.rangeClosed(1, 20).mapToObj(i -> Review.builder()
-                .reviewContent("치킨이 안보이네요.." + i)
-                .reviewRating(3.1 + i)
-                .member(member)
-                .workplace(workplace)
-                .build()).toList();
 
-        reviewRepository.saveAll(reviews);
+            Reservation reservation = Reservation.builder()
+                    .reservationName("이시현")
+                    .reservationPhoneNumber("010-2314-2512")
+                    .reservationState(ReservationState.RESERVABLE)
+                    .startTime(LocalDateTime.now())
+                    .endTime(LocalDateTime.now())
+                    .studyRoomId(studyRoom)
+                    .memberId(member)
+                    .build();
 
-        // 2. 첫 번째 요청: 첫 10개의 리뷰 가져오기
+            Reservation reservation1 = reservationRepository.save(reservation);
+
+            Review review1 = Review.builder()
+                    .reviewContent("치킨이 안보이네요.." + i)
+                    .reviewRating(3.1 + i)
+                    .reservation(reservation1)
+                    .workplaceName(workplace.getWorkplaceName().getValue())
+                    .build();
+            reviewRepository.save(review1);
+
+            reservation1.addReview(review1);
+        });
+
+        // 첫 번째 요청: 첫 10개의 리뷰 가져오기
         ReviewSearch firstPageSearch = ReviewSearch.builder()
                 .lastId(null) // 첫 페이지이므로 lastId는 null
                 .size(10)
                 .build();
-
+        Long workplaceId = workplace.getWorkplaceId();
         List<ReviewResponse> firstPage = reviewService.getList(firstPageSearch, workplaceId);
 
         assertEquals(10, firstPage.size());
         assertEquals("치킨이 안보이네요..20", firstPage.get(0).reviewContent()); // 최신순 검증
         assertEquals("치킨이 안보이네요..11", firstPage.get(9).reviewContent()); // 마지막 항목 검증
 
-        // 3. 두 번째 요청: 첫 페이지의 마지막 ID를 커서로 사용
+        // 두 번째 요청: 첫 페이지의 마지막 ID를 커서로 사용
         Long lastId = firstPage.get(firstPage.size() - 1).reviewId(); // 첫 페이지의 마지막 ID
-
         ReviewSearch secondPageSearch = ReviewSearch.builder()
                 .lastId(lastId)
                 .size(10)
                 .build();
 
-        List<ReviewResponse> secondPage = reviewService.getList(secondPageSearch,workplaceId);
+        List<ReviewResponse> secondPage = reviewService.getList(secondPageSearch, workplaceId);
 
-        assertEquals(10, secondPage.size());// 다음 페이지 첫 항목 검증
+        assertEquals(10, secondPage.size()); // 다음 페이지 첫 항목 검증
         assertEquals("치킨이 안보이네요..1", secondPage.get(9).reviewContent()); // 다음 페이지 마지막 항목 검증
 
-        // 4. 끝 페이지 요청: 두 번째 페이지의 마지막 ID를 커서로 사용
+        // 끝 페이지 요청: 두 번째 페이지의 마지막 ID를 커서로 사용
         lastId = secondPage.get(secondPage.size() - 1).reviewId();
-
         ReviewSearch lastPageSearch = ReviewSearch.builder()
                 .lastId(lastId)
                 .size(10)
                 .build();
 
-        List<ReviewResponse> lastPage = reviewService.getList(lastPageSearch,workplaceId);
-
+        List<ReviewResponse> lastPage = reviewService.getList(lastPageSearch, workplaceId);
         assertTrue(lastPage.isEmpty()); // 데이터가 더 이상 없음을 확인
-
-
-
     }
 }

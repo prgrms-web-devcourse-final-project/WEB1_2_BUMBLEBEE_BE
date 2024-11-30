@@ -16,7 +16,9 @@ import roomit.main.domain.studyroom.entity.StudyRoom;
 import roomit.main.domain.studyroom.repository.StudyRoomRepository;
 import roomit.main.domain.workplace.dto.request.WorkplaceGetRequest;
 import roomit.main.domain.workplace.dto.request.WorkplaceRequest;
-import roomit.main.domain.workplace.dto.response.WorkplaceGetResponse;
+import roomit.main.domain.workplace.dto.response.WorkplaceAllResponse;
+import roomit.main.domain.workplace.dto.response.WorkplaceBusinessResponse;
+import roomit.main.domain.workplace.dto.response.WorkplaceDetailResponse;
 import roomit.main.domain.workplace.dto.response.WorkplaceResponse;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.entity.value.WorkplaceAddress;
@@ -26,8 +28,6 @@ import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
 
 import java.math.BigDecimal;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +42,7 @@ public class WorkplaceService {
     private final StudyRoomRepository studyRoomRepository;
     private final WebClient webClient;
 
-    public List<WorkplaceGetResponse> readAllWorkplaces(WorkplaceGetRequest request, double myLat, double myLon) {
+    public List<WorkplaceAllResponse> readAllWorkplaces(WorkplaceGetRequest request, double myLat, double myLon) {
         List<Object[]> results = workplaceRepository.findAllByLatitudeAndLongitudeWithDistance(
                 myLat, myLon,
                 request.bottomRight().getLatitude().doubleValue(),
@@ -50,30 +50,31 @@ public class WorkplaceService {
                 request.topLeft().getLongitude().doubleValue(),
                 request.bottomRight().getLongitude().doubleValue());
 
-        return results.stream()
-                .map(result -> new WorkplaceGetResponse(
-                        ((Number) result[0]).longValue(),
-                        (String) result[1],
-                        (String) result[2],
-                        (String) result[3],
-                        (String) result[4],
-                        (String) result[5],
-                        ((Time) result[6]).toLocalTime(),
-                        ((Time) result[7]).toLocalTime(),
-                        ((Timestamp) result[8]).toLocalDateTime(),
-                        (BigDecimal) result[10],
-                        (BigDecimal) result[9],
-                        ((Number) result[11]).doubleValue()
-                ))
+        List<WorkplaceAllResponse> responseList = results.stream()
+                .map(result -> {
+                    double starSum = ((Number) result[4]).doubleValue();
+                    long reviewCount = ((Number) result[5]).longValue();
+                    return new WorkplaceAllResponse(
+                            ((Number) result[0]).longValue(),
+                            (String) result[1],
+                            (String) result[2],
+                            (String) result[3],
+                            (reviewCount == 0) ? 0.0 : starSum / reviewCount,
+                            reviewCount,
+                            ((Number) result[6]).doubleValue()
+                    );
+                })
                 .toList();
+
+        return responseList;
     }
 
 
-    public WorkplaceResponse readWorkplace(Long workplaceId) {
+    public WorkplaceDetailResponse readWorkplace(Long workplaceId) {
         Workplace workplace = workplaceRepository.findById(workplaceId)
                 .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
 
-        return new WorkplaceResponse(workplace);
+        return new WorkplaceDetailResponse(workplace);
     }
 
     @Transactional
@@ -87,7 +88,6 @@ public class WorkplaceService {
 
         try {
             Workplace workplace = workplaceDto.toEntity(coordinates.get("latitude"), coordinates.get("longitude"), business);
-            workplace.changeStarSum(0L);
             savedWorkplace = workplaceRepository.save(workplace);
 
         } catch (InvalidDataAccessApiUsageException e) {
@@ -158,22 +158,25 @@ public class WorkplaceService {
         }
     }
 
-    public List<WorkplaceResponse> findWorkplacesByBusinessId(Long businessId) {
+    public WorkplaceBusinessResponse findWorkplacesByBusinessId(Long businessId) {
         List<Workplace> workplaces = workplaceRepository.findByBusiness_BusinessId(businessId);
+
+        Business business = businessRepository.findById(businessId).orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
 
         if (workplaces.isEmpty()) {
             throw ErrorCode.WORKPLACE_NOT_FOUND.commonException();
         }
 
-        return toResponseDto(workplaces);
+        return toResponseDto(workplaces, businessId, business.getBusinessName());
     }
 
-    private List<WorkplaceResponse> toResponseDto(List<Workplace> workplaces) {
+    private WorkplaceBusinessResponse toResponseDto(List<Workplace> workplaces, Long businessId, String businessName) {
         List<WorkplaceResponse> workplaceDtoList = new ArrayList<>();
         for (Workplace workplace : workplaces) {
             workplaceDtoList.add(new WorkplaceResponse(workplace));
         }
-        return workplaceDtoList;
+
+        return new WorkplaceBusinessResponse(businessId, businessName, workplaceDtoList);
     }
 
     protected Map<String, BigDecimal> getStringBigDecimalMap(WorkplaceRequest workplaceDto) {

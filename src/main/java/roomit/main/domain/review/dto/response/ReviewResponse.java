@@ -7,23 +7,13 @@ import roomit.main.domain.workplace.entity.Workplace;
 import java.time.LocalDateTime;
 
 
-public record ReviewResponse(String workplaceName, Double reviewRating, String reviewContent, LocalDateTime reviewDate,
+public record ReviewResponse( String studyRoomName, Double reviewRating, String reviewContent, LocalDateTime reviewDate,
                              Long reviewId) {
 
 
     public ReviewResponse(Review review) {
         this(
-                review.getWorkplace().getWorkplaceName().getValue(),
-                review.getReviewRating(),
-                review.getReviewContent(),
-                LocalDateTime.now(),
-                review.getReviewId()
-        );
-    }
-
-    public ReviewResponse(Review review, Workplace workplace) {
-        this(
-                workplace.getWorkplaceName().getValue(),
+                review.getReservation().getStudyRoomId().getTitle(),
                 review.getReviewRating(),
                 review.getReviewContent(),
                 LocalDateTime.now(),
@@ -32,8 +22,8 @@ public record ReviewResponse(String workplaceName, Double reviewRating, String r
     }
 
     @Builder
-    public ReviewResponse(String workplaceName, Double reviewRating, String reviewContent, LocalDateTime reviewDate, Long reviewId) {
-        this.workplaceName = workplaceName;
+    public ReviewResponse(String studyRoomName, Double reviewRating, String reviewContent, LocalDateTime reviewDate, Long reviewId) {
+        this.studyRoomName = studyRoomName;
         this.reviewRating = reviewRating;
         this.reviewContent = reviewContent;
         this.reviewDate = reviewDate;
