@@ -62,8 +62,6 @@ public class RedisConfig {
         return RedisScript.of(new ClassPathResource("scripts/get_keys_and_values.lua"), List.class);
     }
 
-
-
     @Bean
     public RedisScript<Long> deleteKeysScript() {
         return RedisScript.of(new ClassPathResource("scripts/delete_keys.lua"), Long.class);

@@ -2,6 +2,7 @@ package roomit.main.domain.chat.chatmessage.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import roomit.main.domain.chat.chatmessage.dto.ChatMessageRequest;
@@ -10,12 +11,12 @@ import roomit.main.domain.chat.chatmessage.entity.ChatMessage;
 import roomit.main.domain.chat.chatmessage.repository.ChatMessageRepository;
 import roomit.main.domain.chat.chatroom.entity.ChatRoom;
 import roomit.main.domain.chat.chatroom.repositoroy.ChatRoomRepository;
+import roomit.main.domain.chat.redis.service.RedisLuaService;
 import roomit.main.domain.chat.redis.service.RedisPublisher;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -25,11 +26,20 @@ public class ChatService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final ChatRoomRepository roomRepository;
     private final ChatMessageRepository messageRepository;
+    private final RedisLuaService redisLuaService;
     private final ObjectMapper objectMapper;
+
+    @Value("${redis.message.ttl:3600}") // TTL 환경 변수로 관리
+    private int messageTtl;
 
     private static final String REDIS_MESSAGE_KEY_PREFIX = "chat:room:";
 
     public void sendMessage(ChatMessageRequest request) {
+        // 메시지 타임스탬프 관리
+        if (request.timestamp() == null) {
+            request = new ChatMessageRequest(request.roomId(), request.sender(), request.content(), LocalDateTime.now());
+        }
+
         // Redis Pub/Sub 발행
         String topic = "/sub/chat/room/" + request.roomId();
         redisPublisher.publish(topic, request);
@@ -43,38 +53,29 @@ public class ChatService {
         redisTemplate.opsForValue().set(redisKey, request);
 
         // TTL 설정
-        redisTemplate.expire(redisKey, 60, TimeUnit.MINUTES);
+        redisTemplate.expire(redisKey, messageTtl, TimeUnit.SECONDS);
     }
 
     public void flushMessagesToDatabase(Long roomId) {
         String redisKeyPattern = REDIS_MESSAGE_KEY_PREFIX + roomId + ":*";
 
-        // Redis에서 패턴에 맞는 키 검색
-        Set<String> keys = redisTemplate.keys(redisKeyPattern);
-        if (keys == null || keys.isEmpty()) {
-            return; // 저장할 데이터 없음
-        }
+        // Redis Lua 스크립트로 키 및 데이터 가져오기
+        List<Object> keysAndValues = redisLuaService.getKeysAndValues(redisKeyPattern);
 
-        // Redis에서 메시지 읽기 및 MySQL에 저장
-        List<ChatMessageRequest> messages = keys.stream()
-                .map(key -> {
-                    Object value = redisTemplate.opsForValue().get(key);
-                    // LinkedHashMap을 ChatMessageRequest로 변환
-                    return objectMapper.convertValue(value, ChatMessageRequest.class);
-                })
+        List<ChatMessageRequest> messages = keysAndValues.stream()
+                .map(value -> objectMapper.convertValue(((List<?>) value).get(1), ChatMessageRequest.class))
                 .filter(Objects::nonNull)
                 .toList();
 
         // MySQL에 저장
         saveMessagesToDatabase(messages);
 
-        // Redis에서 키 삭제
-        redisTemplate.delete(keys);
+        // Lua 스크립트를 사용해 Redis 키 삭제
+        redisLuaService.deleteKeys(redisKeyPattern);
     }
 
-
     private void saveMessagesToDatabase(List<ChatMessageRequest> messages) {
-        for (ChatMessageRequest request : messages) {
+        messages.forEach(request -> {
             ChatRoom room = roomRepository.findById(request.roomId())
                     .orElseThrow(() -> new IllegalArgumentException("Room not found"));
 
@@ -82,21 +83,20 @@ public class ChatService {
                     room,
                     request.sender(),
                     request.content(),
-                    LocalDateTime.now()
+                    request.timestamp()
             );
             messageRepository.save(message);
-        }
+        });
     }
 
     public List<ChatMessageResponse> getMessagesByRoomId(Long roomId) {
         String redisKeyPattern = REDIS_MESSAGE_KEY_PREFIX + roomId + ":*";
 
         // Redis에서 임시 데이터 조회
-        Set<String> keys = redisTemplate.keys(redisKeyPattern);
-        if (keys != null && !keys.isEmpty()) {
-            // Redis에서 데이터 조회
-            return keys.stream()
-                    .map(key -> (ChatMessageRequest) redisTemplate.opsForValue().get(key))
+        List<Object> keysAndValues = redisLuaService.getKeysAndValues(redisKeyPattern);
+        if (keysAndValues != null && !keysAndValues.isEmpty()) {
+            return keysAndValues.stream()
+                    .map(value -> objectMapper.convertValue(((List<?>) value).get(1), ChatMessageRequest.class))
                     .filter(Objects::nonNull)
                     .map(request -> new ChatMessageResponse(
                             null, // MySQL 저장 전이므로 ID 없음
@@ -124,5 +124,4 @@ public class ChatService {
         LocalDateTime cutoffDate = LocalDateTime.now().minusDays(30);
         messageRepository.deleteByTimestampBefore(cutoffDate);
     }
-
 }
