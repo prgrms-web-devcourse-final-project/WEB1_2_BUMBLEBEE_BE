@@ -295,7 +295,7 @@ public class WorkplaceControllerTest {
         String requestBody = objectMapper.writeValueAsString(request);
 
         // When & Then
-        mockMvc.perform(get("/api/v1/workplace")
+        mockMvc.perform(post("/api/v1/workplace/distance")
                         .param("latitude", "37.56")
                         .param("longitude", "127.00")
                         .header("Authorization", "Bearer " + token)
