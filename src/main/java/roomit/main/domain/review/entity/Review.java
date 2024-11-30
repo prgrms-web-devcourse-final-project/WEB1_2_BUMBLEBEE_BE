@@ -27,7 +27,7 @@ public class Review {
     private String reviewContent;
 
     @Column(name = "review_rating", nullable = false)
-    private Double reviewRating;
+    private int reviewRating;
 
     @Column(name = "workplace_name", nullable = false)
     private String workplaceName;
@@ -44,7 +44,7 @@ public class Review {
     private Reservation reservation;
 
     @Builder
-    public Review(String reviewContent, Double reviewRating, String workplaceName, Reservation reservation) {
+    public Review(String reviewContent, int reviewRating, String workplaceName, Reservation reservation) {
         this.reviewContent = reviewContent;
         this.reviewRating = reviewRating;
         this.workplaceName = workplaceName;
@@ -52,7 +52,7 @@ public class Review {
         this.reservation = reservation;
     }
 
-    public void changeReviewRating(Double reviewRating) {
+    public void changeReviewRating(int reviewRating) {
         this.reviewRating = reviewRating;
     }
     public void changeReviewContent(String reviewContent) {
