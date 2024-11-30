@@ -11,8 +11,7 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
 import java.time.Duration;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
 
 @Service
 public class FileUploadService {
@@ -33,8 +32,37 @@ public class FileUploadService {
                 .build();
     }
 
-    public String generatePreSignUrl(String filePath, HttpMethod method) {
-        if (method == HttpMethod.PUT) {
+    public Map<String, Object> generatePreSignUrl(String extension) {
+        String filePath = UUID.randomUUID() + "." + extension;
+
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(filePath)
+                .build();
+
+        PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
+                .putObjectRequest(putObjectRequest)
+                .signatureDuration(Duration.ofMinutes(10))
+                .build();
+
+        String url = s3Presigner.presignPutObject(presignRequest).url().toString();
+
+        // URL 정보 반환
+        Map<String, Object> response = new HashMap<>();
+        response.put("presignedUrl", url);
+        response.put("method", "PUT");
+        response.put("headers", Map.of("Content-Type", "image/" + extension));
+        response.put("filePath", filePath);
+
+        return response;
+    }
+
+    public List<Map<String, Object>> generatePreSignUrls(List<String> extensions) {
+        List<Map<String, Object>> presignedUrls = new ArrayList<>();
+
+        for (String extension : extensions) {
+            String filePath = UUID.randomUUID() + "." + extension;
+
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
                     .key(filePath)
@@ -45,9 +73,18 @@ public class FileUploadService {
                     .signatureDuration(Duration.ofMinutes(10))
                     .build();
 
-            return s3Presigner.presignPutObject(presignRequest).url().toString();
+            String url = s3Presigner.presignPutObject(presignRequest).url().toString();
+
+            // URL 정보 저장
+            Map<String, Object> response = new HashMap<>();
+            response.put("presignedUrl", url);
+            response.put("method", "PUT");
+            response.put("headers", Map.of("Content-Type", "image/" + extension));
+            response.put("filePath", filePath);
+
+            presignedUrls.add(response);
         }
 
-        throw new IllegalArgumentException("Unsupported HTTP method");
+        return presignedUrls;
     }
 }
