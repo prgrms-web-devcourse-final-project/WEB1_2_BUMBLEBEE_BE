@@ -1,18 +1,18 @@
 package roomit.main.domain.review.service;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import roomit.main.domain.member.dto.CustomMemberDetails;
-import roomit.main.domain.member.entity.Age;
 import roomit.main.domain.member.entity.Member;
-import roomit.main.domain.member.entity.Role;
 import roomit.main.domain.member.entity.Sex;
 import roomit.main.domain.member.repository.MemberRepository;
 import roomit.main.domain.reservation.entity.Reservation;
@@ -31,13 +31,13 @@ import roomit.main.domain.workplace.repository.WorkplaceRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -81,7 +81,7 @@ class ReviewServiceTest {
 
 
         workplace = Workplace.builder()
-                .workplaceName("사업장 넘버원")
+                .workplaceName("Workplace")
                 .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
@@ -124,6 +124,8 @@ class ReviewServiceTest {
                 .endTime(LocalDateTime.now())
                 .studyRoomId(studyRoom)
                 .memberId(member)
+                .reservationCapacity(123)
+                .reservationPrice(1000)
                 .build();
 
 
@@ -137,7 +139,7 @@ class ReviewServiceTest {
 
         ReviewRegisterRequest request = ReviewRegisterRequest.builder()
                 .reviewContent("좋은 장소네요")
-                .reviewRating(3.5)
+                .reviewRating(3)
                 .reservatinId(reservation.getId())
                 .workPlaceName(workplace.getWorkplaceName().getValue())
                 .build();
@@ -145,6 +147,9 @@ class ReviewServiceTest {
 
 
         reviewService.register(request);
+        Workplace workplace1 = workplaceRepository.findByWorkplaceName(workplace.getWorkplaceName()).get();
+
+        assertEquals(3, workplace1.getStarSum());
 
         List<Review> all = reviewRepository.findAll();
         System.out.println(Arrays.toString(all.toArray()));
@@ -161,22 +166,31 @@ class ReviewServiceTest {
 
         Review review = Review.builder()
                 .reviewContent("치킨이 안보이네요..")
-                .reviewRating(1.3)
+                .reviewRating(1)
+                .workplaceName(workplace.getWorkplaceName().getValue())
+                .reservation(reservation)
+                .build();
+        reviewRepository.save(review);
+
+        Review review1 = Review.builder()
+                .reviewContent("치킨이 안보이네요..")
+                .reviewRating(1)
                 .workplaceName(workplace.getWorkplaceName().getValue())
                 .reservation(reservation)
                 .build();
 
-        reviewRepository.save(review);
+        reviewRepository.save(review1);
         ReviewUpdateRequest reviewUpdateRequest = ReviewUpdateRequest.builder()
                 .reviewContent("치킨이 보이네요??")
-                .reviewRating(4.1)
+                .reviewRating(4)
                 .build();
 
-        reviewService.update(review.getReviewId(), reviewUpdateRequest);
+        reviewService.update(review.getReviewId(), reviewUpdateRequest, workplace.getWorkplaceName().getValue());
+        reviewService.update(review1.getReviewId(), reviewUpdateRequest, workplace.getWorkplaceName().getValue());
 
         List<Review> all = reviewRepository.findAll();
         assertEquals("치킨이 보이네요??", all.get(0).getReviewContent());
-        assertEquals(4.1, all.get(0).getReviewRating());
+        assertEquals(4, all.get(0).getReviewRating());
         assertEquals("Test Room",all.get(0).getReservation().getStudyRoomId().getTitle());
 //        assertEquals(1L, all.get(0).getMember().getMemberId());
 //        assertEquals(1L, all.get(0).getWorkplace().getWorkplaceId());
@@ -203,6 +217,8 @@ class ReviewServiceTest {
                     .reservationState(ReservationState.RESERVABLE)
                     .startTime(LocalDateTime.now())
                     .endTime(LocalDateTime.now())
+                    .reservationPrice(1000)
+                    .reservationCapacity(100)
                     .studyRoomId(studyRoom)
                     .memberId(member)
                     .build();
@@ -211,7 +227,7 @@ class ReviewServiceTest {
 
             Review review1 = Review.builder()
                     .reviewContent("치킨이 안보이네요.." + i)
-                    .reviewRating(3.1 + i)
+                    .reviewRating(3 + i)
                     .reservation(reservation1)
                     .workplaceName(workplace.getWorkplaceName().getValue())
                     .build();
@@ -232,23 +248,29 @@ class ReviewServiceTest {
     @Transactional
     void test4() {
 
+        workplaceRepository.save(workplace);
+
+        reservationRepository.save(reservation);
+
         Review review = Review.builder()
                 .reviewContent("치킨이 안보이네요..")
-                .reviewRating(1.3)
+                .reviewRating(1)
                 .reservation(reservation)
                 .workplaceName(workplace.getWorkplaceName().getValue())
                 .build();
 
         reviewRepository.save(review);
 
-        reviewService.remove(review.getReviewId());
+        reviewService.remove(review.getReviewId(), workplace.getWorkplaceName().getValue());
         assertEquals(0, reviewRepository.findAll().size());
 
     }
 
     @Transactional
+    @DisplayName("커서 기반 페이징")
     @Test
     void test6() {
+
         IntStream.rangeClosed(1, 20).forEach(i -> {
 
 
@@ -259,6 +281,8 @@ class ReviewServiceTest {
                     .startTime(LocalDateTime.now())
                     .endTime(LocalDateTime.now())
                     .studyRoomId(studyRoom)
+                    .reservationCapacity(10)
+                    .reservationPrice(1000)
                     .memberId(member)
                     .build();
 
@@ -266,7 +290,7 @@ class ReviewServiceTest {
 
             Review review1 = Review.builder()
                     .reviewContent("치킨이 안보이네요.." + i)
-                    .reviewRating(3.1 + i)
+                    .reviewRating(3 + i)
                     .reservation(reservation1)
                     .workplaceName(workplace.getWorkplaceName().getValue())
                     .build();
