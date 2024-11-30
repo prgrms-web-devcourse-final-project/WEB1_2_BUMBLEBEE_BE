@@ -328,7 +328,6 @@ public class WorkplaceControllerTest {
         // When
         mockMvc.perform(get("/api/v1/workplace/business")
                         .header("Authorization", "Bearer " + token) // 인증 토큰 추가
-                        .param("businessId", businessId.toString()) // 쿼리 파라미터 추가
                         .contentType(MediaType.APPLICATION_JSON)
                 )
 
