@@ -2,6 +2,7 @@ package roomit.main.global.config.security;
 
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,7 +42,6 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class SpringSecurityConfig {
 
-    private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final CustomMemberDetailsService memberDetailsService;
     private final CustomBusinessDetailsService businessDetailsService;
@@ -89,14 +89,14 @@ public class SpringSecurityConfig {
 
                         CorsConfiguration configuration = new CorsConfiguration();
 
-                        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+                        configuration.setAllowedOrigins(
+                            List.of("https://your-frontend-domain.com","http://localhost:3000"));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
                         configuration.setMaxAge(3600L);
 
-                        configuration.setExposedHeaders(Collections.singletonList("Authorization"));
-
+                        configuration.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie", "refresh"));
                         return configuration;
                     }
                 })));
@@ -118,11 +118,16 @@ public class SpringSecurityConfig {
         http
                 // 경로별 인가 작업
                 .authorizeHttpRequests((auth) -> auth
+                        //정적 리소스 허용
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/static/**", "/index.html").permitAll()
                         //모두 허용
                         .requestMatchers("/login/**","/").permitAll()
                         .requestMatchers("/reissue").permitAll()
+                        .requestMatchers("/noauth").permitAll()
                         .requestMatchers("/api/v1/member/signup").permitAll()
                         .requestMatchers("/api/v1/business/signup").permitAll()
+                        .requestMatchers("/toss/**").permitAll()
+
 
                         //멤버 권한 설정
                         .requestMatchers("/api/v1/member").hasRole("USER")
@@ -156,6 +161,9 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/v1/reservations/workplace/**").hasAnyRole("BUSINESS","USER") //특정 사업장의 예약 찾기
 
                         //결제 권한 설정
+                        .requestMatchers(HttpMethod.POST,"/api/v1/payments/toss").hasRole("USER") //결제 검증 및 서버 저장
+                        .requestMatchers(HttpMethod.GET,"/api/v1/payments/toss/success").permitAll() //결제 성공
+                        .requestMatchers(HttpMethod.GET,"/api/v1/payments/toss/fail").permitAll() //결제 실패
 
                         //알림 권한 설정
                         .requestMatchers(HttpMethod.GET,"/api/v1/notification/member").hasRole("USER") //회원 알림 내역 조회

@@ -39,14 +39,14 @@ public class BusinessServiceTest {
         IntStream.rangeClosed(1, 5).forEach(i -> {
             BusinessRegisterRequest businessRegisterRequest = BusinessRegisterRequest.builder()
                 .businessName("테스트사업자" + i)
-                .businessEmail("business" + i + "@gmail.com")
+                .businessEmail("business" + i + 1 + "@gmail.com")
                 .businessPwd("Business1!")
                 .businessNum("123-12-1234" + i)
                 .build();
 
             businessService.signUpBusiness(businessRegisterRequest); // 데이터 생성
 
-            businessId = businessRepository.findByBusinessEmail("business" + i + "@gmail.com").orElseThrow(NoSuchElementException::new).getBusinessId();
+            businessId = businessRepository.findByBusinessEmail("business" + i + 1 + "@gmail.com").orElseThrow(NoSuchElementException::new).getBusinessId();
         }
         );
     }

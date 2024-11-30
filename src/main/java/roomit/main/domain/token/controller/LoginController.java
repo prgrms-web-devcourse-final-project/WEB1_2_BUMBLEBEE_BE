@@ -11,7 +11,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomit.main.domain.business.dto.CustomBusinessDetails;
 import roomit.main.domain.member.dto.CustomMemberDetails;
@@ -77,7 +76,7 @@ public class LoginController {
             String username = authentication.getName();
 
             // Access Token 생성
-            String accessToken = jwtUtil.createJwt("access", businessDetails.getUsername(), "ROLE_BUSINESS", 60 * 1000L); // 60 유효
+            String accessToken = jwtUtil.createJwt("access", businessDetails.getUsername(), "ROLE_BUSINESS", 1000 * 60 * 15L); // 60 유효
             // Refresh Token 생성
             String refreshToken = jwtUtil.createJwt("refresh", businessDetails.getUsername(), "ROLE_BUSINESS", 1000 * 60 * 60 * 24L); // 24시간 유효
 

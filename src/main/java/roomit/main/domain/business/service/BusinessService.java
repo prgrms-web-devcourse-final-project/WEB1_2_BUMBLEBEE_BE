@@ -21,6 +21,23 @@ public class BusinessService {
     //사업자 등록
     @Transactional
     public void signUpBusiness(BusinessRegisterRequest registerRequest) {
+
+        //중복 이메일 검증
+        if(businessRepository.existsByBusinessEmail(registerRequest.businessEmail())){
+            throw ErrorCode.BUSINESS_EMAIL_DUPLICATION.commonException();
+        }
+
+        //중복 사업자 이름 검증
+        if(businessRepository.existsByBusinessName(registerRequest.businessName())){
+            throw ErrorCode.BUSINESS_NICKNAME_DUPLICATION.commonException();
+        }
+
+        //중복 사업자 번호 검증
+        if(businessRepository.existsByBusinessNum(registerRequest.businessNum())){
+            throw ErrorCode.BUSINESS_NUMBER_DUPLICATION.commonException();
+        }
+
+        //사업자 등록
         try {
             businessRepository.save(registerRequest.toEntity(passwordEncoder));
         }catch (Exception e) {

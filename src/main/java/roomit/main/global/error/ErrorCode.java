@@ -25,6 +25,9 @@ public enum ErrorCode {
     BUSINESS_NOT_MODIFY(HttpStatus.BAD_REQUEST, "B001", "사업자 수정에 실패했습니다."),
     BUSINESS_NOT_DELETE(HttpStatus.BAD_REQUEST, "B002", "사업자 탈퇴에 실패했습니다."),
     BUSINESS_NOT_AUTHORIZED(HttpStatus.FORBIDDEN, "B003", "권한이 없습니다."),
+    BUSINESS_EMAIL_DUPLICATION(HttpStatus.CONFLICT, "B004", "이미 등록된 이메일입니다."),
+    BUSINESS_NUMBER_DUPLICATION(HttpStatus.CONFLICT, "B005", "이미 등록된 사업자번호입니다."),
+    BUSINESS_NICKNAME_DUPLICATION(HttpStatus.CONFLICT, "B006", "이미 등록된 사업자이름입니다."),
 
     /*WorkPlace*/
     WORKPLACE_NOT_REGISTERED(HttpStatus.UNAUTHORIZED, "W001","사업장 등록에 실패하였습니다."),
@@ -38,8 +41,15 @@ public enum ErrorCode {
     REVIEW_NOT_FOUND(HttpStatus.BAD_REQUEST,"V003","존재 하지 않는 리뷰입니다."),
     REVIEW_UPDATE_EXCEPTION(HttpStatus.BAD_REQUEST,"V002","잘못 수정 입니다."),
 
+    /*Payments*/
+    PAYMENTS_NOT_FOUND(HttpStatus.NOT_FOUND,"P001","존재 하지 않는 결제 내역 입니다."),
+    PAYMENTS_INVALID_AMOUNT(HttpStatus.BAD_REQUEST,"P002","잘못된 결제 금액입니다."),
+    PAYMENTS_ALREADY_APPROVED(HttpStatus.BAD_REQUEST,"P003","이미 승인된 결제입니다"),
+    PAYMENTS_AMOUNT_EXP(HttpStatus.BAD_REQUEST,"P004","결제 금액이 일치하지 않습니다"),
+
     /*Reservation*/
     RESERVATIN_NOT_FOUND(HttpStatus.BAD_REQUEST, "R001", "존재 하지 않는 예약입니다.");
+  
     private final String code;
     private final String message;
     private final HttpStatus status;
