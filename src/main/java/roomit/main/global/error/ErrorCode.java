@@ -25,6 +25,9 @@ public enum ErrorCode {
     BUSINESS_NOT_MODIFY(HttpStatus.BAD_REQUEST, "B001", "사업자 수정에 실패했습니다."),
     BUSINESS_NOT_DELETE(HttpStatus.BAD_REQUEST, "B002", "사업자 탈퇴에 실패했습니다."),
     BUSINESS_NOT_AUTHORIZED(HttpStatus.FORBIDDEN, "B003", "권한이 없습니다."),
+    BUSINESS_EMAIL_DUPLICATION(HttpStatus.CONFLICT, "B004", "이미 등록된 이메일입니다."),
+    BUSINESS_NUMBER_DUPLICATION(HttpStatus.CONFLICT, "B005", "이미 등록된 사업자번호입니다."),
+    BUSINESS_NICKNAME_DUPLICATION(HttpStatus.CONFLICT, "B006", "이미 등록된 사업자이름입니다."),
 
     /*WorkPlace*/
     WORKPLACE_NOT_REGISTERED(HttpStatus.UNAUTHORIZED, "W001","사업장 등록에 실패하였습니다."),
