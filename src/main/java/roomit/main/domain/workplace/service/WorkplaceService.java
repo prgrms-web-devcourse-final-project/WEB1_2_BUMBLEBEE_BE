@@ -45,10 +45,11 @@ public class WorkplaceService {
     public List<WorkplaceAllResponse> readAllWorkplaces(WorkplaceGetRequest request, double myLat, double myLon) {
         List<Object[]> results = workplaceRepository.findAllByLatitudeAndLongitudeWithDistance(
                 myLat, myLon,
-                request.bottomRight().getLatitude().doubleValue(),
-                request.topLeft().getLatitude().doubleValue(),
-                request.topLeft().getLongitude().doubleValue(),
-                request.bottomRight().getLongitude().doubleValue());
+                request.bottomLeft().getLatitude().doubleValue(),
+                request.topRight().getLatitude().doubleValue(),
+                request.bottomLeft().getLongitude().doubleValue(),
+                request.topRight().getLongitude().doubleValue()
+        );
 
         List<WorkplaceAllResponse> responseList = results.stream()
                 .map(result -> {
@@ -61,10 +62,11 @@ public class WorkplaceService {
                             (String) result[3],
                             (reviewCount == 0) ? 0.0 : starSum / reviewCount,
                             reviewCount,
-                            ((Number) result[6]).doubleValue()
+                            BigDecimal.valueOf(((Number) result[6]).doubleValue()),  // latitude
+                            BigDecimal.valueOf(((Number) result[7]).doubleValue()),  // longitude
+                            ((Number) result[8]).doubleValue()
                     );
-                })
-                .toList();
+                }).toList();
 
         return responseList;
     }

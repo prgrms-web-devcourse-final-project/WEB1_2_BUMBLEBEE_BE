@@ -145,9 +145,9 @@ public class SpringSecurityConfig {
 
                         //사업장 권한 설정
                         .requestMatchers(HttpMethod.GET,"/api/v1/workplace/info/**").permitAll() //사업장 정보 조회
-                        .requestMatchers(HttpMethod.GET,"/api/v1/workplace").permitAll() //사업장 조회
-                        .requestMatchers(HttpMethod.GET,"/api/v1/workplace/distance").permitAll() //위치 기반 주변 사업장
+//                        .requestMatchers(HttpMethod.GET,"/api/v1/workplace").permitAll() //사업장 조회
                         .requestMatchers(HttpMethod.GET,"/api/v1/workplace/business").hasRole("BUSINESS") //접속한 사업자 사업자ID로 사업장 조회**
+                        .requestMatchers(HttpMethod.POST,"/api/v1/workplace/distance").permitAll() //위치 기반 주변 사업장
                         .requestMatchers(HttpMethod.POST,"/api/v1/workplace").hasRole("BUSINESS") //사업장 등록
                         .requestMatchers(HttpMethod.PUT,"/api/v1/workplace/**").hasRole("BUSINESS") //사업장 정보 수정
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/workplace/**").hasRole("BUSINESS") //사업장 삭제

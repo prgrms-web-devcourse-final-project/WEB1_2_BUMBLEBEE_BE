@@ -1,5 +1,7 @@
 package roomit.main.domain.workplace.dto.response;
 
+import java.math.BigDecimal;
+
 public record WorkplaceAllResponse(
         Long workplaceId,
         String workplaceName,
@@ -7,6 +9,8 @@ public record WorkplaceAllResponse(
         String imageUrl,
         Double stars,
         Long reviewCount,
+        BigDecimal positionLat,
+        BigDecimal positionLon,
         Double distance
 ) {}
 
