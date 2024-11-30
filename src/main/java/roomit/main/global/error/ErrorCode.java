@@ -38,8 +38,15 @@ public enum ErrorCode {
     REVIEW_NOT_FOUND(HttpStatus.BAD_REQUEST,"V003","존재 하지 않는 리뷰입니다."),
     REVIEW_UPDATE_EXCEPTION(HttpStatus.BAD_REQUEST,"V002","잘못 수정 입니다."),
 
+    /*Payments*/
+    PAYMENTS_NOT_FOUND(HttpStatus.NOT_FOUND,"P001","존재 하지 않는 결제 내역 입니다."),
+    PAYMENTS_INVALID_AMOUNT(HttpStatus.BAD_REQUEST,"P002","잘못된 결제 금액입니다."),
+    PAYMENTS_ALREADY_APPROVED(HttpStatus.BAD_REQUEST,"P003","이미 승인된 결제입니다"),
+    PAYMENTS_AMOUNT_EXP(HttpStatus.BAD_REQUEST,"P004","결제 금액이 일치하지 않습니다"),
+
     /*Reservation*/
     RESERVATIN_NOT_FOUND(HttpStatus.BAD_REQUEST, "R001", "존재 하지 않는 예약입니다.");
+  
     private final String code;
     private final String message;
     private final HttpStatus status;
