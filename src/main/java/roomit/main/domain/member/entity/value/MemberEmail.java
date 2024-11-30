@@ -25,7 +25,6 @@ public class MemberEmail {
 
     public MemberEmail(final String email) {
         if (!PATTERN.matcher(email).matches()) {
-            log.error(ERR_MSG);
             throw new IllegalArgumentException(ERR_MSG);
         }
         this.value = email;
