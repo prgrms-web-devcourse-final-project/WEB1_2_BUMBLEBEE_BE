@@ -13,6 +13,7 @@ import roomit.main.domain.business.service.BusinessService;
 
 
 @RestController
+@RequestMapping("/api/v1/business")
 @RequiredArgsConstructor
 public class BusinessController {
 
@@ -20,23 +21,23 @@ public class BusinessController {
 
     //사업자 회원 가입
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/api/v1/business/signup")
-    public void signup(@RequestBody @Valid BusinessRegisterRequest request) {
+    @PostMapping("/signup")
+    public void signUp(@RequestBody @Valid BusinessRegisterRequest request) {
         businessService.signUpBusiness(request);
     }
 
     //사업자 정보 수정
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PutMapping("api/v1/business")
-    public void businessModify(@RequestBody @Valid BusinessUpdateRequest businessUpdateRequest
-                               ,@AuthenticationPrincipal CustomBusinessDetails customBusinessDetails){
+    @PutMapping("")
+    public void businessModify(@RequestBody @Valid BusinessUpdateRequest businessUpdateRequest,
+                               @AuthenticationPrincipal CustomBusinessDetails customBusinessDetails){
         businessService.updateBusinessInfo(customBusinessDetails.getId(), businessUpdateRequest);
     }
 
 
     //사업자 정보 조회
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("api/v1/business")
+    @GetMapping("")
     public BusinessResponse businessRead(@AuthenticationPrincipal CustomBusinessDetails customBusinessDetails){
         return businessService.readBusinessInfo(customBusinessDetails.getId());
     }
@@ -44,7 +45,7 @@ public class BusinessController {
 
     //사업자 탈퇴
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("api/v1/business")
+    @DeleteMapping("")
     public void businessDelete(@AuthenticationPrincipal CustomBusinessDetails customBusinessDetails){
         businessService.deleteBusiness(customBusinessDetails.getId());
     }
