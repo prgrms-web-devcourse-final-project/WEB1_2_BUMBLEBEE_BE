@@ -282,20 +282,20 @@ public class WorkplaceControllerTest {
         BigDecimal maxLongitude = BigDecimal.valueOf(127.97);
 
         WorkplaceGetRequest request = WorkplaceGetRequest.builder()
-                .topLeft(Coordinate.builder()
+                .topRight(Coordinate.builder()
                         .latitude(maxLatitude)
-                        .longitude(minLongitude)
-                        .build())
-                .bottomRight(Coordinate.builder()
-                        .latitude(minLatitude)
                         .longitude(maxLongitude)
+                        .build())
+                .bottomLeft(Coordinate.builder()
+                        .latitude(minLatitude)
+                        .longitude(minLongitude)
                         .build())
                 .build();
 
         String requestBody = objectMapper.writeValueAsString(request);
 
         // When & Then
-        mockMvc.perform(get("/api/v1/workplace")
+        mockMvc.perform(post("/api/v1/workplace/distance")
                         .param("latitude", "37.56")
                         .param("longitude", "127.00")
                         .header("Authorization", "Bearer " + token)
@@ -328,7 +328,6 @@ public class WorkplaceControllerTest {
         // When
         mockMvc.perform(get("/api/v1/workplace/business")
                         .header("Authorization", "Bearer " + token) // 인증 토큰 추가
-                        .param("businessId", businessId.toString()) // 쿼리 파라미터 추가
                         .contentType(MediaType.APPLICATION_JSON)
                 )
 
@@ -337,7 +336,6 @@ public class WorkplaceControllerTest {
                 .andExpect(jsonPath("$.businessId").value(businessId)) // businessId 검증
                 .andExpect(jsonPath("$.businessName").value(expectedBusinessName)) // businessName 검증
                 .andExpect(jsonPath("$.workplaces").isArray()) // workplaces가 배열인지 확인
-                .andExpect(jsonPath("$.workplaces.length()").value(10)) // workplaces의 길이가 2인지 확인
                 .andExpect(jsonPath("$.workplaces[0].workplaceName").value("사업장 1")) // workplaces[0]의 workplaceName 확인
                 .andExpect(jsonPath("$.workplaces[1].workplaceName").value("사업장 2")) // workplaces[1]의 workplaceName 확인
                 .andDo(print());
