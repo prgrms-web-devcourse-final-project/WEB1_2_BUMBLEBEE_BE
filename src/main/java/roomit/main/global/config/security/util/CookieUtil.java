@@ -3,6 +3,7 @@ package roomit.main.global.config.security.util;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseCookie;
 import org.springframework.util.SerializationUtils;
 
 import java.util.Base64;
@@ -11,12 +12,14 @@ public class CookieUtil {
 
     public static void addCookie
             (HttpServletResponse response, String name, String value, int maxAge) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setPath("/");
-        cookie.setMaxAge(maxAge);
-        cookie.setHttpOnly(true);
-
-        response.addCookie(cookie);
+        ResponseCookie refreshTokenCookie = ResponseCookie.from(name, value)
+            .httpOnly(true)
+            .secure(true) // HTTPS에서만 사용
+            .sameSite("None") // Cross-Origin 허용
+            .path("/")
+            .maxAge(7 * 24 * 60 * 60) // 7일
+            .build();
+        response.addHeader("Set-Cookie", refreshTokenCookie.toString());
     }
 
     public static void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name) {
