@@ -13,7 +13,6 @@ import roomit.main.domain.chat.redis.service.RedisPublisher;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -40,8 +39,8 @@ public class ChatService {
         String redisKey = REDIS_MESSAGE_KEY_PREFIX + request.roomId() + ":" + request.timestamp();
         redisTemplate.opsForValue().set(redisKey, request);
 
-        // TTL 설정 (예: 30분 후 만료)
-        redisTemplate.expire(redisKey, 30, TimeUnit.MINUTES);
+        // TTL 설정
+        redisTemplate.expire(redisKey, 60, TimeUnit.MINUTES);
     }
 
     public void flushMessagesToDatabase(Long roomId) {
@@ -53,21 +52,27 @@ public class ChatService {
             return; // 저장할 데이터 없음
         }
 
-        // Redis에서 메시지 읽기 및 MySQL에 저장
-        List<ChatMessageRequest> messages = keys.stream()
-                .map(key -> (ChatMessageRequest) redisTemplate.opsForValue().get(key))
-                .filter(Objects::nonNull)
-                .toList();
+        for (String key : keys) {
+            // 중복 방지를 위해 Redis에서 락 설정
+            Boolean locked = redisTemplate.opsForValue().setIfAbsent(key + ":lock", "1", 5, TimeUnit.SECONDS);
+            if (Boolean.FALSE.equals(locked)) {
+                continue; // 다른 프로세스에서 처리 중인 데이터는 건너뜀
+            }
 
-        // MySQL에 저장
-        saveMessagesToDatabase(messages);
+            // Redis에서 메시지 읽기
+            ChatMessageRequest request = (ChatMessageRequest) redisTemplate.opsForValue().get(key);
+            if (request != null) {
+                saveMessageToDatabase(List.of(request));
+            }
 
-        // Redis에서 키 삭제
-        redisTemplate.delete(keys);
+            // Redis에서 키 삭제
+            redisTemplate.delete(key);
+            redisTemplate.delete(key + ":lock");
+        }
     }
 
 
-    private void saveMessagesToDatabase(List<ChatMessageRequest> messages) {
+    private void saveMessageToDatabase(List<ChatMessageRequest> messages) {
         for (ChatMessageRequest request : messages) {
             ChatRoom room = roomRepository.findById(request.roomId())
                     .orElseThrow(() -> new IllegalArgumentException("Room not found"));
@@ -83,7 +88,7 @@ public class ChatService {
     }
 
     public List<ChatMessageResponse> getMessagesByRoomId(Long roomId) {
-        return messageRepository.findByRoom_RoomId(roomId).stream()
+        return messageRepository.findByRoom_RoomIdOrderByTimestamp(roomId).stream()
                 .map(message -> new ChatMessageResponse(
                         message.getMessageId(),
                         message.getRoom().getRoomId(),
