@@ -20,33 +20,19 @@ public class ChatRoom {
     private Long roomId;
 
     @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
-    private String createdBy;
-
-    @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @ManyToMany
-    @JoinTable(
-            name = "chat_room_members",
-            joinColumns = @JoinColumn(name = "room_id"),
-            inverseJoinColumns = @JoinColumn(name = "member_id")
-    )
-    private List<Member> members = new ArrayList<>();
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "business_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "business_id", nullable = false)
     private Business business;
 
-    public ChatRoom(String name, String createdBy, LocalDateTime createdAt) {
-        this.name = name;
-        this.createdBy = createdBy;
-        this.createdAt = createdAt;
-    }
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 
-    public void addMember(Member member) {
-        members.add(member);
+    public ChatRoom(Business business, Member member, LocalDateTime createdAt) {
+        this.business = business;
+        this.member = member;
+        this.createdAt = createdAt;
     }
 }
