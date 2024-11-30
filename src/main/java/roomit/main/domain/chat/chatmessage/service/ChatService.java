@@ -1,5 +1,6 @@
 package roomit.main.domain.chat.chatmessage.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import roomit.main.domain.chat.redis.service.RedisPublisher;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -23,6 +25,7 @@ public class ChatService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final ChatRoomRepository roomRepository;
     private final ChatMessageRepository messageRepository;
+    private final ObjectMapper objectMapper;
 
     private static final String REDIS_MESSAGE_KEY_PREFIX = "chat:room:";
 
@@ -52,27 +55,25 @@ public class ChatService {
             return; // 저장할 데이터 없음
         }
 
-        for (String key : keys) {
-            // 중복 방지를 위해 Redis에서 락 설정
-            Boolean locked = redisTemplate.opsForValue().setIfAbsent(key + ":lock", "1", 5, TimeUnit.SECONDS);
-            if (Boolean.FALSE.equals(locked)) {
-                continue; // 다른 프로세스에서 처리 중인 데이터는 건너뜀
-            }
+        // Redis에서 메시지 읽기 및 MySQL에 저장
+        List<ChatMessageRequest> messages = keys.stream()
+                .map(key -> {
+                    Object value = redisTemplate.opsForValue().get(key);
+                    // LinkedHashMap을 ChatMessageRequest로 변환
+                    return objectMapper.convertValue(value, ChatMessageRequest.class);
+                })
+                .filter(Objects::nonNull)
+                .toList();
 
-            // Redis에서 메시지 읽기
-            ChatMessageRequest request = (ChatMessageRequest) redisTemplate.opsForValue().get(key);
-            if (request != null) {
-                saveMessageToDatabase(List.of(request));
-            }
+        // MySQL에 저장
+        saveMessagesToDatabase(messages);
 
-            // Redis에서 키 삭제
-            redisTemplate.delete(key);
-            redisTemplate.delete(key + ":lock");
-        }
+        // Redis에서 키 삭제
+        redisTemplate.delete(keys);
     }
 
 
-    private void saveMessageToDatabase(List<ChatMessageRequest> messages) {
+    private void saveMessagesToDatabase(List<ChatMessageRequest> messages) {
         for (ChatMessageRequest request : messages) {
             ChatRoom room = roomRepository.findById(request.roomId())
                     .orElseThrow(() -> new IllegalArgumentException("Room not found"));
@@ -88,6 +89,26 @@ public class ChatService {
     }
 
     public List<ChatMessageResponse> getMessagesByRoomId(Long roomId) {
+        String redisKeyPattern = REDIS_MESSAGE_KEY_PREFIX + roomId + ":*";
+
+        // Redis에서 임시 데이터 조회
+        Set<String> keys = redisTemplate.keys(redisKeyPattern);
+        if (keys != null && !keys.isEmpty()) {
+            // Redis에서 데이터 조회
+            return keys.stream()
+                    .map(key -> (ChatMessageRequest) redisTemplate.opsForValue().get(key))
+                    .filter(Objects::nonNull)
+                    .map(request -> new ChatMessageResponse(
+                            null, // MySQL 저장 전이므로 ID 없음
+                            request.roomId(),
+                            request.sender(),
+                            request.content(),
+                            request.timestamp()
+                    ))
+                    .toList();
+        }
+
+        // Redis 데이터가 없으면 MySQL에서 조회
         return messageRepository.findByRoom_RoomIdOrderByTimestamp(roomId).stream()
                 .map(message -> new ChatMessageResponse(
                         message.getMessageId(),

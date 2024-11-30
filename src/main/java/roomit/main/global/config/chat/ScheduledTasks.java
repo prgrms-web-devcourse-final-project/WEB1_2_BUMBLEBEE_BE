@@ -1,4 +1,4 @@
-package roomit.main.global.config;
+package roomit.main.global.config.chat;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
