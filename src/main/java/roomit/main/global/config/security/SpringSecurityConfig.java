@@ -42,7 +42,6 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class SpringSecurityConfig {
 
-    private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final CustomMemberDetailsService memberDetailsService;
     private final CustomBusinessDetailsService businessDetailsService;

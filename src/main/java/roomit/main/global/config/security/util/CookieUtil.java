@@ -17,7 +17,7 @@ public class CookieUtil {
             .secure(true) // HTTPS에서만 사용
             .sameSite("None") // Cross-Origin 허용
             .path("/")
-            .maxAge(7 * 24 * 60 * 60) // 7일
+            .maxAge(maxAge) // 1일
             .build();
         response.addHeader("Set-Cookie", refreshTokenCookie.toString());
     }
