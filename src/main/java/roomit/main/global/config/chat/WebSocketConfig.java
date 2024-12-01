@@ -1,4 +1,4 @@
-package roomit.main.global.config;
+package roomit.main.global.config.chat;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

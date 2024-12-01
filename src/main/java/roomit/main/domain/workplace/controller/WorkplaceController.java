@@ -24,11 +24,8 @@ public class WorkplaceController {
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/distance")
-    public List<WorkplaceAllResponse> getWorkplaces(
-            @RequestParam Double latitude,
-            @RequestParam Double longitude,
-            @RequestBody WorkplaceGetRequest request) {
-        return workplaceService.readAllWorkplaces(request, latitude, longitude);
+    public List<WorkplaceAllResponse> getWorkplaces(@RequestBody WorkplaceGetRequest request) {
+        return workplaceService.readAllWorkplaces(request);
     }
 
     @ResponseStatus(HttpStatus.OK)
