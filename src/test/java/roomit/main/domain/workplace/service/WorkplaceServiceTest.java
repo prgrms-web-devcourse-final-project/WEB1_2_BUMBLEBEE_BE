@@ -301,7 +301,7 @@ class WorkplaceServiceTest {
                 "서울 중구 장충단로 247 굿모닝시티 8층"
         );
 
-        int cnt=0;
+        int cnt = 0;
 
         for (int i = 1; i <= 11; i++) {
             WorkplaceRequest workplace = WorkplaceRequest.builder()
@@ -349,9 +349,12 @@ class WorkplaceServiceTest {
                         .longitude(BigDecimal.valueOf(127.97)).build())
                 .bottomLeft(Coordinate.builder()
                         .latitude(BigDecimal.valueOf(36.56))
-                        .longitude(BigDecimal.valueOf(126.97)).build()).build();
+                        .longitude(BigDecimal.valueOf(126.97)).build())
+                .latitude(37.56)
+                .longitude(127.00)
+                .build();
 
-        List<WorkplaceAllResponse> workplaces = workplaceService.readAllWorkplaces(request, 37.56,127.00 );
+        List<WorkplaceAllResponse> workplaces = workplaceService.readAllWorkplaces(request);
 
         // Then
         assertThat(workplaces).isNotNull();

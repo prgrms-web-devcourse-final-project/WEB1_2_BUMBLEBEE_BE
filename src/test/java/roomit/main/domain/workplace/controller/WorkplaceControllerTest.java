@@ -290,14 +290,14 @@ public class WorkplaceControllerTest {
                         .latitude(minLatitude)
                         .longitude(minLongitude)
                         .build())
+                .latitude(37.56)
+                .longitude(127.00)
                 .build();
 
         String requestBody = objectMapper.writeValueAsString(request);
 
         // When & Then
         mockMvc.perform(post("/api/v1/workplace/distance")
-                        .param("latitude", "37.56")
-                        .param("longitude", "127.00")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
