@@ -42,6 +42,7 @@ public enum ErrorCode {
     /*Review*/
     REVIEW_NOT_FOUND(HttpStatus.BAD_REQUEST,"V003","존재 하지 않는 리뷰입니다."),
     REVIEW_UPDATE_EXCEPTION(HttpStatus.BAD_REQUEST,"V002","잘못 수정 입니다."),
+    REVIEW_UPDATE_FAIL(HttpStatus.BAD_REQUEST,"V003", "본인 예약 정보가 아닙니다."),
 
     /*Payments*/
     PAYMENTS_NOT_FOUND(HttpStatus.NOT_FOUND,"P001","존재 하지 않는 결제 내역 입니다."),
