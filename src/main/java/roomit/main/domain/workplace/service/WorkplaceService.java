@@ -26,6 +26,7 @@ import roomit.main.domain.workplace.entity.value.WorkplaceName;
 import roomit.main.domain.workplace.entity.value.WorkplacePhoneNumber;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
+import roomit.main.global.exception.CommonException;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -42,9 +43,10 @@ public class WorkplaceService {
     private final StudyRoomRepository studyRoomRepository;
     private final WebClient webClient;
 
-    public List<WorkplaceAllResponse> readAllWorkplaces(WorkplaceGetRequest request, double myLat, double myLon) {
+    public List<WorkplaceAllResponse> readAllWorkplaces(WorkplaceGetRequest request) {
         List<Object[]> results = workplaceRepository.findAllByLatitudeAndLongitudeWithDistance(
-                myLat, myLon,
+                request.latitude(),
+                request.longitude(),
                 request.bottomLeft().getLatitude().doubleValue(),
                 request.topRight().getLatitude().doubleValue(),
                 request.bottomLeft().getLongitude().doubleValue(),
@@ -81,24 +83,24 @@ public class WorkplaceService {
 
     @Transactional
     public void createWorkplace(WorkplaceRequest workplaceDto, Long id) {
-
         Business business = businessRepository.findById(id).orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
 
         Map<String, BigDecimal> coordinates = getStringBigDecimalMap(workplaceDto);
 
-        Workplace savedWorkplace;
-
         try {
             Workplace workplace = workplaceDto.toEntity(coordinates.get("latitude"), coordinates.get("longitude"), business);
-            savedWorkplace = workplaceRepository.save(workplace);
+            Workplace savedWorkplace = workplaceRepository.save(workplace);
 
+            saveStudyrooms(workplaceDto, savedWorkplace);
         } catch (InvalidDataAccessApiUsageException e) {
             throw ErrorCode.WORKPLACE_INVALID_REQUEST.commonException();
         } catch (Exception e) {
+            if(e instanceof CommonException){
+                throw e;
+            }
             throw ErrorCode.WORKPLACE_NOT_REGISTERED.commonException();
         }
 
-        saveStudyrooms(workplaceDto, savedWorkplace);
     }
 
     private void saveStudyrooms(WorkplaceRequest workplaceDto, Workplace savedWorkplace) {
@@ -115,7 +117,6 @@ public class WorkplaceService {
 
     @Transactional
     public void updateWorkplace(Long workplaceId, WorkplaceRequest workplaceDto, Long businessId) {
-
         if (workplaceDto == null && !workplaceDto.workplaceStartTime().isBefore(workplaceDto.workplaceEndTime())) {
             throw ErrorCode.WORKPLACE_INVALID_REQUEST.commonException();
         }
