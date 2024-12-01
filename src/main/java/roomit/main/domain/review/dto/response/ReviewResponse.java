@@ -2,7 +2,6 @@ package roomit.main.domain.review.dto.response;
 
 import lombok.Builder;
 import roomit.main.domain.review.entity.Review;
-import roomit.main.domain.workplace.entity.Workplace;
 
 import java.time.LocalDateTime;
 
