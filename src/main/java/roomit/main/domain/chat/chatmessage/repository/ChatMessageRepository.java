@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
-    List<ChatMessage> findByRoom_RoomIdOrderByTimestamp(Long roomId);
+    List<ChatMessage> findByRoomId(Long roomId);
     void deleteByTimestampBefore(LocalDateTime cutoffDate);
 }

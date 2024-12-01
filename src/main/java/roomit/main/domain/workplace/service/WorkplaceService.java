@@ -161,7 +161,7 @@ public class WorkplaceService {
     }
 
     public WorkplaceBusinessResponse findWorkplacesByBusinessId(Long businessId) {
-        List<Workplace> workplaces = workplaceRepository.findByBusiness_BusinessId(businessId);
+        List<Workplace> workplaces = workplaceRepository.findByBusinessId(businessId);
 
         Business business = businessRepository.findById(businessId).orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
 

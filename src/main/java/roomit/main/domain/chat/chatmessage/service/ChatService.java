@@ -109,7 +109,7 @@ public class ChatService {
         }
 
         // Redis 데이터가 없으면 MySQL에서 조회
-        return messageRepository.findByRoom_RoomIdOrderByTimestamp(roomId).stream()
+        return messageRepository.findByRoomId(roomId).stream()
                 .map(message -> new ChatMessageResponse(
                         message.getMessageId(),
                         message.getRoom().getRoomId(),
