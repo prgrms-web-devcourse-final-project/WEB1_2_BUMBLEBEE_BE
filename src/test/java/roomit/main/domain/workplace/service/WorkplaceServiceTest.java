@@ -344,14 +344,14 @@ class WorkplaceServiceTest {
 
         // When
         WorkplaceGetRequest request = WorkplaceGetRequest.builder()
-                .topLeft(Coordinate.builder()
+                .topRight(Coordinate.builder()
                         .latitude(BigDecimal.valueOf(38.56))
-                        .longitude(BigDecimal.valueOf(126.97)).build())
-                .bottomRight(Coordinate.builder()
+                        .longitude(BigDecimal.valueOf(127.97)).build())
+                .bottomLeft(Coordinate.builder()
                         .latitude(BigDecimal.valueOf(36.56))
-                        .longitude(BigDecimal.valueOf(127.97)).build()).build();
+                        .longitude(BigDecimal.valueOf(126.97)).build()).build();
 
-        List<WorkplaceAllResponse> workplaces = workplaceService.readAllWorkplaces(request, 127.00,37.56 );
+        List<WorkplaceAllResponse> workplaces = workplaceService.readAllWorkplaces(request, 37.56,127.00 );
 
         // Then
         assertThat(workplaces).isNotNull();

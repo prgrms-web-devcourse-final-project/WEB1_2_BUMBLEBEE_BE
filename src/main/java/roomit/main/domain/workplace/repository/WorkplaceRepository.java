@@ -8,19 +8,22 @@ import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.entity.value.WorkplaceName;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface WorkplaceRepository extends JpaRepository<Workplace, Long> {
 
     Workplace getWorkplaceByWorkplaceName(WorkplaceName workplaceName);
 
+    Optional<Workplace> findByWorkplaceName(WorkplaceName workplace);
     @Query(value = """
         SELECT w.workplace_id, w.workplace_name, 
                w.workplace_address, w.image_url,
                w.star_sum, w.review_count,
+               w.workplace_latitude, w.workplace_longitude,
                (6371 * acos(
-                   cos(radians(:latitude)) * cos(radians(w.workplace_latitude)) *
-                   cos(radians(w.workplace_longitude) - radians(:longitude)) +
-                   sin(radians(:latitude)) * sin(radians(w.workplace_latitude))
+                   cos(radians(:positionLat)) * cos(radians(w.workplace_latitude)) *
+                   cos(radians(w.workplace_longitude) - radians(:positionLon)) +
+                   sin(radians(:positionLat)) * sin(radians(w.workplace_latitude))
                )) AS distance
         FROM workplace w 
         WHERE w.workplace_latitude BETWEEN :bottom AND :top 
@@ -28,8 +31,8 @@ public interface WorkplaceRepository extends JpaRepository<Workplace, Long> {
         ORDER BY distance ASC
     """,  nativeQuery = true)
     List<Object[]> findAllByLatitudeAndLongitudeWithDistance(
-            @Param("latitude") double latitude,
-            @Param("longitude") double longitude,
+            @Param("positionLat") double positionLat,
+            @Param("positionLon") double positionLon,
             @Param("bottom") double bottom,
             @Param("top") double top,
             @Param("left") double left,

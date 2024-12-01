@@ -12,6 +12,8 @@ public enum ErrorCode {
     /*Member*/
     MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "M003-1", "존재 하지 않는 회원입니다."),
     MEMBER_UPDATE_EXCEPTION(HttpStatus.BAD_REQUEST, "M001", "잘못된 회원 수정 입니다."),
+    MEMBER_DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST, "L005", "중복된 이메일 입니다."),
+    MEMBER_DUPLICATE_NICK_NAME(HttpStatus.BAD_REQUEST, "L006", "중복된 닉네임 입니다."),
 
     /*Reservation*/
     RESERVATION_NOT_FOUND(HttpStatus.BAD_REQUEST,"R001","존재하지 않는 예약입니다."),
