@@ -10,6 +10,7 @@ import roomit.main.domain.reservation.entity.Reservation;
 import roomit.main.domain.workplace.entity.Workplace;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "review")
@@ -61,5 +62,9 @@ public class Review {
     }
     public void setReservation(Reservation reservation) {
         this.reservation = reservation;
+    }
+
+    public boolean checkMyReservation(Reservation reservation , Long memberId) {
+       return !Objects.equals(reservation.getMemberId().getMemberId(), memberId);
     }
 }
