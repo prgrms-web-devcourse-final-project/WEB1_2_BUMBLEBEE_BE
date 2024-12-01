@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import roomit.main.domain.member.dto.request.MemberUpdateRequest;
 import roomit.main.domain.member.entity.value.MemberEmail;
 import roomit.main.domain.member.entity.value.MemberNickname;
 import roomit.main.domain.member.entity.value.MemberPassword;
@@ -91,22 +92,15 @@ public class Member {
         return this.memberPwd.getValue();
     }
 
-    public void changeEmail(String newEmail) {
-        this.memberEmail = new MemberEmail(newEmail);
+    public void updateMember(final MemberUpdateRequest memberUpdateRequest){
+        this.memberNickname = new MemberNickname(memberUpdateRequest.nickName());
+        this.memberPhonenumber = new MemberPhoneNumber(memberUpdateRequest.phoneNumber());
+        this.memberEmail = new MemberEmail(memberUpdateRequest.email());
+        this.memberSex = memberUpdateRequest.sex();
+        this.birthDay = memberUpdateRequest.birthDay();
     }
-    public void changePhoneNumber(String newPhoneNumber) {
-        this.memberPhonenumber = new MemberPhoneNumber(newPhoneNumber);
-    }
-    public void changeNickName(String newNickName) {
-        this.memberNickname = new MemberNickname(newNickName);
-    }
-    public void changePwd(String newPwd) {
-        this.memberPwd = new MemberPassword(newPwd, new BCryptPasswordEncoder());
-    }
-    public void changeSex(Sex newSex) {
-        this.memberSex = newSex;
-    }
-    public void changeBirthDay(LocalDate newBirthDay){
-        this.birthDay = newBirthDay;
+
+    public void changeEmail(String email){
+        this.memberEmail =  new MemberEmail(email);
     }
 }
