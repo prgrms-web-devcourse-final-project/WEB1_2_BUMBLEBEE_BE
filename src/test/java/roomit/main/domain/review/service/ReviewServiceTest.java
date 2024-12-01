@@ -74,6 +74,8 @@ class ReviewServiceTest {
     private Workplace workplace;
 
     private StudyRoom studyRoom;
+
+    private CustomMemberDetails customMemberDetails;
     @BeforeAll
     void setUp() {
 
@@ -128,12 +130,18 @@ class ReviewServiceTest {
                 .reservationPrice(1000)
                 .build();
 
+         customMemberDetails = new CustomMemberDetails(member);
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(customMemberDetails, null, customMemberDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
     }
     @Test
     @DisplayName("리뷰 등록하기")
     @Transactional
     void test1() {
+
+
 
         reservationRepository.save(reservation);
 
@@ -146,7 +154,7 @@ class ReviewServiceTest {
 
 
 
-        reviewService.register(request);
+        reviewService.register(request, customMemberDetails.getId());
         Workplace workplace1 = workplaceRepository.findByWorkplaceName(workplace.getWorkplaceName()).get();
 
         assertEquals(3, workplace1.getStarSum());
@@ -185,8 +193,8 @@ class ReviewServiceTest {
                 .reviewRating(4)
                 .build();
 
-        reviewService.update(review.getReviewId(), reviewUpdateRequest, workplace.getWorkplaceName().getValue());
-        reviewService.update(review1.getReviewId(), reviewUpdateRequest, workplace.getWorkplaceName().getValue());
+        reviewService.update(review.getReviewId(), reviewUpdateRequest, workplace.getWorkplaceName().getValue(), customMemberDetails.getId());
+        reviewService.update(review1.getReviewId(), reviewUpdateRequest, workplace.getWorkplaceName().getValue(), customMemberDetails.getId());
 
         List<Review> all = reviewRepository.findAll();
         assertEquals("치킨이 보이네요??", all.get(0).getReviewContent());
@@ -261,7 +269,7 @@ class ReviewServiceTest {
 
         reviewRepository.save(review);
 
-        reviewService.remove(review.getReviewId(), workplace.getWorkplaceName().getValue());
+        reviewService.remove(review.getReviewId(), workplace.getWorkplaceName().getValue(), customMemberDetails.getId());
         assertEquals(0, reviewRepository.findAll().size());
 
     }
