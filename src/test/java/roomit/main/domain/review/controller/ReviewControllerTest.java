@@ -238,6 +238,7 @@ class ReviewControllerTest {
                     .reservation(reservation1)
                     .workplaceName(workplace.getWorkplaceName().getValue())
                     .build();
+
             reviewRepository.save(review1);
 
             reservation1.addReview(review1);
