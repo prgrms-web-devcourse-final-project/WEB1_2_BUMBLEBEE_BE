@@ -1,9 +1,6 @@
 package roomit.main.domain.oauth2.service;
 
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -11,7 +8,6 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import roomit.main.domain.member.dto.CustomMemberDetails;
-import roomit.main.domain.member.entity.Age;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.member.entity.Role;
 import roomit.main.domain.member.entity.Sex;
@@ -19,8 +15,6 @@ import roomit.main.domain.member.repository.MemberRepository;
 import roomit.main.domain.oauth2.dto.KakaoResponse;
 import roomit.main.domain.oauth2.dto.NaverResponse;
 import roomit.main.domain.oauth2.dto.OAuth2Response;
-
-import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor

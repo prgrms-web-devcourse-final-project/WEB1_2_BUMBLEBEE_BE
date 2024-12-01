@@ -14,6 +14,7 @@ import roomit.main.domain.review.dto.response.ReviewResponse;
 import roomit.main.domain.review.entity.Review;
 import roomit.main.domain.review.repository.ReviewRepository;
 import roomit.main.domain.workplace.entity.Workplace;
+import roomit.main.domain.workplace.entity.value.WorkplaceName;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
 
@@ -30,27 +31,36 @@ public class ReviewService {
     private final MemberRepository memberRepository;
     private final WorkplaceRepository workplaceRepository;
     private final ReservationRepository reservationRepository;
+
+    @Transactional
     public void register(ReviewRegisterRequest request) {
 
 
         Reservation reservation = reservationRepository.findById(request.reservatinId())
                 .orElseThrow(ErrorCode.RESERVATIN_NOT_FOUND::commonException);
 
-        Review review = Review.builder()
-                .reviewContent(request.reviewContent())
-                .reviewRating(request.reviewRating())
-                .workplaceName(request.workPlaceName())
-                .reservation(reservation)
-                .build();
+        Workplace workPlace = workplaceRepository.findByWorkplaceName(new WorkplaceName(request.workPlaceName()))
+                    .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
 
-        reviewRepository.save(review);
+            // 별점 총합 및 리뷰 개수 업데이트
+        workPlace.changeStarSum(workPlace.getStarSum() + request.reviewRating());
+        workPlace.changeReviewCount(workPlace.getReviewCount() + 1);
+
+        reviewRepository.save(request.toEntity(reservation));
     }
 
     @Transactional
-    public ReviewResponse update(Long reviewId, ReviewUpdateRequest request) {
+    public ReviewResponse update(Long reviewId, ReviewUpdateRequest request, String workPlaceName) {
 
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(ErrorCode.REVIEW_NOT_FOUND::commonException);
+
+        Workplace workPlace = workplaceRepository.findByWorkplaceName(new WorkplaceName(workPlaceName))
+                .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
+
+        // 기존 별점 제거 후 새로운 별점 추가
+        workPlace.changeStarSum(workPlace.getStarSum() - review.getReviewRating()
+                + request.reviewRating());
 
         try {
             review.changeReviewContent(request.reviewContent());
@@ -78,10 +88,17 @@ public class ReviewService {
         return responses;
     }
 
-    public void remove(Long reviewId) {
+    public void remove(Long reviewId, String workPlaceName) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(ErrorCode.REVIEW_NOT_FOUND::commonException);
+        Workplace workPlace = workplaceRepository.findByWorkplaceName(new WorkplaceName(workPlaceName))
+                .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
 
+        // 별점 총합 감소 및 리뷰 개수 감소
+        workPlace.changeStarSum(workPlace.getStarSum() - review.getReviewRating());
+        workPlace.changeReviewCount(workPlace.getReviewCount() - 1);
+
+        workplaceRepository.save(workPlace);
         reviewRepository.delete(review);
     }
 
@@ -89,6 +106,7 @@ public class ReviewService {
 
         Workplace workplace = workplaceRepository.findById(workId)
                 .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
+
         return reviewRepository.getList(reviewSearch, workplace.getWorkplaceId())
                 .stream()
                 .map(ReviewResponse::new)

@@ -21,26 +21,28 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/api/v1/review")
 public class ReviewController {
     private final ReviewService reviewService;
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/api/v1/review/register")
+    @PostMapping("/register")
     public void register(@RequestBody @Valid ReviewRegisterRequest request) {
         reviewService.register(request);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PutMapping("/api/v1/review/update/{reviewId}")
+    @PutMapping("/update/{reviewId}")
     public ReviewResponse update(
             @RequestBody @Valid ReviewUpdateRequest request
-    ,@PathVariable Long reviewId) {
-         return reviewService.update(reviewId, request);
+            ,@PathVariable Long reviewId
+    ,@RequestParam String workplaceName) {
+         return reviewService.update(reviewId, request, workplaceName);
     }
 
     // 단건 리뷰 조회
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/api/v1/review/me")
+    @GetMapping("/me")
     public List<ReviewResponse> read(
             @AuthenticationPrincipal CustomMemberDetails customMemberDetails) {
 
@@ -48,7 +50,7 @@ public class ReviewController {
     }
 
 
-    @GetMapping("api/v1/review/workplace/{workplaceId}")
+    @GetMapping("/workplace/{workplaceId}")
     public ResponseEntity<CursorResponse> getReviews(
             @RequestParam(required = false) Long lastId,
             @RequestParam(defaultValue = "10") int size,
@@ -73,8 +75,9 @@ public class ReviewController {
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/api/v1/review/{reviewId}")
-    public void remove(@PathVariable Long reviewId) {
-        reviewService.remove(reviewId);
+    @DeleteMapping("/{reviewId}")
+    public void remove(@PathVariable Long reviewId,
+                       @RequestParam String workplaceName) {
+        reviewService.remove(reviewId, workplaceName);
     }
 }
