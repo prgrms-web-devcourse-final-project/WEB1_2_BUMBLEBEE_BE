@@ -41,7 +41,11 @@ public class PaymentsService {
 
         validateReservationForPayment(reservationId,memberId,paymentsRequest); // 검증
 
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
+
         Payments payments = paymentsRequest.toEntity();
+        payments.addReservation(reservation);
         paymentsRepository.save(payments); //서버에 저장 db저장
 
         return PaymentsResponse.builder()
