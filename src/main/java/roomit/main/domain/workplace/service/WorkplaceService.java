@@ -92,13 +92,16 @@ public class WorkplaceService {
             Workplace savedWorkplace = workplaceRepository.save(workplace);
 
             saveStudyrooms(workplaceDto, savedWorkplace);
+        }
+        catch (IllegalArgumentException e) {
+            throw new CommonException(ErrorCode.WORKPLACE_INVALID_REQUEST);
         } catch (InvalidDataAccessApiUsageException e) {
             throw ErrorCode.WORKPLACE_INVALID_REQUEST.commonException();
-        } catch (Exception e) {
-            if(e instanceof CommonException){
+        } catch (CommonException e) {
+            if (e.getErrorCode() == ErrorCode.STYDYROOM_NOT_REGISTERD) {
                 throw e;
             }
-            throw ErrorCode.WORKPLACE_NOT_REGISTERED.commonException();
+            throw e;
         }
 
     }
