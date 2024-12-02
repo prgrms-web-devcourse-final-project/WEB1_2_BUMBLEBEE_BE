@@ -107,7 +107,6 @@ public class Reservation extends BaseEntity{
         this.reservationPhoneNumber = new ReservationNum(updateReservationRequest.reservationPhoneNumber());
         this.startTime = updateReservationRequest.startTime();
         this.endTime = updateReservationRequest.endTime();
-
     }
 
     public void addReview(Review review) {

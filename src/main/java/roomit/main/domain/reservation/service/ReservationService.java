@@ -66,8 +66,11 @@ public class ReservationService {
     public void updateReservation(Long reservationId, UpdateReservationRequest request) {
         Reservation existingReservation = reservationRepository.findById(reservationId)
                 .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
-
-        existingReservation.updatedReservation(request);
+        try {
+            existingReservation.updatedReservation(request);
+        }catch (Exception e){
+            throw ErrorCode.RESERVATION_NOT_MODIFIED.commonException();
+        }
     }
 
 
