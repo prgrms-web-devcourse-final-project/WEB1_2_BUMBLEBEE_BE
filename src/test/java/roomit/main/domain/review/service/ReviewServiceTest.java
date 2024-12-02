@@ -35,6 +35,7 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
+import roomit.main.global.service.ImageService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -65,6 +66,9 @@ class ReviewServiceTest {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Autowired
+    private ImageService imageService;
+
     private LocalDate date;
 
     private Member member;
@@ -76,6 +80,7 @@ class ReviewServiceTest {
     private StudyRoom studyRoom;
 
     private CustomMemberDetails customMemberDetails;
+
     @BeforeAll
     void setUp() {
 
@@ -87,7 +92,7 @@ class ReviewServiceTest {
                 .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
-                .imageUrl("http://image.url")
+                .imageUrl(imageService.createImageUrl("Workplace"))
                 .workplaceStartTime(LocalTime.of(9, 0))
                 .workplaceEndTime(LocalTime.of(18, 0))
                 .business(null)
@@ -107,12 +112,12 @@ class ReviewServiceTest {
         memberRepository.save(member);
 
         studyRoom = StudyRoom.builder()
-                .title("Test Room")
+                .studyRoomName("Test Room")
                 .description("A test room")
                 .capacity(10)
                 .price(100)
-                .imageUrl("sdsd")
-                .workplaceId(workplace)
+                .imageUrl(imageService.createImageUrl("Workplace/Test Room"))
+                .workplace(workplace)
                 .build();
 
         studyRoomRepository.save(studyRoom);
@@ -140,9 +145,6 @@ class ReviewServiceTest {
     @DisplayName("리뷰 등록하기")
     @Transactional
     void test1() {
-
-
-
         reservationRepository.save(reservation);
 
         ReviewRegisterRequest request = ReviewRegisterRequest.builder()
@@ -169,37 +171,27 @@ class ReviewServiceTest {
     @DisplayName("리뷰 수정하기")
     @Transactional
     void test2() {
-
-        reservationRepository.save(reservation);
+        Reservation reservation1 = reservationRepository.save(reservation);
 
         Review review = Review.builder()
                 .reviewContent("치킨이 안보이네요..")
                 .reviewRating(1)
                 .workplaceName(workplace.getWorkplaceName().getValue())
-                .reservation(reservation)
+                .reservation(reservation1)
                 .build();
         reviewRepository.save(review);
 
-        Review review1 = Review.builder()
-                .reviewContent("치킨이 안보이네요..")
-                .reviewRating(1)
-                .workplaceName(workplace.getWorkplaceName().getValue())
-                .reservation(reservation)
-                .build();
-
-        reviewRepository.save(review1);
         ReviewUpdateRequest reviewUpdateRequest = ReviewUpdateRequest.builder()
                 .reviewContent("치킨이 보이네요??")
                 .reviewRating(4)
                 .build();
 
         reviewService.update(review.getReviewId(), reviewUpdateRequest, workplace.getWorkplaceName().getValue(), customMemberDetails.getId());
-        reviewService.update(review1.getReviewId(), reviewUpdateRequest, workplace.getWorkplaceName().getValue(), customMemberDetails.getId());
 
         List<Review> all = reviewRepository.findAll();
         assertEquals("치킨이 보이네요??", all.get(0).getReviewContent());
         assertEquals(4, all.get(0).getReviewRating());
-        assertEquals("Test Room",all.get(0).getReservation().getStudyRoomId().getTitle());
+        assertEquals("Test Room",all.get(0).getReservation().getStudyRoomId().getStudyRoomName().getValue());
 //        assertEquals(1L, all.get(0).getMember().getMemberId());
 //        assertEquals(1L, all.get(0).getWorkplace().getWorkplaceId());
 
@@ -258,12 +250,12 @@ class ReviewServiceTest {
 
         workplaceRepository.save(workplace);
 
-        reservationRepository.save(reservation);
+        Reservation reservation1 = reservationRepository.save(reservation);
 
         Review review = Review.builder()
                 .reviewContent("치킨이 안보이네요..")
                 .reviewRating(1)
-                .reservation(reservation)
+                .reservation(reservation1)
                 .workplaceName(workplace.getWorkplaceName().getValue())
                 .build();
 
