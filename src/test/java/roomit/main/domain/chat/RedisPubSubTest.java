@@ -1,14 +1,16 @@
 package roomit.main.domain.chat;
 
+import static org.mockito.ArgumentMatchers.any;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import roomit.main.domain.chat.redis.service.RedisPublisher;
 
-import static org.mockito.ArgumentMatchers.any;
-
 @SpringBootTest
+@ActiveProfiles("test")
 class RedisPubSubTest {
 
     @MockBean
