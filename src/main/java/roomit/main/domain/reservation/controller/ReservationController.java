@@ -29,8 +29,6 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/api/v1/reservations/{studyRoomId}")
     public Long createReservation(@AuthenticationPrincipal CustomMemberDetails customMemberDetails, @PathVariable @Positive Long studyRoomId, @RequestBody @Valid CreateReservationRequest request) {
-        log.info("Received reservation request:{}",request);
-
         return reservationService.createReservation(customMemberDetails.getId(),studyRoomId,request);
     }
 
