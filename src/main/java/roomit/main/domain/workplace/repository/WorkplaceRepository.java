@@ -39,7 +39,8 @@ public interface WorkplaceRepository extends JpaRepository<Workplace, Long> {
             @Param("right") double right);
 
     // Business ID로 Workplace 목록 조회
-    List<Workplace> findByBusiness_BusinessId(Long businessId);
+    @Query("SELECT w FROM Workplace w WHERE w.business.businessId = :businessId")
+    List<Workplace> findByBusinessId(Long businessId);
 
     @Modifying
     @Query("UPDATE Workplace w SET w.starSum = w.starSum + :rating, w.reviewCount = w.reviewCount + 1 WHERE w.workplaceId = :workplaceId")

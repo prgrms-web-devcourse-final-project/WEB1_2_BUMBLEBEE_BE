@@ -162,13 +162,53 @@ class WorkplaceServiceTest {
             workplaceService.createWorkplace(workplace, savedBusiness.getBusinessId());
         });
 
-        assertEquals("사업장 등록에 실패하였습니다.", exception.getMessage());
+        assertEquals("잘못된 입력입니다.", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("사업장 등록 - 스터디룸 등록 실패")
+    @Order(4)
+    void createWorkplaceStudyRoomFailed() {
+        // Given
+        WorkplaceRequest workplace = WorkplaceRequest.builder()
+                .workplaceName("사업장12") // '@' 특수문자는 허용되지 않음
+                .workplacePhoneNumber("0507-1234-5678")
+                .workplaceDescription("사업장 설명")
+                .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
+                .imageUrl("http://image.url")
+                .workplaceStartTime(LocalTime.of(9, 0))
+                .workplaceEndTime(LocalTime.of(18, 0))
+                .studyRoomList(Arrays.asList(
+                        new CreateStudyRoomRequest(
+                                "Room A",
+                                "작은 룸",
+                                null,
+                                7000,
+                                4
+                        ),
+                        new CreateStudyRoomRequest(
+                                "Room B",
+                                "큰 룸",
+                                null,
+                                8000,
+                                6
+                        )
+                ))
+                .build();
+
+
+        // When & Then
+        CommonException exception = assertThrows(CommonException.class, () -> {
+            workplaceService.createWorkplace(workplace, savedBusiness.getBusinessId());
+        });
+
+        assertEquals("스터디룸 등록에 실패하였습니다.", exception.getMessage());
     }
 
 
     @Test
     @DisplayName("사업장 조회 실패")
-    @Order(3)
+    @Order(5)
     void readWorkplaceFailed() {
 
         // When & Then
@@ -181,7 +221,7 @@ class WorkplaceServiceTest {
 
     @Test
     @DisplayName("사업장 수정")
-    @Order(4)
+    @Order(6)
     void updateWorkplace() {
         // Given
         Workplace workplace = Workplace.builder()
@@ -221,7 +261,7 @@ class WorkplaceServiceTest {
 
     @Test
     @DisplayName("사업장 수정 - 필수 필드 누락 실패")
-    @Order(5)
+    @Order(7)
     void updateWorkplaceFailed() {
         // Given
         Workplace workplace = Workplace.builder()
@@ -256,7 +296,7 @@ class WorkplaceServiceTest {
 
     @Test
     @DisplayName("사업장 삭제")
-    @Order(6)
+    @Order(8)
     void deleteWorkplace() {
         // Given
         Workplace workplace = Workplace.builder()
@@ -283,7 +323,7 @@ class WorkplaceServiceTest {
 
     @Test
     @DisplayName("사업장 목록 조회")
-    @Order(7)
+    @Order(9)
     void readAllWorkplaces() {
         // Given
         workplaceRepository.deleteAll();
@@ -301,7 +341,7 @@ class WorkplaceServiceTest {
                 "서울 중구 장충단로 247 굿모닝시티 8층"
         );
 
-        int cnt=0;
+        int cnt = 0;
 
         for (int i = 1; i <= 11; i++) {
             WorkplaceRequest workplace = WorkplaceRequest.builder()
@@ -349,9 +389,12 @@ class WorkplaceServiceTest {
                         .longitude(BigDecimal.valueOf(127.97)).build())
                 .bottomLeft(Coordinate.builder()
                         .latitude(BigDecimal.valueOf(36.56))
-                        .longitude(BigDecimal.valueOf(126.97)).build()).build();
+                        .longitude(BigDecimal.valueOf(126.97)).build())
+                .latitude(37.56)
+                .longitude(127.00)
+                .build();
 
-        List<WorkplaceAllResponse> workplaces = workplaceService.readAllWorkplaces(request, 37.56,127.00 );
+        List<WorkplaceAllResponse> workplaces = workplaceService.readAllWorkplaces(request);
 
         // Then
         assertThat(workplaces).isNotNull();
@@ -365,7 +408,7 @@ class WorkplaceServiceTest {
     }
 
     @Test
-    @Order(8)
+    @Order(10)
     @DisplayName("사업자 ID로 사업장 조회")
     void testFindWorkplacesByBusinessId() {
         // Given
@@ -394,7 +437,7 @@ class WorkplaceServiceTest {
 
     @Test
     @DisplayName("유효하지 않은 주소로 좌표 변환 실패")
-    @Order(9)
+    @Order(11)
     void testGeoCordingFailed() {
         // Given: 유효하지 않은 주소 입력
         WorkplaceRequest workplaceRequest = WorkplaceRequest.builder()
@@ -413,7 +456,7 @@ class WorkplaceServiceTest {
 
     @Test
     @DisplayName("유효한 주소로 좌표 변환 성공")
-    @Order(10)
+    @Order(12)
     void testGeoCordingSuccess() {
         // Given: 유효한 주소 입력
         WorkplaceRequest workplaceRequest = WorkplaceRequest.builder()

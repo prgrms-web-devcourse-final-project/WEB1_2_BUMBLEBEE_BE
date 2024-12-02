@@ -1,4 +1,4 @@
-package roomit.main.domain.chat.service;
+package roomit.main.domain.chat.redis.service;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
