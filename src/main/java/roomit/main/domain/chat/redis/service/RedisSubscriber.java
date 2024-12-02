@@ -1,4 +1,4 @@
-package roomit.main.domain.chat.service;
+package roomit.main.domain.chat.redis.service;
 
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;

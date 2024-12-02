@@ -21,35 +21,39 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/api/v1/review")
 public class ReviewController {
     private final ReviewService reviewService;
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/api/v1/review/register")
-    public void register(@RequestBody @Valid ReviewRegisterRequest request) {
-        reviewService.register(request);
+    @PostMapping("/register")
+    public void register(@RequestBody @Valid ReviewRegisterRequest request, @AuthenticationPrincipal CustomMemberDetails memberDetails) {
+        reviewService.register(request, memberDetails.getId());
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PutMapping("/api/v1/review/update/{reviewId}")
+    @PutMapping("/update/{reviewId}")
     public ReviewResponse update(
             @RequestBody @Valid ReviewUpdateRequest request
-    ,@PathVariable Long reviewId) {
-         return reviewService.update(reviewId, request);
+            , @PathVariable Long reviewId
+            , @RequestParam String workplaceName
+            , @AuthenticationPrincipal CustomMemberDetails memberDetails) {
+        return reviewService.update(reviewId, request, workplaceName, memberDetails.getId());
     }
 
     // 단건 리뷰 조회
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/api/v1/review/me")
+    @GetMapping("/me")
     public List<ReviewResponse> read(
             @AuthenticationPrincipal CustomMemberDetails customMemberDetails) {
 
-       return reviewService.read(customMemberDetails.getId());
+        return reviewService.read(customMemberDetails.getId());
     }
 
 
-    @GetMapping("api/v1/review/workplace/{workplaceId}")
-    public ResponseEntity<CursorResponse> getReviews(
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/workplace/{workplaceId}")
+    public CursorResponse getReviews(
             @RequestParam(required = false) Long lastId,
             @RequestParam(defaultValue = "10") int size,
             @PathVariable Long workplaceId) {
@@ -65,16 +69,18 @@ public class ReviewController {
                 ? null
                 : reviews.get(reviews.size() - 1).reviewId();
 
-        return ResponseEntity.ok(CursorResponse
+        return CursorResponse
                 .builder()
                 .data(reviews)
                 .nextCursor(nextCursor)
-                .build());
+                .build();
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/api/v1/review/{reviewId}")
-    public void remove(@PathVariable Long reviewId) {
-        reviewService.remove(reviewId);
+    @DeleteMapping("/{reviewId}")
+    public void remove(@PathVariable Long reviewId,
+                       @RequestParam String workplaceName,
+                       @AuthenticationPrincipal CustomMemberDetails memberDetails) {
+        reviewService.remove(reviewId, workplaceName, memberDetails.getId());
     }
 }

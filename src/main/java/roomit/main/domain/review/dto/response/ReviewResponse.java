@@ -2,12 +2,11 @@ package roomit.main.domain.review.dto.response;
 
 import lombok.Builder;
 import roomit.main.domain.review.entity.Review;
-import roomit.main.domain.workplace.entity.Workplace;
 
 import java.time.LocalDateTime;
 
-
-public record ReviewResponse( String studyRoomName, Double reviewRating, String reviewContent, LocalDateTime reviewDate,
+@Builder
+public record ReviewResponse( String studyRoomName, int reviewRating, String reviewContent, LocalDateTime reviewDate,
                              Long reviewId) {
 
 
@@ -20,14 +19,4 @@ public record ReviewResponse( String studyRoomName, Double reviewRating, String 
                 review.getReviewId()
         );
     }
-
-    @Builder
-    public ReviewResponse(String studyRoomName, Double reviewRating, String reviewContent, LocalDateTime reviewDate, Long reviewId) {
-        this.studyRoomName = studyRoomName;
-        this.reviewRating = reviewRating;
-        this.reviewContent = reviewContent;
-        this.reviewDate = reviewDate;
-        this.reviewId = reviewId;
-    }
-
 }

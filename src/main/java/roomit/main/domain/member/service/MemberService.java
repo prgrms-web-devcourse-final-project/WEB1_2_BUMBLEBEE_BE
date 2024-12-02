@@ -1,5 +1,6 @@
 package roomit.main.domain.member.service;
 
+import ch.qos.logback.core.spi.ErrorCodes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -7,9 +8,11 @@ import roomit.main.domain.member.dto.request.MemberRegisterRequest;
 import roomit.main.domain.member.dto.request.MemberUpdateRequest;
 import roomit.main.domain.member.dto.response.MemberResponse;
 import roomit.main.domain.member.entity.Member;
+import roomit.main.domain.member.exception.MemberNotFound;
 import roomit.main.domain.member.repository.MemberRepository;
-import roomit.main.global.oauth2.dto.PROVIDER;
 import roomit.main.global.error.ErrorCode;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,18 +22,15 @@ public class MemberService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public void signupMember(MemberRegisterRequest memberRequest) {
-        Member member = Member.builder()
-                .birthDay(memberRequest.birthDay())
-                .memberSex(memberRequest.sex())
-                .memberPwd(memberRequest.pwd()) //암호화
-                .memberEmail(memberRequest.email())
-                .memberPhoneNumber(memberRequest.phoneNumber())
-                .memberNickName(memberRequest.nickName())
-                .provider(PROVIDER.BASIC)
-                .passwordEncoder(bCryptPasswordEncoder)
-                .build();
+        Optional<Member> byMemberEmail =
+                memberRepository.findByMemberEmail(memberRequest.email());
+        boolean present = byMemberEmail.isPresent();
 
-        memberRepository.save(member);
+        if (present) {
+            throw ErrorCode.MEMBER_DUPLICATE_EMAIL.commonException();
+        }
+
+        memberRepository.save(memberRequest.toEntity(bCryptPasswordEncoder));
     }
 
     public MemberResponse read(Long memberId) {
@@ -45,17 +45,11 @@ public class MemberService {
                 .orElseThrow(ErrorCode.MEMBER_NOT_FOUND::commonException);
 
         try {
-            member.changeEmail(request.email());
-            member.changeNickName(request.nickName());
-            member.changePhoneNumber(request.phoneNumber());
-            member.changeSex(request.sex());
-            member.changeBirthDay(request.birthDay());
+            member.updateMember(request);
             memberRepository.save(member);
-
-        }catch (Exception e){
+        } catch (Exception e) {
             throw ErrorCode.MEMBER_UPDATE_EXCEPTION.commonException();
         }
-
         return new MemberResponse(member);
     }
 

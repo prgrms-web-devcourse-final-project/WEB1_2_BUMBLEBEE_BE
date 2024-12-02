@@ -129,6 +129,8 @@ class ReviewControllerTest {
                 .startTime(LocalDateTime.now())
                 .endTime(LocalDateTime.now())
                 .studyRoomId(studyRoom)
+                .reservationCapacity(10)
+                .reservationPrice(1000)
                 .memberId(member)
                 .build();
 
@@ -160,7 +162,7 @@ class ReviewControllerTest {
       
         ReviewRegisterRequest request = ReviewRegisterRequest.builder()
                 .reviewContent("좋은 장소네요")
-                .reviewRating(3.4)
+                .reviewRating(3)
                 .reservatinId(reservation.getId())
                 .workPlaceName(workplace.getWorkplaceName().getValue())
                 .build();
@@ -181,7 +183,7 @@ class ReviewControllerTest {
 
         Review review = Review.builder()
                 .reviewContent("치킨이 안보이네요..")
-                .reviewRating(1.3)
+                .reviewRating(1)
                 .reservation(reservation)
                 .workplaceName(workplace.getWorkplaceName().getValue())
                 .build();
@@ -190,10 +192,10 @@ class ReviewControllerTest {
 
         ReviewUpdateRequest request = ReviewUpdateRequest.builder()
                 .reviewContent("좋은 장소네요")
-                .reviewRating(2.4)
+                .reviewRating(2)
                 .build();
 
-        mockMvc.perform(put("/api/v1/review/update/{reviewId}",review.getReviewId())
+        mockMvc.perform(put("/api/v1/review/update/{reviewId}?workplaceName=사업장 넘버원",review.getReviewId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", "Bearer " + token))
@@ -216,6 +218,8 @@ class ReviewControllerTest {
                     .reservationState(ReservationState.RESERVABLE)
                     .startTime(LocalDateTime.now())
                     .endTime(LocalDateTime.now())
+                    .reservationPrice(1000)
+                    .reservationCapacity(10)
                     .studyRoomId(studyRoom)
                     .memberId(member)
                     .build();
@@ -224,10 +228,11 @@ class ReviewControllerTest {
 
             Review review1 = Review.builder()
                     .reviewContent("치킨이 안보이네요.." + i)
-                    .reviewRating(3.1 + i)
+                    .reviewRating(3 + i)
                     .reservation(reservation1)
                     .workplaceName(workplace.getWorkplaceName().getValue())
                     .build();
+
             reviewRepository.save(review1);
 
             reservation1.addReview(review1);
@@ -250,13 +255,13 @@ class ReviewControllerTest {
 
         Review review = Review.builder()
                 .reviewContent("치킨이 안보이네요..")
-                .reviewRating(1.3)
+                .reviewRating(1)
                 .reservation(reservation)
                 .workplaceName(workplace.getWorkplaceName().getValue())
                 .build();
         reviewRepository.save(review);
 
-        mockMvc.perform(delete("/api/v1/review/{reviewId}",review.getReviewId())
+        mockMvc.perform(delete("/api/v1/review/{reviewId}?workplaceName=사업장 넘버원",review.getReviewId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token)
                 )
@@ -277,6 +282,8 @@ class ReviewControllerTest {
                     .reservationState(ReservationState.RESERVABLE)
                     .startTime(LocalDateTime.now())
                     .endTime(LocalDateTime.now())
+                    .reservationCapacity(10)
+                    .reservationPrice(1000)
                     .studyRoomId(studyRoom)
                     .memberId(member)
                     .build();
@@ -285,7 +292,7 @@ class ReviewControllerTest {
 
             Review review1 = Review.builder()
                     .reviewContent("치킨이 안보이네요.." + i)
-                    .reviewRating(3.1 + i)
+                    .reviewRating(3 + i)
                     .reservation(reservation1)
                     .workplaceName(workplace.getWorkplaceName().getValue())
                     .build();
@@ -319,6 +326,8 @@ class ReviewControllerTest {
                     .startTime(LocalDateTime.now())
                     .endTime(LocalDateTime.now())
                     .studyRoomId(studyRoom)
+                    .reservationCapacity(10)
+                    .reservationPrice(1000)
                     .memberId(member)
                     .build();
 
@@ -326,7 +335,7 @@ class ReviewControllerTest {
 
             Review review1 = Review.builder()
                     .reviewContent("치킨이 안보이네요.." + i)
-                    .reviewRating(3.1 + i)
+                    .reviewRating(3 + i)
                     .reservation(reservation1)
                     .workplaceName(workplace.getWorkplaceName().getValue())
                     .build();
@@ -370,6 +379,8 @@ class ReviewControllerTest {
                     .startTime(LocalDateTime.now())
                     .endTime(LocalDateTime.now())
                     .studyRoomId(studyRoom)
+                    .reservationCapacity(10)
+                    .reservationPrice(1000)
                     .memberId(member)
                     .build();
 
@@ -377,7 +388,7 @@ class ReviewControllerTest {
 
             Review review1 = Review.builder()
                     .reviewContent("치킨이 안보이네요.." + i)
-                    .reviewRating(3.1 + i)
+                    .reviewRating(3 + i)
                     .reservation(reservation1)
                     .workplaceName(workplace.getWorkplaceName().getValue())
                     .build();

@@ -60,6 +60,7 @@ dependencies {
 
     // Spring Data Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 }
 
 def jacocoDir = layout.buildDirectory.dir("reports/")

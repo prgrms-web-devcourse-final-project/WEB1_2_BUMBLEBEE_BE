@@ -10,6 +10,7 @@ import roomit.main.domain.reservation.entity.Reservation;
 import roomit.main.domain.workplace.entity.Workplace;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "review")
@@ -27,7 +28,7 @@ public class Review {
     private String reviewContent;
 
     @Column(name = "review_rating", nullable = false)
-    private Double reviewRating;
+    private Integer reviewRating;
 
     @Column(name = "workplace_name", nullable = false)
     private String workplaceName;
@@ -37,14 +38,15 @@ public class Review {
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(name = "update_at", nullable = false)
+    @Column(name = "update_at")
     private LocalDateTime updatedAt;
 
-    @OneToOne(mappedBy = "review") // Reservation에서 매핑 관리
+    @OneToOne
+    @JoinColumn(name = "reservation_id", nullable = true) // 리뷰는 없어도 됨
     private Reservation reservation;
 
     @Builder
-    public Review(String reviewContent, Double reviewRating, String workplaceName, Reservation reservation) {
+    public Review(String reviewContent, Integer reviewRating, String workplaceName, Reservation reservation) {
         this.reviewContent = reviewContent;
         this.reviewRating = reviewRating;
         this.workplaceName = workplaceName;
@@ -52,7 +54,7 @@ public class Review {
         this.reservation = reservation;
     }
 
-    public void changeReviewRating(Double reviewRating) {
+    public void changeReviewRating(Integer reviewRating) {
         this.reviewRating = reviewRating;
     }
     public void changeReviewContent(String reviewContent) {
@@ -60,5 +62,9 @@ public class Review {
     }
     public void setReservation(Reservation reservation) {
         this.reservation = reservation;
+    }
+
+    public boolean checkMyReservation(Reservation reservation , Long memberId) {
+       return !Objects.equals(reservation.getMemberId().getMemberId(), memberId);
     }
 }

@@ -133,7 +133,7 @@ class MemberControllerTest {
 
 
 
-        mockMvc.perform(get("/api/v1/member/")
+        mockMvc.perform(get("/api/v1/member")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token)
 
@@ -186,7 +186,7 @@ class MemberControllerTest {
 
         String json = objectMapper.writeValueAsString(memberRequest);
 
-        mockMvc.perform(put("/api/v1/member/")
+        mockMvc.perform(put("/api/v1/member")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token)
@@ -225,7 +225,7 @@ class MemberControllerTest {
         String token = tokenResponse.token();
 
 
-        mockMvc.perform(delete("/api/v1/member/")
+        mockMvc.perform(delete("/api/v1/member")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token)
                 )

@@ -10,7 +10,7 @@ import roomit.main.domain.workplace.entity.value.WorkplaceName;
 public record FindPossibleStudyRoomResponse(
     WorkplaceName workplaceName,
     String studyRoomTitle,
-    Double reviewScore,
+    int reviewScore,
     WorkplaceAddress workplaceAddress,
     Integer studyRoomCapacity,
     Integer studyRoomPrice,
