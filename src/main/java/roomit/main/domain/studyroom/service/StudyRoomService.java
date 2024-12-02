@@ -1,25 +1,19 @@
 package roomit.main.domain.studyroom.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
-import roomit.main.domain.member.repository.MemberRepository;
-import roomit.main.domain.reservation.entity.Reservation;
-import roomit.main.domain.reservation.repository.ReservationRepository;
+import org.springframework.transaction.annotation.Transactional;
 import roomit.main.domain.studyroom.dto.request.CreateStudyRoomRequest;
 import roomit.main.domain.studyroom.dto.request.FindAvailableStudyRoomRequest;
 import roomit.main.domain.studyroom.dto.request.UpdateStudyRoomRequest;
 import roomit.main.domain.studyroom.dto.response.FindPossibleStudyRoomResponse;
-import roomit.main.domain.studyroom.dto.response.RecentStudyRoomResponse;
 import roomit.main.domain.studyroom.dto.response.StudyRoomResponse;
 import roomit.main.domain.studyroom.entity.StudyRoom;
 import roomit.main.domain.studyroom.repository.StudyRoomRepository;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
-
-import java.util.List;
-import java.util.Optional;
 import roomit.main.global.service.ImageService;
 
 @Service
