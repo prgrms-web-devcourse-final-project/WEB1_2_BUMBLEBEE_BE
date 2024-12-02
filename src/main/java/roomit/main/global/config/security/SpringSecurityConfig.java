@@ -4,6 +4,7 @@ package roomit.main.global.config.security;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -11,7 +12,6 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -24,13 +24,13 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import roomit.main.domain.business.service.CustomBusinessDetailsService;
 import roomit.main.domain.member.service.CustomMemberDetailsService;
-import roomit.main.domain.oauth2.config.CustomSuccessHandler;
-import roomit.main.domain.oauth2.service.CustomOAuth2UserService;
-import roomit.main.domain.token.config.JWTFilter;
-import roomit.main.domain.token.config.JWTUtil;
-import roomit.main.domain.token.config.LoginFilter;
-import roomit.main.domain.token.config.LogoutFilter;
-import roomit.main.domain.token.repository.RefreshRepository;
+import roomit.main.global.oauth2.config.CustomSuccessHandler;
+import roomit.main.global.oauth2.service.CustomOAuth2UserService;
+import roomit.main.global.token.config.JWTFilter;
+import roomit.main.global.token.config.JWTUtil;
+import roomit.main.global.token.config.LoginFilter;
+import roomit.main.global.token.config.LogoutFilter;
+import roomit.main.global.token.repository.RefreshRepository;
 
 
 import java.util.Arrays;
@@ -41,6 +41,9 @@ import java.util.Collections;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SpringSecurityConfig {
+
+    @Value("${cors.url}")
+    private String corsUrl;
 
     private final JWTUtil jwtUtil;
     private final CustomMemberDetailsService memberDetailsService;
@@ -90,7 +93,7 @@ public class SpringSecurityConfig {
                         CorsConfiguration configuration = new CorsConfiguration();
 
                         configuration.setAllowedOrigins(
-                            List.of("https://your-frontend-domain.com","http://localhost:3000"));
+                            List.of("https://your-frontend-domain.com",corsUrl));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));

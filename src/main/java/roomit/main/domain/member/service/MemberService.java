@@ -8,6 +8,7 @@ import roomit.main.domain.member.dto.request.MemberUpdateRequest;
 import roomit.main.domain.member.dto.response.MemberResponse;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.member.repository.MemberRepository;
+import roomit.main.global.oauth2.dto.PROVIDER;
 import roomit.main.global.error.ErrorCode;
 
 @Service
@@ -25,6 +26,7 @@ public class MemberService {
                 .memberEmail(memberRequest.email())
                 .memberPhoneNumber(memberRequest.phoneNumber())
                 .memberNickName(memberRequest.nickName())
+                .provider(PROVIDER.BASIC)
                 .passwordEncoder(bCryptPasswordEncoder)
                 .build();
 

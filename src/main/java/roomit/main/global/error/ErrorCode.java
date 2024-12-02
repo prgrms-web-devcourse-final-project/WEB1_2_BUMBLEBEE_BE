@@ -48,8 +48,24 @@ public enum ErrorCode {
     PAYMENTS_AMOUNT_EXP(HttpStatus.BAD_REQUEST,"P004","결제 금액이 일치하지 않습니다"),
 
     /*Reservation*/
-    RESERVATIN_NOT_FOUND(HttpStatus.BAD_REQUEST, "R001", "존재 하지 않는 예약입니다.");
-  
+    RESERVATIN_NOT_FOUND(HttpStatus.BAD_REQUEST, "R001", "존재 하지 않는 예약입니다."),
+
+    /*OAuth*/
+    OAUTH_LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "O001", "OAuth 로그인에 실패했습니다."),
+
+    /*Login*/
+    LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "L001", "로그인에 실패했습니다."),
+
+    /*Token*/
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "T001", "유효하지 않은 토큰입니다."),
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "T002", "토큰이 만료되었습니다."),
+    MALFORMED_TOKEN(HttpStatus.UNAUTHORIZED, "T003", "잘못된 형식의 토큰입니다."),
+    MISSING_TOKEN(HttpStatus.UNAUTHORIZED, "T004", "토큰이 누락되었습니다."),
+    TOKEN_VERIFICATION_FAILED(HttpStatus.UNAUTHORIZED, "T005", "토큰 검증에 실패했습니다."),
+    INSUFFICIENT_ROLE(HttpStatus.FORBIDDEN, "T006", "권한이 부족합니다.");
+
+
+
     private final String code;
     private final String message;
     private final HttpStatus status;

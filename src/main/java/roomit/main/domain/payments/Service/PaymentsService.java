@@ -80,16 +80,17 @@ public class PaymentsService {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = getHeaders();
         JSONObject params = new JSONObject();
+        params.put("paymentKey", paymentKey);
         params.put("orderId", orderId);
         params.put("amount", amount);
 
         PaymentsSuccessResponse result = null;
         try {
-            result = restTemplate.postForObject(PaymentsConfig.URL + paymentKey,
+            result = restTemplate.postForObject(PaymentsConfig.URL,
                     new HttpEntity<>(params, headers),
                     PaymentsSuccessResponse.class);
         } catch (Exception e) {
-            throw ErrorCode.PAYMENTS_ALREADY_APPROVED.commonException();
+            throw e;
         }
 
         return result;
