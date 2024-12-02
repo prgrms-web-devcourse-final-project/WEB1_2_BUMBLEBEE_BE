@@ -1,8 +1,27 @@
 package roomit.main.domain.workplace.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.math.BigDecimal;
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.NoSuchElementException;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,24 +33,13 @@ import roomit.main.domain.business.dto.request.BusinessRegisterRequest;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.business.repository.BusinessRepository;
 import roomit.main.domain.studyroom.dto.request.CreateStudyRoomRequest;
-import roomit.main.global.token.dto.request.LoginRequest;
-import roomit.main.global.token.dto.response.TokenResponse;
 import roomit.main.domain.workplace.dto.request.WorkplaceGetRequest;
 import roomit.main.domain.workplace.dto.request.WorkplaceRequest;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.entity.value.Coordinate;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
-
-import java.math.BigDecimal;
-import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import roomit.main.global.service.ImageService;
+import roomit.main.global.token.dto.request.LoginRequest;
 
 
 @SpringBootTest
@@ -52,6 +60,9 @@ public class WorkplaceControllerTest {
 
     @Autowired
     private WorkplaceRepository workplaceRepository;
+
+    @Autowired
+    private ImageService imageService;
 
     private static String token;
 
@@ -94,8 +105,7 @@ public class WorkplaceControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        TokenResponse tokenResponse = objectMapper.readValue(loginResult.getResponse().getContentAsString(), TokenResponse.class);
-        token = tokenResponse.token();
+        token = loginResult.getResponse().getHeader("Authorization");
 
         business = businessRepository.findByBusinessEmail("business1@gmail.com").orElseThrow(NoSuchElementException::new);
 
@@ -118,7 +128,7 @@ public class WorkplaceControllerTest {
                     .workplacePhoneNumber("0507-1234-" + String.format("%04d", i))
                     .workplaceDescription("사업장 설명 " + i)
                     .workplaceAddress(addresses.get(i - 1))
-                    .imageUrl("http://image.url")
+                    .imageUrl(imageService.createImageUrl("사업장 " + i))
                     .workplaceStartTime(LocalTime.of(9, 0))
                     .workplaceEndTime(LocalTime.of(18, 0))
                     .latitude(BigDecimal.valueOf(37.56 + i * 0.01))
@@ -144,21 +154,21 @@ public class WorkplaceControllerTest {
                 .workplacePhoneNumber("0507-1234-5698")
                 .workplaceDescription("사업장 설명1")
                 .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 7층")
-                .imageUrl("http://image.url")
+                .imageUrl("사업장1")
                 .workplaceStartTime(LocalTime.of(9, 0))
                 .workplaceEndTime(LocalTime.of(18, 0))
                 .studyRoomList(Arrays.asList(
                         new CreateStudyRoomRequest(
                                 "Room A",
                                 "작은 룸",
-                                "http://default-image.url",
+                                "사업장1/RoomA",
                                 7000,
                                 4
                         ),
                         new CreateStudyRoomRequest(
                                 "Room B",
                                 "큰 룸",
-                                "http://default-image.url",
+                                "사업장1/RoomB",
                                 8000,
                                 6
                         )
@@ -209,7 +219,7 @@ public class WorkplaceControllerTest {
                 .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
-                .imageUrl("http://image.url")
+                .imageUrl(imageService.createImageUrl("사업장"))
                 .workplaceStartTime(LocalTime.of(9, 0))
                 .workplaceEndTime(LocalTime.of(18, 0))
                 .business(business)
@@ -222,7 +232,7 @@ public class WorkplaceControllerTest {
                 .workplacePhoneNumber("0507-1234-5670")
                 .workplaceDescription("사업장 설명 수정")
                 .workplaceAddress("서울 중구 장충단로13길 20")
-                .imageUrl("http://image.url")
+                .imageUrl("사업장 수정")
                 .workplaceStartTime(LocalTime.of(9, 0))
                 .workplaceEndTime(LocalTime.of(18, 0))
                 .build();
@@ -252,7 +262,7 @@ public class WorkplaceControllerTest {
                 .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
-                .imageUrl("http://image.url")
+                .imageUrl(imageService.createImageUrl("사업장"))
                 .workplaceStartTime(LocalTime.of(9, 0))
                 .workplaceEndTime(LocalTime.of(18, 0))
                 .business(business)

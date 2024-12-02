@@ -1,7 +1,13 @@
 package roomit.main.domain.payments.Service;
 
 import jakarta.transaction.Transactional;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
+import net.minidev.json.JSONObject;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -15,15 +21,7 @@ import roomit.main.domain.payments.repository.PaymentsRepository;
 import roomit.main.domain.reservation.entity.Reservation;
 import roomit.main.domain.reservation.entity.ReservationState;
 import roomit.main.domain.reservation.repository.ReservationRepository;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import net.minidev.json.JSONObject;
 import roomit.main.global.error.ErrorCode;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +46,7 @@ public class PaymentsService {
         payments.addReservation(reservation);
         paymentsRepository.save(payments); //서버에 저장 db저장
 
-        reservation.setReservationState(ReservationState.COMPLETED);
+        reservation.changeReservationState(ReservationState.COMPLETED);
 
         return PaymentsResponse.builder()
                 .orderId(payments.getOrderId())

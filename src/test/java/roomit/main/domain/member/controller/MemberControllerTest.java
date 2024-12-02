@@ -1,7 +1,16 @@
 
 package roomit.main.domain.member.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,16 +28,8 @@ import roomit.main.domain.member.dto.request.MemberUpdateRequest;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.member.entity.Sex;
 import roomit.main.domain.member.repository.MemberRepository;
-import roomit.main.global.token.dto.request.LoginRequest;
-import roomit.main.global.token.dto.response.TokenResponse;
 import roomit.main.global.error.ErrorCode;
-
-import java.time.LocalDate;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import roomit.main.global.token.dto.request.LoginRequest;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -128,8 +129,7 @@ class MemberControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        TokenResponse tokenResponse = objectMapper.readValue(loginResult.getResponse().getContentAsString(), TokenResponse.class);
-        String token = tokenResponse.token();
+        String token = loginResult.getResponse().getHeader("Authorization");
 
 
 
@@ -172,8 +172,7 @@ class MemberControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        TokenResponse tokenResponse = objectMapper.readValue(loginResult.getResponse().getContentAsString(), TokenResponse.class);
-        String token = tokenResponse.token();
+        String token = loginResult.getResponse().getHeader("Authorization");
 
 
         MemberUpdateRequest memberRequest = MemberUpdateRequest.builder()
@@ -221,8 +220,7 @@ class MemberControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        TokenResponse tokenResponse = objectMapper.readValue(loginResult.getResponse().getContentAsString(), TokenResponse.class);
-        String token = tokenResponse.token();
+        String token = loginResult.getResponse().getHeader("Authorization");
 
 
         mockMvc.perform(delete("/api/v1/member")

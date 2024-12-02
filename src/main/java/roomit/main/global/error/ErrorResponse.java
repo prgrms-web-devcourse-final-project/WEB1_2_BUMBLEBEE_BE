@@ -6,9 +6,11 @@ import java.util.Map;
 import java.util.Objects;
 
 
-public record ErrorResponse (ErrorCode errorCode,Map<String, String> validation){
+public record ErrorResponse (String code, String message){
     @Builder
-    public ErrorResponse {
+    public ErrorResponse (String code, String message) {
+        this.code = code;
+        this.message = message;
     }
 
         public record ErrorValidation(String code, String message, Map<String, String> validation) {

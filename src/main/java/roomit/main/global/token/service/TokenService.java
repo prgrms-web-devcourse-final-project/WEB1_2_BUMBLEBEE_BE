@@ -4,6 +4,8 @@ import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Collections;
+import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,16 +14,13 @@ import org.springframework.stereotype.Service;
 import roomit.main.domain.business.dto.CustomBusinessDetails;
 import roomit.main.domain.member.dto.CustomMemberDetails;
 import roomit.main.domain.member.entity.Role;
+import roomit.main.global.config.security.util.CookieUtil;
+import roomit.main.global.error.ErrorCode;
 import roomit.main.global.token.config.JWTUtil;
 import roomit.main.global.token.dto.request.LoginRequest;
 import roomit.main.global.token.dto.response.LoginResponse;
 import roomit.main.global.token.entity.RefreshEntity;
 import roomit.main.global.token.repository.RefreshRepository;
-import roomit.main.global.config.security.util.CookieUtil;
-import roomit.main.global.error.ErrorCode;
-
-import java.util.Collections;
-import java.util.Date;
 
 @Service
 @RequiredArgsConstructor

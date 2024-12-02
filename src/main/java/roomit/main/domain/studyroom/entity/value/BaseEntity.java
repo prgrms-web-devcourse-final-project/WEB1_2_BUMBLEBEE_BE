@@ -1,4 +1,4 @@
-package roomit.main.domain.studyroom.entity;
+package roomit.main.domain.studyroom.entity.value;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

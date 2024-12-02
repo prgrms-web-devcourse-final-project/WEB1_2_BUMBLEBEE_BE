@@ -20,7 +20,7 @@ public record RecentStudyRoomResponse(
                 workplace.getWorkplaceName(),
                 reservation.getCreatedAt(),
                 reservation.getStartTime(),
-                studyRoom.getTitle(),
+                studyRoom.getStudyRoomName().getValue(),
                 studyRoom.getCapacity(),
                 studyRoom.getPrice()
         );

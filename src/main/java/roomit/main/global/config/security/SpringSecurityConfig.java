@@ -2,6 +2,8 @@ package roomit.main.global.config.security;
 
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,10 +33,6 @@ import roomit.main.global.token.config.JWTUtil;
 import roomit.main.global.token.config.LoginFilter;
 import roomit.main.global.token.config.LogoutFilter;
 import roomit.main.global.token.repository.RefreshRepository;
-
-
-import java.util.Arrays;
-import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity

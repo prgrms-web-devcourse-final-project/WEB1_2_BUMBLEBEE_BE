@@ -8,11 +8,10 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.filter.GenericFilterBean;
 import roomit.main.global.token.repository.RefreshRepository;
-
-import java.io.IOException;
 
 @RequiredArgsConstructor
 public class LogoutFilter extends GenericFilterBean {

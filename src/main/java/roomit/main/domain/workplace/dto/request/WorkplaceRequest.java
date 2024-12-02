@@ -7,7 +7,7 @@ import lombok.Builder;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.studyroom.dto.request.CreateStudyRoomRequest;
 import roomit.main.domain.workplace.entity.Workplace;
-import roomit.main.domain.workplace.entity.value.ImageUrl;
+import roomit.main.global.inner.ImageUrl;
 import roomit.main.domain.workplace.entity.value.WorkplaceAddress;
 import roomit.main.domain.workplace.entity.value.WorkplaceName;
 import roomit.main.domain.workplace.entity.value.WorkplacePhoneNumber;
@@ -15,6 +15,7 @@ import roomit.main.domain.workplace.entity.value.WorkplacePhoneNumber;
 import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.List;
+import roomit.main.global.service.ImageService;
 
 @Builder
 public record WorkplaceRequest(
@@ -27,13 +28,16 @@ public record WorkplaceRequest(
         @NotNull(message = "사업장 종료 시간을 입력해주세요.") LocalTime workplaceEndTime,
         List<CreateStudyRoomRequest> studyRoomList
 ) {
-    public Workplace toEntity(BigDecimal latitude, BigDecimal longitude, Business business) {
+    public Workplace toEntity(BigDecimal latitude, BigDecimal longitude, Business business, ImageService imageService) {
+
+        ImageUrl image = imageService.createImageUrl(imageUrl);
+
         return Workplace.builder()
                 .workplaceName(workplaceName)
                 .workplaceDescription(workplaceDescription)
                 .workplacePhoneNumber(workplacePhoneNumber)
                 .workplaceAddress(workplaceAddress)
-                .imageUrl(imageUrl)
+                .imageUrl(image)
                 .workplaceStartTime(workplaceStartTime)
                 .workplaceEndTime(workplaceEndTime)
                 .latitude(latitude)

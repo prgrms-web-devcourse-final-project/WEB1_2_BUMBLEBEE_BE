@@ -10,9 +10,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.format.annotation.DateTimeFormat;
 import roomit.main.domain.business.entity.Business;
-import roomit.main.domain.review.entity.Review;
 import roomit.main.domain.studyroom.entity.StudyRoom;
-import roomit.main.domain.workplace.entity.value.ImageUrl;
+import roomit.main.global.inner.ImageUrl;
 import roomit.main.domain.workplace.entity.value.WorkplaceAddress;
 import roomit.main.domain.workplace.entity.value.WorkplaceName;
 import roomit.main.domain.workplace.entity.value.WorkplacePhoneNumber;
@@ -81,7 +80,7 @@ public class Workplace {
     @JoinColumn(name = "business_id")
     private Business business;
 
-    @OneToMany(mappedBy = "workPlaceId", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "workPlace", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<StudyRoom> studyRoom = new ArrayList<>();
 
 
@@ -91,7 +90,7 @@ public class Workplace {
                      final String workplacePhoneNumber,
                      final String workplaceDescription,
                      final String workplaceAddress,
-                     final String imageUrl,
+                     final ImageUrl imageUrl,
                      final LocalTime workplaceStartTime,
                      final LocalTime workplaceEndTime,
                      final BigDecimal latitude,
@@ -102,7 +101,7 @@ public class Workplace {
         this.workplacePhoneNumber = new WorkplacePhoneNumber(workplacePhoneNumber);
         this.workplaceDescription = workplaceDescription;
         this.workplaceAddress = new WorkplaceAddress(workplaceAddress);
-        this.imageUrl = new ImageUrl(imageUrl);
+        this.imageUrl = imageUrl;
         this.workplaceStartTime = workplaceStartTime;
         this.workplaceEndTime = workplaceEndTime;
         this.latitude = latitude;
