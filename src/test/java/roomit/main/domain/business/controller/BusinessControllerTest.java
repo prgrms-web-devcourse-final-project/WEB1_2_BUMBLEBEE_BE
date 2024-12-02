@@ -11,8 +11,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import roomit.main.domain.business.dto.request.BusinessRegisterRequest;
 import roomit.main.domain.business.dto.request.BusinessUpdateRequest;
-import roomit.main.domain.token.dto.LoginRequest;
-import roomit.main.domain.token.dto.LoginResponse;
+import roomit.main.global.token.dto.request.LoginRequest;
+import roomit.main.global.token.dto.response.TokenResponse;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -71,8 +71,8 @@ public class BusinessControllerTest {
           .andExpect(status().isOk())
           .andReturn();
 
-      LoginResponse loginResponse = objectMapper.readValue(loginResult.getResponse().getContentAsString(), LoginResponse.class);
-      token = loginResponse.getToken();
+      TokenResponse tokenResponse = objectMapper.readValue(loginResult.getResponse().getContentAsString(), TokenResponse.class);
+      token = tokenResponse.token();
     }
 
     @Test
@@ -319,8 +319,8 @@ public class BusinessControllerTest {
         .andExpect(status().isOk())
         .andReturn();
 
-    LoginResponse loginResponse = objectMapper.readValue(loginResult.getResponse().getContentAsString(), LoginResponse.class);
-    token = loginResponse.getToken();
+    TokenResponse tokenResponse = objectMapper.readValue(loginResult.getResponse().getContentAsString(), TokenResponse.class);
+    token = tokenResponse.token();
 
     MvcResult businessRemoveResult = mockMvc.perform(delete("/api/v1/business")
             .contentType(MediaType.APPLICATION_JSON)

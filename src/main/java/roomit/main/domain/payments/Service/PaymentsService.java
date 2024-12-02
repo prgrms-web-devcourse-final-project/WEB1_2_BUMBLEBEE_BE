@@ -41,8 +41,14 @@ public class PaymentsService {
 
         validateReservationForPayment(reservationId,memberId,paymentsRequest); // 검증
 
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
+
         Payments payments = paymentsRequest.toEntity();
+        payments.addReservation(reservation);
         paymentsRepository.save(payments); //서버에 저장 db저장
+
+        reservation.setReservationState(ReservationState.COMPLETED);
 
         return PaymentsResponse.builder()
                 .orderId(payments.getOrderId())
@@ -76,16 +82,17 @@ public class PaymentsService {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = getHeaders();
         JSONObject params = new JSONObject();
+        params.put("paymentKey", paymentKey);
         params.put("orderId", orderId);
         params.put("amount", amount);
 
         PaymentsSuccessResponse result = null;
         try {
-            result = restTemplate.postForObject(PaymentsConfig.URL + paymentKey,
+            result = restTemplate.postForObject(PaymentsConfig.URL,
                     new HttpEntity<>(params, headers),
                     PaymentsSuccessResponse.class);
         } catch (Exception e) {
-            throw ErrorCode.PAYMENTS_ALREADY_APPROVED.commonException();
+            throw e;
         }
 
         return result;
@@ -128,11 +135,11 @@ public class PaymentsService {
 
         // 예약 조회 및 소유권 검증
         Reservation reservation = reservationRepository.findFirstByIdAndMemberId(reservationId, memberId)
-                .orElseThrow(() -> null); // 예외 추가해야함
+                .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException); // 예외 추가해야함
 
         // 예약 상태 검증
         if(reservation.getReservationState().equals(ReservationState.COMPLETED)){
-            throw null; //예외 추가해야함
+            throw ErrorCode.RESERVATION_ALREADY_COMPLETED.commonException();
         }
 
         // 결제 금액 검증

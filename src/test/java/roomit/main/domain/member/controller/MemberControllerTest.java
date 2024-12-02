@@ -19,12 +19,11 @@ import roomit.main.domain.member.dto.request.MemberUpdateRequest;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.member.entity.Sex;
 import roomit.main.domain.member.repository.MemberRepository;
-import roomit.main.domain.token.dto.LoginRequest;
-import roomit.main.domain.token.dto.LoginResponse;
+import roomit.main.global.token.dto.request.LoginRequest;
+import roomit.main.global.token.dto.response.TokenResponse;
 import roomit.main.global.error.ErrorCode;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -129,8 +128,8 @@ class MemberControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        LoginResponse loginResponse = objectMapper.readValue(loginResult.getResponse().getContentAsString(), LoginResponse.class);
-        String token = loginResponse.getToken();
+        TokenResponse tokenResponse = objectMapper.readValue(loginResult.getResponse().getContentAsString(), TokenResponse.class);
+        String token = tokenResponse.token();
 
 
 
@@ -173,8 +172,8 @@ class MemberControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        LoginResponse loginResponse = objectMapper.readValue(loginResult.getResponse().getContentAsString(), LoginResponse.class);
-        String token = loginResponse.getToken();
+        TokenResponse tokenResponse = objectMapper.readValue(loginResult.getResponse().getContentAsString(), TokenResponse.class);
+        String token = tokenResponse.token();
 
 
         MemberUpdateRequest memberRequest = MemberUpdateRequest.builder()
@@ -222,8 +221,8 @@ class MemberControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        LoginResponse loginResponse = objectMapper.readValue(loginResult.getResponse().getContentAsString(), LoginResponse.class);
-        String token = loginResponse.getToken();
+        TokenResponse tokenResponse = objectMapper.readValue(loginResult.getResponse().getContentAsString(), TokenResponse.class);
+        String token = tokenResponse.token();
 
 
         mockMvc.perform(delete("/api/v1/member")

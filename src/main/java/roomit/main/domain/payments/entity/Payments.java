@@ -9,6 +9,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import roomit.main.domain.payments.dto.response.PaymentsResponse;
 import roomit.main.domain.reservation.entity.Reservation;
+import roomit.main.domain.review.entity.Review;
 
 import java.time.LocalDateTime;
 
@@ -31,7 +32,7 @@ public class Payments {
     @Column(name = "order_name", nullable = false)
     private String orderName; //주문 상품 이름
 
-    @Column(name = "toss_payments_key", nullable = false)
+    @Column(name = "toss_payments_key")
     private String tossPaymentsKey; //페이먼트키
 
     @Column(name = "total_amount", nullable = false)
@@ -105,5 +106,9 @@ public class Payments {
 
     public void changeFailReason(String failReason) {
         this.failReason = failReason;
+    }
+
+    public void addReservation(Reservation reservation) {
+        this.reservation = reservation;
     }
 }

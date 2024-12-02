@@ -13,6 +13,7 @@ import roomit.main.domain.member.entity.value.MemberEmail;
 import roomit.main.domain.member.entity.value.MemberNickname;
 import roomit.main.domain.member.entity.value.MemberPassword;
 import roomit.main.domain.member.entity.value.MemberPhoneNumber;
+import roomit.main.global.oauth2.dto.PROVIDER;
 import roomit.main.domain.reservation.entity.Reservation;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -56,6 +57,10 @@ public class Member {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDay;
 
+    @Column(name = "provider")
+    @Enumerated(value = EnumType.STRING)
+    private PROVIDER provider;
+
     @CreatedDate
     private LocalDateTime createdAt;
 
@@ -65,7 +70,7 @@ public class Member {
     private List<Reservation> reservations = new ArrayList();
 
     @Builder
-    public Member(String memberNickName, String memberPhoneNumber, LocalDate birthDay, Sex memberSex, String memberEmail, String memberPwd, Role memberRole , PasswordEncoder passwordEncoder /*Reservation reservation*/) {
+    public Member(String memberNickName, String memberPhoneNumber, LocalDate birthDay, Sex memberSex, String memberEmail, String memberPwd, Role memberRole , PasswordEncoder passwordEncoder, PROVIDER provider /*Reservation reservation*/) {
         this.memberNickname = new MemberNickname(memberNickName);
         this.memberPhonenumber = new MemberPhoneNumber(memberPhoneNumber);
         this.memberEmail = new MemberEmail(memberEmail);
@@ -73,6 +78,7 @@ public class Member {
         this.birthDay = birthDay;
         this.memberSex = memberSex;
         this.memberRole = Role.ROLE_USER;
+        this.provider = provider;
 //        this.reservation = reservation;
     }
 

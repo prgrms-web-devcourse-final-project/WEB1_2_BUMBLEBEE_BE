@@ -14,8 +14,8 @@ import roomit.main.domain.business.dto.request.BusinessRegisterRequest;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.business.repository.BusinessRepository;
 import roomit.main.domain.studyroom.dto.request.CreateStudyRoomRequest;
-import roomit.main.domain.token.dto.LoginRequest;
-import roomit.main.domain.token.dto.LoginResponse;
+import roomit.main.global.token.dto.request.LoginRequest;
+import roomit.main.global.token.dto.response.TokenResponse;
 import roomit.main.domain.workplace.dto.request.WorkplaceGetRequest;
 import roomit.main.domain.workplace.dto.request.WorkplaceRequest;
 import roomit.main.domain.workplace.entity.Workplace;
@@ -94,8 +94,8 @@ public class WorkplaceControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        LoginResponse loginResponse = objectMapper.readValue(loginResult.getResponse().getContentAsString(), LoginResponse.class);
-        token = loginResponse.getToken();
+        TokenResponse tokenResponse = objectMapper.readValue(loginResult.getResponse().getContentAsString(), TokenResponse.class);
+        token = tokenResponse.token();
 
         business = businessRepository.findByBusinessEmail("business1@gmail.com").orElseThrow(NoSuchElementException::new);
 
