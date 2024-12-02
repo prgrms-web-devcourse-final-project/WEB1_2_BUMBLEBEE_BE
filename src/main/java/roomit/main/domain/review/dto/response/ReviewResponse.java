@@ -13,7 +13,7 @@ public record ReviewResponse( String studyRoomName, int reviewRating, String rev
 
     public ReviewResponse(Review review) {
         this(
-                review.getReservation().getStudyRoomId().getTitle(),
+                review.getReservation().getStudyRoom().getTitle(),
                 review.getReviewRating(),
                 review.getReviewContent(),
                 LocalDateTime.now(),

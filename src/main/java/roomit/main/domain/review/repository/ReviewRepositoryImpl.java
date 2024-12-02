@@ -58,7 +58,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom{
         // 리뷰를 조회하는 쿼리
         return jpaQueryFactory.selectFrom(review)
                 .join(review.reservation, reservation) // 예약 정보와 조인
-                .join(reservation.studyRoomId, studyRoom) // 학습룸 정보와 조인
+                .join(reservation.studyRoom, studyRoom) // 학습룸 정보와 조인
                 .join(studyRoom.workPlaceId, workplace) // 직장 정보와 조인
                 .where(finalCondition) // 조건 적용
                 .limit(reviewSearch.getSize()) // 페이지 크기 설정
