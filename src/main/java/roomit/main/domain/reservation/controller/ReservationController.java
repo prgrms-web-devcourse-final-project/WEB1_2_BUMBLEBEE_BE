@@ -3,7 +3,6 @@ package roomit.main.domain.reservation.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -15,15 +14,13 @@ import roomit.main.domain.reservation.dto.response.ReservationResponse;
 import roomit.main.domain.reservation.service.ReservationService;
 
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 @RestController
 @RequiredArgsConstructor
 public class ReservationController {
 
     private final ReservationService reservationService;
-    private static final Logger log = LoggerFactory.getLogger(ReservationController.class);
 
     // 예약 만들기
     @ResponseStatus(HttpStatus.CREATED)
