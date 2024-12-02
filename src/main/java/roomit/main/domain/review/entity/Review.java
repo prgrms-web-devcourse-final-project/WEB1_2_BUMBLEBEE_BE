@@ -5,9 +5,12 @@ import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.reservation.entity.Reservation;
+import roomit.main.domain.workplace.entity.Workplace;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "review")
@@ -15,6 +18,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 public class Review {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_id", nullable = false)
@@ -58,5 +62,9 @@ public class Review {
     }
     public void setReservation(Reservation reservation) {
         this.reservation = reservation;
+    }
+
+    public boolean checkMyReservation(Reservation reservation , Long memberId) {
+       return !Objects.equals(reservation.getMemberId().getMemberId(), memberId);
     }
 }
