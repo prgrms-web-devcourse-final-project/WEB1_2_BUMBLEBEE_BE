@@ -6,16 +6,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import roomit.main.domain.business.dto.CustomBusinessDetails;
 import roomit.main.domain.member.dto.CustomMemberDetails;
 import roomit.main.domain.reservation.dto.request.CreateReservationRequest;
 import roomit.main.domain.reservation.dto.request.UpdateReservationRequest;
 import roomit.main.domain.reservation.dto.response.MyWorkPlaceReservationResponse;
 import roomit.main.domain.reservation.dto.response.ReservationResponse;
-import roomit.main.domain.reservation.entity.Reservation;
 import roomit.main.domain.reservation.service.ReservationService;
 
 import java.util.List;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -46,14 +45,14 @@ public class ReservationController {
 
     // 특정 멤버의 예약 찾기
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/api/v1/reservations/member/{memberId}")
+    @GetMapping("/api/v1/reservations/member")
     public ReservationResponse findRecentReservationByMemberId(@AuthenticationPrincipal CustomMemberDetails customMemberDetails) {
         return reservationService.findByMemberId(customMemberDetails.getId());
     }
 
     // 특정 멤버의 예약 찾기
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/api/v1/all/reservations/member/{memberId}")
+    @GetMapping("/api/v1/all/reservations/member")
     public List<ReservationResponse> findReservationsByMemberId(@AuthenticationPrincipal CustomMemberDetails customMemberDetails) {
         return reservationService.findReservationsByMemberId(customMemberDetails.getId());
     }

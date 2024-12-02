@@ -153,7 +153,7 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/workplace/**").hasRole("BUSINESS") //사업장 삭제
 
                         //예약 권한 설정
-                        .requestMatchers(HttpMethod.POST,"/api/v1/reservations").hasAnyRole("USER") //예약 등록
+                        .requestMatchers(HttpMethod.POST,"/api/v1/reservations/**").hasAnyRole("USER") //예약 등록
                         .requestMatchers(HttpMethod.PUT,"/api/v1/reservations/**").hasAnyRole("BUSINESS") //예약 수정
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/reservations/**").hasAnyRole("BUSINESS","USER") //예약 삭제
                         .requestMatchers(HttpMethod.GET,"/api/v1/all/reservations/member/**").hasAnyRole("USER") //특정 멤버의 최근 예약 단건 조회
