@@ -34,7 +34,7 @@ public class ReservationService {
     @Transactional
     public Long createReservation(Long memberId,Long studyRoomId,CreateReservationRequest request) {
         if(!validateReservation(request.startTime(),request.endTime())){
-            throw new IllegalArgumentException("종료 시간이 시작 시간보다 빠를순 없습니다.");
+            throw ErrorCode.START_TIME_NOT_AFTER_END_TIME.commonException();
         }
 
         Member member = memberRepository.findById(memberId)

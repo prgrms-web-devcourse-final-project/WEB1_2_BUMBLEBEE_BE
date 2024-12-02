@@ -17,6 +17,7 @@ public enum ErrorCode {
 
     /*Reservation*/
     RESERVATION_NOT_FOUND(HttpStatus.BAD_REQUEST,"R001","존재하지 않는 예약입니다."),
+    START_TIME_NOT_AFTER_END_TIME(HttpStatus.BAD_REQUEST,"R002","종료시간이 시작시간보다 빠릅니다."),
 
     /*StudyRoom*/
     STUDYROOM_NOT_FOUND(HttpStatus.BAD_REQUEST,"S001","존재하지 않는 스터디룸입니다."),

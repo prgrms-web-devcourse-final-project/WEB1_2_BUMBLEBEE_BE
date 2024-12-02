@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface ReservationRepository extends JpaRepository<Reservation,Long> {
 
     // 내 최근 예약 하나 가져오기
-    @Query("SELECT r FROM Reservation r WHERE r.member =: memberId ORDER BY  r.createdAt DESC")
+    @Query("SELECT r FROM Reservation r WHERE r.member =: memberId ORDER BY  r.createdAt DESC LIMIT 1")
     List<Reservation> findRecentReservationByMemberId(@Param("memberId") Long memberId);
 
     // 내 최근순으로 예약 리스트 출력
