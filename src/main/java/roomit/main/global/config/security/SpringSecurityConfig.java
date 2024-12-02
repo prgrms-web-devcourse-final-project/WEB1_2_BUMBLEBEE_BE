@@ -2,8 +2,11 @@ package roomit.main.global.config.security;
 
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -11,7 +14,6 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -24,23 +26,22 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import roomit.main.domain.business.service.CustomBusinessDetailsService;
 import roomit.main.domain.member.service.CustomMemberDetailsService;
-import roomit.main.domain.oauth2.config.CustomSuccessHandler;
-import roomit.main.domain.oauth2.service.CustomOAuth2UserService;
-import roomit.main.domain.token.config.JWTFilter;
-import roomit.main.domain.token.config.JWTUtil;
-import roomit.main.domain.token.config.LoginFilter;
-import roomit.main.domain.token.config.LogoutFilter;
-import roomit.main.domain.token.repository.RefreshRepository;
-
-
-import java.util.Arrays;
-import java.util.Collections;
+import roomit.main.global.oauth2.config.CustomSuccessHandler;
+import roomit.main.global.oauth2.service.CustomOAuth2UserService;
+import roomit.main.global.token.config.JWTFilter;
+import roomit.main.global.token.config.JWTUtil;
+import roomit.main.global.token.config.LoginFilter;
+import roomit.main.global.token.config.LogoutFilter;
+import roomit.main.global.token.repository.RefreshRepository;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SpringSecurityConfig {
+
+    @Value("${cors.url}")
+    private String corsUrl;
 
     private final JWTUtil jwtUtil;
     private final CustomMemberDetailsService memberDetailsService;
@@ -90,7 +91,7 @@ public class SpringSecurityConfig {
                         CorsConfiguration configuration = new CorsConfiguration();
 
                         configuration.setAllowedOrigins(
-                            List.of("https://your-frontend-domain.com","http://localhost:3000"));
+                            List.of("https://your-frontend-domain.com",corsUrl));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -153,7 +154,7 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/workplace/**").hasRole("BUSINESS") //사업장 삭제
 
                         //예약 권한 설정
-                        .requestMatchers(HttpMethod.POST,"/api/v1/reservations").hasAnyRole("USER") //예약 등록
+                        .requestMatchers(HttpMethod.POST,"/api/v1/reservations/**").hasAnyRole("USER") //예약 등록
                         .requestMatchers(HttpMethod.PUT,"/api/v1/reservations/**").hasAnyRole("BUSINESS") //예약 수정
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/reservations/**").hasAnyRole("BUSINESS","USER") //예약 삭제
                         .requestMatchers(HttpMethod.GET,"/api/v1/all/reservations/member/**").hasAnyRole("USER") //특정 멤버의 최근 예약 단건 조회
@@ -161,9 +162,7 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/v1/reservations/workplace/**").hasAnyRole("BUSINESS","USER") //특정 사업장의 예약 찾기
 
                         //결제 권한 설정
-                        .requestMatchers(HttpMethod.POST,"/api/v1/payments/toss").hasRole("USER") //결제 검증 및 서버 저장
-                        .requestMatchers(HttpMethod.GET,"/api/v1/payments/toss/success").permitAll() //결제 성공
-                        .requestMatchers(HttpMethod.GET,"/api/v1/payments/toss/fail").permitAll() //결제 실패
+                        .requestMatchers(HttpMethod.POST,"/api/v1/payments/toss/**").hasRole("USER") //결제 검증 및 서버 저장
 
                         //알림 권한 설정
                         .requestMatchers(HttpMethod.GET,"/api/v1/notification/member").hasRole("USER") //회원 알림 내역 조회

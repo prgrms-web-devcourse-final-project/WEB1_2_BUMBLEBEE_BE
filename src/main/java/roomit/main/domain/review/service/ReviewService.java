@@ -1,5 +1,8 @@
 package roomit.main.domain.review.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,12 +21,6 @@ import roomit.main.domain.workplace.entity.value.WorkplaceName;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
-import static roomit.main.domain.member.entity.QMember.member;
-
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
@@ -37,10 +34,10 @@ public class ReviewService {
     public void register(ReviewRegisterRequest request, Long memberId) {
 
         Reservation reservation = reservationRepository.findById(request.reservatinId())
-                .orElseThrow(ErrorCode.RESERVATIN_NOT_FOUND::commonException);
+                .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
         // 본인이 예약한거지 확인하는거
 
-        if (!Objects.equals(reservation.getMemberId().getMemberId(), memberId)){
+        if (!Objects.equals(reservation.getMember().getMemberId(), memberId)){
             throw ErrorCode.REVIEW_UPDATE_FAIL.commonException();
         }
 

@@ -1,7 +1,21 @@
 package roomit.main.domain.business.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,15 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import roomit.main.domain.business.dto.request.BusinessRegisterRequest;
 import roomit.main.domain.business.dto.request.BusinessUpdateRequest;
-import roomit.main.domain.token.dto.LoginRequest;
-import roomit.main.domain.token.dto.LoginResponse;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import roomit.main.global.token.dto.request.LoginRequest;
 
 
 @AutoConfigureMockMvc
@@ -35,9 +41,7 @@ public class BusinessControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-
     private static String token;
-
 
     @BeforeAll
     void setUp() throws Exception {
@@ -57,7 +61,7 @@ public class BusinessControllerTest {
           )
           .andExpect(status().isCreated());
 
-      //로그인
+      /// 로그인
       LoginRequest loginRequest = LoginRequest.builder()
           .email("business1@gmail.com")
           .password("Business1!")
@@ -65,14 +69,19 @@ public class BusinessControllerTest {
 
       String loginJson = objectMapper.writeValueAsString(loginRequest);
 
+      // 로그인 요청을 보내고 응답 받기
       MvcResult loginResult = mockMvc.perform(post("/login/business")
               .contentType(MediaType.APPLICATION_JSON)
               .content(loginJson))
           .andExpect(status().isOk())
           .andReturn();
 
-      LoginResponse loginResponse = objectMapper.readValue(loginResult.getResponse().getContentAsString(), LoginResponse.class);
-      token = loginResponse.getToken();
+      // 응답 헤더에서 Authorization 토큰을 추출
+      token = loginResult.getResponse().getHeader("Authorization");
+
+      if (token == null) {
+        System.out.println("Authorization header is missing or incorrect.");
+      }
     }
 
     @Test
@@ -271,14 +280,15 @@ public class BusinessControllerTest {
     @Order(3)
     @DisplayName("사업자 정보 조회")
     void test3() throws Exception {
-    MvcResult businessModifyResult = mockMvc.perform(get("/api/v1/business")
+      System.out.println(token);
+    mockMvc.perform(get("/api/v1/business")
             .contentType(MediaType.APPLICATION_JSON)
             .header("Authorization", "Bearer " + token))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.businessName").value("테스트사업자")) // businessName 값 검증
         .andExpect(jsonPath("$.businessNum").value("123-12-12347")) // businessNum 값 검증
-        .andExpect(jsonPath("$.businessEmail").value("business1@gmail.com")) // businessEmail 값 검증
-        .andReturn();
+        .andExpect(jsonPath("$.businessEmail").value("business1@gmail.com")); // businessEmail 값 검증
+
   }
 
     @Test
@@ -319,8 +329,7 @@ public class BusinessControllerTest {
         .andExpect(status().isOk())
         .andReturn();
 
-    LoginResponse loginResponse = objectMapper.readValue(loginResult.getResponse().getContentAsString(), LoginResponse.class);
-    token = loginResponse.getToken();
+      token = loginResult.getResponse().getHeader("Authorization");
 
     MvcResult businessRemoveResult = mockMvc.perform(delete("/api/v1/business")
             .contentType(MediaType.APPLICATION_JSON)

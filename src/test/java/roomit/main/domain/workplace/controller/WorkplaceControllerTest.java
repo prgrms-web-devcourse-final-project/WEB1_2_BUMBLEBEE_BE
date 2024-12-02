@@ -1,8 +1,27 @@
 package roomit.main.domain.workplace.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.math.BigDecimal;
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.NoSuchElementException;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,25 +33,13 @@ import roomit.main.domain.business.dto.request.BusinessRegisterRequest;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.business.repository.BusinessRepository;
 import roomit.main.domain.studyroom.dto.request.CreateStudyRoomRequest;
-import roomit.main.domain.token.dto.LoginRequest;
-import roomit.main.domain.token.dto.LoginResponse;
 import roomit.main.domain.workplace.dto.request.WorkplaceGetRequest;
 import roomit.main.domain.workplace.dto.request.WorkplaceRequest;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.entity.value.Coordinate;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
-
-import java.math.BigDecimal;
-import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
 import roomit.main.global.service.ImageService;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import roomit.main.global.token.dto.request.LoginRequest;
 
 
 @SpringBootTest
@@ -98,8 +105,7 @@ public class WorkplaceControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        LoginResponse loginResponse = objectMapper.readValue(loginResult.getResponse().getContentAsString(), LoginResponse.class);
-        token = loginResponse.getToken();
+        token = loginResult.getResponse().getHeader("Authorization");
 
         business = businessRepository.findByBusinessEmail("business1@gmail.com").orElseThrow(NoSuchElementException::new);
 

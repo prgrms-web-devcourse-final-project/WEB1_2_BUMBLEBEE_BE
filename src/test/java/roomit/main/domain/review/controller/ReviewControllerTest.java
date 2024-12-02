@@ -1,21 +1,30 @@
 package roomit.main.domain.review.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
-import org.junit.jupiter.api.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.stream.IntStream;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
-import roomit.main.domain.member.dto.CustomMemberDetails;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.member.entity.Sex;
 import roomit.main.domain.member.repository.MemberRepository;
@@ -23,28 +32,14 @@ import roomit.main.domain.reservation.entity.Reservation;
 import roomit.main.domain.reservation.entity.ReservationState;
 import roomit.main.domain.reservation.repository.ReservationRepository;
 import roomit.main.domain.review.dto.request.ReviewRegisterRequest;
-import roomit.main.domain.review.dto.request.ReviewUpdateRequest;
 import roomit.main.domain.review.entity.Review;
 import roomit.main.domain.review.repository.ReviewRepository;
 import roomit.main.domain.studyroom.entity.StudyRoom;
 import roomit.main.domain.studyroom.repository.StudyRoomRepository;
-import roomit.main.domain.token.dto.LoginRequest;
-import roomit.main.domain.token.dto.LoginResponse;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
-
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.stream.IntStream;
 import roomit.main.global.service.ImageService;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import roomit.main.global.token.dto.request.LoginRequest;
 @AutoConfigureMockMvc
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -135,13 +130,13 @@ class ReviewControllerTest {
         reservation = Reservation.builder()
                 .reservationName("이시현")
                 .reservationPhoneNumber("010-2314-2512")
-                .reservationState(ReservationState.RESERVABLE)
+                .reservationState(ReservationState.COMPLETED)
                 .startTime(LocalDateTime.now())
                 .endTime(LocalDateTime.now())
-                .studyRoomId(studyRoom)
+                .studyRoom(studyRoom)
                 .reservationCapacity(10)
                 .reservationPrice(1000)
-                .memberId(member)
+                .member(member)
                 .build();
 
 
@@ -158,8 +153,7 @@ class ReviewControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        LoginResponse loginResponse = objectMapper.readValue(loginResult.getResponse().getContentAsString(), LoginResponse.class);
-        token = loginResponse.getToken();
+        token = loginResult.getResponse().getHeader("Authorization");
 
     }
 
@@ -173,7 +167,7 @@ class ReviewControllerTest {
         ReviewRegisterRequest request = ReviewRegisterRequest.builder()
                 .reviewContent("좋은 장소네요")
                 .reviewRating(3)
-                .reservatinId(reservation.getId())
+                .reservatinId(reservation.getReservationId())
                 .workPlaceName(workplace.getWorkplaceName().getValue())
                 .build();
 
@@ -225,13 +219,13 @@ class ReviewControllerTest {
             Reservation reservation = Reservation.builder()
                     .reservationName("이시현")
                     .reservationPhoneNumber("010-2314-2512")
-                    .reservationState(ReservationState.RESERVABLE)
+                    .reservationState(ReservationState.COMPLETED)
                     .startTime(LocalDateTime.now())
                     .endTime(LocalDateTime.now())
                     .reservationPrice(1000)
                     .reservationCapacity(10)
-                    .studyRoomId(studyRoom)
-                    .memberId(member)
+                    .studyRoom(studyRoom)
+                    .member(member)
                     .build();
 
             Reservation reservation1 = reservationRepository.save(reservation);
@@ -289,13 +283,13 @@ class ReviewControllerTest {
             Reservation reservation = Reservation.builder()
                     .reservationName("이시현")
                     .reservationPhoneNumber("010-2314-2512")
-                    .reservationState(ReservationState.RESERVABLE)
+                    .reservationState(ReservationState.COMPLETED)
                     .startTime(LocalDateTime.now())
                     .endTime(LocalDateTime.now())
                     .reservationCapacity(10)
                     .reservationPrice(1000)
-                    .studyRoomId(studyRoom)
-                    .memberId(member)
+                    .studyRoom(studyRoom)
+                    .member(member)
                     .build();
 
             Reservation reservation1 = reservationRepository.save(reservation);
@@ -332,13 +326,13 @@ class ReviewControllerTest {
             Reservation reservation = Reservation.builder()
                     .reservationName("이시현")
                     .reservationPhoneNumber("010-2314-2512")
-                    .reservationState(ReservationState.RESERVABLE)
+                    .reservationState(ReservationState.COMPLETED)
                     .startTime(LocalDateTime.now())
                     .endTime(LocalDateTime.now())
-                    .studyRoomId(studyRoom)
+                    .studyRoom(studyRoom)
                     .reservationCapacity(10)
                     .reservationPrice(1000)
-                    .memberId(member)
+                    .member(member)
                     .build();
 
             Reservation reservation1 = reservationRepository.save(reservation);
@@ -385,13 +379,13 @@ class ReviewControllerTest {
             Reservation reservation = Reservation.builder()
                     .reservationName("이시현")
                     .reservationPhoneNumber("010-2314-2512")
-                    .reservationState(ReservationState.RESERVABLE)
+                    .reservationState(ReservationState.COMPLETED)
                     .startTime(LocalDateTime.now())
                     .endTime(LocalDateTime.now())
-                    .studyRoomId(studyRoom)
+                    .studyRoom(studyRoom)
                     .reservationCapacity(10)
                     .reservationPrice(1000)
-                    .memberId(member)
+                    .member(member)
                     .build();
 
             Reservation reservation1 = reservationRepository.save(reservation);
