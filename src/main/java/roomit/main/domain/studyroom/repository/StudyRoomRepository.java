@@ -12,10 +12,10 @@ import java.util.List;
 
 @Repository
 public interface StudyRoomRepository extends JpaRepository<StudyRoom,Long> {
-    @Query("SELECT sr FROM StudyRoom sr JOIN sr.workPlaceId wp WHERE sr.capacity >= :capacity AND wp.workplaceAddress = :workplaceAddress AND NOT EXISTS (SELECT r FROM Reservation r WHERE r.studyRoomId = sr AND (r.startTime < :endTime AND r.endTime > :startTime))")
+    @Query("SELECT sr FROM StudyRoom sr JOIN sr.workPlace wp WHERE sr.capacity >= :capacity AND wp.workplaceAddress = :workplaceAddress AND NOT EXISTS (SELECT r FROM Reservation r WHERE r.studyRoomId = sr AND (r.startTime < :endTime AND r.endTime > :startTime))")
     List<FindPossibleStudyRoomResponse> findAvailableStudyRooms(@Param("workplaceAddress") String workplaceAddress, @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("capacity") Integer capacity);
 
-    @Query("SELECT sr FROM StudyRoom sr JOIN sr.workPlaceId wp WHERE wp.workplaceId = :workplaceId")
+    @Query("SELECT sr FROM StudyRoom sr JOIN sr.workPlace wp WHERE wp.workplaceId = :workplaceId")
     List<StudyRoomResponse> findStudyRoomsByWorkPlaceId(@Param("workplaceId") Long workplaceId);
 
 }

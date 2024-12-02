@@ -25,7 +25,7 @@ public record ReservationResponse (
                 reservation.getEndTime(),
                 studyRoom.getCapacity(),
                 studyRoom.getPrice(),
-                studyRoom.getImageUrl()
+                studyRoom.getImageUrl().getValue()
                 // payment.getCreatedAt()
         );
     }

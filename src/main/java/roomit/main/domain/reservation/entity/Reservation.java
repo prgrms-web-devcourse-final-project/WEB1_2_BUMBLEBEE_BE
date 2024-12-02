@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.review.entity.Review;
-import roomit.main.domain.studyroom.entity.BaseEntity;
+import roomit.main.domain.studyroom.entity.value.BaseEntity;
 import roomit.main.domain.studyroom.entity.StudyRoom;
 
 import java.time.LocalDateTime;

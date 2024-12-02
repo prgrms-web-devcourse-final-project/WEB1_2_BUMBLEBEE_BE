@@ -13,7 +13,7 @@ public record StudyRoomRequest(
     // toEntity 메서드 추가
     public StudyRoom toEntity() {
         return StudyRoom.builder()
-                .title(title)
+                .studyRoomName(title)
                 .description(description)
                 .capacity(capacity)
                 .price(price)

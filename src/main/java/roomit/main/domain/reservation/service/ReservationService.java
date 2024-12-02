@@ -84,7 +84,7 @@ public class ReservationService {
         }
         Reservation recentReservation =  reservations.get(0);
         StudyRoom studyRoom = recentReservation.getStudyRoomId();
-        Workplace workplace = studyRoom.getWorkPlaceId();
+        Workplace workplace = studyRoom.getWorkPlace();
 
         return ReservationResponse.from(studyRoom,recentReservation,workplace);
     }
@@ -102,7 +102,7 @@ public class ReservationService {
                 .map(reservation -> ReservationResponse.from(
                         reservation.getStudyRoomId(),
                         reservation,
-                        reservation.getStudyRoomId().getWorkPlaceId()
+                        reservation.getStudyRoomId().getWorkPlace()
                 ))
                 .toList();
     }
@@ -118,7 +118,7 @@ public class ReservationService {
                 .map(reservation -> MyWorkPlaceReservationResponse.from(
                         reservation.getStudyRoomId(),
                         reservation,
-                        reservation.getStudyRoomId().getWorkPlaceId()
+                        reservation.getStudyRoomId().getWorkPlace()
                 ))
                 .toList();
     }

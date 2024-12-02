@@ -24,12 +24,12 @@ public record MyWorkPlaceReservationResponse (
                 workplace.getWorkplaceName(),
                 reservation.getReservationName(),
                 reservation.getReservationPhoneNumber(),
-                studyRoom.getTitle(),
+                studyRoom.getStudyRoomName().getValue(),
                 reservation.getCreatedAt(),
                 reservation.getStartTime(),
                 reservation.getEndTime(),
                 studyRoom.getCapacity(),
-                studyRoom.getImageUrl()
+                studyRoom.getImageUrl().getValue()
                 //payment.getCreatedAt()
                 );
     }

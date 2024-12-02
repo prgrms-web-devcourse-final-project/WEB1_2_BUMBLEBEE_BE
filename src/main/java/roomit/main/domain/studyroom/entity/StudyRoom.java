@@ -2,7 +2,10 @@ package roomit.main.domain.studyroom.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import roomit.main.domain.studyroom.entity.value.BaseEntity;
+import roomit.main.domain.studyroom.entity.value.StudyRoomName;
 import roomit.main.domain.workplace.entity.Workplace;
+import roomit.main.global.inner.ImageUrl;
 
 @Entity
 @Table(name = "StudyRoom")
@@ -14,36 +17,36 @@ public class StudyRoom extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "studyroom_id", unique = true, updatable = false, columnDefinition = "BIGINT")
+    @Column(name = "studyroom_id")
     private Long studyRoomId;
 
-    @Column(name = "studyroom_title", nullable = false , columnDefinition = "VARCHAR(255)")
-    private String title;
+    @Embedded
+    private StudyRoomName studyRoomName;
 
-    @Column(name = "studyroom_description", nullable = false ,columnDefinition = "VARCHAR(255)")
+    @Column(name = "studyroom_description", nullable = false)
     private String description;
 
-    @Column(name = "studyroom_capacity", nullable = false, columnDefinition = "INT")
+    @Column(name = "studyroom_capacity", nullable = false)
     private Integer capacity;
 
-    @Column(name = "studyroom_price", nullable = false,columnDefinition = "INT")
+    @Column(name = "studyroom_price", nullable = false)
     private Integer price;
 
-    @Column(name = "studyroom_image_url", nullable = false, columnDefinition = "VARCHAR(255)")
-    private String imageUrl;
+    @Embedded
+    private ImageUrl imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workplace_id", nullable = false)
-    private Workplace workPlaceId;
+    private Workplace workPlace;
 
     @Builder
-    public StudyRoom(String title, String description, Integer capacity, Integer price,String imageUrl,Workplace workplaceId) {
-        this.title = title;
+    public StudyRoom(String studyRoomName, String description, Integer capacity, Integer price,ImageUrl imageUrl,Workplace workplace) {
+        this.studyRoomName = new StudyRoomName(studyRoomName);
         this.description = description;
         this.capacity = capacity;
         this.price = price;
         this.imageUrl = imageUrl;
-        this.workPlaceId = workplaceId;
+        this.workPlace = workplace;
     }
 
 }

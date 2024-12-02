@@ -20,24 +20,23 @@ import roomit.main.global.error.ErrorCode;
 
 import java.util.List;
 import java.util.Optional;
+import roomit.main.global.service.ImageService;
 
 @Service
 @RequiredArgsConstructor
 public class StudyRoomService {
 
     private final StudyRoomRepository studyRoomRepository;
-    private final ReservationRepository reservationRepository;
     private final WorkplaceRepository workplaceRepository;
-    private final MemberRepository memberRepository;
-    //private final ReviewRepository reviewRepository;
+    private final ImageService imageService;
 
     // 스터디룸 만드는 메서드
     @Transactional
     public void createStudyRoom(Long workPlaceId,CreateStudyRoomRequest request) {
         Workplace workplace = workplaceRepository.findById(workPlaceId)
                 .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
-        StudyRoom createdStudyRoom = request.toEntity();
-        createdStudyRoom.setWorkPlaceId(workplace);
+        StudyRoom createdStudyRoom = request.toEntity(imageService);
+        createdStudyRoom.setWorkPlace(workplace);
         studyRoomRepository.save(createdStudyRoom);
     }
 
