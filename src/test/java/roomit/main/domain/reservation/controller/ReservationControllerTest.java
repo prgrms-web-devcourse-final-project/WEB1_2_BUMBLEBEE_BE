@@ -12,6 +12,7 @@ import roomit.main.domain.reservation.dto.request.CreateReservationRequest;
 import roomit.main.domain.reservation.dto.request.UpdateReservationRequest;
 import roomit.main.domain.reservation.dto.response.MyWorkPlaceReservationResponse;
 import roomit.main.domain.reservation.dto.response.ReservationResponse;
+import roomit.main.domain.reservation.entity.value.ReservationNum;
 import roomit.main.domain.reservation.service.ReservationService;
 import roomit.main.domain.workplace.entity.value.WorkplaceName;
 
@@ -73,7 +74,7 @@ public class ReservationControllerTest {
         workplaceReservationResponse = new MyWorkPlaceReservationResponse(
                 new WorkplaceName("사업장"),
                 "John Doe",
-                "010-1234-5678",
+                new ReservationNum("010-1234-5678"), // Change this line
                 "Study Room 1",
                 LocalDateTime.now(),
                 LocalDateTime.now().plusDays(1),

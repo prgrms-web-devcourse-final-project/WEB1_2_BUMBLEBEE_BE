@@ -131,13 +131,13 @@ class ReviewControllerTest {
         reservation = Reservation.builder()
                 .reservationName("이시현")
                 .reservationPhoneNumber("010-2314-2512")
-                .reservationState(ReservationState.RESERVABLE)
+                .reservationState(ReservationState.COMPLETED)
                 .startTime(LocalDateTime.now())
                 .endTime(LocalDateTime.now())
-                .studyRoomId(studyRoom)
+                .studyRoom(studyRoom)
                 .reservationCapacity(10)
                 .reservationPrice(1000)
-                .memberId(member)
+                .member(member)
                 .build();
 
 
@@ -169,7 +169,7 @@ class ReviewControllerTest {
         ReviewRegisterRequest request = ReviewRegisterRequest.builder()
                 .reviewContent("좋은 장소네요")
                 .reviewRating(3)
-                .reservatinId(reservation.getId())
+                .reservatinId(reservation.getReservationId())
                 .workPlaceName(workplace.getWorkplaceName().getValue())
                 .build();
 
@@ -221,13 +221,13 @@ class ReviewControllerTest {
             Reservation reservation = Reservation.builder()
                     .reservationName("이시현")
                     .reservationPhoneNumber("010-2314-2512")
-                    .reservationState(ReservationState.RESERVABLE)
+                    .reservationState(ReservationState.COMPLETED)
                     .startTime(LocalDateTime.now())
                     .endTime(LocalDateTime.now())
                     .reservationPrice(1000)
                     .reservationCapacity(10)
-                    .studyRoomId(studyRoom)
-                    .memberId(member)
+                    .studyRoom(studyRoom)
+                    .member(member)
                     .build();
 
             Reservation reservation1 = reservationRepository.save(reservation);
@@ -284,13 +284,13 @@ class ReviewControllerTest {
             Reservation reservation = Reservation.builder()
                     .reservationName("이시현")
                     .reservationPhoneNumber("010-2314-2512")
-                    .reservationState(ReservationState.RESERVABLE)
+                    .reservationState(ReservationState.COMPLETED)
                     .startTime(LocalDateTime.now())
                     .endTime(LocalDateTime.now())
                     .reservationCapacity(10)
                     .reservationPrice(1000)
-                    .studyRoomId(studyRoom)
-                    .memberId(member)
+                    .studyRoom(studyRoom)
+                    .member(member)
                     .build();
 
             Reservation reservation1 = reservationRepository.save(reservation);
@@ -327,13 +327,13 @@ class ReviewControllerTest {
             Reservation reservation = Reservation.builder()
                     .reservationName("이시현")
                     .reservationPhoneNumber("010-2314-2512")
-                    .reservationState(ReservationState.RESERVABLE)
+                    .reservationState(ReservationState.COMPLETED)
                     .startTime(LocalDateTime.now())
                     .endTime(LocalDateTime.now())
-                    .studyRoomId(studyRoom)
+                    .studyRoom(studyRoom)
                     .reservationCapacity(10)
                     .reservationPrice(1000)
-                    .memberId(member)
+                    .member(member)
                     .build();
 
             Reservation reservation1 = reservationRepository.save(reservation);
@@ -380,13 +380,13 @@ class ReviewControllerTest {
             Reservation reservation = Reservation.builder()
                     .reservationName("이시현")
                     .reservationPhoneNumber("010-2314-2512")
-                    .reservationState(ReservationState.RESERVABLE)
+                    .reservationState(ReservationState.COMPLETED)
                     .startTime(LocalDateTime.now())
                     .endTime(LocalDateTime.now())
-                    .studyRoomId(studyRoom)
+                    .studyRoom(studyRoom)
                     .reservationCapacity(10)
                     .reservationPrice(1000)
-                    .memberId(member)
+                    .member(member)
                     .build();
 
             Reservation reservation1 = reservationRepository.save(reservation);

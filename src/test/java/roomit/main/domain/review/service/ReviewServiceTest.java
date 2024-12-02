@@ -119,11 +119,11 @@ class ReviewServiceTest {
         reservation = Reservation.builder()
                 .reservationName("이시현")
                 .reservationPhoneNumber("010-2314-2512")
-                .reservationState(ReservationState.RESERVABLE)
+                .reservationState(ReservationState.COMPLETED)
                 .startTime(LocalDateTime.now())
                 .endTime(LocalDateTime.now())
-                .studyRoomId(studyRoom)
-                .memberId(member)
+                .studyRoom(studyRoom)
+                .member(member)
                 .reservationCapacity(123)
                 .reservationPrice(1000)
                 .build();
@@ -140,7 +140,7 @@ class ReviewServiceTest {
         ReviewRegisterRequest request = ReviewRegisterRequest.builder()
                 .reviewContent("좋은 장소네요")
                 .reviewRating(3)
-                .reservatinId(reservation.getId())
+                .reservatinId(reservation.getReservationId())
                 .workPlaceName(workplace.getWorkplaceName().getValue())
                 .build();
 
@@ -191,7 +191,7 @@ class ReviewServiceTest {
         List<Review> all = reviewRepository.findAll();
         assertEquals("치킨이 보이네요??", all.get(0).getReviewContent());
         assertEquals(4, all.get(0).getReviewRating());
-        assertEquals("Test Room",all.get(0).getReservation().getStudyRoomId().getTitle());
+        assertEquals("Test Room",all.get(0).getReservation().getStudyRoom().getTitle());
 //        assertEquals(1L, all.get(0).getMember().getMemberId());
 //        assertEquals(1L, all.get(0).getWorkplace().getWorkplaceId());
 
@@ -214,13 +214,13 @@ class ReviewServiceTest {
             Reservation reservation = Reservation.builder()
                     .reservationName("이시현")
                     .reservationPhoneNumber("010-2314-2512")
-                    .reservationState(ReservationState.RESERVABLE)
+                    .reservationState(ReservationState.COMPLETED)
                     .startTime(LocalDateTime.now())
                     .endTime(LocalDateTime.now())
                     .reservationPrice(1000)
                     .reservationCapacity(100)
-                    .studyRoomId(studyRoom)
-                    .memberId(member)
+                    .studyRoom(studyRoom)
+                    .member(member)
                     .build();
 
             Reservation reservation1 = reservationRepository.save(reservation);
@@ -277,13 +277,13 @@ class ReviewServiceTest {
             Reservation reservation = Reservation.builder()
                     .reservationName("이시현")
                     .reservationPhoneNumber("010-2314-2512")
-                    .reservationState(ReservationState.RESERVABLE)
+                    .reservationState(ReservationState.COMPLETED)
                     .startTime(LocalDateTime.now())
                     .endTime(LocalDateTime.now())
-                    .studyRoomId(studyRoom)
+                    .studyRoom(studyRoom)
                     .reservationCapacity(10)
                     .reservationPrice(1000)
-                    .memberId(member)
+                    .member(member)
                     .build();
 
             Reservation reservation1 = reservationRepository.save(reservation);
