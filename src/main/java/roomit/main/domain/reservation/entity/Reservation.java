@@ -3,6 +3,9 @@ package roomit.main.domain.reservation.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import roomit.main.domain.member.entity.Member;
+import roomit.main.domain.reservation.dto.request.UpdateReservationRequest;
+import roomit.main.domain.reservation.entity.value.ReservationName;
+import roomit.main.domain.reservation.entity.value.ReservationNum;
 import roomit.main.domain.review.entity.Review;
 import roomit.main.domain.studyroom.entity.BaseEntity;
 import roomit.main.domain.studyroom.entity.StudyRoom;
@@ -12,20 +15,19 @@ import java.time.LocalDateTime;
 @Table(name = "Reservation")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Setter
 @Entity
 public class Reservation extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "reservation_id", unique = true, updatable = false, columnDefinition = "BIGINT")
-    private Long id;
+    private Long reservationId;
 
-    @Column(name = "reservation_name", nullable = false, columnDefinition = "VARCHAR(255)")
-    private String reservationName;
+    @Embedded
+    private ReservationName reservationName;
 
-    @Column(name = "reservation_phone_number", nullable = false, columnDefinition = "VARCHAR(20)")
-    private String reservationPhoneNumber;
+    @Embedded
+    private ReservationNum reservationPhoneNumber;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "reservation_state", nullable = false, columnDefinition = "VARCHAR(20)")
@@ -45,34 +47,66 @@ public class Reservation extends BaseEntity{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member memberId;
+    private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "studyroom_id")
-    private StudyRoom studyRoomId;
+    private StudyRoom studyRoom;
 
     @OneToOne(cascade = CascadeType.ALL) // Review와 일대일 관계 설정
     @JoinColumn(name = "review_id") // 외래 키 이름 설정
     private Review review;
 
     @Builder
-    public Reservation(String reservationName, String reservationPhoneNumber, ReservationState reservationState, Integer reservationCapacity,Integer reservationPrice,LocalDateTime startTime, LocalDateTime endTime, Member memberId, StudyRoom studyRoomId) {
-        this.reservationName = reservationName;
-        this.reservationPhoneNumber = reservationPhoneNumber;
+    public Reservation(String reservationName, String reservationPhoneNumber, ReservationState reservationState, Integer reservationCapacity,Integer reservationPrice,LocalDateTime startTime, LocalDateTime endTime, Member member, StudyRoom studyRoom) {
+        this.reservationName = new ReservationName(reservationName);
+        this.reservationPhoneNumber = new ReservationNum(reservationPhoneNumber);
         this.reservationState = reservationState;
         this.reservationCapacity = reservationCapacity;
         this.reservationPrice = reservationPrice;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.memberId = memberId;
-        this.studyRoomId = studyRoomId;
+        this.member = member;
+        this.studyRoom = studyRoom;
     }
 
-    @PrePersist
-    public void prePersist() {
-        if (this.reservationState == null) {
-            this.reservationState = ReservationState.RESERVABLE;
-        }
+    public void changereservationName(String reservationName) {
+        this.reservationName = new ReservationName(reservationName);
+    }
+
+    public void changeReservationState(ReservationState reservationState) {
+        this.reservationState = reservationState;
+    }
+
+    public void changeReservationCapacity(Integer reservationCapacity) {
+        this.reservationCapacity = reservationCapacity;
+    }
+
+    public void changeReservationPrice(Integer reservationPrice) {
+        this.reservationPrice = reservationPrice;
+    }
+
+    public void changeStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void changeEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public void changeMember(Member member) {
+        this.member = member;
+    }
+
+    public void changeStudyRoom(StudyRoom studyRoom) {
+        this.studyRoom = studyRoom;
+    }
+
+    public void updatedReservation(UpdateReservationRequest updateReservationRequest) {
+        this.reservationName = new ReservationName(updateReservationRequest.reservationName());
+        this.reservationPhoneNumber = new ReservationNum(updateReservationRequest.reservationPhoneNumber());
+        this.startTime = updateReservationRequest.startTime();
+        this.endTime = updateReservationRequest.endTime();
     }
 
     public void addReview(Review review) {

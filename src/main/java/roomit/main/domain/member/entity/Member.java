@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import roomit.main.domain.member.dto.request.MemberUpdateRequest;
 import roomit.main.domain.member.entity.value.MemberEmail;
@@ -16,7 +15,6 @@ import roomit.main.domain.member.entity.value.MemberPassword;
 import roomit.main.domain.member.entity.value.MemberPhoneNumber;
 import roomit.main.global.oauth2.dto.PROVIDER;
 import roomit.main.domain.reservation.entity.Reservation;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -68,7 +66,7 @@ public class Member {
 
     private LocalDateTime deleteAt;
 
-    @OneToMany(mappedBy = "memberId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reservation> reservations = new ArrayList();
 
     @Builder
