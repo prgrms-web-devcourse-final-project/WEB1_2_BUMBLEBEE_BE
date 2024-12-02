@@ -15,6 +15,7 @@ public enum ErrorCode {
 
     /*Reservation*/
     RESERVATION_NOT_FOUND(HttpStatus.BAD_REQUEST,"R001","존재하지 않는 예약입니다."),
+    RESERVATION_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "R002", "이미 완료된 예약입니다."),
 
     /*StudyRoom*/
     STUDYROOM_NOT_FOUND(HttpStatus.BAD_REQUEST,"S001","존재하지 않는 스터디룸입니다."),
@@ -47,8 +48,6 @@ public enum ErrorCode {
     PAYMENTS_ALREADY_APPROVED(HttpStatus.BAD_REQUEST,"P003","이미 승인된 결제입니다"),
     PAYMENTS_AMOUNT_EXP(HttpStatus.BAD_REQUEST,"P004","결제 금액이 일치하지 않습니다"),
 
-    /*Reservation*/
-    RESERVATIN_NOT_FOUND(HttpStatus.BAD_REQUEST, "R001", "존재 하지 않는 예약입니다."),
 
     /*OAuth*/
     OAUTH_LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "O001", "OAuth 로그인에 실패했습니다."),

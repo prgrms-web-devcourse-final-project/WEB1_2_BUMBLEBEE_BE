@@ -48,6 +48,8 @@ public class PaymentsService {
         payments.addReservation(reservation);
         paymentsRepository.save(payments); //서버에 저장 db저장
 
+        reservation.setReservationState(ReservationState.COMPLETED);
+
         return PaymentsResponse.builder()
                 .orderId(payments.getOrderId())
                 .orderName(payments.getOrderName())
@@ -133,11 +135,11 @@ public class PaymentsService {
 
         // 예약 조회 및 소유권 검증
         Reservation reservation = reservationRepository.findFirstByIdAndMemberId(reservationId, memberId)
-                .orElseThrow(() -> null); // 예외 추가해야함
+                .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException); // 예외 추가해야함
 
         // 예약 상태 검증
         if(reservation.getReservationState().equals(ReservationState.COMPLETED)){
-            throw null; //예외 추가해야함
+            throw ErrorCode.RESERVATION_ALREADY_COMPLETED.commonException();
         }
 
         // 결제 금액 검증
