@@ -32,8 +32,8 @@ public class FileUploadService {
                 .build();
     }
 
-    public Map<String, Object> generatePreSignUrl(String extension) {
-        String filePath = UUID.randomUUID() + "." + extension;
+    public Map<String, Object> generatePreSignUrl(String fileName, String extension) {
+        String filePath = fileName + "/" + UUID.randomUUID() + "." + extension;
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
@@ -55,36 +55,5 @@ public class FileUploadService {
         response.put("filePath", filePath);
 
         return response;
-    }
-
-    public List<Map<String, Object>> generatePreSignUrls(List<String> extensions) {
-        List<Map<String, Object>> presignedUrls = new ArrayList<>();
-
-        for (String extension : extensions) {
-            String filePath = UUID.randomUUID() + "." + extension;
-
-            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(filePath)
-                    .build();
-
-            PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
-                    .putObjectRequest(putObjectRequest)
-                    .signatureDuration(Duration.ofMinutes(10))
-                    .build();
-
-            String url = s3Presigner.presignPutObject(presignRequest).url().toString();
-
-            // URL 정보 저장
-            Map<String, Object> response = new HashMap<>();
-            response.put("presignedUrl", url);
-            response.put("method", "PUT");
-            response.put("headers", Map.of("Content-Type", "image/" + extension));
-            response.put("filePath", filePath);
-
-            presignedUrls.add(response);
-        }
-
-        return presignedUrls;
     }
 }

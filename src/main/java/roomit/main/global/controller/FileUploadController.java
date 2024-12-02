@@ -23,18 +23,12 @@ public class FileUploadController {
     @GetMapping("/api/generate-presigned-url")
     public ResponseEntity<Object> generatePresignedUrls(
             @RequestParam(required = false) String extension,  // 단일 확장자
-            @RequestParam(required = false) List<String> extensions) { // 다수 확장자
+            @RequestParam(required = false) String fileName) { // 다수 확장자
 
         // 단일 URL 생성
         if (extension != null) {
-            Map<String, Object> singleUrl = fileUploadService.generatePreSignUrl(extension);
+            Map<String, Object> singleUrl = fileUploadService.generatePreSignUrl(fileName,extension);
             return ResponseEntity.ok(singleUrl);
-        }
-
-        // 다수 URL 생성
-        if (extensions != null && !extensions.isEmpty()) {
-            List<Map<String, Object>> multipleUrls = fileUploadService.generatePreSignUrls(extensions);
-            return ResponseEntity.ok(multipleUrls);
         }
 
         // 요청이 올바르지 않은 경우
