@@ -80,7 +80,7 @@ public class ReservationService {
 
         if (reservations.isEmpty())
         {
-            throw new IllegalArgumentException("예약 이력이 없습니다.");
+            throw(ErrorCode.RESERVATION_NOT_FOUND.commonException());
         }
         Reservation recentReservation =  reservations.get(0);
         StudyRoom studyRoom = recentReservation.getStudyRoom();
@@ -95,7 +95,7 @@ public class ReservationService {
         List<Reservation> reservations = reservationRepository.findReservationsByMemberId(memberId);
 
         if(reservations.isEmpty()){
-            throw new IllegalArgumentException("예약 이력이 없습니다.");
+            throw(ErrorCode.RESERVATION_NOT_FOUND.commonException());
         }
 
         return reservations.stream()
