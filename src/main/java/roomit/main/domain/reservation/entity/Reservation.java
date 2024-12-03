@@ -102,11 +102,12 @@ public class Reservation extends BaseEntity{
         this.studyRoom = studyRoom;
     }
 
-    public void updatedReservation(UpdateReservationRequest updateReservationRequest) {
-        this.reservationName = new ReservationName(updateReservationRequest.reservationName());
-        this.reservationPhoneNumber = new ReservationNum(updateReservationRequest.reservationPhoneNumber());
-        this.startTime = updateReservationRequest.startTime();
-        this.endTime = updateReservationRequest.endTime();
+    public void updateReservationDetails(String reservationName, String reservationPhoneNumber,
+                                         LocalDateTime startTime, LocalDateTime endTime) {
+        this.reservationName = new ReservationName(reservationName);
+        this.reservationPhoneNumber = new ReservationNum(reservationPhoneNumber);
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 
     public void addReview(Review review) {
