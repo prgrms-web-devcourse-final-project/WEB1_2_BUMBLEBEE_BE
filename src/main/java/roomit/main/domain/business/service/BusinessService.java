@@ -63,8 +63,6 @@ public class BusinessService {
 
         try {
             business.updateBusiness(updateRequest);
-
-            businessRepository.save(business);
         }catch (Exception e){
             throw ErrorCode.BUSINESS_NOT_MODIFY.commonException();
         }

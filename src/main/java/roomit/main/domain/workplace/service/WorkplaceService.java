@@ -32,6 +32,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import roomit.main.global.service.ImageService;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +43,7 @@ public class WorkplaceService {
     private final BusinessRepository businessRepository;
     private final StudyRoomRepository studyRoomRepository;
     private final WebClient webClient;
+    private final ImageService imageService;
 
     public List<WorkplaceAllResponse> readAllWorkplaces(WorkplaceGetRequest request) {
         List<Object[]> results = workplaceRepository.findAllByLatitudeAndLongitudeWithDistance(
@@ -88,7 +90,7 @@ public class WorkplaceService {
         Map<String, BigDecimal> coordinates = getStringBigDecimalMap(workplaceDto);
 
         try {
-            Workplace workplace = workplaceDto.toEntity(coordinates.get("latitude"), coordinates.get("longitude"), business);
+            Workplace workplace = workplaceDto.toEntity(coordinates.get("latitude"), coordinates.get("longitude"), business, imageService);
             Workplace savedWorkplace = workplaceRepository.save(workplace);
 
             saveStudyrooms(workplaceDto, savedWorkplace);
@@ -109,8 +111,8 @@ public class WorkplaceService {
     private void saveStudyrooms(WorkplaceRequest workplaceDto, Workplace savedWorkplace) {
         try {
             for (CreateStudyRoomRequest studyRoomRequest : workplaceDto.studyRoomList()) {
-                StudyRoom studyRoom = studyRoomRequest.toEntity();
-                studyRoom.setWorkPlaceId(savedWorkplace); // 스터디룸에 사업장 연결
+                StudyRoom studyRoom = studyRoomRequest.toEntity(imageService);
+                studyRoom.setWorkPlace(savedWorkplace); // 스터디룸에 사업장 연결
                 studyRoomRepository.save(studyRoom);
             }
         } catch (Exception e) {

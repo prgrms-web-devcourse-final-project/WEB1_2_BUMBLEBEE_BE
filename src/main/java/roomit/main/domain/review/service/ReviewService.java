@@ -1,5 +1,8 @@
 package roomit.main.domain.review.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,11 +21,6 @@ import roomit.main.domain.workplace.entity.value.WorkplaceName;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static roomit.main.domain.member.entity.QMember.member;
-
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
@@ -33,11 +31,15 @@ public class ReviewService {
     private final ReservationRepository reservationRepository;
 
     @Transactional
-    public void register(ReviewRegisterRequest request) {
-
+    public void register(ReviewRegisterRequest request, Long memberId) {
 
         Reservation reservation = reservationRepository.findById(request.reservatinId())
-                .orElseThrow(ErrorCode.RESERVATIN_NOT_FOUND::commonException);
+                .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
+        // 본인이 예약한거지 확인하는거
+
+        if (!Objects.equals(reservation.getMember().getMemberId(), memberId)){
+            throw ErrorCode.REVIEW_UPDATE_FAIL.commonException();
+        }
 
         Workplace workPlace = workplaceRepository.findByWorkplaceName(new WorkplaceName(request.workPlaceName()))
                     .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
@@ -50,13 +52,20 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewResponse update(Long reviewId, ReviewUpdateRequest request, String workPlaceName) {
+    public ReviewResponse update(Long reviewId, ReviewUpdateRequest request, String workPlaceName, Long memberId) {
 
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(ErrorCode.REVIEW_NOT_FOUND::commonException);
 
+        Reservation reservation = review.getReservation();
+
         Workplace workPlace = workplaceRepository.findByWorkplaceName(new WorkplaceName(workPlaceName))
                 .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
+
+        boolean isTrue = review.checkMyReservation(reservation, memberId);
+        if (isTrue){
+            throw ErrorCode.REVIEW_UPDATE_FAIL.commonException();
+        }
 
         // 기존 별점 제거 후 새로운 별점 추가
         workPlace.changeStarSum(workPlace.getStarSum() - review.getReviewRating()
@@ -88,11 +97,19 @@ public class ReviewService {
         return responses;
     }
 
-    public void remove(Long reviewId, String workPlaceName) {
+    public void remove(Long reviewId, String workPlaceName, Long memberId) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(ErrorCode.REVIEW_NOT_FOUND::commonException);
+
+        Reservation reservation = review.getReservation();
+
         Workplace workPlace = workplaceRepository.findByWorkplaceName(new WorkplaceName(workPlaceName))
                 .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
+
+        boolean isTrue = review.checkMyReservation(reservation, memberId);
+        if (isTrue){
+            throw ErrorCode.REVIEW_UPDATE_FAIL.commonException();
+        }
 
         // 별점 총합 감소 및 리뷰 개수 감소
         workPlace.changeStarSum(workPlace.getStarSum() - review.getReviewRating());
@@ -112,4 +129,6 @@ public class ReviewService {
                 .map(ReviewResponse::new)
                 .toList();
     }
+
+
 }

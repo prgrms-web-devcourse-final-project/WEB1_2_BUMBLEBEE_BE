@@ -27,17 +27,18 @@ public class ReviewController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/register")
-    public void register(@RequestBody @Valid ReviewRegisterRequest request) {
-        reviewService.register(request);
+    public void register(@RequestBody @Valid ReviewRegisterRequest request, @AuthenticationPrincipal CustomMemberDetails memberDetails) {
+        reviewService.register(request, memberDetails.getId());
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/update/{reviewId}")
     public ReviewResponse update(
             @RequestBody @Valid ReviewUpdateRequest request
-            ,@PathVariable Long reviewId
-    ,@RequestParam String workplaceName) {
-         return reviewService.update(reviewId, request, workplaceName);
+            , @PathVariable Long reviewId
+            , @RequestParam String workplaceName
+            , @AuthenticationPrincipal CustomMemberDetails memberDetails) {
+        return reviewService.update(reviewId, request, workplaceName, memberDetails.getId());
     }
 
     // 단건 리뷰 조회
@@ -46,12 +47,13 @@ public class ReviewController {
     public List<ReviewResponse> read(
             @AuthenticationPrincipal CustomMemberDetails customMemberDetails) {
 
-       return reviewService.read(customMemberDetails.getId());
+        return reviewService.read(customMemberDetails.getId());
     }
 
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/workplace/{workplaceId}")
-    public ResponseEntity<CursorResponse> getReviews(
+    public CursorResponse getReviews(
             @RequestParam(required = false) Long lastId,
             @RequestParam(defaultValue = "10") int size,
             @PathVariable Long workplaceId) {
@@ -67,17 +69,18 @@ public class ReviewController {
                 ? null
                 : reviews.get(reviews.size() - 1).reviewId();
 
-        return ResponseEntity.ok(CursorResponse
+        return CursorResponse
                 .builder()
                 .data(reviews)
                 .nextCursor(nextCursor)
-                .build());
+                .build();
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{reviewId}")
     public void remove(@PathVariable Long reviewId,
-                       @RequestParam String workplaceName) {
-        reviewService.remove(reviewId, workplaceName);
+                       @RequestParam String workplaceName,
+                       @AuthenticationPrincipal CustomMemberDetails memberDetails) {
+        reviewService.remove(reviewId, workplaceName, memberDetails.getId());
     }
 }

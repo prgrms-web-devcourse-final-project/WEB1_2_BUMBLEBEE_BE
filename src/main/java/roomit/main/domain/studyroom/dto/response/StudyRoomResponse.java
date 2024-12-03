@@ -12,9 +12,9 @@ public record StudyRoomResponse (
 
     public static StudyRoomResponse from(StudyRoom studyRoom) {
         return new StudyRoomResponse(
-                studyRoom.getTitle(),
+                studyRoom.getStudyRoomName().getValue(),
                 studyRoom.getDescription(),
-                studyRoom.getImageUrl(),
+                studyRoom.getImageUrl().getValue(),
                 studyRoom.getPrice(),
                 studyRoom.getCapacity()
                 );

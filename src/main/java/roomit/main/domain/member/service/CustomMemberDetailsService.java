@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import roomit.main.domain.member.dto.CustomMemberDetails;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.member.repository.MemberRepository;
+import roomit.main.global.error.ErrorCode;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -21,7 +22,7 @@ public class CustomMemberDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Member member = memberRepository.findByMemberEmail(email)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(ErrorCode.MEMBER_NOT_FOUND::commonException);
 
         if (member != null){
 

@@ -17,7 +17,8 @@ public class ExceptionController {
     public ResponseEntity<ErrorResponse> commonException(CommonException e) {
         HttpStatus statusCode = e.getErrorCode().getStatus(); // 에러코드 W001-3 익셉션 ?
         ErrorResponse response = ErrorResponse.builder()
-                .errorCode(e.getErrorCode())
+                .code(e.getErrorCode().getCode())
+                .message(e.getErrorCode().getMessage())
                 .build();
 
         return ResponseEntity.status(statusCode).body(response);
