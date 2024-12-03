@@ -2,6 +2,7 @@ package roomit.main.domain.payments.dto.response;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
+import roomit.main.domain.payments.entity.Payments;
 import roomit.main.domain.payments.entity.TossPaymentMethod;
 
 import java.time.LocalDateTime;
@@ -21,4 +22,4 @@ public record PaymentValidationResponse(
         boolean cancelYN, // 취소 YN
         String cancelReason, // 취소 이유
         LocalDateTime createdAt // 결제가 이루어진 시간
-) {}
+) { }

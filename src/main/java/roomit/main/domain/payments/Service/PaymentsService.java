@@ -38,7 +38,7 @@ public class PaymentsService {
      * 결제 검증
      */
 
-    public PaymentValidationResponse requestPayment(Long reservationId, Long memberId, PaymentsRequest paymentsRequest) { // 결제 승인 요청
+    public PaymentValidationResponse requestPayment(Long reservationId, Long memberId, PaymentsRequest paymentsRequest) {
 
         validateReservationForPayment(reservationId,memberId,paymentsRequest); // 검증
 
@@ -47,20 +47,12 @@ public class PaymentsService {
 
         Payments payments = paymentsRequest.toEntity();
         payments.addReservation(reservation);
-        paymentsRepository.save(payments); //서버에 저장 db저장
+        paymentsRepository.save(payments);
 
         reservation.changeReservationState(ReservationState.COMPLETED);
+        reservationRepository.save(reservation);
 
-        return PaymentValidationResponse.builder()
-                .orderId(payments.getOrderId())
-                .orderName(payments.getOrderName())
-                .memberName(payments.getMemberName())
-                .memberPhoneNum(payments.getMemberPhoneNum())
-                .tossPaymentMethod(payments.getTossPaymentMethod())
-                .amount(payments.getTotalAmount())
-                .createdAt(payments.getCreatedAt())
-                .successUrl(paymentsConfig.getSuccessUrl())
-                .failUrl(paymentsConfig.getFailUrl()).build();
+        return payments.toDto(paymentsConfig.getSuccessUrl(),paymentsConfig.getFailUrl());
     }
 
     /**
@@ -87,65 +79,11 @@ public class PaymentsService {
         params.put("orderId", orderId);
         params.put("amount", amount);
 
-        try {
             return restTemplate.postForObject(PaymentsConfig.URL+"/confirm",
                     new HttpEntity<>(params, headers),
                     PaymentsResponse.class);
-        } catch (Exception e) {
-            throw e; //예외추가해야함
-        }
-
 
     }
-
-    @Transactional
-    public Map cancelPayments(String paymentKey, String cancelReason) {
-
-        try {
-            Payments payment = paymentsRepository.findByTossPaymentsKey(paymentKey)
-                    .orElseThrow(); //예외추가해야함
-            Long totalAmount = payment.getTotalAmount();
-
-            Reservation reservation = paymentsRepository.findReservationByPayments(payment)
-                    .orElseThrow(); //예외추가해야함
-
-            reservation.changeReservationState(ReservationState.CANCELLED); //
-
-            LocalDateTime now = LocalDateTime.now();
-            LocalDateTime reservationTime = reservation.getStartTime();
-            return tossPaymentCancel(paymentKey,cancelReason,totalAmount);
-        } catch (Exception e){
-            throw e; //예외추가해야함
-        }
-    }
-
-    public Map tossPaymentCancel(String paymentKey, String cancelReason, Long cancelAmount) {
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = getHeaders();
-        JSONObject params = new JSONObject();
-        params.put("cancelReason", cancelReason);
-        params.put("cancelAmount", cancelAmount);
-
-        try {
-            return restTemplate.postForObject(PaymentsConfig.URL +"/"+paymentKey+ "/cancel", //url이 안맞음 고쳐야함
-                    new HttpEntity<>(params, headers),
-                    Map.class);
-        } catch (Exception e){
-            throw e; //예외추가해야함
-        }
-    }
-
-    /**
-     * 결제 요청된 금액과 실제 결제된 금액이 같은지 검증
-     */
-    public Payments verifyPayment(String orderId, Long amount) {
-        Payments payment = paymentsRepository.findByOrderId(orderId).orElseThrow(ErrorCode.PAYMENTS_NOT_FOUND::commonException);
-        if (!payment.getTotalAmount().equals(amount)) {
-            throw ErrorCode.PAYMENTS_AMOUNT_EXP.commonException();
-        }
-        return payment;
-    }
-
 
     /**
      * 결제 실패
@@ -165,13 +103,49 @@ public class PaymentsService {
     }
 
     /**
+     * 결제 취소
+     */
+    @Transactional
+    public Map cancelPayments(String paymentKey, String cancelReason) {
+
+        Payments payment = paymentsRepository.findByTossPaymentsKey(paymentKey)
+                .orElseThrow(ErrorCode.PAYMENTS_NOT_FOUND::commonException);
+        Long amount = payment.getTotalAmount();
+
+        Reservation reservation = paymentsRepository.findReservationByPayments(payment)
+                .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
+
+        Long totalAmount = calculateRefundAmount(reservation, amount);
+
+        reservation.changeReservationState(ReservationState.CANCELLED);
+        reservationRepository.save(reservation);
+
+        return tossPaymentCancel(paymentKey,cancelReason,totalAmount);
+    }
+
+    /**
+     * (토스)결제 취소 요청
+     */
+    public Map tossPaymentCancel(String paymentKey, String cancelReason, Long cancelAmount) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = getHeaders();
+        JSONObject params = new JSONObject();
+        params.put("cancelReason", cancelReason);
+        params.put("cancelAmount", cancelAmount);
+
+        return restTemplate.postForObject(PaymentsConfig.URL +"/"+paymentKey+ "/cancel",
+                new HttpEntity<>(params, headers),
+                Map.class);
+    }
+
+    /**
      * 예약 및 결제 검증 로직
      */
     public void validateReservationForPayment(Long reservationId, Long memberId, PaymentsRequest paymentRequest) {
 
         // 예약 조회 및 소유권 검증
         Reservation reservation = reservationRepository.findFirstByIdAndMemberId(reservationId, memberId)
-                .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException); // 예외 추가해야함
+                .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
 
         // 예약 상태 검증
         if(reservation.getReservationState().equals(ReservationState.COMPLETED)){
@@ -184,10 +158,32 @@ public class PaymentsService {
         }
     }
 
+    /**
+     * 결제 요청된 금액과 실제 결제된 금액이 같은지 검증
+     */
+    public Payments verifyPayment(String orderId, Long amount) {
+        Payments payment = paymentsRepository.findByOrderId(orderId).orElseThrow(ErrorCode.PAYMENTS_NOT_FOUND::commonException);
+        if (!payment.getTotalAmount().equals(amount)) {
+            throw ErrorCode.PAYMENTS_AMOUNT_EXP.commonException();
+        }
+        return payment;
+    }
 
+    /**
+     * 환불 규정에 맞는지 검증
+     */
+    private Long calculateRefundAmount(Reservation reservation, Long totalAmount) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime reservationTime = reservation.getStartTime();
 
-
-
+        if (now.isBefore(reservationTime.minusDays(2))) {
+            return totalAmount;
+        } else if (now.isBefore(reservationTime.minusDays(1))) {
+            return totalAmount / 2;
+        } else {
+            throw ErrorCode.RESERVATION_CANNOT_CANCEL.commonException();
+        }
+    }
 
     private HttpHeaders getHeaders() {
         HttpHeaders headers = new HttpHeaders();
