@@ -1,13 +1,9 @@
 package roomit.main.global.token.repository;
 
-import jakarta.transaction.Transactional;
-import org.springframework.data.jpa.repository.JpaRepository;
-import roomit.main.global.token.entity.RefreshEntity;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+import roomit.main.global.token.entity.Refresh;
 
-public interface RefreshRepository extends JpaRepository<RefreshEntity,Long> {
-
-    Boolean existsByRefresh(String refresh);
-
-    @Transactional
-    void deleteByRefresh(String refresh);
+@Repository
+public interface RefreshRepository extends CrudRepository<Refresh,String> {
 }

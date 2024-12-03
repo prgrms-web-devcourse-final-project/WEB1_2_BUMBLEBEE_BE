@@ -46,9 +46,9 @@ public class SpringSecurityConfig {
     private final JWTUtil jwtUtil;
     private final CustomMemberDetailsService memberDetailsService;
     private final CustomBusinessDetailsService businessDetailsService;
-    private final RefreshRepository refreshRepository;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
+    private final RefreshRepository refreshRepository;
 
     @Bean
     public AuthenticationManager authenticationManager() {
@@ -68,6 +68,7 @@ public class SpringSecurityConfig {
 
         return new BCryptPasswordEncoder();
     }
+
 
     @Bean
     public RoleHierarchy roleHierarchy() {
@@ -91,7 +92,7 @@ public class SpringSecurityConfig {
                         CorsConfiguration configuration = new CorsConfiguration();
 
                         configuration.setAllowedOrigins(
-                            List.of("https://your-frontend-domain.com",corsUrl));
+                            List.of("https://your-frontend-domain.com",corsUrl,  "http://127.0.0.1:5000"));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -116,6 +117,7 @@ public class SpringSecurityConfig {
                                 .userService(customOAuth2UserService)) // 사용자 정보 로드
                         .successHandler(customSuccessHandler) // 성공 핸들러
                 );
+
         http
                 // 경로별 인가 작업
                 .authorizeHttpRequests((auth) -> auth
@@ -130,6 +132,7 @@ public class SpringSecurityConfig {
                         .requestMatchers("/toss/**").permitAll()
                         .requestMatchers("/api/subscribe/**").permitAll()
 
+                        .requestMatchers("/api/v1/recommend/**").permitAll()
 
                         //멤버 권한 설정
                         .requestMatchers("/api/v1/member").hasRole("USER")
