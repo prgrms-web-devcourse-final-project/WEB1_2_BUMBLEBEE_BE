@@ -2,8 +2,11 @@ package roomit.main.domain.payments.Service;
 
 import jakarta.transaction.Transactional;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.Map;
+
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
 import org.springframework.http.HttpEntity;
@@ -14,8 +17,8 @@ import org.springframework.web.client.RestTemplate;
 import roomit.main.domain.payments.config.PaymentsConfig;
 import roomit.main.domain.payments.dto.request.PaymentsRequest;
 import roomit.main.domain.payments.dto.response.PaymentsFailResponse;
+import roomit.main.domain.payments.dto.response.PaymentValidationResponse;
 import roomit.main.domain.payments.dto.response.PaymentsResponse;
-import roomit.main.domain.payments.dto.response.PaymentsSuccessResponse;
 import roomit.main.domain.payments.entity.Payments;
 import roomit.main.domain.payments.repository.PaymentsRepository;
 import roomit.main.domain.reservation.entity.Reservation;
@@ -35,7 +38,7 @@ public class PaymentsService {
      * 결제 검증
      */
 
-    public PaymentsResponse requestPayment(Long reservationId, Long memberId, PaymentsRequest paymentsRequest) { // 결제 승인 요청
+    public PaymentValidationResponse requestPayment(Long reservationId, Long memberId, PaymentsRequest paymentsRequest) { // 결제 승인 요청
 
         validateReservationForPayment(reservationId,memberId,paymentsRequest); // 검증
 
@@ -48,7 +51,7 @@ public class PaymentsService {
 
         reservation.changeReservationState(ReservationState.COMPLETED);
 
-        return PaymentsResponse.builder()
+        return PaymentValidationResponse.builder()
                 .orderId(payments.getOrderId())
                 .orderName(payments.getOrderName())
                 .memberName(payments.getMemberName())
@@ -64,9 +67,9 @@ public class PaymentsService {
      * 결제 성공
      */
     @Transactional
-    public PaymentsSuccessResponse tossPaymentSuccess(String paymentKey, String orderId, Long amount) {
+    public PaymentsResponse tossPaymentSuccess(String paymentKey, String orderId, Long amount) {
         Payments payments = verifyPayment(orderId, amount);
-        PaymentsSuccessResponse result = requestPaymentAccept(paymentKey, orderId, amount);
+        PaymentsResponse result = requestPaymentAccept(paymentKey, orderId, amount);
         payments.changeTossPaymentsKey(paymentKey);
         payments.changePaySuccessYN(true);
         return result;
@@ -76,7 +79,7 @@ public class PaymentsService {
      * (토스)결제 승인 요청
      */
     @Transactional
-    public PaymentsSuccessResponse requestPaymentAccept(String paymentKey, String orderId, Long amount) {
+    public PaymentsResponse requestPaymentAccept(String paymentKey, String orderId, Long amount) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = getHeaders();
         JSONObject params = new JSONObject();
@@ -84,17 +87,52 @@ public class PaymentsService {
         params.put("orderId", orderId);
         params.put("amount", amount);
 
-        PaymentsSuccessResponse result = null;
         try {
-            result = restTemplate.postForObject(PaymentsConfig.URL,
+            return restTemplate.postForObject(PaymentsConfig.URL+"/confirm",
                     new HttpEntity<>(params, headers),
-                    PaymentsSuccessResponse.class);
+                    PaymentsResponse.class);
         } catch (Exception e) {
-            throw e;
+            throw e; //예외추가해야함
         }
 
-        return result;
 
+    }
+
+    @Transactional
+    public Map cancelPayments(String paymentKey, String cancelReason) {
+
+        try {
+            Payments payment = paymentsRepository.findByTossPaymentsKey(paymentKey)
+                    .orElseThrow(); //예외추가해야함
+            Long totalAmount = payment.getTotalAmount();
+
+            Reservation reservation = paymentsRepository.findReservationByPayments(payment)
+                    .orElseThrow(); //예외추가해야함
+
+            reservation.changeReservationState(ReservationState.CANCELLED); //
+
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime reservationTime = reservation.getStartTime();
+            return tossPaymentCancel(paymentKey,cancelReason,totalAmount);
+        } catch (Exception e){
+            throw e; //예외추가해야함
+        }
+    }
+
+    public Map tossPaymentCancel(String paymentKey, String cancelReason, Long cancelAmount) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = getHeaders();
+        JSONObject params = new JSONObject();
+        params.put("cancelReason", cancelReason);
+        params.put("cancelAmount", cancelAmount);
+
+        try {
+            return restTemplate.postForObject(PaymentsConfig.URL +"/"+paymentKey+ "/cancel", //url이 안맞음 고쳐야함
+                    new HttpEntity<>(params, headers),
+                    Map.class);
+        } catch (Exception e){
+            throw e; //예외추가해야함
+        }
     }
 
     /**
@@ -145,6 +183,10 @@ public class PaymentsService {
             throw ErrorCode.PAYMENTS_INVALID_AMOUNT.commonException();
         }
     }
+
+
+
+
 
 
     private HttpHeaders getHeaders() {
