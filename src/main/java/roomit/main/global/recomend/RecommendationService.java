@@ -1,61 +1,66 @@
 package roomit.main.global.recomend;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
-@Slf4j
 public class RecommendationService {
 
-    public List<RecommendationResponse> getRecommendations(Long userId, int n) {
+    public RecommendationResponseWrapper getRecommendations(Long userId, int age, int n) {
+        String url = "http://127.0.0.1:8070/recommend"; // Flask 서버의 recommend 엔드포인트
         RestTemplate restTemplate = new RestTemplate();
-        String flaskUrl = "http://127.0.0.1:8070/recommend";
 
-        // 요청 데이터 생성
-        JSONObject requestBody = new JSONObject();
+        // Flask로 보낼 요청 데이터 생성
+        Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("user_id", userId);
-        requestBody.put("n", n); // Top-N 개수를 전달
+        requestBody.put("age", age);
+        requestBody.put("n", n);
 
-        // HTTP 요청 생성
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> entity = new HttpEntity<>(requestBody.toString(), headers);
+        try {
+            // Flask 서버에 POST 요청
+            ResponseEntity<RecommendationResponseWrapper> response = restTemplate.postForEntity(
+                    url, requestBody, RecommendationResponseWrapper.class
+            );
 
-        // Flask 서버로 요청 전송
-        ResponseEntity<String> response = restTemplate.exchange(flaskUrl, HttpMethod.POST, entity, String.class);
-
-        if (response.getStatusCode() == HttpStatus.OK) {
-            // JSON 응답을 리스트 형태로 변환
-            ObjectMapper mapper = new ObjectMapper();
-            try {
-                return mapper.readValue(response.getBody(), new TypeReference<List<RecommendationResponse>>() {});
-            } catch (Exception e) {
-                throw new RuntimeException("Error parsing Flask response: " + e.getMessage(), e);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                return response.getBody(); // 성공 시 추천 결과 반환
+            } else {
+                throw new RuntimeException("Failed to get recommendations from Flask. Status: " + response.getStatusCode());
             }
-        } else {
-            throw new RuntimeException("Error during Flask communication: " + response.getStatusCode() + ": " + response.getBody());
+        } catch (Exception e) {
+            throw new RuntimeException("Error during Flask communication: " + e.getMessage());
         }
     }
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
+    @Data
+    public static class RecommendationResponseWrapper {
+        @JsonProperty("age_group")
+        private String ageGroup; // Flask에서 반환하는 연령대 정보
+        private List<RecommendationResponse> recommendations;
+    }
+
+    @Data
     public static class RecommendationResponse {
-        private Long workplace_id;
-        private String workplace_name;
-        private Double predicted_rating;
+        @JsonProperty("workplace_id")
+        private Long workplaceId;
+
+        @JsonProperty("workplace_name")
+        private String workplaceName;
+
+        @JsonProperty("predicted_rating")
+        private double predictedRating;
     }
 }
