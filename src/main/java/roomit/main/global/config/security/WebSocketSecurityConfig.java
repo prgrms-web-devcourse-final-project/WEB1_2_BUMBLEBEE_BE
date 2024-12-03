@@ -7,9 +7,9 @@ public class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBro
     @Override
     protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
         messages
-                .simpMessageDestMatchers("/pub").authenticated() // **WebSocket 메시지 전송 인증 추가**
-                .simpSubscribeDestMatchers("/sub/chat/**").permitAll(); // 구독 요청 인증
-//                .anyMessage().denyAll(); // 다른 요청은 모두 거부
+                .simpMessageDestMatchers("/pub/**").authenticated() // **WebSocket 메시지 전송 인증 추가**
+                .simpSubscribeDestMatchers("/sub/chat/**").permitAll()// 구독 요청 인증
+                .anyMessage().denyAll(); // 다른 요청은 모두 거부
     }
 
     @Override
