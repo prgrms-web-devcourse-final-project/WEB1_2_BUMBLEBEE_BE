@@ -51,7 +51,7 @@ public interface WorkplaceRepository extends JpaRepository<Workplace, Long> {
                    point(w.workplace_longitude, w.workplace_latitude),
                    point(:longitude, :latitude)
                ) AS distance
-        FROM Workplace w
+        FROM workplace w
         WHERE ST_Distance_Sphere(
             point(w.workplace_longitude, w.workplace_latitude),
             point(:longitude, :latitude)
