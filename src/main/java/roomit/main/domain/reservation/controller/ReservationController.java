@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import roomit.main.domain.business.dto.CustomBusinessDetails;
 import roomit.main.domain.member.dto.CustomMemberDetails;
 import roomit.main.domain.reservation.dto.request.CreateReservationRequest;
 import roomit.main.domain.reservation.dto.request.UpdateReservationRequest;
@@ -61,8 +62,8 @@ public class ReservationController {
 
     // 특정 사업장의 예약 찾기
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/api/v1/reservations/workplace/{workplaceId}")
-    public List<MyWorkPlaceReservationResponse> findReservationByWorkplaceId(@PathVariable @Positive Long workplaceId) {
-        return reservationService.findReservationByWorkplaceId(workplaceId);
+    @GetMapping("/api/v1/reservations/all/workplace")
+    public List<MyWorkPlaceReservationResponse> findReservationByWorkplaceId(@AuthenticationPrincipal CustomBusinessDetails customBusinessDetails) {
+        return reservationService.findReservationByWorkplaceId(customBusinessDetails.getId());
     }
 }
