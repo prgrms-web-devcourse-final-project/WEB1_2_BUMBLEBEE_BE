@@ -3,6 +3,7 @@ package roomit.main.domain.reservation.repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,8 +20,8 @@ public interface ReservationRepository extends JpaRepository<Reservation,Long> {
     List<Reservation> findReservationsByMemberId(@Param("memberId") Long memberId);
 
     // 내 작업장의 예약 리스트 출력.
-    @Query("SELECT r FROM Reservation r JOIN r.studyRoom sr WHERE sr.workPlace.workplaceId = :workPlaceId ORDER BY r.createdAt DESC")
-    List<Reservation> findMyWorkPlaceReservationsByWorkPlaceId(@Param("workPlaceId") Long workPlaceId);
+    @Query("SELECT r FROM Reservation r JOIN r.studyRoom sr JOIN sr.workPlace wp JOIN wp.business m WHERE m.businessId = :businessId ORDER BY r.createdAt DESC")
+    List<Reservation> findMyAllReservations(@Param("businessId") Long businessId);
 
     // 예약 ID와 회원 ID로 가장 최근 예약 하나 조회
     @Query("SELECT r FROM Reservation r WHERE r.reservationId = :reservationId AND r.member.memberId = :memberId")
