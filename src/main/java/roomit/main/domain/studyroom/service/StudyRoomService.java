@@ -5,7 +5,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomit.main.domain.reservation.entity.Reservation;
@@ -19,6 +21,7 @@ import roomit.main.domain.studyroom.dto.response.StudyRoomListResponse;
 import roomit.main.domain.studyroom.dto.response.StudyRoomResponse;
 import roomit.main.domain.studyroom.entity.StudyRoom;
 import roomit.main.domain.studyroom.repository.StudyRoomRepository;
+import roomit.main.domain.workplace.dto.response.DistanceWorkplaceResponse;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
@@ -27,6 +30,7 @@ import roomit.main.global.service.ImageService;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class StudyRoomService {
 
     private final StudyRoomRepository studyRoomRepository;
@@ -37,7 +41,9 @@ public class StudyRoomService {
 
     // 스터디룸 등록
     @Transactional
-    public void createStudyRoom(Long workPlaceId,CreateStudyRoomRequest request, Long businessId) {
+    public void createStudyRoom(Long workPlaceId,
+                                CreateStudyRoomRequest request,
+                                Long businessId) {
         Workplace workplace = workplaceRepository.findById(workPlaceId)
                 .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
 
@@ -69,7 +75,9 @@ public class StudyRoomService {
 
     // 스터디룸 수정
     @Transactional
-    public void updateStudyRoom(Long studyRoomId,UpdateStudyRoomRequest request, Long businessId) {
+    public void updateStudyRoom(Long studyRoomId,
+                                UpdateStudyRoomRequest request,
+                                Long businessId) {
         StudyRoom existingStudyRoom = studyRoomRepository.findById(studyRoomId)
                 .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
 
@@ -114,7 +122,8 @@ public class StudyRoomService {
 
     //스터디룸 예약 가능한 시간대 조회
     @Transactional(readOnly = true)
-    public ReservationPossibleStudyRoomResponse getPossibleReservation(Long studyRoomId, LocalDate checkDate) {
+    public ReservationPossibleStudyRoomResponse getPossibleReservation(Long studyRoomId,
+                                                                       LocalDate checkDate) {
 
         StudyRoom studyRoom = studyRoomRepository.findById(studyRoomId)
             .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
@@ -157,15 +166,36 @@ public class StudyRoomService {
     }
 
 
-
     // 예약가능한 스터디룸 조회
     @Transactional(readOnly = true)
-    public List<FindPossibleStudyRoomResponse> findAvailableStudyRooms(FindAvailableStudyRoomRequest request) {
-        return studyRoomRepository.findAvailableStudyRooms(
-                request.address(),
-                request.startTime(),
-                request.endTime(),
-                request.capacity()
-        );
+    public List<FindPossibleStudyRoomResponse> findAvailableStudyRooms(FindAvailableStudyRoomRequest request,
+        List<DistanceWorkplaceResponse> searchWorkplace) {
+
+        // 검색된 Workplace ID
+        List<Long> workplaceIds = searchWorkplace.stream()
+            .map(DistanceWorkplaceResponse::workplaceId)
+            .toList();
+
+        List<StudyRoom> studyRooms = studyRoomRepository.findByWorkPlaceId(workplaceIds);
+
+        // 예약이 있는 경우에 대해서만 필터링
+        return studyRooms.stream()
+            .filter(studyRoom -> studyRoom.getReservations().stream()
+                .noneMatch(reservation ->
+                    reservation.getStartTime().isBefore(request.endDateTime()) &&
+                        reservation.getEndTime().isAfter(request.startDateTime())
+                )) // 예약이 겹치지 않는 경우만 필터링
+            .map(studyRoom -> {
+                // studyRoom의 workplaceId와 searchWorkplace의 workplaceId를 비교하여 일치하는 distance를 찾음
+                double distance = searchWorkplace.stream()
+                    .filter(workplace -> workplace.workplaceId().equals(studyRoom.getWorkPlace().getWorkplaceId()))
+                    .map(DistanceWorkplaceResponse::distance)
+                    .findFirst()
+                    .orElse(0.0); // 기본값 0.0, 일치하는 경우가 없으면 0.0을 반환
+
+                return new FindPossibleStudyRoomResponse(studyRoom, distance);
+            })
+            .collect(Collectors.toList());
     }
+
 }

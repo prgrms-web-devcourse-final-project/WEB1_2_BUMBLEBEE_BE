@@ -149,6 +149,7 @@ public class JWTFilter extends OncePerRequestFilter {
                 "/reissue",
                 "/api/v1/studyroom/workplace/**",
                 "/api/v1/studyroom/search/**",
+                "/api/v1/studyroom/available",
                 "/api/v1/workplace/info/**",
                 "/api/v1/review/workplace/**",
                 "/api/v1/workplace/distance",

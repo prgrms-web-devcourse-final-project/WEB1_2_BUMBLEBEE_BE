@@ -25,7 +25,7 @@ import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.global.inner.ImageUrl;
 
 @Entity
-@Table(name = "StudyRoom")
+@Table(name = "studyroom")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

@@ -3,15 +3,17 @@ package roomit.main.domain.workplace.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.business.repository.BusinessRepository;
@@ -20,6 +22,7 @@ import roomit.main.domain.studyroom.entity.StudyRoom;
 import roomit.main.domain.studyroom.repository.StudyRoomRepository;
 import roomit.main.domain.workplace.dto.request.WorkplaceGetRequest;
 import roomit.main.domain.workplace.dto.request.WorkplaceRequest;
+import roomit.main.domain.workplace.dto.response.DistanceWorkplaceResponse;
 import roomit.main.domain.workplace.dto.response.WorkplaceAllResponse;
 import roomit.main.domain.workplace.dto.response.WorkplaceBusinessResponse;
 import roomit.main.domain.workplace.dto.response.WorkplaceDetailResponse;
@@ -222,6 +225,26 @@ public class WorkplaceService {
         } catch (Exception e) {
             throw new RuntimeException("Failed to extract coordinates from response", e);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<DistanceWorkplaceResponse> findNearbyWorkplaces(String address, double maxDistance) {
+        // 1. 주소를 좌표로 변환
+        Map<String, BigDecimal> coordinates = geoCording(address);
+        BigDecimal latitude = coordinates.get("latitude");
+        BigDecimal longitude = coordinates.get("longitude");
+
+        // 2. 좌표와 거리 기반으로 Workplace 조회
+        List<Object[]> results = workplaceRepository.findNearbyWorkplaces(longitude.doubleValue(), latitude.doubleValue(), maxDistance);
+
+        DecimalFormat df = new DecimalFormat("#.##"); // 소수점 2자리 포맷
+
+        return results.stream()
+            .map(result -> new DistanceWorkplaceResponse(
+                (Long) result[0], // workplaceId
+                Double.valueOf(df.format((Double) result[1] / 1000)) // distance
+            ))
+            .collect(Collectors.toList());
     }
 }
 

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Positive;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,13 +27,17 @@ import roomit.main.domain.studyroom.dto.response.ReservationPossibleStudyRoomRes
 import roomit.main.domain.studyroom.dto.response.StudyRoomListResponse;
 import roomit.main.domain.studyroom.dto.response.StudyRoomResponse;
 import roomit.main.domain.studyroom.service.StudyRoomService;
+import roomit.main.domain.workplace.dto.response.DistanceWorkplaceResponse;
+import roomit.main.domain.workplace.service.WorkplaceService;
 
 @RestController
 @RequestMapping("/api/v1/studyroom")
 @RequiredArgsConstructor
+@Slf4j
 public class StudyRoomController {
 
     private final StudyRoomService studyRoomService;
+    private final WorkplaceService workplaceService;
 
     //스터디룸 등록
     @ResponseStatus(HttpStatus.CREATED)
@@ -86,6 +91,7 @@ public class StudyRoomController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/available")
     public List<FindPossibleStudyRoomResponse> findAvailableStudyRooms(@RequestBody @Valid FindAvailableStudyRoomRequest request) {
-        return studyRoomService.findAvailableStudyRooms(request);
+        List<DistanceWorkplaceResponse> searchWorkPlace = workplaceService.findNearbyWorkplaces(request.address(), 10000);
+        return studyRoomService.findAvailableStudyRooms(request, searchWorkPlace);
     }
 }
