@@ -22,7 +22,8 @@ public enum ErrorCode {
     RESERVATION_NOT_MODIFIED(HttpStatus.NOT_MODIFIED,"R004","예약 수정이 완료되지 않았습니다."),
     RESERVATION_IS_EMPTY(HttpStatus.NOT_FOUND,"R005","존재하는 예약이 없습니다."),
     RESERVATION_CANNOT_CANCEL(HttpStatus.BAD_REQUEST,"R006","예약취소는 당일에는 불가능합니다.."),
-    RESERVATION_ALREADY_CANCELLED(HttpStatus.BAD_REQUEST, "R007", "취소된 예약입니다."),
+    DUPLICATE_RESERVATION(HttpStatus.BAD_REQUEST,"R007","예약 시간이 겹칩니다."),
+    RESERVATION_ALREADY_CANCELLED(HttpStatus.BAD_REQUEST, "R008", "취소된 예약입니다."),
 
     /*StudyRoom*/
     STUDYROOM_NOT_FOUND(HttpStatus.NOT_FOUND,"S001","존재하지 않는 스터디룸입니다."),

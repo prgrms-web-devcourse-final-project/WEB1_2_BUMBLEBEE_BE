@@ -1,5 +1,7 @@
 package roomit.main.domain.reservation.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,9 +19,6 @@ import roomit.main.domain.studyroom.repository.StudyRoomRepository;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.global.error.ErrorCode;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
@@ -36,10 +35,10 @@ public class ReservationService {
         }
 
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
+            .orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
 
         StudyRoom studyRoom = studyRoomRepository.findById(studyRoomId)
-                .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
+            .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
 
         Reservation reservation = request.toEntity(member,studyRoom);
 
@@ -63,7 +62,7 @@ public class ReservationService {
     @Transactional
     public void deleteReservation(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
+            .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime reservationTime = reservation.getStartTime();
@@ -85,13 +84,13 @@ public class ReservationService {
         validateReservationOwner(reservationId,memberId);
 
         Reservation existingReservation = reservationRepository.findById(reservationId)
-                .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
+            .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
         try {
             existingReservation.updateReservationDetails(
-                    request.reservationName(),
-                    request.reservationPhoneNumber(),
-                    request.startTime(),
-                    request.endTime()
+                request.reservationName(),
+                request.reservationPhoneNumber(),
+                request.startTime(),
+                request.endTime()
             );
         }catch (Exception e){
             throw ErrorCode.RESERVATION_NOT_MODIFIED.commonException();
@@ -103,7 +102,7 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId)
             .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
 
-    // 예약을 만든 사람과 수정 요청자가 동일한지 확인
+        // 예약을 만든 사람과 수정 요청자가 동일한지 확인
         if (!reservation.getMember().getMemberId().equals(memberId)) {
             throw ErrorCode.RESERVATION_NOT_MODIFIED.commonException();  // 수정 권한이 없을 경우 예외 처리
         }
@@ -137,12 +136,12 @@ public class ReservationService {
         }
 
         return reservations.stream()
-                .map(reservation -> ReservationResponse.from(
-                        reservation.getStudyRoom(),
-                        reservation,
-                        reservation.getStudyRoom().getWorkPlace()
-                ))
-                .toList();
+            .map(reservation -> ReservationResponse.from(
+                reservation.getStudyRoom(),
+                reservation,
+                reservation.getStudyRoom().getWorkPlace()
+            ))
+            .toList();
     }
 
 
@@ -157,12 +156,12 @@ public class ReservationService {
         }
 
         return reservations.stream()
-                .map(reservation -> MyWorkPlaceReservationResponse.from(
-                        reservation.getStudyRoom(),
-                        reservation,
-                        reservation.getStudyRoom().getWorkPlace()
-                ))
-                .toList();
+            .map(reservation -> MyWorkPlaceReservationResponse.from(
+                reservation.getStudyRoom(),
+                reservation,
+                reservation.getStudyRoom().getWorkPlace()
+            ))
+            .toList();
     }
 
 }

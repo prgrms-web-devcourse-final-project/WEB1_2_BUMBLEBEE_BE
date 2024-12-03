@@ -1,7 +1,6 @@
 package roomit.main.domain.review.controller;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -32,6 +31,7 @@ import roomit.main.domain.reservation.entity.Reservation;
 import roomit.main.domain.reservation.entity.ReservationState;
 import roomit.main.domain.reservation.repository.ReservationRepository;
 import roomit.main.domain.review.dto.request.ReviewRegisterRequest;
+import roomit.main.domain.review.dto.request.ReviewUpdateRequest;
 import roomit.main.domain.review.entity.Review;
 import roomit.main.domain.review.repository.ReviewRepository;
 import roomit.main.domain.studyroom.entity.StudyRoom;
@@ -179,33 +179,33 @@ class ReviewControllerTest {
                 .andDo(print());
     }
 
-//    @Test
-//    @DisplayName("리뷰 수정")
-//    void test2() throws Exception{
-//
-//        reservationRepository.save(reservation);
-//
-//        Review review = Review.builder()
-//                .reviewContent("치킨이 안보이네요..")
-//                .reviewRating(1)
-//                .reservation(reservation)
-//                .workplaceName(workplace.getWorkplaceName().getValue())
-//                .build();
-//        reviewRepository.save(review);
-//
-//
-//        ReviewUpdateRequest request = ReviewUpdateRequest.builder()
-//                .reviewContent("좋은 장소네요")
-//                .reviewRating(2)
-//                .build();
-//
-//        mockMvc.perform(put("/api/v1/review/update/{reviewId}?workplaceName=사업장 넘버원",review.getReviewId())
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(request))
-//                        .header("Authorization", "Bearer " + token))
-//                .andExpect(status().isNoContent())
-//                .andDo(print());
-//    }
+    @Test
+    @DisplayName("리뷰 수정")
+    void test2() throws Exception{
+
+        Reservation save = reservationRepository.save(reservation);
+
+        Review review = Review.builder()
+                .reviewContent("치킨이 안보이네요..")
+                .reviewRating(1)
+                .reservation(save)
+                .workplaceName(workplace.getWorkplaceName().getValue())
+                .build();
+        reviewRepository.save(review);
+
+
+        ReviewUpdateRequest request = ReviewUpdateRequest.builder()
+                .reviewContent("좋은 장소네요")
+                .reviewRating(2)
+                .build();
+
+        mockMvc.perform(put("/api/v1/review/update/{reviewId}?workplaceName=사업장 넘버원",review.getReviewId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent())
+                .andDo(print());
+    }
 
     @Test
     @DisplayName("리뷰 조회")
@@ -250,28 +250,29 @@ class ReviewControllerTest {
                 .andDo(print());
     }
 
-//    @Test
-//    @DisplayName("리뷰 삭제")
-//    void test4() throws Exception{
-//
-//
-//        reservationRepository.save(reservation);
-//
-//        Review review = Review.builder()
-//                .reviewContent("치킨이 안보이네요..")
-//                .reviewRating(1)
-//                .reservation(reservation)
-//                .workplaceName(workplace.getWorkplaceName().getValue())
-//                .build();
-//        reviewRepository.save(review);
-//
-//        mockMvc.perform(delete("/api/v1/review/{reviewId}?workplaceName=사업장 넘버원",review.getReviewId())
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .header("Authorization", "Bearer " + token)
-//                )
-//                .andExpect(status().isNoContent())
-//                .andDo(print());
-//    }
+    @Test
+    @DisplayName("리뷰 삭제")
+    void test4() throws Exception{
+
+
+        Reservation save = reservationRepository.save(reservation);
+
+
+        Review review = Review.builder()
+                .reviewContent("치킨이 안보이네요..")
+                .reviewRating(1)
+                .reservation(save)
+                .workplaceName(workplace.getWorkplaceName().getValue())
+                .build();
+        reviewRepository.save(review);
+
+        mockMvc.perform(delete("/api/v1/review/{reviewId}?workplaceName=사업장 넘버원",review.getReviewId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + token)
+                )
+                .andExpect(status().isNoContent())
+                .andDo(print());
+    }
     @Test
     @DisplayName("첫 페이지 요청 커서 없는 case")
     void test5() throws Exception{

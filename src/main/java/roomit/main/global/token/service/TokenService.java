@@ -5,7 +5,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Collections;
-import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,7 +18,7 @@ import roomit.main.global.error.ErrorCode;
 import roomit.main.global.token.config.JWTUtil;
 import roomit.main.global.token.dto.request.LoginRequest;
 import roomit.main.global.token.dto.response.LoginResponse;
-import roomit.main.global.token.entity.RefreshEntity;
+import roomit.main.global.token.entity.Refresh;
 import roomit.main.global.token.repository.RefreshRepository;
 
 @Service
@@ -50,8 +49,8 @@ public class TokenService {
             // Refresh Token을 쿠키에 저장
             CookieUtil.addCookie(response, "refresh", refreshToken, 60 * 60 * 24); // 1일 유효
 
-            // Refresh Token을 DB에 저장
-            addRefreshEntity(username,refreshToken,6000000L);
+            // Refresh Token을 Redis에 저장
+            addRefreshEntity(username, refreshToken);
 
             return new LoginResponse(Role.ROLE_USER);
 
@@ -80,8 +79,8 @@ public class TokenService {
             // Refresh Token을 쿠키에 저장
             CookieUtil.addCookie(response, "refresh", refreshToken, 60 * 60 * 24); // 1일 유효
 
-            // Refresh Token을 DB에 저장
-            addRefreshEntity(username,refreshToken,6000000L);
+            // Refresh Token을 Redis에 저장
+            addRefreshEntity(username, refreshToken);
 
             return new LoginResponse(Role.ROLE_BUSINESS);
 
@@ -91,16 +90,8 @@ public class TokenService {
     }
 
     public void reissue(HttpServletRequest request, HttpServletResponse response){
-        //get refresh token
-        String refresh = null;
-        Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
 
-            if (cookie.getName().equals("refresh")) {
-
-                refresh = cookie.getValue();
-            }
-        }
+        String refresh = extractRefreshToken(request);
 
         if (refresh == null) {
             throw ErrorCode.MISSING_TOKEN.commonException();
@@ -116,17 +107,14 @@ public class TokenService {
 
         // 토큰이 refresh인지 체크
         String category = jwtUtil.getCategory(refresh);
-
         if (!category.equals("refresh")) {
 
             //response status code
             throw ErrorCode.MALFORMED_TOKEN.commonException();
         }
 
-        //DB에 저장되어 있는지 확인
-        Boolean isExist = refreshRepository.existsByRefresh(refresh);
-        if (!isExist) {
-
+        // Redis에 토큰 존재 여부 확인
+        if (!refreshRepository.existsById(refresh)) {
             throw ErrorCode.INVALID_TOKEN.commonException();
         }
 
@@ -134,12 +122,12 @@ public class TokenService {
         String  role = jwtUtil.getRole(refresh).name();
 
         //make new JWT
-        String newAccess = jwtUtil.createJwt("access", username, role, 600000L);
-        String newRefresh = jwtUtil.createJwt("refresh", username, role, 86400000L);
+        String newAccess = jwtUtil.createJwt("access", username, role, 1000 * 60 * 15L);
+        String newRefresh = jwtUtil.createJwt("refresh", username, role, 1000 * 60 * 60 * 24L);
 
-        //Refresh 토큰 저장 DB에 기존의 Refresh 토큰 삭제 후 새 Refresh 토큰 저장
-        refreshRepository.deleteByRefresh(refresh);
-        addRefreshEntity(username, newRefresh, 86400000L);
+        // Redis에서 기존 Refresh Token 삭제 및 새로 저장
+        refreshRepository.deleteById(refresh);
+        addRefreshEntity(username, newRefresh);
 
         //response
         response.addHeader("Authorization", newAccess);
@@ -147,15 +135,23 @@ public class TokenService {
     }
 
 
-    private void addRefreshEntity(String username, String refresh, Long expiredMs) {
+    private void addRefreshEntity(String username, String refreshToken) {
+        Refresh refresh = new Refresh();
+        refresh.changeRefresh(refreshToken);
+        refresh.changeUsername(username);
 
-        Date date = new Date(System.currentTimeMillis() + expiredMs);
+        refreshRepository.save(refresh);
+    }
 
-        RefreshEntity refreshEntity = new RefreshEntity();
-        refreshEntity.changeUsername(username);
-        refreshEntity.changeRefresh(refresh);
-        refreshEntity.changeExpiration(date.toString());
-
-        refreshRepository.save(refreshEntity);
+    private String extractRefreshToken(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("refresh".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 }
