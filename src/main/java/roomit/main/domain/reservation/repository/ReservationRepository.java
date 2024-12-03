@@ -20,10 +20,10 @@ public interface ReservationRepository extends JpaRepository<Reservation,Long> {
     // 내 작업장의 예약 리스트 출력.
     @Query("SELECT r FROM Reservation r JOIN r.studyRoom sr WHERE sr.workPlace.workplaceId = :workPlaceId ORDER BY r.createdAt DESC")
     List<Reservation> findMyWorkPlaceReservationsByWorkPlaceId(@Param("workPlaceId") Long workPlaceId);
-  
-     // 예약 ID와 회원 ID로 가장 최근 예약 하나 조회
-     @Query("SELECT r FROM Reservation r WHERE r.reservationId = :reservationId AND r.member = :memberId")
-     Optional<Reservation> findFirstByIdAndMemberId(@Param("reservationId") Long reservationId, @Param("memberId") Long memberId);
+
+    // 예약 ID와 회원 ID로 가장 최근 예약 하나 조회
+    @Query("SELECT r FROM Reservation r WHERE r.reservationId = :reservationId AND r.member.id = :memberId")
+    Optional<Reservation> findFirstByIdAndMemberId(@Param("reservationId") Long reservationId, @Param("memberId") Long memberId);
 
 
 }
