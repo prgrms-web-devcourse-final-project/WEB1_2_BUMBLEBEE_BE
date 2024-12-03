@@ -31,8 +31,8 @@ public class FileUploadService {
                 .build();
     }
 
-    public Map<String, Object> generatePreSignUrl(String fileName, String extension, String fileLocation) {
-        String filePath = fileLocation + "/" + fileName + "." + extension;
+    public Map<String, Object> generatePreSignUrl(String fileName, String fileLocation) {
+        String filePath = fileLocation + "/" + fileName;
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
@@ -50,7 +50,7 @@ public class FileUploadService {
         Map<String, Object> response = new HashMap<>();
         response.put("presignedUrl", url);
         response.put("method", "PUT");
-        response.put("headers", Map.of("Content-Type", "image/" + extension));
+        response.put("headers", Map.of("Content-Type", fileLocation + "/" + fileName));
         response.put("filePath", filePath);
 
         return response;
