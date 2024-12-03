@@ -28,6 +28,6 @@ public class ChatRoomController {
     @GetMapping("/room")
     public List<ChatRoomResponse> list(@AuthenticationPrincipal CustomMemberDetails memberDetails,
                                        @AuthenticationPrincipal CustomBusinessDetails businessDetails){
-        return chatRoomService.getRooms(memberDetails.getId(), businessDetails.getId());
+        return chatRoomService.getRooms(memberDetails, businessDetails);
     }
 }
