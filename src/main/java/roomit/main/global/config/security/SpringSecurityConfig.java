@@ -46,9 +46,9 @@ public class SpringSecurityConfig {
     private final JWTUtil jwtUtil;
     private final CustomMemberDetailsService memberDetailsService;
     private final CustomBusinessDetailsService businessDetailsService;
-    private final RefreshRepository refreshRepository;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
+    private final RefreshRepository refreshRepository;
 
     @Bean
     public AuthenticationManager authenticationManager() {
@@ -68,6 +68,7 @@ public class SpringSecurityConfig {
 
         return new BCryptPasswordEncoder();
     }
+
 
     @Bean
     public RoleHierarchy roleHierarchy() {
@@ -116,6 +117,7 @@ public class SpringSecurityConfig {
                                 .userService(customOAuth2UserService)) // 사용자 정보 로드
                         .successHandler(customSuccessHandler) // 성공 핸들러
                 );
+
         http
                 // 경로별 인가 작업
                 .authorizeHttpRequests((auth) -> auth
