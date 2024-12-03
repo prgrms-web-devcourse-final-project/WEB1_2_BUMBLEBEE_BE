@@ -91,7 +91,7 @@ public class SpringSecurityConfig {
                         CorsConfiguration configuration = new CorsConfiguration();
 
                         configuration.setAllowedOrigins(
-                            List.of("https://your-frontend-domain.com",corsUrl));
+                            List.of("https://your-frontend-domain.com",corsUrl,  "http://127.0.0.1:5000"));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -129,6 +129,7 @@ public class SpringSecurityConfig {
                         .requestMatchers("/api/v1/business/signup").permitAll()
                         .requestMatchers("/toss/**").permitAll()
 
+                        .requestMatchers("/api/v1/recommend/**").permitAll()
 
                         //멤버 권한 설정
                         .requestMatchers("/api/v1/member").hasRole("USER")
