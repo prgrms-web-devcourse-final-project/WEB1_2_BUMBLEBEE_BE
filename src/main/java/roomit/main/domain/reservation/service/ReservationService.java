@@ -35,6 +35,10 @@ public class ReservationService {
             throw ErrorCode.START_TIME_NOT_AFTER_END_TIME.commonException();
         }
 
+//        if(isDuplicateReservation(studyRoomId,request.startTime(),request.endTime())){
+//            throw ErrorCode.DUPLICATE_RESERVATION.commonException();
+//        }
+
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
 
@@ -56,7 +60,7 @@ public class ReservationService {
 
 //    // 중복 예약 방지 로직
 //    private boolean isDuplicateReservation(Long studyRoomId,LocalDateTime startTime,LocalDateTime endTime){
-//
+//        return reservationRepository.existsByStudyRoomIdAndStartTimeLessThanAndEndTimeGreaterThan(studyRoomId,startTime,endTime);
 //    }
 
     // x를 눌러 예약을 삭제하는 메서드
@@ -149,8 +153,8 @@ public class ReservationService {
 
     // 내 사업장의 예약자 보기 (예약자 확인 페이지)
     @Transactional(readOnly = true)
-    public List<MyWorkPlaceReservationResponse> findReservationByWorkplaceId(Long workplaceId) {
-        List<Reservation> reservations = reservationRepository.findMyWorkPlaceReservationsByWorkPlaceId(workplaceId);
+    public List<MyWorkPlaceReservationResponse> findReservationByWorkplaceId(Long businessId) {
+        List<Reservation> reservations = reservationRepository.findMyAllReservations(businessId);
 
         if(reservations.isEmpty()){
             throw(ErrorCode.RESERVATION_IS_EMPTY.commonException());
