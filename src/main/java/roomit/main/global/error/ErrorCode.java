@@ -18,9 +18,11 @@ public enum ErrorCode {
     /*Reservation*/
     RESERVATION_NOT_FOUND(HttpStatus.BAD_REQUEST,"R001","존재하지 않는 예약입니다."),
     RESERVATION_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "R002", "이미 완료된 예약입니다."),
-    RESERVATION_ALREADY_CANCELLED(HttpStatus.BAD_REQUEST, "R003", "취소된 예약입니다."),
-    START_TIME_NOT_AFTER_END_TIME(HttpStatus.BAD_REQUEST,"R004","종료시간이 시작시간보다 빠릅니다."),
-    RESERVATION_NOT_MODIFIED(HttpStatus.NOT_MODIFIED,"R005","예약 수정이 완료되지 않았습니다."),
+    START_TIME_NOT_AFTER_END_TIME(HttpStatus.BAD_REQUEST,"R003","종료시간이 시작시간보다 빠릅니다."),
+    RESERVATION_NOT_MODIFIED(HttpStatus.NOT_MODIFIED,"R004","예약 수정이 완료되지 않았습니다."),
+    RESERVATION_IS_EMPTY(HttpStatus.NOT_FOUND,"R005","존재하는 예약이 없습니다."),
+    RESERVATION_CANNOT_CANCEL(HttpStatus.BAD_REQUEST,"R006","예약취소는 당일에는 불가능합니다.."),
+    RESERVATION_ALREADY_CANCELLED(HttpStatus.BAD_REQUEST, "R007", "취소된 예약입니다."),
 
     /*StudyRoom*/
     STUDYROOM_NOT_FOUND(HttpStatus.BAD_REQUEST,"S001","존재하지 않는 스터디룸입니다."),

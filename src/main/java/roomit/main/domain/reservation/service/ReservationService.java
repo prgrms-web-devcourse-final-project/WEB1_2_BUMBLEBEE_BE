@@ -50,26 +50,62 @@ public class ReservationService {
     @Transactional(readOnly = true)
     public boolean validateReservation(LocalDateTime startTime, LocalDateTime endTime) {
         return startTime.isBefore(endTime);
-
     }
+
+
+
+//    // 중복 예약 방지 로직
+//    private boolean isDuplicateReservation(Long studyRoomId,LocalDateTime startTime,LocalDateTime endTime){
+//
+//    }
 
     // x를 눌러 예약을 삭제하는 메서드
     @Transactional
     public void deleteReservation(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
-        reservation.changeReservationState(ReservationState.CANCELLED);
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime reservationTime = reservation.getStartTime();
+
+        if(now.isBefore(reservationTime.minusDays(2))){
+            // 100프로 환불 메서드
+            reservation.changeReservationState(ReservationState.CANCELLED);
+        }else if(now.isBefore(reservationTime.minusDays(1))){
+            // 50프로 환불 메서드
+            reservation.changeReservationState(ReservationState.CANCELLED);
+        }else{
+            throw ErrorCode.RESERVATION_CANNOT_CANCEL.commonException();
+        }
     }
 
     // 예약을 수정하는 메서드
     @Transactional
-    public void updateReservation(Long reservationId, UpdateReservationRequest request) {
+    public void updateReservation(Long reservationId,Long memberId ,UpdateReservationRequest request) {
+        validateReservationOwner(reservationId,memberId);
+
         Reservation existingReservation = reservationRepository.findById(reservationId)
                 .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
         try {
-            existingReservation.updatedReservation(request);
+            existingReservation.updateReservationDetails(
+                    request.reservationName(),
+                    request.reservationPhoneNumber(),
+                    request.startTime(),
+                    request.endTime()
+            );
         }catch (Exception e){
             throw ErrorCode.RESERVATION_NOT_MODIFIED.commonException();
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public void validateReservationOwner(Long reservationId, Long memberId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+            .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
+
+    // 예약을 만든 사람과 수정 요청자가 동일한지 확인
+        if (!reservation.getMember().getMemberId().equals(memberId)) {
+            throw ErrorCode.RESERVATION_NOT_MODIFIED.commonException();  // 수정 권한이 없을 경우 예외 처리
         }
     }
 
@@ -77,17 +113,18 @@ public class ReservationService {
     // memberId를 이용하여 나의 최근 예약 조회
     @Transactional(readOnly = true)
     public ReservationResponse findByMemberId(Long memberId) {
-        List<Reservation> reservations = reservationRepository.findRecentReservationByMemberId(memberId);
+        List<Reservation> recentReservation = reservationRepository.findRecentReservationByMemberId(memberId);
 
-        if (reservations.isEmpty())
+        if (recentReservation == null)
         {
-            throw(ErrorCode.RESERVATION_NOT_FOUND.commonException());
+            throw(ErrorCode.RESERVATION_IS_EMPTY.commonException());
         }
-        Reservation recentReservation =  reservations.get(0);
-        StudyRoom studyRoom = recentReservation.getStudyRoom();
+
+        Reservation recentReservation1 = recentReservation.get(0);
+        StudyRoom studyRoom = recentReservation1.getStudyRoom();
         Workplace workplace = studyRoom.getWorkPlace();
 
-        return ReservationResponse.from(studyRoom,recentReservation,workplace);
+        return ReservationResponse.from(studyRoom,recentReservation1,workplace);
     }
 
     // memberId를 이용하여 나의 예약 전체 조회
@@ -96,7 +133,7 @@ public class ReservationService {
         List<Reservation> reservations = reservationRepository.findReservationsByMemberId(memberId);
 
         if(reservations.isEmpty()){
-            throw(ErrorCode.RESERVATION_NOT_FOUND.commonException());
+            throw(ErrorCode.RESERVATION_IS_EMPTY.commonException());
         }
 
         return reservations.stream()
@@ -114,6 +151,10 @@ public class ReservationService {
     @Transactional(readOnly = true)
     public List<MyWorkPlaceReservationResponse> findReservationByWorkplaceId(Long workplaceId) {
         List<Reservation> reservations = reservationRepository.findMyWorkPlaceReservationsByWorkPlaceId(workplaceId);
+
+        if(reservations.isEmpty()){
+            throw(ErrorCode.RESERVATION_IS_EMPTY.commonException());
+        }
 
         return reservations.stream()
                 .map(reservation -> MyWorkPlaceReservationResponse.from(
