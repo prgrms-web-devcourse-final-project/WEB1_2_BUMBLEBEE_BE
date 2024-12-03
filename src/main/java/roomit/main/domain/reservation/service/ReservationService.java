@@ -71,11 +71,9 @@ public class ReservationService {
         if(now.isBefore(reservationTime.minusDays(2))){
             // 100프로 환불 메서드
             reservation.changeReservationState(ReservationState.CANCELLED);
-            System.out.println("2일 전 취소: 무료 취소 처리되었습니다.");
         }else if(now.isBefore(reservationTime.minusDays(1))){
             // 50프로 환불 메서드
             reservation.changeReservationState(ReservationState.CANCELLED);
-            System.out.println("1일 전 취소: 수수료 50% 부과되었습니다.");
         }else{
             throw ErrorCode.RESERVATION_CANNOT_CANCEL.commonException();
         }
