@@ -57,6 +57,8 @@ public enum ErrorCode {
     PAYMENTS_ALREADY_APPROVED(HttpStatus.BAD_REQUEST,"P003","이미 승인된 결제입니다"),
     PAYMENTS_AMOUNT_EXP(HttpStatus.BAD_REQUEST,"P004","결제 금액이 일치하지 않습니다"),
     PAYMENTS_PROCESS_FAILED(HttpStatus.BAD_REQUEST, "P005", "결제 처리에 실패했습니다."),
+    PAYMENTS_CANCEL_FAILED(HttpStatus.BAD_REQUEST, "P006", "결제 취소에 실패했습니다."),
+
 
 
     /*OAuth*/

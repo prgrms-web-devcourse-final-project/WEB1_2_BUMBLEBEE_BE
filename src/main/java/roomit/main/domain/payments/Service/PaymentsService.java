@@ -45,14 +45,18 @@ public class PaymentsService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
 
-        Payments payments = paymentsRequest.toEntity();
-        payments.addReservation(reservation);
-        paymentsRepository.save(payments);
+        try {
+            Payments payments = paymentsRequest.toEntity();
+            payments.addReservation(reservation);
+            paymentsRepository.save(payments);
 
-        reservation.changeReservationState(ReservationState.COMPLETED);
-        reservationRepository.save(reservation);
+            reservation.changeReservationState(ReservationState.COMPLETED);
+            reservationRepository.save(reservation);
 
-        return payments.toDto(paymentsConfig.getSuccessUrl(),paymentsConfig.getFailUrl());
+            return payments.toDto(paymentsConfig.getSuccessUrl(), paymentsConfig.getFailUrl());
+        } catch (Exception e){
+            throw ErrorCode.PAYMENTS_PROCESS_FAILED.commonException();
+        }
     }
 
     /**
@@ -62,8 +66,10 @@ public class PaymentsService {
     public PaymentsResponse tossPaymentSuccess(String paymentKey, String orderId, Long amount) {
         Payments payments = verifyPayment(orderId, amount);
         PaymentsResponse result = requestPaymentAccept(paymentKey, orderId, amount);
+
         payments.changeTossPaymentsKey(paymentKey);
         payments.changePaySuccessYN(true);
+
         return result;
     }
 
@@ -117,8 +123,16 @@ public class PaymentsService {
 
         Long totalAmount = calculateRefundAmount(reservation, amount);
 
-        reservation.changeReservationState(ReservationState.CANCELLED);
-        reservationRepository.save(reservation);
+        try {
+            reservation.changeReservationState(ReservationState.CANCELLED);
+            reservationRepository.save(reservation);
+
+            payment.changeCancelYN(true);
+            payment.changeCancelReason(cancelReason);
+            paymentsRepository.save(payment);
+        } catch (Exception e){
+            throw ErrorCode.PAYMENTS_CANCEL_FAILED.commonException();
+        }
 
         return tossPaymentCancel(paymentKey,cancelReason,totalAmount);
     }

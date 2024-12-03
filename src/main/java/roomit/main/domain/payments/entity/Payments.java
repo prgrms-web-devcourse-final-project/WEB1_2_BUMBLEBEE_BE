@@ -121,6 +121,14 @@ public class Payments {
         this.failReason = failReason;
     }
 
+    public void changeCancelYN(boolean cancelYN) {
+        this.cancelYN = cancelYN;
+    }
+
+    public void changeCancelReason(String cancelReason) {
+        this.cancelReason = cancelReason;
+    }
+
     public void addReservation(Reservation reservation) {
         this.reservation = reservation;
         reservation.changePayments(this);
