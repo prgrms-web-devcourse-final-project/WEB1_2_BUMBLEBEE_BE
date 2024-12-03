@@ -4,6 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -27,11 +31,6 @@ import roomit.main.domain.workplace.entity.value.WorkplacePhoneNumber;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
 import roomit.main.global.exception.CommonException;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import roomit.main.global.service.ImageService;
 
 @Service
@@ -100,7 +99,7 @@ public class WorkplaceService {
         } catch (InvalidDataAccessApiUsageException e) {
             throw ErrorCode.WORKPLACE_INVALID_REQUEST.commonException();
         } catch (CommonException e) {
-            if (e.getErrorCode() == ErrorCode.STYDYROOM_NOT_REGISTERD) {
+            if (e.getErrorCode() == ErrorCode.STUDYROOM_NOT_REGISTERD) {
                 throw e;
             }
             throw e;
@@ -111,12 +110,11 @@ public class WorkplaceService {
     private void saveStudyrooms(WorkplaceRequest workplaceDto, Workplace savedWorkplace) {
         try {
             for (CreateStudyRoomRequest studyRoomRequest : workplaceDto.studyRoomList()) {
-                StudyRoom studyRoom = studyRoomRequest.toEntity(imageService);
-                studyRoom.setWorkPlace(savedWorkplace); // 스터디룸에 사업장 연결
+                StudyRoom studyRoom = studyRoomRequest.toEntity(imageService, savedWorkplace);
                 studyRoomRepository.save(studyRoom);
             }
         } catch (Exception e) {
-            throw ErrorCode.STYDYROOM_NOT_REGISTERD.commonException();
+            throw ErrorCode.STUDYROOM_NOT_REGISTERD.commonException();
         }
     }
 

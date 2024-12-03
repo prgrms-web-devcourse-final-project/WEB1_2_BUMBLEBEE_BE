@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import roomit.main.domain.studyroom.dto.response.FindPossibleStudyRoomResponse;
-import roomit.main.domain.studyroom.dto.response.StudyRoomResponse;
 import roomit.main.domain.studyroom.entity.StudyRoom;
 
 @Repository
@@ -15,6 +14,6 @@ public interface StudyRoomRepository extends JpaRepository<StudyRoom,Long> {
     List<FindPossibleStudyRoomResponse> findAvailableStudyRooms(@Param("workplaceAddress") String workplaceAddress, @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("capacity") Integer capacity);
 
     @Query("SELECT sr FROM StudyRoom sr JOIN sr.workPlace wp WHERE wp.workplaceId = :workplaceId")
-    List<StudyRoomResponse> findStudyRoomsByWorkPlaceId(@Param("workplaceId") Long workplaceId);
+    List<StudyRoom> findStudyRoomsByWorkPlaceId(@Param("workplaceId") Long workplaceId);
 
 }
