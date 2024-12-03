@@ -2,14 +2,27 @@ package roomit.main.domain.chat.chatroom.repositoroy;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import roomit.main.domain.chat.chatroom.dto.ChatRoomDetailsDTO;
 import roomit.main.domain.chat.chatroom.dto.ChatRoomResponse;
 import roomit.main.domain.chat.chatroom.entity.ChatRoom;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
+
+    @Query("""
+            SELECT new roomit.main.domain.chat.chatroom.dto.ChatRoomDetailsDTO(
+            c.roomId, c.member.memberNickname.value, c.business.businessName.value
+            )
+            FROM ChatRoom c 
+            WHERE c.roomId = :roomId
+        """)
+    Optional<ChatRoomDetailsDTO> findRoomDetailsById(@Param("roomId") Long roomId);
+
 
     @Query("SELECT c.roomId FROM ChatRoom c")
     List<Long> findAllRoomIds();

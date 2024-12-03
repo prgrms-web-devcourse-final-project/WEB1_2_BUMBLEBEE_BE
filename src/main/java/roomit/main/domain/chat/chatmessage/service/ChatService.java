@@ -6,15 +6,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import roomit.main.domain.business.dto.CustomBusinessDetails;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.business.repository.BusinessRepository;
 import roomit.main.domain.chat.chatmessage.dto.ChatMessageRequest;
 import roomit.main.domain.chat.chatmessage.dto.ChatMessageResponse;
 import roomit.main.domain.chat.chatmessage.entity.ChatMessage;
 import roomit.main.domain.chat.chatmessage.repository.ChatMessageRepository;
+import roomit.main.domain.chat.chatroom.dto.ChatRoomDetailsDTO;
 import roomit.main.domain.chat.chatroom.entity.ChatRoom;
 import roomit.main.domain.chat.chatroom.repositoroy.ChatRoomRepository;
 import roomit.main.domain.chat.redis.service.RedisPublisher;
+import roomit.main.domain.member.dto.CustomMemberDetails;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.member.repository.MemberRepository;
 import roomit.main.global.error.ErrorCode;
@@ -44,11 +47,11 @@ public class ChatService {
     private static final String REDIS_MESSAGE_KEY_PREFIX = "chat:room:";
 
     public void sendMessage(ChatMessageRequest request) {
-        ChatRoom room = roomRepository.findById(request.roomId())
+        ChatRoomDetailsDTO roomDetails = roomRepository.findRoomDetailsById(request.roomId())
                 .orElseThrow(() -> new IllegalArgumentException("Chat room not found"));
 
-        boolean isSenderValid = request.senderType().equals("business") && room.getBusiness().getBusinessName().equals(request.sender())
-                || request.senderType().equals("member") && room.getMember().getMemberNickName().equals(request.sender());
+        boolean isSenderValid = request.senderType().equals("business") && roomDetails.businessName().equals(request.sender())
+                || request.senderType().equals("member") && roomDetails.memberNickName().equals(request.sender());
 
         if (!isSenderValid) {
             throw new IllegalArgumentException("Sender is not authorized to send messages in this room");
@@ -62,8 +65,6 @@ public class ChatService {
         // Redis Pub/Sub 발행
         String topic = "/sub/chat/room/" + request.roomId();
         redisPublisher.publish(topic, request);
-
-        log.info("save");
 
         // Redis에 저장
         saveMessageToRedis(request);
@@ -108,18 +109,31 @@ public class ChatService {
                     request.content(),
                     request.timestamp()
             );
+
             messageRepository.save(message);
         });
     }
 
-    public List<ChatMessageResponse> getMessagesByRoomId(Long roomId, Long senderId, String senderName) {
+    public List<ChatMessageResponse> getMessagesByRoomId(Long roomId, CustomMemberDetails memberDetails, CustomBusinessDetails businessDetails) {
+        String senderName = null;
+        String senderType = null;
+
+        if (memberDetails != null) {
+            senderName = memberDetails.getName();
+            senderType = "member";
+        } else if (businessDetails != null) {
+            senderName = businessDetails.getName();
+            senderType = "business";
+        }
+
         ChatRoom room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("Chat room not found"));
 
-        String senderType = identify(senderId, senderName);
-
-        boolean isAuthorized = senderType.equals("business") && room.getBusiness().getBusinessName().equals(senderName)
-                || senderType.equals("member") && room.getMember().getMemberNickName().equals(senderName);
+        System.out.println(senderType);
+        System.out.println(room.getMember().getMemberNickName());
+        System.out.println(senderName);
+        boolean isAuthorized = (senderType.equals("business") && Objects.equals(room.getBusiness().getBusinessName(), senderName))
+                || (senderType.equals("member") && Objects.equals(room.getMember().getMemberNickName(), senderName));
 
         if (!isAuthorized) {
             throw new IllegalArgumentException("Sender is not authorized to view messages in this room");
@@ -154,18 +168,6 @@ public class ChatService {
                         message.getTimestamp()
                 ))
                 .toList();
-    }
-
-    private String identify(Long senderId, String senderName) {
-        // Business 확인
-        if (businessRepository.existsByIdAndBusinessName(senderId, senderName)) {
-            return "business";
-        }
-        // Member 확인
-        if (memberRepository.existsByIdAndMemberNickName(senderId, senderName)) {
-            return "member";
-        }
-        throw new IllegalArgumentException("Invalid sender information");
     }
 
     public void deleteOldMessages() {

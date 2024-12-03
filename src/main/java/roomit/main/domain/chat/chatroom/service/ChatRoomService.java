@@ -2,10 +2,12 @@ package roomit.main.domain.chat.chatroom.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomit.main.domain.business.dto.CustomBusinessDetails;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.chat.chatroom.dto.ChatRoomResponse;
 import roomit.main.domain.chat.chatroom.entity.ChatRoom;
 import roomit.main.domain.chat.chatroom.repositoroy.ChatRoomRepository;
+import roomit.main.domain.member.dto.CustomMemberDetails;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.member.repository.MemberRepository;
 import roomit.main.domain.studyroom.entity.StudyRoom;
@@ -28,7 +30,7 @@ public class ChatRoomService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(ErrorCode.MEMBER_NOT_FOUND::commonException);
 
-        Business business = studyRoom.getWorkPlaceId().getBusiness();
+        Business business = studyRoom.getWorkPlace().getBusiness();
 
         if (chatRoomRepository.existsChatRoomByMemberIdAndBusinessId(memberId, business.getBusinessId())) {
             return;
@@ -37,13 +39,13 @@ public class ChatRoomService {
         chatRoomRepository.save(new ChatRoom(business, member));
     }
 
-    public List<ChatRoomResponse> getRooms(Long memberId, Long businessId) {
-        if (memberId != null) {
-            return chatRoomRepository.findChatRoomByMembersId(memberId);
+    public List<ChatRoomResponse> getRooms(CustomMemberDetails member, CustomBusinessDetails business) {
+        if (member != null) {
+            return chatRoomRepository.findChatRoomByMembersId(member.getId());
         }
 
-        if (businessId != null) {
-            return chatRoomRepository.findChatRoomByBusinessId(businessId);
+        if (business != null) {
+            return chatRoomRepository.findChatRoomByBusinessId(business.getId());
         }
 
         return null;
