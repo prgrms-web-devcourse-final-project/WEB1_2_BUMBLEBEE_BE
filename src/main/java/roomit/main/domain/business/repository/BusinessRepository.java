@@ -20,6 +20,11 @@ public interface BusinessRepository extends JpaRepository<Business, Long> {
     @Query(value = "SELECT CASE WHEN COUNT(b) > 0 THEN true ELSE false END FROM Business b WHERE b.businessName.value=:businessNum")
     Boolean existsByBusinessNum(String businessNum);
 
-
+    @Query("""
+        SELECT CASE WHEN COUNT(b) > 0 THEN TRUE ELSE FALSE END 
+        FROM Business b
+        WHERE b.businessId = :senderId AND b.businessName = :senderName
+    """)
+    boolean existsByIdAndBusinessName(Long senderId, String senderName);
 }
 
