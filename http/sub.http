@@ -1,0 +1,4 @@
+### 구독
+GET http://localhost:8080/api/subscribe/1
+Content-Type: application/json
+Accept: text/event-stream

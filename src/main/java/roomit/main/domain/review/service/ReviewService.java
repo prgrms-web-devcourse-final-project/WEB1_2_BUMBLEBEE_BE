@@ -3,11 +3,16 @@ package roomit.main.domain.review.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.member.repository.MemberRepository;
+import roomit.main.domain.notification.dto.ResponseNotificationDto;
+import roomit.main.domain.notification.entity.Notification;
+import roomit.main.domain.notification.entity.NotificationType;
+import roomit.main.domain.notification.service.NotificationService;
 import roomit.main.domain.reservation.entity.Reservation;
 import roomit.main.domain.reservation.repository.ReservationRepository;
 import roomit.main.domain.review.dto.request.ReviewRegisterRequest;
@@ -29,6 +34,7 @@ public class ReviewService {
     private final MemberRepository memberRepository;
     private final WorkplaceRepository workplaceRepository;
     private final ReservationRepository reservationRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public void register(ReviewRegisterRequest request, Long memberId) {
@@ -37,18 +43,34 @@ public class ReviewService {
                 .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
         // 본인이 예약한거지 확인하는거
 
-        if (!Objects.equals(reservation.getMember().getMemberId(), memberId)){
-            throw ErrorCode.REVIEW_UPDATE_FAIL.commonException();
-        }
+//        if (!Objects.equals(reservation.getMember().getMemberId(), memberId)) {
+//            throw ErrorCode.REVIEW_UPDATE_FAIL.commonException();
+//        }
 
         Workplace workPlace = workplaceRepository.findByWorkplaceName(new WorkplaceName(request.workPlaceName()))
-                    .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
+                .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
 
-            // 별점 총합 및 리뷰 개수 업데이트
+        // 별점 총합 및 리뷰 개수 업데이트
         workPlace.changeStarSum(workPlace.getStarSum() + request.reviewRating());
         workPlace.changeReviewCount(workPlace.getReviewCount() + 1);
 
         reviewRepository.save(request.toEntity(reservation));
+
+        Notification notification = Notification.builder()
+                .url("/api/v1/review/register")
+                .notificationType(NotificationType.REVIEW_CREATED)
+                .content("리뷰가 등록되었습니다.")
+                .build();
+
+        ResponseNotificationDto responseNotificationDto = ResponseNotificationDto
+                .builder()
+                .notification(notification)
+                .build();
+
+        notificationService.notify(
+                workPlace.getBusiness().getBusinessId().longValue(),
+                responseNotificationDto
+                );
     }
 
     @Transactional
@@ -63,7 +85,7 @@ public class ReviewService {
                 .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
 
         boolean isTrue = review.checkMyReservation(reservation, memberId);
-        if (isTrue){
+        if (isTrue) {
             throw ErrorCode.REVIEW_UPDATE_FAIL.commonException();
         }
 
@@ -107,7 +129,7 @@ public class ReviewService {
                 .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
 
         boolean isTrue = review.checkMyReservation(reservation, memberId);
-        if (isTrue){
+        if (isTrue) {
             throw ErrorCode.REVIEW_UPDATE_FAIL.commonException();
         }
 

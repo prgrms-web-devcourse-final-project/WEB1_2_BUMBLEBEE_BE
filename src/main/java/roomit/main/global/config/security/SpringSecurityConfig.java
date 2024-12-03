@@ -128,6 +128,7 @@ public class SpringSecurityConfig {
                         .requestMatchers("/api/v1/member/signup").permitAll()
                         .requestMatchers("/api/v1/business/signup").permitAll()
                         .requestMatchers("/toss/**").permitAll()
+                        .requestMatchers("/api/subscribe/**").permitAll()
 
 
                         //멤버 권한 설정
