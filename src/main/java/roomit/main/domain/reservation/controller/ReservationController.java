@@ -3,6 +3,7 @@ package roomit.main.domain.reservation.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -37,10 +39,10 @@ public class ReservationController {
     }
 
     // 예약 수정
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/api/v1/reservations/{reservationId}")
-    public void updateReservation(@PathVariable @Positive Long reservationId, @RequestBody @Valid UpdateReservationRequest request) {
-        reservationService.updateReservation(reservationId, request);
+    public void updateReservation(@AuthenticationPrincipal CustomMemberDetails customMemberDetails,@PathVariable @Positive Long reservationId, @RequestBody @Valid UpdateReservationRequest request) {
+        reservationService.updateReservation(customMemberDetails.getId(),reservationId , request);
     }
 
     // 특정 멤버의 예약 찾기
