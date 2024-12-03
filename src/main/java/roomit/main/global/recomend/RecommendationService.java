@@ -1,4 +1,4 @@
-package roomit.main.global.service;
+package roomit.main.global.recomend;
 
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -13,9 +13,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Slf4j
