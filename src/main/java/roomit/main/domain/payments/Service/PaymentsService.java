@@ -34,30 +34,34 @@ public class PaymentsService {
     /**
      * 결제 검증
      */
-
-    public PaymentsResponse requestPayment(Long reservationId, Long memberId, PaymentsRequest paymentsRequest) { // 결제 승인 요청
+    public PaymentsResponse requestPayment(Long reservationId, Long memberId, PaymentsRequest paymentsRequest) {
 
         validateReservationForPayment(reservationId,memberId,paymentsRequest); // 검증
 
-        Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
+        try {
+            Reservation reservation = reservationRepository.findById(reservationId)
+                    .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
 
-        Payments payments = paymentsRequest.toEntity();
-        payments.addReservation(reservation);
-        paymentsRepository.save(payments); //서버에 저장 db저장
+            Payments payments = paymentsRequest.toEntity();
+            payments.addReservation(reservation);
+            paymentsRepository.save(payments);
 
-        reservation.changeReservationState(ReservationState.COMPLETED);
+            reservation.changeReservationState(ReservationState.COMPLETED);
+            reservationRepository.save(reservation);
 
-        return PaymentsResponse.builder()
-                .orderId(payments.getOrderId())
-                .orderName(payments.getOrderName())
-                .memberName(payments.getMemberName())
-                .memberPhoneNum(payments.getMemberPhoneNum())
-                .tossPaymentMethod(payments.getTossPaymentMethod())
-                .amount(payments.getTotalAmount())
-                .createdAt(payments.getCreatedAt())
-                .successUrl(paymentsConfig.getSuccessUrl())
-                .failUrl(paymentsConfig.getFailUrl()).build();
+            return PaymentsResponse.builder()
+                    .orderId(payments.getOrderId())
+                    .orderName(payments.getOrderName())
+                    .memberName(payments.getMemberName())
+                    .memberPhoneNum(payments.getMemberPhoneNum())
+                    .tossPaymentMethod(payments.getTossPaymentMethod())
+                    .amount(payments.getTotalAmount())
+                    .createdAt(payments.getCreatedAt())
+                    .successUrl(paymentsConfig.getSuccessUrl())
+                    .failUrl(paymentsConfig.getFailUrl()).build();
+        } catch (Exception e){
+            throw ErrorCode.PAYMENTS_PROCESS_FAILED.commonException();
+        }
     }
 
     /**
@@ -90,7 +94,7 @@ public class PaymentsService {
                     new HttpEntity<>(params, headers),
                     PaymentsSuccessResponse.class);
         } catch (Exception e) {
-            throw e;
+            throw e; //예외 발생시 /noauth로 401에러가 보내져 토스쪽에서 보낸 예외를 보기 위해 설정
         }
 
         return result;
@@ -138,6 +142,8 @@ public class PaymentsService {
         // 예약 상태 검증
         if(reservation.getReservationState().equals(ReservationState.COMPLETED)){
             throw ErrorCode.RESERVATION_ALREADY_COMPLETED.commonException();
+        } else if (reservation.getReservationState().equals(ReservationState.CANCELLED)){
+            throw ErrorCode.RESERVATION_ALREADY_CANCELLED.commonException();
         }
 
         // 결제 금액 검증
