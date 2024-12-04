@@ -26,8 +26,11 @@ public enum ErrorCode {
     RESERVATION_ALREADY_CANCELLED(HttpStatus.BAD_REQUEST, "R008", "취소된 예약입니다."),
 
     /*StudyRoom*/
-    STUDYROOM_NOT_FOUND(HttpStatus.BAD_REQUEST,"S001","존재하지 않는 스터디룸입니다."),
-    STYDYROOM_NOT_REGISTERD(HttpStatus.UNAUTHORIZED, "S002","스터디룸 등록에 실패하였습니다."),
+    STUDYROOM_NOT_FOUND(HttpStatus.NOT_FOUND,"S001","존재하지 않는 스터디룸입니다."),
+    NOT_OWNER_OF_STUDYROOM(HttpStatus.FORBIDDEN, "S002", "본인이 소유한 사업장이 아닙니다."),
+    STUDYROOM_NOT_REGISTERD(HttpStatus.UNAUTHORIZED, "S003","스터디룸 등록에 실패하였습니다."),
+    STUDYROOM_NOT_MODIFY(HttpStatus.UNAUTHORIZED, "S004","스터디룸 수정에 실패하였습니다."),
+    STUDYROOM_NOT_DELETE(HttpStatus.UNAUTHORIZED, "S004","스터디룸 삭제에 실패하였습니다."),
 
     /*Business*/
     BUSINESS_NOT_FOUND(HttpStatus.BAD_REQUEST, "B003", "존재 하지 않는 사업자입니다."),
@@ -57,10 +60,14 @@ public enum ErrorCode {
     PAYMENTS_ALREADY_APPROVED(HttpStatus.BAD_REQUEST,"P003","이미 승인된 결제입니다"),
     PAYMENTS_AMOUNT_EXP(HttpStatus.BAD_REQUEST,"P004","결제 금액이 일치하지 않습니다"),
     PAYMENTS_PROCESS_FAILED(HttpStatus.BAD_REQUEST, "P005", "결제 처리에 실패했습니다."),
+    PAYMENTS_CANCEL_FAILED(HttpStatus.BAD_REQUEST, "P006", "결제 취소에 실패했습니다."),
 
 
     /*OAuth*/
     OAUTH_LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "O001", "OAuth 로그인에 실패했습니다."),
+
+    /*S3*/
+    S3_IMAGE_FETCH_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S001", "S3에서 이미지를 가져오는 데 실패했습니다."),
 
     /*Login*/
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "L001", "로그인에 실패했습니다."),

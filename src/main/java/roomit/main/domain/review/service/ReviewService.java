@@ -33,7 +33,7 @@ public class ReviewService {
     @Transactional
     public void register(ReviewRegisterRequest request, Long memberId) {
 
-        Reservation reservation = reservationRepository.findById(request.reservatinId())
+        Reservation reservation = reservationRepository.findById(request.reservationId())
                 .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
         // 본인이 예약한거지 확인하는거
 
