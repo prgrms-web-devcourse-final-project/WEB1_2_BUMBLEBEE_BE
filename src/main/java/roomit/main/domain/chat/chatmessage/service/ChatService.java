@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import roomit.main.domain.business.dto.CustomBusinessDetails;
-import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.business.repository.BusinessRepository;
 import roomit.main.domain.chat.chatmessage.dto.ChatMessageRequest;
 import roomit.main.domain.chat.chatmessage.dto.ChatMessageResponse;
@@ -18,14 +17,11 @@ import roomit.main.domain.chat.chatroom.entity.ChatRoom;
 import roomit.main.domain.chat.chatroom.repositoroy.ChatRoomRepository;
 import roomit.main.domain.chat.redis.service.RedisPublisher;
 import roomit.main.domain.member.dto.CustomMemberDetails;
-import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.member.repository.MemberRepository;
-import roomit.main.global.error.ErrorCode;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -33,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 @RequiredArgsConstructor
 public class ChatService {
+    private static final String REDIS_MESSAGE_KEY_PREFIX = "chat:room:";
     private final RedisPublisher redisPublisher;
     private final RedisTemplate<String, Object> redisTemplate;
     private final ChatRoomRepository roomRepository;
@@ -43,8 +40,6 @@ public class ChatService {
 
     @Value("${redis.message.ttl:3600}") // 메시지 TTL 설정
     private int messageTtl;
-
-    private static final String REDIS_MESSAGE_KEY_PREFIX = "chat:room:";
 
     public void sendMessage(ChatMessageRequest request) {
         ChatRoomDetailsDTO roomDetails = roomRepository.findRoomDetailsById(request.roomId())
@@ -59,7 +54,7 @@ public class ChatService {
 
         if (request.timestamp() == null) {
             request = new ChatMessageRequest
-                    (request.roomId(), request.sender(), request.content(), LocalDateTime.now(),  request.senderType());
+                    (request.roomId(), request.sender(), request.content(), LocalDateTime.now(), request.senderType());
         }
 
         // Redis Pub/Sub 발행
@@ -103,12 +98,7 @@ public class ChatService {
             ChatRoom room = roomRepository.findById(request.roomId())
                     .orElseThrow(() -> new IllegalArgumentException("Room not found"));
 
-            ChatMessage message = new ChatMessage(
-                    room,
-                    request.sender(),
-                    request.content(),
-                    request.timestamp()
-            );
+            ChatMessage message = new ChatMessage(room, request);
 
             messageRepository.save(message);
         });
@@ -148,25 +138,13 @@ public class ChatService {
                     .map(key -> redisTemplate.opsForValue().get(key))
                     .filter(Objects::nonNull)
                     .map(value -> objectMapper.convertValue(value, ChatMessageRequest.class))
-                    .map(request -> new ChatMessageResponse(
-                            null, // MySQL 저장 전이므로 ID 없음
-                            request.roomId(),
-                            request.sender(),
-                            request.content(),
-                            request.timestamp()
-                    ))
+                    .map(request -> new ChatMessageResponse(request))
                     .toList();
         }
 
         // Redis 데이터가 없으면 MySQL에서 조회
         return messageRepository.findByRoomId(roomId).stream()
-                .map(message -> new ChatMessageResponse(
-                        message.getMessageId(),
-                        message.getRoom().getRoomId(),
-                        message.getSender(),
-                        message.getContent(),
-                        message.getTimestamp()
-                ))
+                .map(message -> new ChatMessageResponse(message))
                 .toList();
     }
 
