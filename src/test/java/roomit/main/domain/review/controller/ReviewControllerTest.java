@@ -183,7 +183,19 @@ class ReviewControllerTest {
     @DisplayName("리뷰 수정")
     void test2() throws Exception{
 
-        Reservation save = reservationRepository.save(reservation);
+        Reservation reservation1 = Reservation.builder()
+                .reservationName("이시현")
+                .reservationPhoneNumber("010-2314-2512")
+                .reservationState(ReservationState.COMPLETED)
+                .startTime(LocalDateTime.now())
+                .endTime(LocalDateTime.now())
+                .reservationPrice(1000)
+                .reservationCapacity(10)
+                .studyRoom(studyRoom)
+                .member(member)
+                .build();
+
+        Reservation save = reservationRepository.save(reservation1);
 
         Review review = Review.builder()
                 .reviewContent("치킨이 안보이네요..")
@@ -254,8 +266,19 @@ class ReviewControllerTest {
     @DisplayName("리뷰 삭제")
     void test4() throws Exception{
 
+        Reservation reservation1 = Reservation.builder()
+                .reservationName("이시현")
+                .reservationPhoneNumber("010-2314-2512")
+                .reservationState(ReservationState.COMPLETED)
+                .startTime(LocalDateTime.now())
+                .endTime(LocalDateTime.now())
+                .reservationPrice(1000)
+                .reservationCapacity(10)
+                .studyRoom(studyRoom)
+                .member(member)
+                .build();
 
-        Reservation save = reservationRepository.save(reservation);
+        Reservation save = reservationRepository.save(reservation1);
 
 
         Review review = Review.builder()

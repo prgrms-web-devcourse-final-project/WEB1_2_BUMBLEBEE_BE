@@ -52,9 +52,9 @@ public class PaymentsRestController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/toss/fail")
     public PaymentsFailResponse tossPaymentFail(
-            @RequestParam String code,
-            @RequestParam String message,
-            @RequestParam String orderId
+            @RequestParam(name = "code") String code,
+            @RequestParam(name = "message") String message,
+            @RequestParam(name = "orderId") String orderId
     ) {
         return paymentsService.tossPaymentFail(code, message, orderId);
     }

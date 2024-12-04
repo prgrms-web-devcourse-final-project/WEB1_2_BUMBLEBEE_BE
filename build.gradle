@@ -57,10 +57,13 @@ dependencies {
 
     // Websocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework:spring-messaging'
+    testImplementation 'org.springframework:spring-websocket'
 
     // Spring Data Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
 }
 
 def jacocoDir = layout.buildDirectory.dir("reports/")

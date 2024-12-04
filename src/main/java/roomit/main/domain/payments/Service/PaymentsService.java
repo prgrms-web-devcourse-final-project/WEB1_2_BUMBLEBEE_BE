@@ -38,6 +38,7 @@ public class PaymentsService {
      * 결제 검증
      */
 
+    @Transactional
     public PaymentValidationResponse requestPayment(Long reservationId, Long memberId, PaymentsRequest paymentsRequest) {
 
         validateReservationForPayment(reservationId,memberId,paymentsRequest); // 검증
@@ -55,7 +56,7 @@ public class PaymentsService {
 
             return payments.toDto(paymentsConfig.getSuccessUrl(), paymentsConfig.getFailUrl());
         } catch (Exception e){
-            throw ErrorCode.PAYMENTS_PROCESS_FAILED.commonException();
+            throw e;
         }
     }
 

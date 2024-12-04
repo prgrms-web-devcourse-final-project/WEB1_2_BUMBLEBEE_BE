@@ -1,11 +1,13 @@
 package roomit.main.domain.payments.dto.request;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import roomit.main.domain.payments.entity.Payments;
 import roomit.main.domain.payments.entity.TossPaymentMethod;
 
 import java.util.UUID;
 
+@Builder
 public record PaymentsRequest(
         @NotNull String orderId,
         @NotNull String orderName,

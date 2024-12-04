@@ -173,6 +173,7 @@ public class SpringSecurityConfig {
 
                         //결제 권한 설정
                         .requestMatchers(HttpMethod.POST,"/api/v1/payments/toss/**").hasRole("USER") //결제 검증 및 서버 저장
+                        .requestMatchers(HttpMethod.GET,"/api/v1/payments/toss/**").hasRole("USER")
 
                         //알림 권한 설정
                         .requestMatchers(HttpMethod.GET,"/api/v1/notification/member").hasRole("USER") //회원 알림 내역 조회
@@ -185,6 +186,11 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.PUT,"/api/v1/review/update/**").hasAnyRole("BUSINESS","USER") //후기 수정
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/review/**").hasAnyRole("BUSINESS","USER") //후기 삭제
 
+                        .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/chat/room/**").hasAnyRole("BUSINESS","USER")
+
+                        .requestMatchers("/api/v1/chat/create").hasAnyRole("BUSINESS","USER")
+                        .requestMatchers("/api/v1/chat/room").hasAnyRole("BUSINESS","USER")
                         .anyRequest().authenticated());
 
         http

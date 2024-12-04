@@ -44,11 +44,15 @@ public class ReviewService {
         Workplace workPlace = workplaceRepository.findByWorkplaceName(new WorkplaceName(request.workPlaceName()))
                     .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
 
-            // 별점 총합 및 리뷰 개수 업데이트
+        Review review = request.toEntity(reservation);
+
+        reservation.addReview(review);
+
+        // 별점 총합 및 리뷰 개수 업데이트
         workPlace.changeStarSum(workPlace.getStarSum() + request.reviewRating());
         workPlace.changeReviewCount(workPlace.getReviewCount() + 1);
 
-        reviewRepository.save(request.toEntity(reservation));
+        reviewRepository.save(review);
     }
 
     @Transactional
@@ -129,6 +133,4 @@ public class ReviewService {
                 .map(ReviewResponse::new)
                 .toList();
     }
-
-
 }
