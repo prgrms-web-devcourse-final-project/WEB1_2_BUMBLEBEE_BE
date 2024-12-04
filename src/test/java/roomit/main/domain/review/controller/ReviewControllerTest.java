@@ -167,7 +167,7 @@ class ReviewControllerTest {
         ReviewRegisterRequest request = ReviewRegisterRequest.builder()
                 .reviewContent("좋은 장소네요")
                 .reviewRating(3)
-                .reservatinId(reservation.getReservationId())
+                .reservationId(reservation.getReservationId())
                 .workPlaceName(workplace.getWorkplaceName().getValue())
                 .build();
 

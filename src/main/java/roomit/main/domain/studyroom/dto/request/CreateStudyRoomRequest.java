@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import roomit.main.domain.studyroom.entity.StudyRoom;
 import roomit.main.domain.studyroom.entity.value.StudyRoomName;
+import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.global.inner.ImageUrl;
 import roomit.main.global.service.ImageService;
 
@@ -15,7 +16,7 @@ public record CreateStudyRoomRequest(@Pattern(regexp = StudyRoomName.REGEX, mess
                                      @NotNull Integer capacity
 
 ) {
-    public StudyRoom toEntity(ImageService imageService) {
+    public StudyRoom toEntity(ImageService imageService, Workplace workplace) {
 
         ImageUrl image = imageService.createImageUrl(imageUrl);
 
@@ -25,6 +26,7 @@ public record CreateStudyRoomRequest(@Pattern(regexp = StudyRoomName.REGEX, mess
             .capacity(capacity)
             .price(price)
             .imageUrl(image)
+            .workplace(workplace)
             .build();
     }
 }
