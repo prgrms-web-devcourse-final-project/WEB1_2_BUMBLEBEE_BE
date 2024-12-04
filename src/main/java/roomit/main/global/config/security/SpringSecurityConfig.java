@@ -173,6 +173,7 @@ public class SpringSecurityConfig {
 
                         //결제 권한 설정
                         .requestMatchers(HttpMethod.POST,"/api/v1/payments/toss/**").hasRole("USER") //결제 검증 및 서버 저장
+                        .requestMatchers(HttpMethod.GET,"/api/v1/payments/toss/**").hasRole("USER")
 
                         //알림 권한 설정
                         .requestMatchers(HttpMethod.GET,"/api/v1/notification/member").hasRole("USER") //회원 알림 내역 조회
