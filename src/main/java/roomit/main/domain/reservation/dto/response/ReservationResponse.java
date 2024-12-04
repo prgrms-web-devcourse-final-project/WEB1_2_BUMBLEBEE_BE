@@ -14,7 +14,7 @@ public record ReservationResponse (
         LocalDateTime reservationCreatedAt,
         LocalDateTime startTime,
         LocalDateTime endTime,
-        Integer studyRoomCapacity,
+        Integer reservationCapacity,
         Integer price
         // LocalDateTime paymentCreatedAt
 ){
@@ -28,7 +28,7 @@ public record ReservationResponse (
                 reservation.getCreatedAt(),
                 reservation.getStartTime(),
                 reservation.getEndTime(),
-                studyRoom.getCapacity(),
+                reservation.getReservationCapacity(),
                 studyRoom.getPrice()
                 // payment.getCreatedAt()
         );

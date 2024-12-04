@@ -16,7 +16,7 @@ public record MyWorkPlaceReservationResponse (
     LocalDateTime reservationCreatedAt,
     LocalDateTime reservationStartTime,
     LocalDateTime reservationEndTime,
-    Integer studyRoomCapacity,
+    Integer reservationCapacity,
     String studyRoomUrl
     // LocalDateTime paymentCreatedAt
 ) {
@@ -29,7 +29,7 @@ public record MyWorkPlaceReservationResponse (
                 reservation.getCreatedAt(),
                 reservation.getStartTime(),
                 reservation.getEndTime(),
-                studyRoom.getCapacity(),
+                reservation.getReservationCapacity(),
                 studyRoom.getImageUrl().getValue()
                 //payment.getCreatedAt()
                 );

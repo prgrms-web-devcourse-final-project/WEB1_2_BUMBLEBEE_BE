@@ -73,7 +73,6 @@ public class Reservation extends BaseEntity{
     @JoinColumn(name = "review_id") // 외래 키 이름 설정
     private Review review;
 
-
     @OneToOne(mappedBy = "reservation")
     private Payments payments;
 
@@ -137,15 +136,13 @@ public class Reservation extends BaseEntity{
 
     public void addReview(Review review) {
         this.review = review;
-        review.setReservation(this); // Review에도 역방향 관계 설정
+        review.changeReservation(this); // Review에도 역방향 관계 설정
     }
 
     @PreRemove
     private void preRemove() {
         if (review != null) {
-            review.setReservation(null); // 리뷰와의 연결을 끊음
+            review.changeReservation(null); // 리뷰와의 연결을 끊음
         }
     }
-
-
 }
