@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import roomit.main.domain.business.dto.CustomBusinessDetails;
-import roomit.main.domain.business.repository.BusinessRepository;
 import roomit.main.domain.chat.chatmessage.dto.ChatMessageRequest;
 import roomit.main.domain.chat.chatmessage.dto.ChatMessageResponse;
 import roomit.main.domain.chat.chatmessage.entity.ChatMessage;
@@ -17,7 +16,7 @@ import roomit.main.domain.chat.chatroom.entity.ChatRoom;
 import roomit.main.domain.chat.chatroom.repositoroy.ChatRoomRepository;
 import roomit.main.domain.chat.redis.service.RedisPublisher;
 import roomit.main.domain.member.dto.CustomMemberDetails;
-import roomit.main.domain.member.repository.MemberRepository;
+import roomit.main.global.error.ErrorCode;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,21 +34,19 @@ public class ChatService {
     private final ChatRoomRepository roomRepository;
     private final ChatMessageRepository messageRepository;
     private final ObjectMapper objectMapper;
-    private final BusinessRepository businessRepository;
-    private final MemberRepository memberRepository;
 
     @Value("${redis.message.ttl:3600}") // 메시지 TTL 설정
     private int messageTtl;
 
     public void sendMessage(ChatMessageRequest request) {
         ChatRoomDetailsDTO roomDetails = roomRepository.findRoomDetailsById(request.roomId())
-                .orElseThrow(() -> new IllegalArgumentException("Chat room not found"));
+                .orElseThrow(ErrorCode.CHATROOM_NOT_FOUND::commonException);
 
         boolean isSenderValid = request.senderType().equals("business") && roomDetails.businessName().equals(request.sender())
                 || request.senderType().equals("member") && roomDetails.memberNickName().equals(request.sender());
 
         if (!isSenderValid) {
-            throw new IllegalArgumentException("Sender is not authorized to send messages in this room");
+            throw ErrorCode.CHAT_NOT_AUTHORIZED.commonException();
         }
 
         if (request.timestamp() == null) {
@@ -96,7 +93,7 @@ public class ChatService {
     private void saveMessagesToDatabase(List<ChatMessageRequest> messages) {
         messages.forEach(request -> {
             ChatRoom room = roomRepository.findById(request.roomId())
-                    .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+                    .orElseThrow(ErrorCode.CHATROOM_NOT_FOUND::commonException);
 
             ChatMessage message = new ChatMessage(room, request);
 
@@ -117,7 +114,7 @@ public class ChatService {
         }
 
         ChatRoom room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new IllegalArgumentException("Chat room not found"));
+                .orElseThrow(ErrorCode.CHATROOM_NOT_FOUND::commonException);
 
         System.out.println(senderType);
         System.out.println(room.getMember().getMemberNickName());
@@ -138,13 +135,13 @@ public class ChatService {
                     .map(key -> redisTemplate.opsForValue().get(key))
                     .filter(Objects::nonNull)
                     .map(value -> objectMapper.convertValue(value, ChatMessageRequest.class))
-                    .map(request -> new ChatMessageResponse(request))
+                    .map(ChatMessageResponse::new)
                     .toList();
         }
 
         // Redis 데이터가 없으면 MySQL에서 조회
         return messageRepository.findByRoomId(roomId).stream()
-                .map(message -> new ChatMessageResponse(message))
+                .map(ChatMessageResponse::new)
                 .toList();
     }
 
