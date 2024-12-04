@@ -3,7 +3,6 @@ package roomit.main.global.service;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -32,8 +31,8 @@ public class FileUploadService {
                 .build();
     }
 
-    public Map<String, Object> generatePreSignUrl(String fileName, String extension) {
-        String filePath = fileName + "/" + UUID.randomUUID() + "." + extension;
+    public Map<String, Object> generatePreSignUrl(String fileName, String fileLocation) {
+        String filePath = fileLocation + "/" + fileName;
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
@@ -51,7 +50,7 @@ public class FileUploadService {
         Map<String, Object> response = new HashMap<>();
         response.put("presignedUrl", url);
         response.put("method", "PUT");
-        response.put("headers", Map.of("Content-Type", "image/" + extension));
+        response.put("headers", Map.of("Content-Type", fileLocation + "/" + fileName));
         response.put("filePath", filePath);
 
         return response;
