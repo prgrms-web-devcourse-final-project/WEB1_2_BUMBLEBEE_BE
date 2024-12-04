@@ -9,12 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import roomit.main.domain.member.dto.CustomMemberDetails;
 import roomit.main.domain.payments.Service.PaymentsService;
 import roomit.main.domain.payments.dto.request.PaymentsRequest;
-import roomit.main.domain.payments.dto.response.PaymentsResponse;
+import roomit.main.domain.payments.dto.response.PaymentValidationResponse;
 import roomit.main.domain.payments.dto.response.PaymentsFailResponse;
-import roomit.main.domain.payments.dto.response.PaymentsSuccessResponse;
-
-
-import java.io.IOException;
+import roomit.main.domain.payments.dto.response.PaymentsResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,9 +25,9 @@ public class PaymentsRestController {
      */
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/toss")
-    public PaymentsResponse requestTossPayment(@AuthenticationPrincipal CustomMemberDetails principal,
-                                             @RequestParam(name = "reservationId", required = true) Long reservationId,
-                                             @RequestBody @Valid PaymentsRequest request) {
+    public PaymentValidationResponse requestTossPayment(@AuthenticationPrincipal CustomMemberDetails principal,
+                                                        @RequestParam(name = "reservationId", required = true) Long reservationId,
+                                                        @RequestBody @Valid PaymentsRequest request) {
 
         return paymentsService.requestPayment(reservationId,principal.getId(),request);
     }
@@ -40,7 +37,7 @@ public class PaymentsRestController {
      */
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/toss/success")
-    public PaymentsSuccessResponse tossPaymentSuccess(
+    public PaymentsResponse tossPaymentSuccess(
             @RequestParam String paymentKey,
             @RequestParam String orderId,
             @RequestParam Long amount
@@ -62,4 +59,14 @@ public class PaymentsRestController {
         return paymentsService.tossPaymentFail(code, message, orderId);
     }
 
+    /**
+     * 결제 취소 했을때
+     */
+    @PostMapping("/toss/cancel")
+    public void tossPaymentCancelPoint(
+            @RequestParam String paymentKey,
+            @RequestParam String cancelReason
+    ) {
+        paymentsService.cancelPayments(paymentKey, cancelReason);
+    }
 }

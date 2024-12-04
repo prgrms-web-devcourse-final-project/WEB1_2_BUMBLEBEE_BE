@@ -7,9 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import roomit.main.domain.payments.dto.response.PaymentsResponse;
+import roomit.main.domain.payments.dto.response.PaymentValidationResponse;
 import roomit.main.domain.reservation.entity.Reservation;
-import roomit.main.domain.review.entity.Review;
 
 import java.time.LocalDateTime;
 
@@ -59,7 +58,7 @@ public class Payments {
     @Column(name = "cancel_reason")
     private String cancelReason;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "reservation_id", nullable = false)
     private Reservation reservation;
 
@@ -96,6 +95,20 @@ public class Payments {
         this.createdAt = createdAt;
     }
 
+    public PaymentValidationResponse toDto(String successUrl, String failUrl) {
+        return PaymentValidationResponse.builder()
+                .orderId(this.orderId)
+                .orderName(this.orderName)
+                .memberName(this.memberName)
+                .memberPhoneNum(this.memberPhoneNum)
+                .tossPaymentMethod(this.tossPaymentMethod)
+                .amount(this.totalAmount)
+                .createdAt(this.createdAt)
+                .successUrl(successUrl)
+                .failUrl(failUrl)
+                .build();
+    }
+
     public void changeTossPaymentsKey(String tossPaymentsKey) {
         this.tossPaymentsKey = tossPaymentsKey;
     }
@@ -108,7 +121,16 @@ public class Payments {
         this.failReason = failReason;
     }
 
+    public void changeCancelYN(boolean cancelYN) {
+        this.cancelYN = cancelYN;
+    }
+
+    public void changeCancelReason(String cancelReason) {
+        this.cancelReason = cancelReason;
+    }
+
     public void addReservation(Reservation reservation) {
         this.reservation = reservation;
+        reservation.changePayments(this);
     }
 }

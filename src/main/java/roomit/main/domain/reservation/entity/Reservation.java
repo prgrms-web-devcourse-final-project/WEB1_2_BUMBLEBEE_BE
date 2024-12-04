@@ -20,6 +20,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import roomit.main.domain.member.entity.Member;
+import roomit.main.domain.payments.entity.Payments;
 import roomit.main.domain.reservation.dto.request.UpdateReservationRequest;
 import roomit.main.domain.reservation.entity.value.ReservationName;
 import roomit.main.domain.reservation.entity.value.ReservationNum;
@@ -72,6 +73,11 @@ public class Reservation extends BaseEntity{
     @JoinColumn(name = "review_id") // 외래 키 이름 설정
     private Review review;
 
+
+    @OneToOne(mappedBy = "reservation")
+    private Payments payments;
+
+
     @Builder
     public Reservation(String reservationName, String reservationPhoneNumber, ReservationState reservationState, Integer reservationCapacity,Integer reservationPrice,LocalDateTime startTime, LocalDateTime endTime, Member member, StudyRoom studyRoom) {
         this.reservationName = new ReservationName(reservationName);
@@ -115,6 +121,10 @@ public class Reservation extends BaseEntity{
 
     public void changeStudyRoom(StudyRoom studyRoom) {
         this.studyRoom = studyRoom;
+    }
+
+    public void changePayments(Payments payments) {
+        this.payments = payments;
     }
 
     public void updateReservationDetails(String reservationName, String reservationPhoneNumber,
