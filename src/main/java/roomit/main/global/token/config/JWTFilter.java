@@ -153,7 +153,7 @@ public class JWTFilter extends OncePerRequestFilter {
                 "/api/v1/review/workplace/**",
                 "/api/v1/workplace/distance",
                 "/api/v1/workplace/distance",
-                "/ws/**"
+                "/ws/**",
                 //결제
                 "/api/v1/payments/toss/success",
                 "/api/v1/payments/toss/fail",
