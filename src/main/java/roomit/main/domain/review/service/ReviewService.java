@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomit.main.domain.member.entity.Member;
@@ -23,6 +24,7 @@ import roomit.main.global.error.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
@@ -87,7 +89,6 @@ public class ReviewService {
 
     public List<ReviewResponse> read(Long memberId) {
 
-
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(ErrorCode.MEMBER_NOT_FOUND::commonException);
 
@@ -95,7 +96,9 @@ public class ReviewService {
 
         List<ReviewResponse> responses = new ArrayList<>();
         for (Reservation reservation : reservations) {
-            responses.add(new ReviewResponse(reservation.getReview()));
+            if(reservation.getReview() != null){
+                responses.add(new ReviewResponse(reservation.getReview()));
+            }
         }
 
         return responses;

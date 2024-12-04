@@ -303,12 +303,11 @@ public class BusinessControllerTest {
 
       String businessModify = objectMapper.writeValueAsString(businessUpdateRequest);
 
-      MvcResult businessModifyResult = mockMvc.perform(put("/api/v1/business")
+      mockMvc.perform(put("/api/v1/business")
               .contentType(MediaType.APPLICATION_JSON)
               .header("Authorization", "Bearer " + token)
               .content(businessModify))
-          .andExpect(status().isNoContent())
-          .andReturn();
+          .andExpect(status().isNoContent());
     }
 
     @Test
@@ -331,11 +330,10 @@ public class BusinessControllerTest {
 
       token = loginResult.getResponse().getHeader("Authorization");
 
-    MvcResult businessRemoveResult = mockMvc.perform(delete("/api/v1/business")
+    mockMvc.perform(delete("/api/v1/business")
             .contentType(MediaType.APPLICATION_JSON)
             .header("Authorization", "Bearer " + token))
-        .andExpect(status().isNoContent())
-        .andReturn();
+        .andExpect(status().isNoContent());
   }
 
 }

@@ -3,6 +3,7 @@ package roomit.main.domain.studyroom.dto.response;
 import roomit.main.domain.studyroom.entity.StudyRoom;
 
 public record FindPossibleStudyRoomResponse(
+    Long studyroomId,
     String workplaceName,
     String studyRoomName,
     Double reviewScore,
@@ -16,6 +17,7 @@ public record FindPossibleStudyRoomResponse(
 
   public FindPossibleStudyRoomResponse (StudyRoom studyRoom, Double distance){
     this(
+        studyRoom.getStudyRoomId(),
         studyRoom.getWorkPlace().getWorkplaceName().getValue(),
         studyRoom.getStudyRoomName().getValue(),
         (double) studyRoom.getWorkPlace().getStarSum() / (studyRoom.getWorkPlace().getReviewCount()),

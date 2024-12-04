@@ -1,9 +1,8 @@
 package roomit.main.domain.review.dto.response;
 
+import java.time.LocalDateTime;
 import lombok.Builder;
 import roomit.main.domain.review.entity.Review;
-
-import java.time.LocalDateTime;
 
 @Builder
 public record ReviewResponse(

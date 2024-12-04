@@ -3,7 +3,9 @@ package roomit.main.domain.studyroom.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -42,10 +44,12 @@ public class StudyRoomController {
     //스터디룸 등록
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{workplaceId}")
-    public void createStudyRoom(@PathVariable @Positive Long workplaceId,
+    public Map<String, Long> createStudyRoom(@PathVariable @Positive Long workplaceId,
                                 @RequestBody CreateStudyRoomRequest request,
                                 @AuthenticationPrincipal CustomBusinessDetails customBusinessDetails) {
-        studyRoomService.createStudyRoom(workplaceId,request, customBusinessDetails.getId());
+        Map<String, Long> response = new HashMap<>();
+        response.put("studyroomId", studyRoomService.createStudyRoom(workplaceId,request, customBusinessDetails.getId()));
+        return response;
     }
 
     // 사업장의 스터디룸 찾기
