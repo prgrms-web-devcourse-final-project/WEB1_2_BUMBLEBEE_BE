@@ -112,11 +112,13 @@ public class PaymentsService {
      * 결제 취소
      */
     @Transactional
-    public Map cancelPayments(String paymentKey, String cancelReason) {
+    public Map cancelPayments(Long reservationId, String cancelReason) {
 
-        Payments payment = paymentsRepository.findByTossPaymentsKey(paymentKey)
+        Payments payment = paymentsRepository.findByReservation_ReservationId(reservationId)
                 .orElseThrow(ErrorCode.PAYMENTS_NOT_FOUND::commonException);
         Long amount = payment.getTotalAmount();
+
+        String paymentKey = payment.getTossPaymentsKey();
 
         Reservation reservation = paymentsRepository.findReservationByPayments(payment)
                 .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
