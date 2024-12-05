@@ -1,6 +1,7 @@
 package roomit.main.domain.chat.chatroom.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import roomit.main.domain.business.dto.CustomBusinessDetails;
@@ -19,12 +20,14 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
 
     @PostMapping("/create")
+    @ResponseStatus(HttpStatus.CREATED)
     public void createRoom(@RequestBody ChatRoomRequest request,
             @AuthenticationPrincipal CustomMemberDetails memberDetails){
         chatRoomService.create(memberDetails.getId(), request.studyRoomId());
     }
 
     @GetMapping("/room")
+    @ResponseStatus(HttpStatus.OK)
     public List<? extends ChatRoomResponse> list(@AuthenticationPrincipal CustomMemberDetails memberDetails,
                                                  @AuthenticationPrincipal CustomBusinessDetails businessDetails){
         List<? extends ChatRoomResponse> rooms = chatRoomService.getRooms(memberDetails, businessDetails);
