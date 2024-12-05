@@ -14,6 +14,7 @@ import roomit.main.domain.review.dto.request.ReviewRegisterRequest;
 import roomit.main.domain.review.dto.request.ReviewSearch;
 import roomit.main.domain.review.dto.request.ReviewUpdateRequest;
 import roomit.main.domain.review.dto.response.CursorResponse;
+import roomit.main.domain.review.dto.response.ReviewMeResponse;
 import roomit.main.domain.review.dto.response.ReviewResponse;
 import roomit.main.domain.review.service.ReviewService;
 
@@ -45,7 +46,7 @@ public class ReviewController {
     // 단건 리뷰 조회
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/me")
-    public List<ReviewResponse> read(
+    public List<ReviewMeResponse> read(
             @AuthenticationPrincipal CustomMemberDetails customMemberDetails) {
 
         return reviewService.read(customMemberDetails.getId());

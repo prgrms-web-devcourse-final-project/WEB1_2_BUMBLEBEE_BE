@@ -154,7 +154,7 @@ public class SpringSecurityConfig {
 
                         //스터디룸 권한 설정
                         .requestMatchers(HttpMethod.GET,"/api/v1/studyroom/workplace/**").permitAll()           //사업장의 스터디룸 찾기
-                        .requestMatchers(HttpMethod.GET, "/api/v1/studyroom/available").permitAll()             //예약가능한 스터디룸 찾기
+                        .requestMatchers(HttpMethod.POST, "/api/v1/studyroom/available").permitAll()             //예약가능한 스터디룸 찾기
                         .requestMatchers(HttpMethod.GET,"/api/v1/studyroom/search/**").permitAll()              //스터디룸의 예약 가능한 시간대
                         .requestMatchers(HttpMethod.GET,"/api/v1/studyroom/**").permitAll()                     //스터디룸 상세 정보
                         .requestMatchers(HttpMethod.POST,"/api/v1/studyroom").hasRole("BUSINESS")               //스터디룸 등록

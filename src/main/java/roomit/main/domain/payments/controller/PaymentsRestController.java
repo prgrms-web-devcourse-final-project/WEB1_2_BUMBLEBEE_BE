@@ -32,7 +32,7 @@ public class PaymentsRestController {
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/toss")
     public PaymentValidationResponse requestTossPayment(@AuthenticationPrincipal CustomMemberDetails principal,
-                                                        @RequestParam(name = "reservationId", required = true) Long reservationId,
+                                                        @RequestParam(name = "reservationId") Long reservationId,
                                                         @RequestBody @Valid PaymentsRequest request) {
 
         return paymentsService.requestPayment(reservationId,principal.getId(),request);
@@ -44,9 +44,9 @@ public class PaymentsRestController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/toss/success")
     public PaymentsResponse tossPaymentSuccess(
-            @RequestParam String paymentKey,
-            @RequestParam String orderId,
-            @RequestParam Long amount
+            @RequestParam(name = "paymentKey") String paymentKey,
+            @RequestParam(name = "orderId") String orderId,
+            @RequestParam(name = "amount") Long amount
     ) {
 
         return paymentsService.tossPaymentSuccess(paymentKey, orderId, amount);
@@ -70,9 +70,9 @@ public class PaymentsRestController {
      */
     @PostMapping("/toss/cancel")
     public void tossPaymentCancelPoint(
-            @RequestParam String paymentKey,
-            @RequestParam String cancelReason
+            @RequestParam(name = "reservationId") Long reservationId,
+            @RequestParam (name = "cancelReason") String cancelReason
     ) {
-        paymentsService.cancelPayments(paymentKey, cancelReason);
+        paymentsService.cancelPayments(reservationId, cancelReason);
     }
 }

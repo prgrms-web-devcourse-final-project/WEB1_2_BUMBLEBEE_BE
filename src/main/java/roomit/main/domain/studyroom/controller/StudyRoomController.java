@@ -93,7 +93,7 @@ public class StudyRoomController {
 
     // 검색 필터링
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/available")
+    @PostMapping("/available")
     public List<FindPossibleStudyRoomResponse> findAvailableStudyRooms(@RequestBody @Valid FindAvailableStudyRoomRequest request) {
         List<DistanceWorkplaceResponse> searchWorkPlace = workplaceService.findNearbyWorkplaces(request.address(), 10000);
         return studyRoomService.findAvailableStudyRooms(request, searchWorkPlace);

@@ -97,10 +97,19 @@ public class PaymentsService {
      */
     @Transactional
     public PaymentsFailResponse tossPaymentFail(String code, String message, String orderId) {
-        Payments payment = paymentsRepository.findByOrderId(orderId).orElseThrow(ErrorCode.PAYMENTS_NOT_FOUND::commonException);
+        Payments payment = paymentsRepository.findByOrderId(orderId)
+                .orElseThrow(ErrorCode.PAYMENTS_NOT_FOUND::commonException);
 
-        payment.changePaySuccessYN(false);
-        payment.changeFailReason(message);
+        Reservation reservation = paymentsRepository.findReservationByPayments(payment)
+                .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
+
+        try {
+            reservation.changeReservationState(ReservationState.PAYMENT_FAIL);
+            payment.changePaySuccessYN(false);
+            payment.changeFailReason(message);
+        } catch (Exception e){
+            throw ErrorCode.PAYMENTS_FAILED.commonException();
+        }
 
         return PaymentsFailResponse.builder()
                 .errorCode(code)
@@ -112,11 +121,13 @@ public class PaymentsService {
      * 결제 취소
      */
     @Transactional
-    public Map cancelPayments(String paymentKey, String cancelReason) {
+    public Map cancelPayments(Long reservationId, String cancelReason) {
 
-        Payments payment = paymentsRepository.findByTossPaymentsKey(paymentKey)
+        Payments payment = paymentsRepository.findByReservation_ReservationId(reservationId)
                 .orElseThrow(ErrorCode.PAYMENTS_NOT_FOUND::commonException);
         Long amount = payment.getTotalAmount();
+
+        String paymentKey = payment.getTossPaymentsKey();
 
         Reservation reservation = paymentsRepository.findReservationByPayments(payment)
                 .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);

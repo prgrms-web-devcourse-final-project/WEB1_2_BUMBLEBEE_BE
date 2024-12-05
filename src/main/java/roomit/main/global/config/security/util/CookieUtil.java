@@ -15,7 +15,6 @@ public class CookieUtil {
             .httpOnly(true)
             .secure(true) // HTTPS에서만 사용
             .sameSite("None") // Cross-Origin 허용
-            .domain("localhost")
             .path("/")
             .maxAge(maxAge) // 1일
             .build();

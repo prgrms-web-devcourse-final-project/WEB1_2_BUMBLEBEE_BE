@@ -22,6 +22,7 @@ import roomit.main.domain.reservation.repository.ReservationRepository;
 import roomit.main.domain.review.dto.request.ReviewRegisterRequest;
 import roomit.main.domain.review.dto.request.ReviewSearch;
 import roomit.main.domain.review.dto.request.ReviewUpdateRequest;
+import roomit.main.domain.review.dto.response.ReviewMeResponse;
 import roomit.main.domain.review.dto.response.ReviewResponse;
 import roomit.main.domain.review.entity.Review;
 import roomit.main.domain.review.repository.ReviewRepository;
@@ -29,6 +30,7 @@ import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.entity.value.WorkplaceName;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
+import roomit.main.global.service.FileLocationService;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +44,7 @@ public class ReviewService {
     private final NotificationService notificationService;
     private final BusinessRepository businessRepository;
     private final NotificationRepository notificationRepository;
+    private final FileLocationService fileLocationService;
 
     @Transactional
     public void register(ReviewRegisterRequest request, Long memberId) {
@@ -130,17 +133,21 @@ public class ReviewService {
         return new ReviewResponse(review);
     }
 
-    public List<ReviewResponse> read(Long memberId) {
+    public List<ReviewMeResponse> read(Long memberId) {
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(ErrorCode.MEMBER_NOT_FOUND::commonException);
 
         List<Reservation> reservations = member.getReservations();
 
-        List<ReviewResponse> responses = new ArrayList<>();
+        List<ReviewMeResponse> responses = new ArrayList<>();
         for (Reservation reservation : reservations) {
             if(reservation.getReview() != null){
-                responses.add(new ReviewResponse(reservation.getReview()));
+                Workplace workplace = workplaceRepository
+                        .findByWorkplaceName(new WorkplaceName(reservation.getReview().getWorkplaceName()))
+                        .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
+
+                responses.add(new ReviewMeResponse(reservation.getReview(),workplace,fileLocationService));
             }
         }
 

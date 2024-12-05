@@ -17,5 +17,7 @@ public interface PaymentsRepository extends JpaRepository<Payments,Long> {
     @Query("SELECT p.reservation FROM Payments p WHERE p = :payments")
     Optional<Reservation> findReservationByPayments(Payments payments);
 
+    Optional<Payments> findByReservation_ReservationId(Long reservationId);
+
 
 }

@@ -61,6 +61,7 @@ public enum ErrorCode {
     PAYMENTS_AMOUNT_EXP(HttpStatus.BAD_REQUEST,"P004","결제 금액이 일치하지 않습니다"),
     PAYMENTS_PROCESS_FAILED(HttpStatus.BAD_REQUEST, "P005", "결제 처리에 실패했습니다."),
     PAYMENTS_CANCEL_FAILED(HttpStatus.BAD_REQUEST, "P006", "결제 취소에 실패했습니다."),
+    PAYMENTS_FAILED(HttpStatus.BAD_REQUEST, "P007", "결제 실패했습니다."),
 
 
     /*OAuth*/
@@ -82,7 +83,7 @@ public enum ErrorCode {
     INSUFFICIENT_ROLE(HttpStatus.FORBIDDEN, "T006", "권한이 부족합니다."),
 
     /*Notice*/
-    SUBSCRIBE_FAIL(HttpStatus.BAD_REQUEST, "N001", "구독 연결에 실패했습니다.");
+    SUBSCRIBE_FAIL(HttpStatus.BAD_REQUEST, "N001", "구독 연결에 실패했습니다."),
 
 
     /*Chat*/
