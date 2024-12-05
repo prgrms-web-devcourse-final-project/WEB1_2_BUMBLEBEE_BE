@@ -1,22 +1,22 @@
 package roomit.main.domain.reservation.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDateTime;
 import roomit.main.domain.reservation.entity.Reservation;
 import roomit.main.domain.reservation.entity.value.ReservationNum;
 import roomit.main.domain.studyroom.entity.StudyRoom;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.entity.value.WorkplaceName;
 
-import java.time.LocalDateTime;
-
 public record MyWorkPlaceReservationResponse (
     WorkplaceName workplaceName,
     String reservationName,
     ReservationNum reservationPhoneNumber,
     String studyRoomName,
-    LocalDateTime reservationCreatedAt,
-    LocalDateTime reservationStartTime,
-    LocalDateTime reservationEndTime,
-    Integer studyRoomCapacity,
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime reservationCreatedAt,
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime reservationStartTime,
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime reservationEndTime,
+    Integer reservationCapacity,
     String studyRoomUrl
     // LocalDateTime paymentCreatedAt
 ) {
@@ -29,7 +29,7 @@ public record MyWorkPlaceReservationResponse (
                 reservation.getCreatedAt(),
                 reservation.getStartTime(),
                 reservation.getEndTime(),
-                studyRoom.getCapacity(),
+                reservation.getReservationCapacity(),
                 studyRoom.getImageUrl().getValue()
                 //payment.getCreatedAt()
                 );

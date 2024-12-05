@@ -1,5 +1,14 @@
 package roomit.main.domain.review.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,17 +37,7 @@ import roomit.main.domain.studyroom.entity.StudyRoom;
 import roomit.main.domain.studyroom.repository.StudyRoomRepository;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.IntStream;
 import roomit.main.global.service.ImageService;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -150,7 +149,7 @@ class ReviewServiceTest {
         ReviewRegisterRequest request = ReviewRegisterRequest.builder()
                 .reviewContent("좋은 장소네요")
                 .reviewRating(3)
-                .reservatinId(reservation.getReservationId())
+                .reservationId(reservation.getReservationId())
                 .workPlaceName(workplace.getWorkplaceName().getValue())
                 .build();
 
@@ -171,6 +170,18 @@ class ReviewServiceTest {
     @DisplayName("리뷰 수정하기")
     @Transactional
     void test2() {
+        Reservation reservation = Reservation.builder()
+                .reservationName("이시현")
+                .reservationPhoneNumber("010-2314-2512")
+                .reservationState(ReservationState.COMPLETED)
+                .startTime(LocalDateTime.now())
+                .endTime(LocalDateTime.now())
+                .reservationPrice(1000)
+                .reservationCapacity(10)
+                .studyRoom(studyRoom)
+                .member(member)
+                .build();
+
         Reservation reservation1 = reservationRepository.save(reservation);
 
         Review review = Review.builder()
@@ -247,8 +258,19 @@ class ReviewServiceTest {
     @DisplayName("리뷰 삭제")
     @Transactional
     void test4() {
-
         workplaceRepository.save(workplace);
+
+        Reservation reservation = Reservation.builder()
+                .reservationName("이시현")
+                .reservationPhoneNumber("010-2314-2512")
+                .reservationState(ReservationState.COMPLETED)
+                .startTime(LocalDateTime.now())
+                .endTime(LocalDateTime.now())
+                .reservationPrice(1000)
+                .reservationCapacity(10)
+                .studyRoom(studyRoom)
+                .member(member)
+                .build();
 
         Reservation reservation1 = reservationRepository.save(reservation);
 

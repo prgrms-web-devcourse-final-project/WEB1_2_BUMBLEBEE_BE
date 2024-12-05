@@ -1,32 +1,32 @@
 package roomit.main.domain.studyroom.dto.response;
 
-import roomit.main.domain.review.entity.Review;
 import roomit.main.domain.studyroom.entity.StudyRoom;
-import roomit.main.domain.workplace.entity.Workplace;
-import roomit.main.global.inner.ImageUrl;
-import roomit.main.domain.workplace.entity.value.WorkplaceAddress;
-import roomit.main.domain.workplace.entity.value.WorkplaceName;
 
 public record FindPossibleStudyRoomResponse(
-    WorkplaceName workplaceName,
-    String studyRoomTitle,
-    int reviewScore,
-    WorkplaceAddress workplaceAddress,
+    Long studyroomId,
+    String workplaceName,
+    String studyRoomName,
+    Double reviewScore,
+    Long reviewCount,
+    String workplaceAddress,
     Integer studyRoomCapacity,
     Integer studyRoomPrice,
-    ImageUrl imageUrl){
+    String  imageUrl,
+    Double distance
+){
 
-
-    public static FindPossibleStudyRoomResponse from(Workplace workplace, StudyRoom studyRoom, Review review){
-        return new FindPossibleStudyRoomResponse(
-                workplace.getWorkplaceName(),
-                studyRoom.getStudyRoomName().getValue(),
-                review.getReviewRating(),
-                workplace.getWorkplaceAddress(),
-                studyRoom.getCapacity(),
-                studyRoom.getPrice(),
-                workplace.getImageUrl()
-        );
-    }
-
+  public FindPossibleStudyRoomResponse (StudyRoom studyRoom, Double distance){
+    this(
+        studyRoom.getStudyRoomId(),
+        studyRoom.getWorkPlace().getWorkplaceName().getValue(),
+        studyRoom.getStudyRoomName().getValue(),
+        (double) studyRoom.getWorkPlace().getStarSum() / (studyRoom.getWorkPlace().getReviewCount()),
+        studyRoom.getWorkPlace().getReviewCount(),
+        studyRoom.getWorkPlace().getWorkplaceAddress().getValue(),
+        studyRoom.getCapacity(),
+        studyRoom.getPrice(),
+        studyRoom.getWorkPlace().getImageUrl().getValue(),
+        distance
+    );
+  }
 }

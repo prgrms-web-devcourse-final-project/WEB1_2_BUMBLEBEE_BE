@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomit.main.domain.business.entity.Business;
@@ -31,6 +32,7 @@ import roomit.main.global.error.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
@@ -44,7 +46,7 @@ public class ReviewService {
     @Transactional
     public void register(ReviewRegisterRequest request, Long memberId) {
 
-        Reservation reservation = reservationRepository.findById(request.reservatinId())
+        Reservation reservation = reservationRepository.findById(request.reservationId())
                 .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
 
         // 본인이 예약한거지 확인하는거
@@ -56,9 +58,14 @@ public class ReviewService {
         Workplace workPlace = workplaceRepository.findByWorkplaceName(new WorkplaceName(request.workPlaceName()))
                 .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
 
+        Review review = request.toEntity(reservation);
+
+        reservation.addReview(review);
+
         // 별점 총합 및 리뷰 개수 업데이트
         workPlace.changeStarSum(workPlace.getStarSum() + request.reviewRating());
         workPlace.changeReviewCount(workPlace.getReviewCount() + 1);
+
 
         reviewRepository.save(request.toEntity(reservation));
 
@@ -125,7 +132,6 @@ public class ReviewService {
 
     public List<ReviewResponse> read(Long memberId) {
 
-
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(ErrorCode.MEMBER_NOT_FOUND::commonException);
 
@@ -133,7 +139,9 @@ public class ReviewService {
 
         List<ReviewResponse> responses = new ArrayList<>();
         for (Reservation reservation : reservations) {
-            responses.add(new ReviewResponse(reservation.getReview()));
+            if(reservation.getReview() != null){
+                responses.add(new ReviewResponse(reservation.getReview()));
+            }
         }
 
         return responses;
@@ -171,6 +179,4 @@ public class ReviewService {
                 .map(ReviewResponse::new)
                 .toList();
     }
-
-
 }

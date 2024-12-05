@@ -1,5 +1,7 @@
 package roomit.main.global.recomend;
 
+import java.time.LocalDate;
+import java.time.Period;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -9,9 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomit.main.domain.member.dto.CustomMemberDetails;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.member.repository.MemberRepository;
+import roomit.main.domain.member.dto.CustomMemberDetails;
 
 import java.time.LocalDate;
 import java.time.Period;

@@ -1,8 +1,8 @@
 package roomit.main.domain.workplace.dto.response;
 
-import roomit.main.domain.workplace.entity.Workplace;
-
 import java.time.LocalDateTime;
+import roomit.main.domain.workplace.entity.Workplace;
+import roomit.main.global.service.FileLocationService;
 
 public record WorkplaceResponse(
         Long workplaceId,
@@ -12,13 +12,13 @@ public record WorkplaceResponse(
         String imageUrl,
         LocalDateTime createdAt
 ) {
-    public WorkplaceResponse(Workplace workplace) {
+    public WorkplaceResponse(Workplace workplace, FileLocationService fileLocationService) {
         this(
             workplace.getWorkplaceId(),
             workplace.getWorkplaceName().getValue(),
             workplace.getWorkplacePhoneNumber().getValue(),
             workplace.getWorkplaceAddress().getValue(),
-            workplace.getImageUrl().getValue(),
+            fileLocationService.getImagesFromFolder(workplace.getImageUrl().getValue()).get(0),
             workplace.getCreatedAt()
         );
     }
