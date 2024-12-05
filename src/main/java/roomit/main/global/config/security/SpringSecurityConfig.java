@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -136,8 +138,13 @@ public class SpringSecurityConfig {
                         .requestMatchers("/api/v1/member/signup").permitAll()
                         .requestMatchers("/api/v1/business/signup").permitAll()
                         .requestMatchers("/toss/**").permitAll()
+                        .requestMatchers("/api/subscribe/**").permitAll()
 
                         .requestMatchers("/api/v1/recommend/**").permitAll()
+
+                        //PresignedURL
+                        .requestMatchers(HttpMethod.GET,"/api/generate-presigned-url").hasRole("BUSINESS")
+                        .requestMatchers(HttpMethod.DELETE,"/api/delete-folder").hasRole("BUSINESS")
 
                         //멤버 권한 설정
                         .requestMatchers("/api/v1/member").hasRole("USER")
@@ -146,13 +153,13 @@ public class SpringSecurityConfig {
                         .requestMatchers("/api/v1/business").hasRole("BUSINESS")
 
                         //스터디룸 권한 설정
-                        .requestMatchers(HttpMethod.GET,"/api/v1/studyroom/workplace/**").permitAll() //사업장의 스터디룸 찾기
-                        .requestMatchers(HttpMethod.GET, "/api/v1/studyroom/available").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/studyroom/search/**").permitAll() //예약가능한 스터디룸 찾기
-                        .requestMatchers(HttpMethod.GET,"/api/v1/studyroom/**").hasRole("USER") //최근 예약한 스터디룸 보여주기
-                        .requestMatchers(HttpMethod.POST,"/api/v1/studyroom").hasRole("BUSINESS") //스터디룸 등록
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/studyroom").hasRole("BUSINESS") //스터디룸 수정
-                        .requestMatchers(HttpMethod.DELETE,"/api/v1/studyroom/**").hasRole("BUSINESS") //스터디룸 삭제
+                        .requestMatchers(HttpMethod.GET,"/api/v1/studyroom/workplace/**").permitAll()           //사업장의 스터디룸 찾기
+                        .requestMatchers(HttpMethod.POST, "/api/v1/studyroom/available").permitAll()             //예약가능한 스터디룸 찾기
+                        .requestMatchers(HttpMethod.GET,"/api/v1/studyroom/search/**").permitAll()              //스터디룸의 예약 가능한 시간대
+                        .requestMatchers(HttpMethod.GET,"/api/v1/studyroom/**").permitAll()                     //스터디룸 상세 정보
+                        .requestMatchers(HttpMethod.POST,"/api/v1/studyroom").hasRole("BUSINESS")               //스터디룸 등록
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/studyroom").hasRole("BUSINESS")                //스터디룸 수정
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/studyroom/**").hasRole("BUSINESS")          //스터디룸 삭제
 
                         //사업장 권한 설정
                         .requestMatchers(HttpMethod.GET,"/api/v1/workplace/info/**").permitAll() //사업장 정보 조회
@@ -173,6 +180,7 @@ public class SpringSecurityConfig {
 
                         //결제 권한 설정
                         .requestMatchers(HttpMethod.POST,"/api/v1/payments/toss/**").hasRole("USER") //결제 검증 및 서버 저장
+                        .requestMatchers(HttpMethod.GET,"/api/v1/payments/toss/**").hasRole("USER")
 
                         //알림 권한 설정
                         .requestMatchers(HttpMethod.GET,"/api/v1/notification/member").hasRole("USER") //회원 알림 내역 조회

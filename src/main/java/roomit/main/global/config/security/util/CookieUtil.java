@@ -3,10 +3,9 @@ package roomit.main.global.config.security.util;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Base64;
 import org.springframework.http.ResponseCookie;
 import org.springframework.util.SerializationUtils;
-
-import java.util.Base64;
 
 public class CookieUtil {
 

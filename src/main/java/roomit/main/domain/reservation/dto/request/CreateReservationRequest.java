@@ -24,7 +24,7 @@ public record CreateReservationRequest (
         return Reservation.builder()
                 .reservationName(this.reservationName)
                 .reservationPhoneNumber(this.reservationPhoneNumber)
-                .reservationState(ReservationState.COMPLETED)
+                .reservationState(ReservationState.ON_HOLD)
                 .reservationCapacity(this.capacity)
                 .reservationPrice(this.price)
                 .startTime(this.startTime)

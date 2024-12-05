@@ -170,6 +170,18 @@ class ReviewServiceTest {
     @DisplayName("리뷰 수정하기")
     @Transactional
     void test2() {
+        Reservation reservation = Reservation.builder()
+                .reservationName("이시현")
+                .reservationPhoneNumber("010-2314-2512")
+                .reservationState(ReservationState.COMPLETED)
+                .startTime(LocalDateTime.now())
+                .endTime(LocalDateTime.now())
+                .reservationPrice(1000)
+                .reservationCapacity(10)
+                .studyRoom(studyRoom)
+                .member(member)
+                .build();
+
         Reservation reservation1 = reservationRepository.save(reservation);
 
         Review review = Review.builder()
@@ -246,8 +258,19 @@ class ReviewServiceTest {
     @DisplayName("리뷰 삭제")
     @Transactional
     void test4() {
-
         workplaceRepository.save(workplace);
+
+        Reservation reservation = Reservation.builder()
+                .reservationName("이시현")
+                .reservationPhoneNumber("010-2314-2512")
+                .reservationState(ReservationState.COMPLETED)
+                .startTime(LocalDateTime.now())
+                .endTime(LocalDateTime.now())
+                .reservationPrice(1000)
+                .reservationCapacity(10)
+                .studyRoom(studyRoom)
+                .member(member)
+                .build();
 
         Reservation reservation1 = reservationRepository.save(reservation);
 

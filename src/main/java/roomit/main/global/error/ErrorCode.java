@@ -61,6 +61,7 @@ public enum ErrorCode {
     PAYMENTS_AMOUNT_EXP(HttpStatus.BAD_REQUEST,"P004","결제 금액이 일치하지 않습니다"),
     PAYMENTS_PROCESS_FAILED(HttpStatus.BAD_REQUEST, "P005", "결제 처리에 실패했습니다."),
     PAYMENTS_CANCEL_FAILED(HttpStatus.BAD_REQUEST, "P006", "결제 취소에 실패했습니다."),
+    PAYMENTS_FAILED(HttpStatus.BAD_REQUEST, "P007", "결제 실패했습니다."),
 
 
     /*OAuth*/
@@ -68,6 +69,7 @@ public enum ErrorCode {
 
     /*S3*/
     S3_IMAGE_FETCH_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S001", "S3에서 이미지를 가져오는 데 실패했습니다."),
+    S3_IMAGE_NOT_DELETE(HttpStatus.INTERNAL_SERVER_ERROR, "S002","S3에서 폴더를 삭제하는데 실패했습니다."),
 
     /*Login*/
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "L001", "로그인에 실패했습니다."),
@@ -79,6 +81,10 @@ public enum ErrorCode {
     MISSING_TOKEN(HttpStatus.UNAUTHORIZED, "T004", "토큰이 누락되었습니다."),
     TOKEN_VERIFICATION_FAILED(HttpStatus.UNAUTHORIZED, "T005", "토큰 검증에 실패했습니다."),
     INSUFFICIENT_ROLE(HttpStatus.FORBIDDEN, "T006", "권한이 부족합니다."),
+
+    /*Notice*/
+    SUBSCRIBE_FAIL(HttpStatus.BAD_REQUEST, "N001", "구독 연결에 실패했습니다."),
+
 
     /*Chat*/
     CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND,"C001","존재하지 채팅방 입니다"),

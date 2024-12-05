@@ -1,0 +1,87 @@
+POST http://localhost:8080/api/v1/business/signup
+Content-Type: application/json
+
+{
+		"businessName":"사업자3",
+		"businessEmail":"business1@email.com",
+	     "businessPwd":"testT!123",
+		"businessNum":"133-12-12345"
+}
+
+### 로그인
+POST http://localhost:8080/login/business
+Content-Type: application/json
+
+{
+  "email" : "business3@gmail.com",
+  "password" : "Test1234!"
+
+}
+### 구독
+
+GET http://localhost:8080/api/subscribe
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiYnVzaW5lc3MzQGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0JVU0lORVNTIiwiaWF0IjoxNzMzMzE5MTc5LCJleHAiOjE3MzMzMjAwNzl9.6LJSxNxKqH8scC-0ivIqsjdvjR1TlFMcJ-uRI5Iuij8
+Accept: text/event-stream
+
+### 예약등록
+
+POST http://localhost:8080/api/v1/reservations/1
+Content-Type: application/json
+
+{
+  "reservationName": "홍길동",
+  "reservationPhoneNumber": "010-0000-0000",
+  "capacity" : 4,
+  "price" : 12000,
+  "startTime": "2024-12-03T13:00:00",
+  "endTime": "2024-12-03T14:59:00"
+
+}
+### 리뷰등록
+POST http://localhost:8080/api/v1/review/register
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoibWVtYmVyNUBtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3MzMzMDg5MDYsImV4cCI6MTczMzMwOTgwNn0.Stt7SPMZ1Jmu0jlob3faCHKV4KRd2VLyReZv4UWOg7g
+
+{
+    "reservatinId" : 10,
+    "workPlaceName" : "ENI스터디룸",
+    "reviewContent": "좋습니다",
+    "reviewRating" : 4
+ }
+### 멤버 회원가입
+POST http://localhost:8080/api/v1/member/signup
+Content-Type: application/json
+
+{
+    "nickName" : "테스트",
+    "phoneNumber": "010-3333-2222",
+    "sex" : "MALE",
+    "email" : "123@aa.com",
+    "pwd" : "Tpgur8597!!",
+    "birthDay" : "2024-01-01"
+}
+### 멤버 로그인
+POST http://localhost:8080/login/member
+Content-Type: application/json
+
+{
+
+  "email" : "member5@mail.com",
+  "password" : "Test1234!"
+
+}
+
+### 예약 등록
+POST http://localhost:8080/api/v1/reservations/12
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoibWVtYmVyNUBtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3MzMzMTkxOTgsImV4cCI6MTczMzMyMDA5OH0.HpIkdS7MeuKbSRwPWrTGPm3CAMrd0ZhZdiH2NRVxI7M
+
+{
+  "reservationName": "홍길동",
+  "reservationPhoneNumber": "010-0000-0000",
+  "capacity" : 4,
+  "price" : 12000,
+  "startTime": "2024-12-03T13:00:00",
+  "endTime": "2024-12-03T14:59:00"
+}

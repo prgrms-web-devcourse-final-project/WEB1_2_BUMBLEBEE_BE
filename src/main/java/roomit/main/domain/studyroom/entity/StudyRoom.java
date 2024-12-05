@@ -75,4 +75,8 @@ public class StudyRoom extends BaseEntity {
         this.capacity = updateStudyRoomRequest.capacity();
         this.price = updateStudyRoomRequest.price();
     }
+
+    public void changeStudyRoomImageUrl(final ImageUrl imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }

@@ -25,6 +25,7 @@ import roomit.main.domain.workplace.dto.request.WorkplaceRequest;
 import roomit.main.domain.workplace.dto.response.DistanceWorkplaceResponse;
 import roomit.main.domain.workplace.dto.response.WorkplaceAllResponse;
 import roomit.main.domain.workplace.dto.response.WorkplaceBusinessResponse;
+import roomit.main.domain.workplace.dto.response.WorkplaceCreateResponse;
 import roomit.main.domain.workplace.dto.response.WorkplaceDetailResponse;
 import roomit.main.domain.workplace.dto.response.WorkplaceResponse;
 import roomit.main.domain.workplace.entity.Workplace;
@@ -34,6 +35,7 @@ import roomit.main.domain.workplace.entity.value.WorkplacePhoneNumber;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
 import roomit.main.global.exception.CommonException;
+import roomit.main.global.service.FileLocationService;
 import roomit.main.global.service.ImageService;
 
 @Service
@@ -46,6 +48,7 @@ public class WorkplaceService {
     private final StudyRoomRepository studyRoomRepository;
     private final WebClient webClient;
     private final ImageService imageService;
+    private final FileLocationService fileLocationService;
 
     public List<WorkplaceAllResponse> readAllWorkplaces(WorkplaceGetRequest request) {
         List<Object[]> results = workplaceRepository.findAllByLatitudeAndLongitudeWithDistance(
@@ -65,7 +68,7 @@ public class WorkplaceService {
                             ((Number) result[0]).longValue(),
                             (String) result[1],
                             (String) result[2],
-                            (String) result[3],
+                            fileLocationService.getImagesFromFolder((String)result[3]).get(0),
                             (reviewCount == 0) ? 0.0 : starSum / reviewCount,
                             reviewCount,
                             BigDecimal.valueOf(((Number) result[6]).doubleValue()),  // latitude
@@ -82,20 +85,25 @@ public class WorkplaceService {
         Workplace workplace = workplaceRepository.findById(workplaceId)
                 .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
 
-        return new WorkplaceDetailResponse(workplace);
+        return new WorkplaceDetailResponse(workplace, fileLocationService);
     }
 
     @Transactional
-    public void createWorkplace(WorkplaceRequest workplaceDto, Long id) {
+    public WorkplaceCreateResponse createWorkplace(WorkplaceRequest workplaceDto, Long id) {
         Business business = businessRepository.findById(id).orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
 
         Map<String, BigDecimal> coordinates = getStringBigDecimalMap(workplaceDto);
 
         try {
-            Workplace workplace = workplaceDto.toEntity(coordinates.get("latitude"), coordinates.get("longitude"), business, imageService);
+            Workplace workplace = workplaceDto.toEntity(coordinates.get("latitude"), coordinates.get("longitude"), business);
             Workplace savedWorkplace = workplaceRepository.save(workplace);
+            String imageUrl = "workplace-" + savedWorkplace.getWorkplaceId();
+            savedWorkplace.changeImageUrl(imageService.createImageUrl(imageUrl));
 
-            saveStudyrooms(workplaceDto, savedWorkplace);
+            List<Long> studyroomID = new ArrayList<>();
+            studyroomID = saveStudyrooms(workplaceDto, savedWorkplace, studyroomID);
+
+            return new WorkplaceCreateResponse(savedWorkplace.getWorkplaceId(), studyroomID);
         }
         catch (IllegalArgumentException e) {
             throw new CommonException(ErrorCode.WORKPLACE_INVALID_REQUEST);
@@ -110,12 +118,15 @@ public class WorkplaceService {
 
     }
 
-    private void saveStudyrooms(WorkplaceRequest workplaceDto, Workplace savedWorkplace) {
+    private List<Long> saveStudyrooms(WorkplaceRequest workplaceDto, Workplace savedWorkplace, List<Long> studyroomIDs) {
         try {
             for (CreateStudyRoomRequest studyRoomRequest : workplaceDto.studyRoomList()) {
-                StudyRoom studyRoom = studyRoomRequest.toEntity(imageService, savedWorkplace);
-                studyRoomRepository.save(studyRoom);
+                StudyRoom studyRoom = studyRoomRepository.save(studyRoomRequest.toEntity(savedWorkplace));
+                String imageUrl = "workplace-" + savedWorkplace.getWorkplaceId() + "/studyroom-" + studyRoom.getStudyRoomId();
+                studyRoom.changeStudyRoomImageUrl(imageService.createImageUrl(imageUrl));
+                studyroomIDs.add(studyRoom.getStudyRoomId());
             }
+            return studyroomIDs;
         } catch (Exception e) {
             throw ErrorCode.STUDYROOM_NOT_REGISTERD.commonException();
         }
@@ -182,7 +193,7 @@ public class WorkplaceService {
     private WorkplaceBusinessResponse toResponseDto(List<Workplace> workplaces, Long businessId, String businessName) {
         List<WorkplaceResponse> workplaceDtoList = new ArrayList<>();
         for (Workplace workplace : workplaces) {
-            workplaceDtoList.add(new WorkplaceResponse(workplace));
+            workplaceDtoList.add(new WorkplaceResponse(workplace, fileLocationService));
         }
 
         return new WorkplaceBusinessResponse(businessId, businessName, workplaceDtoList);

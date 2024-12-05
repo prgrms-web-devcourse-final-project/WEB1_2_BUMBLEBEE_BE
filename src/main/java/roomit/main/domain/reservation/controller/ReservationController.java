@@ -2,11 +2,20 @@ package roomit.main.domain.reservation.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import roomit.main.domain.business.dto.CustomBusinessDetails;
 import roomit.main.domain.member.dto.CustomMemberDetails;
 import roomit.main.domain.reservation.dto.request.CreateReservationRequest;
@@ -15,12 +24,9 @@ import roomit.main.domain.reservation.dto.response.MyWorkPlaceReservationRespons
 import roomit.main.domain.reservation.dto.response.ReservationResponse;
 import roomit.main.domain.reservation.service.ReservationService;
 
-import java.util.List;
-
 
 @RestController
 @RequiredArgsConstructor
-@Slf4j
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -28,8 +34,12 @@ public class ReservationController {
     // 예약 만들기
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/api/v1/reservations/{studyRoomId}")
-    public Long createReservation(@AuthenticationPrincipal CustomMemberDetails customMemberDetails, @PathVariable @Positive Long studyRoomId, @RequestBody @Valid CreateReservationRequest request) {
-        return reservationService.createReservation(customMemberDetails.getId(),studyRoomId,request);
+    public Map<String, Long> createReservation(@AuthenticationPrincipal CustomMemberDetails customMemberDetails,
+                                  @PathVariable @Positive Long studyRoomId,
+                                  @RequestBody @Valid CreateReservationRequest request) {
+        Map<String, Long> response = new HashMap<>();
+        response.put("reservationId", reservationService.createReservation(customMemberDetails.getId(),studyRoomId,request));
+        return response;
     }
 
     // 예약 삭제
@@ -42,7 +52,9 @@ public class ReservationController {
     // 예약 수정
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/api/v1/reservations/{reservationId}")
-    public void updateReservation(@AuthenticationPrincipal CustomMemberDetails customMemberDetails,@PathVariable @Positive Long reservationId, @RequestBody @Valid UpdateReservationRequest request) {
+    public void updateReservation(@AuthenticationPrincipal CustomMemberDetails customMemberDetails,
+                                  @PathVariable @Positive Long reservationId,
+                                  @RequestBody @Valid UpdateReservationRequest request) {
         reservationService.updateReservation(customMemberDetails.getId(),reservationId , request);
     }
 

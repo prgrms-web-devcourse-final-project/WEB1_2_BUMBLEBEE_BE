@@ -8,11 +8,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import roomit.main.domain.business.dto.CustomBusinessDetails;
 import roomit.main.domain.member.dto.CustomMemberDetails;
 import roomit.main.domain.review.dto.request.ReviewRegisterRequest;
 import roomit.main.domain.review.dto.request.ReviewSearch;
 import roomit.main.domain.review.dto.request.ReviewUpdateRequest;
 import roomit.main.domain.review.dto.response.CursorResponse;
+import roomit.main.domain.review.dto.response.ReviewMeResponse;
 import roomit.main.domain.review.dto.response.ReviewResponse;
 import roomit.main.domain.review.service.ReviewService;
 
@@ -27,8 +29,8 @@ public class ReviewController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/register")
-    public void register(@RequestBody @Valid ReviewRegisterRequest request, @AuthenticationPrincipal CustomMemberDetails memberDetails) {
-        reviewService.register(request, memberDetails.getId());
+    public void register(@RequestBody @Valid ReviewRegisterRequest request, @AuthenticationPrincipal CustomMemberDetails customMemberDetails) {
+        reviewService.register(request, customMemberDetails.getId());
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -44,7 +46,7 @@ public class ReviewController {
     // 단건 리뷰 조회
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/me")
-    public List<ReviewResponse> read(
+    public List<ReviewMeResponse> read(
             @AuthenticationPrincipal CustomMemberDetails customMemberDetails) {
 
         return reviewService.read(customMemberDetails.getId());

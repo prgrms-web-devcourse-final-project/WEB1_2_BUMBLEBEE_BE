@@ -143,7 +143,6 @@ public class JWTFilter extends OncePerRequestFilter {
                 "/js/**",
                 "/images/**",
                 "/login/**",
-                "/toss/**",
                 "/api/v1/member/signup",
                 "/api/v1/business/signup",
                 "/reissue",
@@ -156,8 +155,6 @@ public class JWTFilter extends OncePerRequestFilter {
                 "/api/v1/workplace/distance",
                 "/ws/**",
                 //결제
-                "/api/v1/payments/toss/success",
-                "/api/v1/payments/toss/fail",
                 "/api/v1/recommend/**"
         );
 

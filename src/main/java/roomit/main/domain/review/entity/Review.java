@@ -68,7 +68,7 @@ public class Review {
     public void changeReviewContent(String reviewContent) {
         this.reviewContent = reviewContent;
     }
-    public void setReservation(Reservation reservation) {
+    public void changeReservation(Reservation reservation) {
         this.reservation = reservation;
     }
 
