@@ -24,13 +24,13 @@ public record CreateReservationRequest (
 ) {
     public Reservation toEntity(Member member, StudyRoom studyRoom) {
         return Reservation.builder()
-                .reservationName(this.reservationName)
-                .reservationPhoneNumber(this.reservationPhoneNumber)
+                .reservationName(reservationName)
+                .reservationPhoneNumber(reservationPhoneNumber)
                 .reservationState(ReservationState.ON_HOLD)
-                .reservationCapacity(this.capacity)
-                .reservationPrice(this.price)
-                .startTime(this.startTime)
-                .endTime(this.endTime)
+                .reservationCapacity(capacity)
+                .reservationPrice(price)
+                .startTime(startTime)
+                .endTime(endTime)
                 .member(member)
                 .studyRoom(studyRoom)
                 .build();

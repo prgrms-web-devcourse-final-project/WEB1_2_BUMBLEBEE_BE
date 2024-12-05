@@ -54,12 +54,10 @@ public class ReservationService {
     public Long createReservation(Long memberId,Long studyRoomId,CreateReservationRequest request) {
         validateReservation(request.startTime(),request.endTime());
 
-
         checkReservationTime(request.startTime(),request.endTime(),studyRoomId,ReservationState.ACTIVE,ReservationState.ON_HOLD);
 
         Member member = memberRepository.findById(memberId)
             .orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
-
 
         StudyRoom studyRoom = studyRoomRepository.findByIdWithWorkplace(studyRoomId)
                 .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
@@ -139,24 +137,24 @@ public class ReservationService {
         }
     }
 
-    // 예약을 수정하는 메서드
-    @Transactional
-    public void updateReservation(Long reservationId,Long memberId ,UpdateReservationRequest request) {
-        validateReservationOwner(reservationId,memberId);
-
-        Reservation existingReservation = reservationRepository.findById(reservationId)
-            .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
-        try {
-            existingReservation.updateReservationDetails(
-                request.reservationName(),
-                request.reservationPhoneNumber(),
-                request.startTime(),
-                request.endTime()
-            );
-        }catch (Exception e){
-            throw ErrorCode.RESERVATION_NOT_MODIFIED.commonException();
-        }
-    }
+//    // 예약을 수정하는 메서드
+//    @Transactional
+//    public void updateReservation(Long reservationId,Long memberId ,UpdateReservationRequest request) {
+//        validateReservationOwner(reservationId,memberId);
+//
+//        Reservation existingReservation = reservationRepository.findById(reservationId)
+//            .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
+//        try {
+//            existingReservation.updateReservationDetails(
+//                request.reservationName(),
+//                request.reservationPhoneNumber(),
+//                request.startTime(),
+//                request.endTime()
+//            );
+//        }catch (Exception e){
+//            throw ErrorCode.RESERVATION_NOT_MODIFIED.commonException();
+//        }
+//    }
 
     @Transactional(readOnly = true)
     public void validateReservationOwner(Long reservationId, Long memberId) {
@@ -232,9 +230,6 @@ public class ReservationService {
     // 분산락 테스트 (분산락x)
     @Transactional
     public void createTestLockFalse(Long memberId,Long studyRoomId,CreateReservationRequest request) {
-        validateReservation(request.startTime(),request.endTime());
-
-        checkReservationTime(request.startTime(),request.endTime(),studyRoomId,ReservationState.ACTIVE,ReservationState.ON_HOLD);
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);

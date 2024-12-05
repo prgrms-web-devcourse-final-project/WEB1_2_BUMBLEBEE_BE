@@ -57,7 +57,7 @@ public class PaymentsService {
 
             return payments.toDto(paymentsConfig.getSuccessUrl(), paymentsConfig.getFailUrl());
         } catch (Exception e){
-            throw e;
+            throw ErrorCode.PAYMENTS_VALIDATION_FAILED.commonException();
         }
     }
 
