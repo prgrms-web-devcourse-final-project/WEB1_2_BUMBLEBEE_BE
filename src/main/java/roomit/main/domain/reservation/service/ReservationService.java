@@ -75,6 +75,11 @@ public class ReservationService {
 
         alrim(workPlace);
 
+        Notification notification = notificationRepository.findById(workPlace.getWorkplaceId())
+                .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
+
+        notification.read();
+        notificationRepository.save(notification);
         return reservationId;
     }
 
