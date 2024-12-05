@@ -15,8 +15,8 @@ public interface ReservationRepository extends JpaRepository<Reservation,Long> {
     @Query("SELECT r FROM Reservation r WHERE r.member.memberId = :memberId ORDER BY  r.createdAt DESC ")
     List<Reservation> findRecentReservationByMemberId(@Param("memberId") Long memberId);
 
-    Optional<Reservation> findTopByMemberMemberIdOrderByCreatedAtDesc(Long memberId);
-    //JPA 쿼리
+    Reservation findTopByMemberMemberIdOrderByCreatedAtDesc(Long memberId);
+
 
     // 내 최근순으로 예약 리스트 출력
     @Query("SELECT r FROM Reservation r WHERE r.member.memberId = :memberId ORDER BY  r.createdAt DESC")
@@ -33,5 +33,7 @@ public interface ReservationRepository extends JpaRepository<Reservation,Long> {
     // 예약 가능한 스터디룸 조회를 위한 지금까지 예약된 내역 조회
     @Query("SELECT r FROM Reservation r WHERE r.studyRoom.studyRoomId = :studyRoomId AND FUNCTION('DATE', r.startTime) = :date")
     List<Reservation> findReservationsByStudyRoomAndDate(@Param("studyRoomId") Long studyRoomId, @Param("date") LocalDate date);
+
+
 }
 

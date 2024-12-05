@@ -74,7 +74,6 @@ public class ReservationService {
         if(!startTime.isBefore(endTime)){
             throw ErrorCode.START_TIME_NOT_AFTER_END_TIME.commonException();
         }
-
     }
 
 //    @Transactional(readOnly = true)
@@ -173,11 +172,15 @@ public class ReservationService {
     // 제일 최근 예약 1건 조회
     @Transactional(readOnly = true)
     public ReservationResponse findByMemberId(Long memberId) {
-        Reservation reservation = reservationRepository.findTopByMemberMemberIdOrderByCreatedAtDesc(memberId)
-                .orElseThrow(ErrorCode.RESERVATION_IS_EMPTY::commonException);
+        Reservation reservation = reservationRepository.findTopByMemberMemberIdOrderByCreatedAtDesc(memberId);
+
+        if(reservation == null){
+            return null;
+        }
 
         StudyRoom studyRoom = reservation.getStudyRoom();
         Workplace workPlace = studyRoom.getWorkPlace();
+
 
         return ReservationResponse.from(studyRoom,reservation,workPlace,fileLocationService);
     }
@@ -190,7 +193,7 @@ public class ReservationService {
         List<Reservation> reservations = reservationRepository.findReservationsByMemberId(memberId);
 
         if(reservations.isEmpty()){
-            throw(ErrorCode.RESERVATION_IS_EMPTY.commonException());
+            return null;
         }
 
         return reservations.stream()
@@ -211,7 +214,7 @@ public class ReservationService {
         List<Reservation> reservations = reservationRepository.findMyAllReservations(businessId);
 
         if(reservations.isEmpty()){
-            throw(ErrorCode.RESERVATION_IS_EMPTY.commonException());
+            return null;
         }
 
         return reservations.stream()
