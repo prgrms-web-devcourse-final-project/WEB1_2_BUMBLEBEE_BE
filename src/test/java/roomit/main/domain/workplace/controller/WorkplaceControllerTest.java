@@ -154,21 +154,18 @@ public class WorkplaceControllerTest {
                 .workplacePhoneNumber("0507-1234-5698")
                 .workplaceDescription("사업장 설명1")
                 .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 7층")
-                .imageUrl("사업장1")
                 .workplaceStartTime(LocalTime.of(9, 0))
                 .workplaceEndTime(LocalTime.of(18, 0))
                 .studyRoomList(Arrays.asList(
                         new CreateStudyRoomRequest(
                                 "Room A",
                                 "작은 룸",
-                                "사업장1/RoomA",
                                 7000,
                                 4
                         ),
                         new CreateStudyRoomRequest(
                                 "Room B",
                                 "큰 룸",
-                                "사업장1/RoomB",
                                 8000,
                                 6
                         )
@@ -232,7 +229,6 @@ public class WorkplaceControllerTest {
                 .workplacePhoneNumber("0507-1234-5670")
                 .workplaceDescription("사업장 설명 수정")
                 .workplaceAddress("서울 중구 장충단로13길 20")
-                .imageUrl("사업장 수정")
                 .workplaceStartTime(LocalTime.of(9, 0))
                 .workplaceEndTime(LocalTime.of(18, 0))
                 .build();

@@ -1,6 +1,22 @@
 package roomit.main.domain.workplace.service;
 
-import org.junit.jupiter.api.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.math.BigDecimal;
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -20,16 +36,7 @@ import roomit.main.domain.workplace.entity.value.WorkplaceName;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
 import roomit.main.global.exception.CommonException;
-
-import java.math.BigDecimal;
-import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 import roomit.main.global.service.ImageService;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -114,21 +121,18 @@ class WorkplaceServiceTest {
                 .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
-                .imageUrl("사업장1")
                 .workplaceStartTime(LocalTime.of(9, 0))
                 .workplaceEndTime(LocalTime.of(18, 0))
                 .studyRoomList(Arrays.asList(
                         new CreateStudyRoomRequest(
                                 "Room A",
                                 "작은 룸",
-                                "사업장1/RoomA",
                                 7000,
                                 4
                         ),
                         new CreateStudyRoomRequest(
                                 "Room B",
                                 "큰 룸",
-                                "사업장1/RoomB",
                                 8000,
                                 6
                         )
@@ -155,7 +159,6 @@ class WorkplaceServiceTest {
                 .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
-                .imageUrl("사업장@")
                 .workplaceStartTime(LocalTime.of(9, 0))
                 .workplaceEndTime(LocalTime.of(18, 0))
                 .build();
@@ -179,21 +182,18 @@ class WorkplaceServiceTest {
                 .workplacePhoneNumber("0507-1234-5678")
                 .workplaceDescription("사업장 설명")
                 .workplaceAddress("서울 중구 장충단로 247 굿모닝시티 8층")
-                .imageUrl("사업장12")
                 .workplaceStartTime(LocalTime.of(9, 0))
                 .workplaceEndTime(LocalTime.of(18, 0))
                 .studyRoomList(Arrays.asList(
                         new CreateStudyRoomRequest(
                                 "Room A",
                                 "작은 룸",
-                                "사업장12/RoomA",
                                 7000,
                                 4
                         ),
                         new CreateStudyRoomRequest(
                                 "Room B",
                                 "큰 룸",
-                                "사업장12/RoomB",
                                 8000,
                                 6
                         )
@@ -246,7 +246,6 @@ class WorkplaceServiceTest {
                 .workplacePhoneNumber("0507-1234-5670")
                 .workplaceDescription("사업장 설명 수정")
                 .workplaceAddress("서울 중구 을지로 227 훈련원공원")
-                .imageUrl("사업장 수정")
                 .workplaceStartTime(LocalTime.of(9, 0))
                 .workplaceEndTime(LocalTime.of(18, 0))
                 .build();
@@ -353,21 +352,18 @@ class WorkplaceServiceTest {
                     .workplacePhoneNumber("0507-1234-" + String.format("%04d", i))
                     .workplaceDescription("사업장 설명")
                     .workplaceAddress(addresses.get(i - 1))
-                    .imageUrl("사업장" + i)
                     .workplaceStartTime(LocalTime.of(9, 0))
                     .workplaceEndTime(LocalTime.of(18, 0))
                     .studyRoomList(Arrays.asList(
                             new CreateStudyRoomRequest(
                                     "Room A",
                                     "작은 룸",
-                                    "사업장" + i + "/RoomA",
                                     7000,
                                     4
                             ),
                             new CreateStudyRoomRequest(
                                     "Room B",
                                     "큰 룸",
-                                    "사업장" + i + "/RoomB",
                                     8000,
                                     6
                             )

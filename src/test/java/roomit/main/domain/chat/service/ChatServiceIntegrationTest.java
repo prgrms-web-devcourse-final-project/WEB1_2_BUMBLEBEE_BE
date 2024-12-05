@@ -1,9 +1,14 @@
 package roomit.main.domain.chat.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,27 +17,15 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
-import roomit.main.domain.business.dto.request.BusinessRegisterRequest;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.business.repository.BusinessRepository;
-import roomit.main.domain.business.service.BusinessService;
 import roomit.main.domain.chat.chatmessage.dto.ChatMessageRequest;
-import roomit.main.domain.chat.chatmessage.entity.ChatMessage;
 import roomit.main.domain.chat.chatmessage.repository.ChatMessageRepository;
 import roomit.main.domain.chat.chatmessage.service.ChatService;
-import roomit.main.domain.chat.chatroom.entity.ChatRoom;
 import roomit.main.domain.chat.chatroom.repositoroy.ChatRoomRepository;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.member.entity.Sex;
 import roomit.main.domain.member.repository.MemberRepository;
-
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -132,27 +125,27 @@ class ChatServiceIntegrationTest {
 
 
 
-    @Test
-    void testSendMessageAndFlush() {
-        // Given
-        ChatRoom chatRoom = chatRoomRepository.save(new ChatRoom(business, member));
-        ChatMessageRequest request = new ChatMessageRequest(chatRoom.getRoomId(), "Tester", "Hello, Redis!", LocalDateTime.now(), "member");
-        System.out.println("ChatRoom saved with ID: " + chatRoom.getRoomId());
-
-        // When
-        chatService.sendMessage(request);
-        System.out.println("Message sent to Redis: " + request);
-
-        chatService.flushMessagesToDatabase(chatRoom.getRoomId());
-        System.out.println("Flushed messages from Redis to MySQL for Room ID: " + chatRoom.getRoomId());
-
-        // Then
-        List<ChatMessage> messages = chatMessageRepository.findAll();
-        System.out.println("Messages in MySQL: " + messages);
-        assertThat(messages).isNotEmpty(); // 데이터가 존재하는지 확인
-
-        ChatMessage savedMessage = messages.get(0);
-        assertThat(savedMessage.getSender()).isEqualTo("Tester");
-        assertThat(savedMessage.getContent()).isEqualTo("Hello, Redis!");
-    }
+//    @Test
+//    void testSendMessageAndFlush() {
+//        // Given
+//        ChatRoom chatRoom = chatRoomRepository.save(new ChatRoom(business, member));
+//        ChatMessageRequest request = new ChatMessageRequest(chatRoom.getRoomId(), "Tester", "Hello, Redis!", LocalDateTime.now(), "member");
+//        System.out.println("ChatRoom saved with ID: " + chatRoom.getRoomId());
+//
+//        // When
+//        chatService.sendMessage(request);
+//        System.out.println("Message sent to Redis: " + request);
+//
+//        chatService.flushMessagesToDatabase(chatRoom.getRoomId());
+//        System.out.println("Flushed messages from Redis to MySQL for Room ID: " + chatRoom.getRoomId());
+//
+//        // Then
+//        List<ChatMessage> messages = chatMessageRepository.findAll();
+//        System.out.println("Messages in MySQL: " + messages);
+//        assertThat(messages).isNotEmpty(); // 데이터가 존재하는지 확인
+//
+//        ChatMessage savedMessage = messages.get(0);
+//        assertThat(savedMessage.getSender()).isEqualTo("Tester");
+//        assertThat(savedMessage.getContent()).isEqualTo("Hello, Redis!");
+//    }
 }

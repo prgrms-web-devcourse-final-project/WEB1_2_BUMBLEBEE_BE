@@ -5,8 +5,6 @@ import lombok.Builder;
 import roomit.main.domain.payments.entity.Payments;
 import roomit.main.domain.payments.entity.TossPaymentMethod;
 
-import java.util.UUID;
-
 @Builder
 public record PaymentsRequest(
         @NotNull String orderId,

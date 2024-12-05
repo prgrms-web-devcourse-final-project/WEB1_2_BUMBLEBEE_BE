@@ -1,11 +1,11 @@
 package roomit.main.domain.workplace.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import roomit.main.domain.workplace.entity.Workplace;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import roomit.main.domain.workplace.entity.Workplace;
+import roomit.main.global.service.FileLocationService;
 
 public record WorkplaceDetailResponse(
         Long workplaceId,
@@ -18,16 +18,16 @@ public record WorkplaceDetailResponse(
         @JsonFormat(pattern = "HH:mm") LocalTime workplaceEndTime,
         BigDecimal latitude,
         BigDecimal longitude,
-        LocalDateTime createdAt
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime createdAt
 ){
-    public WorkplaceDetailResponse(Workplace workplace) {
+    public WorkplaceDetailResponse(Workplace workplace, FileLocationService fileLocationService) {
         this(
                 workplace.getWorkplaceId(),
                 workplace.getWorkplaceName().getValue(),
                 workplace.getWorkplacePhoneNumber().getValue(),
                 workplace.getWorkplaceDescription(),
                 workplace.getWorkplaceAddress().getValue(),
-                workplace.getImageUrl().getValue(),
+                fileLocationService.getImagesFromFolder(workplace.getImageUrl().getValue()).get(0),
                 workplace.getWorkplaceStartTime(),
                 workplace.getWorkplaceEndTime(),
                 workplace.getLatitude(),

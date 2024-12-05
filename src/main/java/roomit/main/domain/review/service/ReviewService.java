@@ -97,13 +97,14 @@ public class ReviewService {
 
         List<ReviewMeResponse> responses = new ArrayList<>();
         for (Reservation reservation : reservations) {
-            Workplace workplace = workplaceRepository
-                    .findByWorkplaceName(new WorkplaceName(reservation.getReview().getWorkplaceName()))
-                    .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
+            if(reservation.getReview() != null){
+                Workplace workplace = workplaceRepository
+                        .findByWorkplaceName(new WorkplaceName(reservation.getReview().getWorkplaceName()))
+                        .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
 
-            responses.add(new ReviewMeResponse(reservation.getReview(),workplace,fileLocationService));
+                responses.add(new ReviewMeResponse(reservation.getReview(),workplace,fileLocationService));
+            }
         }
-
         return responses;
     }
 

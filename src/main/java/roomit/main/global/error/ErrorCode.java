@@ -69,6 +69,7 @@ public enum ErrorCode {
 
     /*S3*/
     S3_IMAGE_FETCH_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S001", "S3에서 이미지를 가져오는 데 실패했습니다."),
+    S3_IMAGE_NOT_DELETE(HttpStatus.INTERNAL_SERVER_ERROR, "S002","S3에서 폴더를 삭제하는데 실패했습니다."),
 
     /*Login*/
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "L001", "로그인에 실패했습니다."),
