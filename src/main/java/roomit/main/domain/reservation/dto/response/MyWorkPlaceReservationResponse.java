@@ -17,7 +17,10 @@ public record MyWorkPlaceReservationResponse (
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime reservationStartTime,
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime reservationEndTime,
     Integer reservationCapacity,
-    String studyRoomUrl
+    String workplaceImageUrl,
+    Long workplaceId,
+    Long reservationId,
+    Integer reservationPrice
     // LocalDateTime paymentCreatedAt
 ) {
     public static MyWorkPlaceReservationResponse from(StudyRoom studyRoom, Reservation reservation, Workplace workplace) {
@@ -30,7 +33,10 @@ public record MyWorkPlaceReservationResponse (
                 reservation.getStartTime(),
                 reservation.getEndTime(),
                 reservation.getReservationCapacity(),
-                studyRoom.getImageUrl().getValue()
+                workplace.getImageUrl().getValue(),
+                workplace.getWorkplaceId(),
+                reservation.getReservationId(),
+                reservation.getReservationPrice()
                 //payment.getCreatedAt()
                 );
     }
