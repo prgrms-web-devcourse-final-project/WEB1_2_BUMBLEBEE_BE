@@ -42,8 +42,8 @@ public class ChatService {
         ChatRoomDetailsDTO roomDetails = roomRepository.findRoomDetailsById(request.roomId())
                 .orElseThrow(ErrorCode.CHATROOM_NOT_FOUND::commonException);
 
-        boolean isSenderValid = request.senderType().equals("business") && roomDetails.businessName().equals(request.sender())
-                || request.senderType().equals("member") && roomDetails.memberNickName().equals(request.sender());
+        boolean isSenderValid = (request.senderType().equals("business") && roomDetails.businessName().equals(request.sender()))
+                || (request.senderType().equals("member") && roomDetails.memberNickName().equals(request.sender()));
 
         if (!isSenderValid) {
             throw ErrorCode.CHAT_NOT_AUTHORIZED.commonException();

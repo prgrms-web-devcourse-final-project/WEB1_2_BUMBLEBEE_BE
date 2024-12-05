@@ -20,9 +20,9 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
 
     @PostMapping("/create")
-    public void createRoom(@RequestBody ChatRoomRequest request,
+    public Long createRoom(@RequestBody ChatRoomRequest request,
             @AuthenticationPrincipal CustomMemberDetails memberDetails){
-        chatRoomService.create(memberDetails.getId(), request.studyRoomId());
+        return chatRoomService.create(memberDetails.getId(), request.studyRoomId());
     }
 
     @GetMapping("/room")
