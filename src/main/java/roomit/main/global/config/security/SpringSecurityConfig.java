@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -112,11 +114,16 @@ public class SpringSecurityConfig {
         //oauth2
         http
                 .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/noauth") // 로그인 페이지 설정
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService)) // 사용자 정보 로드
                         .successHandler(customSuccessHandler) // 성공 핸들러
                 );
+        http.exceptionHandling(exceptionHandling ->
+                exceptionHandling
+                        .authenticationEntryPoint((request, response, authException) ->
+                                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Oauth2 인증 실패")
+                        )
+        );
 
         http
                 // 경로별 인가 작업
