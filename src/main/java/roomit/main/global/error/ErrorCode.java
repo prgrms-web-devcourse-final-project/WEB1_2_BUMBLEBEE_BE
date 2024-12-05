@@ -71,7 +71,10 @@ public enum ErrorCode {
     MALFORMED_TOKEN(HttpStatus.UNAUTHORIZED, "T003", "잘못된 형식의 토큰입니다."),
     MISSING_TOKEN(HttpStatus.UNAUTHORIZED, "T004", "토큰이 누락되었습니다."),
     TOKEN_VERIFICATION_FAILED(HttpStatus.UNAUTHORIZED, "T005", "토큰 검증에 실패했습니다."),
-    INSUFFICIENT_ROLE(HttpStatus.FORBIDDEN, "T006", "권한이 부족합니다.");
+    INSUFFICIENT_ROLE(HttpStatus.FORBIDDEN, "T006", "권한이 부족합니다."),
+
+    /*Notice*/
+    SUBSCRIBE_FAIL(HttpStatus.BAD_REQUEST, "N001", "구독 연결에 실패했습니다.");
 
 
 
