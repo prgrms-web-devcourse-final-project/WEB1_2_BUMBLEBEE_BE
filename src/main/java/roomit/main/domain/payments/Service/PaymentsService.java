@@ -97,10 +97,19 @@ public class PaymentsService {
      */
     @Transactional
     public PaymentsFailResponse tossPaymentFail(String code, String message, String orderId) {
-        Payments payment = paymentsRepository.findByOrderId(orderId).orElseThrow(ErrorCode.PAYMENTS_NOT_FOUND::commonException);
+        Payments payment = paymentsRepository.findByOrderId(orderId)
+                .orElseThrow(ErrorCode.PAYMENTS_NOT_FOUND::commonException);
 
-        payment.changePaySuccessYN(false);
-        payment.changeFailReason(message);
+        Reservation reservation = paymentsRepository.findReservationByPayments(payment)
+                .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
+
+        try {
+            reservation.changeReservationState(ReservationState.PAYMENT_FAIL);
+            payment.changePaySuccessYN(false);
+            payment.changeFailReason(message);
+        } catch (Exception e){
+            throw ErrorCode.PAYMENTS_FAILED.commonException();
+        }
 
         return PaymentsFailResponse.builder()
                 .errorCode(code)
