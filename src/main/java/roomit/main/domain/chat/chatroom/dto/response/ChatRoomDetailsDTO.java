@@ -1,4 +1,4 @@
-package roomit.main.domain.chat.chatroom.dto;
+package roomit.main.domain.chat.chatroom.dto.response;
 
 public record ChatRoomDetailsDTO(
         Long roomId,
