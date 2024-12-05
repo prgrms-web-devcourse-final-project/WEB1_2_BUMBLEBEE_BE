@@ -66,11 +66,7 @@ public class ReservationService {
 
         Reservation reservation = request.toEntity(member,studyRoom);
 
-
-        // 예약 저장
-        Long reservationId = reservationRepository.save(reservation).getReservationId();
-
-        return reservationId;
+        return reservationRepository.save(reservation).getReservationId();
     }
 
     @Transactional(readOnly = true)

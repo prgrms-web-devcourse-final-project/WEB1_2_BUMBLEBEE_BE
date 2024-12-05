@@ -1,6 +1,7 @@
 package roomit.main.domain.chat.chatroom.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import roomit.main.domain.business.dto.CustomBusinessDetails;
 import roomit.main.domain.business.entity.Business;
@@ -14,6 +15,7 @@ import roomit.main.domain.studyroom.entity.StudyRoom;
 import roomit.main.domain.studyroom.repository.StudyRoomRepository;
 import roomit.main.global.error.ErrorCode;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -23,7 +25,7 @@ public class ChatRoomService {
     private final StudyRoomRepository studyRoomRepository;
     private final MemberRepository memberRepository;
 
-    public void create(Long memberId, Long studyRoomId) {
+    public Long create(Long memberId, Long studyRoomId) {
         StudyRoom studyRoom = studyRoomRepository.findById(studyRoomId)
                 .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
 
@@ -32,11 +34,11 @@ public class ChatRoomService {
 
         Business business = studyRoom.getWorkPlace().getBusiness();
 
-        if (chatRoomRepository.existsChatRoomByMemberIdAndBusinessId(memberId, business.getBusinessId())) {
-            return;
+        if (!chatRoomRepository.existsChatRoomByMemberIdAndBusinessId(memberId, business.getBusinessId())) {
+            chatRoomRepository.save(new ChatRoom(business, member));
         }
 
-        chatRoomRepository.save(new ChatRoom(business, member));
+        return chatRoomRepository.findChatRoomId(memberId, business.getBusinessId());
     }
 
     public List<ChatRoomResponse> getRooms(CustomMemberDetails member, CustomBusinessDetails business) {
@@ -48,6 +50,6 @@ public class ChatRoomService {
             return chatRoomRepository.findChatRoomByBusinessId(business.getId());
         }
 
-        return null;
+        return Collections.emptyList();
     }
 }

@@ -35,25 +35,45 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
     Boolean existsChatRoomByMemberIdAndBusinessId(Long memberId, Long businessId);
 
     @Query("""
-        SELECT new roomit.main.domain.chat.chatroom.dto.ChatRoomMemberResponse(
-            m.room.roomId, m.room.business.businessId, MAX(m.timestamp)
-        ) 
-        FROM ChatMessage m
-        where m.room.member.memberId = :memberId
-        GROUP BY m.room.roomId, m.room.business
-        ORDER BY max(m.timestamp) DESC
+    SELECT new roomit.main.domain.chat.chatroom.dto.ChatRoomMemberResponse(
+        c.roomId, 
+        b.businessId, 
+        CASE 
+            WHEN MAX(m.timestamp) IS NOT NULL THEN MAX(m.timestamp) 
+            ELSE c.createdAt 
+        END
+    ) 
+    FROM ChatRoom c
+    LEFT JOIN c.messages m
+    LEFT JOIN c.business b
+    WHERE c.member.memberId = :memberId
+    GROUP BY c.roomId, b.businessId, c.createdAt
+    ORDER BY 
+        CASE 
+            WHEN MAX(m.timestamp) IS NOT NULL THEN MAX(m.timestamp) 
+            ELSE c.createdAt 
+        END DESC
     """)
     List<ChatRoomResponse> findChatRoomByMembersId(Long memberId);
 
+
     @Query("""
-        SELECT new roomit.main.domain.chat.chatroom.dto.ChatRoomBusinessResponse(
-            m.room.roomId, m.room.member.memberId, MAX(m.timestamp)
-        ) 
-        FROM ChatMessage m
-        where m.room.business.businessId = :businessId
-        GROUP BY m.room.roomId, m.room.member
-        ORDER BY max(m.timestamp) DESC
-    """)
+            SELECT new roomit.main.domain.chat.chatroom.dto.ChatRoomBusinessResponse(
+                m.room.roomId, m.room.member.memberId, MAX(m.timestamp)
+            ) 
+            FROM ChatRoom c
+            LEFT JOIN c.messages m
+            WHERE m.room.business.businessId = :businessId
+            GROUP BY m.room.roomId, m.room.member, c.createdAt
+            ORDER BY MAX(m.timestamp) DESC
+            """)
     List<ChatRoomResponse> findChatRoomByBusinessId(Long businessId);
+
+    @Query("""
+    SELECT m.roomId
+    FROM ChatRoom m
+    where m.member.memberId = :memberId and m.business.businessId = :businessId
+""")
+    Long findChatRoomId(Long memberId, Long businessId);
 
 }

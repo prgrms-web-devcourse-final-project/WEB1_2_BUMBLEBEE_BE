@@ -14,14 +14,12 @@ import java.time.LocalDateTime;
 @ToString
 public class ResponseNotificationDto {
     private String content;
-    private Boolean isRead;
     private LocalDateTime createdAt;
     private Long workplaceId;
 
     @Builder
     public ResponseNotificationDto(Notification notification, Long workplaceId) {
         this.content = notification.getContent();
-        this.isRead = notification.getIsRead();
         this.createdAt = LocalDateTime.now();
         this.workplaceId = workplaceId;
     }

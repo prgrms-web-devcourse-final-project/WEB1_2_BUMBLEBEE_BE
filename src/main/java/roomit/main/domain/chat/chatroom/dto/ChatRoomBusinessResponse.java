@@ -7,4 +7,8 @@ public record ChatRoomBusinessResponse(
         Long memberId,
         LocalDateTime updatedAt
 ) implements ChatRoomResponse {
+    @Override
+    public Long id() {
+        return memberId;
+    }
 }

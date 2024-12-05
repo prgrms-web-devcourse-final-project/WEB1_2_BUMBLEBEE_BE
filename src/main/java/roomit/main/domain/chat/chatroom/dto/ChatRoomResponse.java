@@ -4,5 +4,6 @@ import java.time.LocalDateTime;
 
 public interface ChatRoomResponse {
     Long roomId();
+    Long id();
     LocalDateTime updatedAt();
 }

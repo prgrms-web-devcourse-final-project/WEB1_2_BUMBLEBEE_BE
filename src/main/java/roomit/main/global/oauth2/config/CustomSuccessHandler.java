@@ -53,7 +53,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             log.info(role);
 
             // Redirect URL
-            String redirectUrl = oauthUrl + access +"?role="+role;
+            String redirectUrl = oauthUrl + access +"&role="+role;
 
             response.sendRedirect(redirectUrl);
         } catch (Exception e){
