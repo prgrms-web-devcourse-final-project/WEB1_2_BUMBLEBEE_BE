@@ -11,14 +11,29 @@ public record ChatMessageResponse
          Long roomId,
          String sender,
          String content,
+         Boolean isRead,
          LocalDateTime timestamp
         ) {
 
-    public ChatMessageResponse(ChatMessageRequest request) {
-        this(null, request.roomId(), request.sender(), request.content(), request.timestamp());
+    public ChatMessageResponse(ChatMessage chatMessage) {
+        this(
+                chatMessage.getMessageId(),
+                chatMessage.getRoom().getRoomId(),
+                chatMessage.getSender(),
+                chatMessage.getContent(),
+                chatMessage.getIsRead(),
+                chatMessage.getTimestamp()
+        );
     }
 
-    public ChatMessageResponse(ChatMessage message) {
-        this(message.getMessageId(), message.getRoom().getRoomId(), message.getSender(), message.getContent(), message.getTimestamp());
+    public ChatMessageResponse(ChatMessage message, boolean isRead) {
+        this(
+                message.getMessageId(),
+                message.getRoom().getRoomId(),
+                message.getSender(),
+                message.getContent(),
+                isRead,
+                message.getTimestamp()
+        );
     }
 }
