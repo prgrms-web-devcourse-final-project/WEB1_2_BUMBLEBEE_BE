@@ -13,7 +13,6 @@ public interface WorkplaceRepository extends JpaRepository<Workplace, Long> {
 
     Workplace getWorkplaceByWorkplaceName(WorkplaceName workplaceName);
 
-    Optional<Workplace> findByWorkplaceName(WorkplaceName workplace);
     @Query(value = """
         SELECT w.workplace_id, w.workplace_name, 
                w.workplace_address, w.image_url,

@@ -38,7 +38,7 @@ public class FileLocationService {
   public List<String> getImagesFromFolder(String folderPath) {
     List<String> imageUrls = new ArrayList<>();
 
-    String baseUrl = "https://elasticbeanstalk-ap-northeast-2-405894845535.s3.ap-northeast-2.amazonaws.com/";
+    String baseUrl = "https://s3.ap-northeast-2.amazonaws.com/bumblebee.roomit/";
 
     try {
       String path = folderPath.substring(baseUrl.length());  // baseUrl 길이만큼 잘라냄
@@ -59,11 +59,14 @@ public class FileLocationService {
           for (S3Object object : response.contents()) {
             String key = object.key();
 
-            // 이미지 파일인지 확인 (확장자 필터)
-            if (key.endsWith(".jpg") || key.endsWith(".png") || key.endsWith(".jpeg")) {
-              // 이미지 URL 생성 (bucketName과 region을 추가)
-              String imageUrl = "https://" + bucketName + ".s3.ap-northeast-2.amazonaws.com/" + key;
-              imageUrls.add(imageUrl);
+            // 해당 파일이 지정한 폴더에 속한 직접적인 파일인지 확인
+            if (key.startsWith(path + "/") && !key.substring(path.length() + 1).contains("/")) {
+              // 이미지 파일인지 확인 (확장자 필터)
+              if (key.endsWith(".jpg") || key.endsWith(".png") || key.endsWith(".jpeg")) {
+                // 이미지 URL 생성 (bucketName과 region을 추가)
+                String imageUrl = "https://s3.ap-northeast-2.amazonaws.com/" + bucketName + "/" + key;
+                imageUrls.add(imageUrl);
+              }
             }
           }
         }

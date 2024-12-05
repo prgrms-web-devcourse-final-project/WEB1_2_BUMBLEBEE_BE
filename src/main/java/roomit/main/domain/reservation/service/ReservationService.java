@@ -33,6 +33,7 @@ import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.entity.value.WorkplaceName;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
+import roomit.main.global.service.FileLocationService;
 
 @Slf4j
 @Service
@@ -46,6 +47,7 @@ public class ReservationService {
     private final NotificationRepository notificationRepository;
     private final NotificationService notificationService;
     private final WorkplaceRepository workplaceRepository;
+    private final FileLocationService fileLocationService;
 
     // 예약 만드는 메서드
     @Transactional
@@ -68,36 +70,9 @@ public class ReservationService {
         // 예약 저장
         Long reservationId = reservationRepository.save(reservation).getReservationId();
 
-        // 알림 처리
-        StudyRoom studyRoom1 = reservation.getStudyRoom();
-        Workplace workPlace = studyRoom1.getWorkPlace();
-
-
-        alrim(workPlace);
-
         return reservationId;
     }
 
-    public void alrim(Workplace workplace){
-        Business business = workplace.getBusiness();
-
-        Notification notification = Notification.builder()
-                .business(business)
-                .notificationType(NotificationType.RESERVATION_CONFIRMED)
-                .content("예약이 등록되었습니다.")
-                .build();
-
-        ResponseNotificationDto responseNotificationDto = ResponseNotificationDto
-                .builder()
-                .notification(notification)
-                .workplaceId(workplace.getWorkplaceId())
-                .build();
-
-        notificationService.notify(
-                business.getBusinessId(),
-                responseNotificationDto
-        );
-    }
     @Transactional(readOnly = true)
     public void validateReservation(LocalDateTime startTime, LocalDateTime endTime) {
         if(!startTime.isBefore(endTime)){
@@ -199,23 +174,19 @@ public class ReservationService {
         }
     }
 
-
-    // memberId를 이용하여 나의 최근 예약 조회
+    // 제일 최근 예약 1건 조회
     @Transactional(readOnly = true)
     public ReservationResponse findByMemberId(Long memberId) {
-        List<Reservation> recentReservation = reservationRepository.findRecentReservationByMemberId(memberId);
+        Reservation reservation = reservationRepository.findTopByMemberMemberIdOrderByCreatedAtDesc(memberId)
+                .orElseThrow(ErrorCode.RESERVATION_IS_EMPTY::commonException);
 
-        if (recentReservation == null)
-        {
-            throw(ErrorCode.RESERVATION_IS_EMPTY.commonException());
-        }
+        StudyRoom studyRoom = reservation.getStudyRoom();
+        Workplace workPlace = studyRoom.getWorkPlace();
 
-        Reservation recentReservation1 = recentReservation.get(0);
-        StudyRoom studyRoom = recentReservation1.getStudyRoom();
-        Workplace workplace = studyRoom.getWorkPlace();
-
-        return ReservationResponse.from(studyRoom,recentReservation1,workplace);
+        return ReservationResponse.from(studyRoom,reservation,workPlace,fileLocationService);
     }
+
+
 
     // memberId를 이용하여 나의 예약 전체 조회
     @Transactional(readOnly = true)
@@ -230,7 +201,8 @@ public class ReservationService {
             .map(reservation -> ReservationResponse.from(
                 reservation.getStudyRoom(),
                 reservation,
-                reservation.getStudyRoom().getWorkPlace()
+                reservation.getStudyRoom().getWorkPlace(),
+                    fileLocationService
             ))
             .toList();
     }
@@ -250,7 +222,8 @@ public class ReservationService {
             .map(reservation -> MyWorkPlaceReservationResponse.from(
                 reservation.getStudyRoom(),
                 reservation,
-                reservation.getStudyRoom().getWorkPlace()
+                reservation.getStudyRoom().getWorkPlace(),
+                    fileLocationService
             ))
             .toList();
     }

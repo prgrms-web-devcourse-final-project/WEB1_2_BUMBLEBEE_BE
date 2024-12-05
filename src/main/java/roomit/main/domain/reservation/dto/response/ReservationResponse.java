@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import roomit.main.domain.reservation.entity.Reservation;
 import roomit.main.domain.studyroom.entity.StudyRoom;
 import roomit.main.domain.workplace.entity.Workplace;
+import roomit.main.global.service.FileLocationService;
 
 public record ReservationResponse (
         Long reservationId,
@@ -19,12 +20,12 @@ public record ReservationResponse (
         Integer price
         // LocalDateTime paymentCreatedAt
 ){
-    public static ReservationResponse from(StudyRoom studyRoom ,Reservation reservation, Workplace workplace) {
+    public static ReservationResponse from(StudyRoom studyRoom , Reservation reservation, Workplace workplace, FileLocationService fileLocationService) {
         return new ReservationResponse(
                 reservation.getReservationId(),
                 workplace.getWorkplaceId(),
                 workplace.getWorkplaceName().getValue(),
-                workplace.getImageUrl().getValue(),
+                fileLocationService.getImagesFromFolder(workplace.getImageUrl().getValue()).get(0),
                 studyRoom.getStudyRoomName().getValue(),
                 reservation.getCreatedAt(),
                 reservation.getStartTime(),

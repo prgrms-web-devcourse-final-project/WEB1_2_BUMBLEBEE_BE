@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -20,10 +21,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+import roomit.main.domain.business.dto.request.BusinessRegisterRequest;
+import roomit.main.domain.business.entity.Business;
+import roomit.main.domain.business.repository.BusinessRepository;
+import roomit.main.domain.business.service.BusinessService;
 import roomit.main.domain.member.dto.CustomMemberDetails;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.member.entity.Sex;
 import roomit.main.domain.member.repository.MemberRepository;
+import roomit.main.domain.notification.entity.Notification;
+import roomit.main.domain.notification.entity.NotificationType;
+import roomit.main.domain.notification.repository.NotificationRepository;
 import roomit.main.domain.reservation.entity.Reservation;
 import roomit.main.domain.reservation.entity.ReservationState;
 import roomit.main.domain.reservation.repository.ReservationRepository;
@@ -68,6 +76,15 @@ class ReviewServiceTest {
     @Autowired
     private ImageService imageService;
 
+    @Autowired
+    private BusinessRepository businessRepository;
+
+    @Autowired
+    private BusinessService businessService;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
+
     private LocalDate date;
 
     private Member member;
@@ -78,6 +95,8 @@ class ReviewServiceTest {
 
     private StudyRoom studyRoom;
 
+    private Notification notification;
+
     private CustomMemberDetails customMemberDetails;
 
     @BeforeAll
@@ -85,6 +104,17 @@ class ReviewServiceTest {
 
         date = LocalDate.of(2024, 11, 22);
 
+        BusinessRegisterRequest businessRegisterRequest = BusinessRegisterRequest.builder()
+                .businessName("테스트사업자123")
+                .businessEmail("business123Test@gmail.com")
+                .businessPwd("Business1!")
+                .businessNum("632-12-25250")
+                .build();
+
+        businessService.signUpBusiness(businessRegisterRequest); // 데이터 생성
+
+        Business business = businessRepository.findByBusinessEmail("business123Test@gmail.com")
+                .orElseThrow();
 
         workplace = Workplace.builder()
                 .workplaceName("Workplace")
@@ -94,7 +124,7 @@ class ReviewServiceTest {
                 .imageUrl(imageService.createImageUrl("Workplace"))
                 .workplaceStartTime(LocalTime.of(9, 0))
                 .workplaceEndTime(LocalTime.of(18, 0))
-                .business(null)
+                .business(business)
                 .build();
         workplaceRepository.save(workplace);
 
@@ -109,6 +139,7 @@ class ReviewServiceTest {
                 .build();
 
         memberRepository.save(member);
+
 
         studyRoom = StudyRoom.builder()
                 .studyRoomName("Test Room")
@@ -134,6 +165,15 @@ class ReviewServiceTest {
                 .reservationPrice(1000)
                 .build();
 
+        notification = Notification.builder()
+                .business(business)
+                .content("테스트 알람")
+                .notificationType(NotificationType.REVIEW_CREATED)
+                .url("아무거나")
+                .build();
+
+        notificationRepository.save(notification);
+
          customMemberDetails = new CustomMemberDetails(member);
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(customMemberDetails, null, customMemberDetails.getAuthorities());
@@ -144,6 +184,7 @@ class ReviewServiceTest {
     @DisplayName("리뷰 등록하기")
     @Transactional
     void test1() {
+
         reservationRepository.save(reservation);
 
         ReviewRegisterRequest request = ReviewRegisterRequest.builder()
@@ -152,8 +193,6 @@ class ReviewServiceTest {
                 .reservationId(reservation.getReservationId())
                 .workPlaceName(workplace.getWorkplaceName().getValue())
                 .build();
-
-
 
         reviewService.register(request, customMemberDetails.getId());
         Workplace workplace1 = workplaceRepository.findByWorkplaceName(workplace.getWorkplaceName()).get();
