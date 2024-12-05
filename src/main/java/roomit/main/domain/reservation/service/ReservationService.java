@@ -12,8 +12,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.member.repository.MemberRepository;
+import roomit.main.domain.notification.dto.ResponseNotificationDto;
+import roomit.main.domain.notification.entity.Notification;
+import roomit.main.domain.notification.entity.NotificationType;
+import roomit.main.domain.notification.repository.NotificationRepository;
+import roomit.main.domain.notification.service.NotificationService;
 import roomit.main.domain.reservation.dto.request.CreateReservationRequest;
 import roomit.main.domain.reservation.dto.request.UpdateReservationRequest;
 import roomit.main.domain.reservation.dto.response.MyWorkPlaceReservationResponse;
@@ -24,6 +30,8 @@ import roomit.main.domain.reservation.repository.ReservationRepository;
 import roomit.main.domain.studyroom.entity.StudyRoom;
 import roomit.main.domain.studyroom.repository.StudyRoomRepository;
 import roomit.main.domain.workplace.entity.Workplace;
+import roomit.main.domain.workplace.entity.value.WorkplaceName;
+import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
 
 @Slf4j
@@ -35,6 +43,9 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final StudyRoomRepository studyRoomRepository;
     private final MemberRepository memberRepository;
+    private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
+    private final WorkplaceRepository workplaceRepository;
 
     // 예약 만드는 메서드
     @Transactional
@@ -47,15 +58,46 @@ public class ReservationService {
         Member member = memberRepository.findById(memberId)
             .orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
 
-        StudyRoom studyRoom = studyRoomRepository.findById(studyRoomId)
-            .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
+
+        StudyRoom studyRoom = studyRoomRepository.findByIdWithWorkplace(studyRoomId)
+                .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
 
         Reservation reservation = request.toEntity(member,studyRoom);
 
-        return reservationRepository.save(reservation).getReservationId();
+
+        // 예약 저장
+        Long reservationId = reservationRepository.save(reservation).getReservationId();
+
+        // 알림 처리
+        StudyRoom studyRoom1 = reservation.getStudyRoom();
+        Workplace workPlace = studyRoom1.getWorkPlace();
+
+
+        alrim(workPlace);
+
+        return reservationId;
     }
 
-    // 시작시간이 종료시간보다 빠른가 체크
+    public void alrim(Workplace workplace){
+        Business business = workplace.getBusiness();
+
+        Notification notification = Notification.builder()
+                .business(business)
+                .notificationType(NotificationType.RESERVATION_CONFIRMED)
+                .content("예약이 등록되었습니다.")
+                .build();
+
+        ResponseNotificationDto responseNotificationDto = ResponseNotificationDto
+                .builder()
+                .notification(notification)
+                .workplaceId(workplace.getWorkplaceId())
+                .build();
+
+        notificationService.notify(
+                business.getBusinessId(),
+                responseNotificationDto
+        );
+    }
     @Transactional(readOnly = true)
     public void validateReservation(LocalDateTime startTime, LocalDateTime endTime) {
         if(!startTime.isBefore(endTime)){
