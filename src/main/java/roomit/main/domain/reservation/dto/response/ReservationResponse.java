@@ -17,7 +17,8 @@ public record ReservationResponse (
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime,
         Integer reservationCapacity,
-        Integer price
+        Integer price,
+        Boolean existReview
         // LocalDateTime paymentCreatedAt
 ){
     public static ReservationResponse from(StudyRoom studyRoom , Reservation reservation, Workplace workplace, FileLocationService fileLocationService) {
@@ -31,7 +32,8 @@ public record ReservationResponse (
                 reservation.getStartTime(),
                 reservation.getEndTime(),
                 reservation.getReservationCapacity(),
-                studyRoom.getPrice()
+                studyRoom.getPrice(),
+                reservation.getReview() != null
                 // payment.getCreatedAt()
         );
     }
