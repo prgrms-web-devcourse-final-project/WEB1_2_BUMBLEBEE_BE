@@ -3,11 +3,20 @@ package roomit.main.domain.review.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomit.main.domain.business.entity.Business;
+import roomit.main.domain.business.repository.BusinessRepository;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.member.repository.MemberRepository;
+import roomit.main.domain.notification.dto.ResponseNotificationDto;
+import roomit.main.domain.notification.entity.Notification;
+import roomit.main.domain.notification.entity.NotificationType;
+import roomit.main.domain.notification.repository.NotificationRepository;
+import roomit.main.domain.notification.service.NotificationService;
 import roomit.main.domain.reservation.entity.Reservation;
 import roomit.main.domain.reservation.repository.ReservationRepository;
 import roomit.main.domain.review.dto.request.ReviewRegisterRequest;
@@ -25,12 +34,16 @@ import roomit.main.global.service.FileLocationService;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final MemberRepository memberRepository;
     private final WorkplaceRepository workplaceRepository;
     private final ReservationRepository reservationRepository;
+    private final NotificationService notificationService;
+    private final BusinessRepository businessRepository;
+    private final NotificationRepository notificationRepository;
     private final FileLocationService fileLocationService;
 
     @Transactional
@@ -38,14 +51,15 @@ public class ReviewService {
 
         Reservation reservation = reservationRepository.findById(request.reservationId())
                 .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
+
         // 본인이 예약한거지 확인하는거
 
-        if (!Objects.equals(reservation.getMember().getMemberId(), memberId)){
+        if (!Objects.equals(reservation.getMember().getMemberId(), memberId)) {
             throw ErrorCode.REVIEW_UPDATE_FAIL.commonException();
         }
 
         Workplace workPlace = workplaceRepository.findByWorkplaceName(new WorkplaceName(request.workPlaceName()))
-                    .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
+                .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
 
         Review review = request.toEntity(reservation);
 
@@ -55,7 +69,38 @@ public class ReviewService {
         workPlace.changeStarSum(workPlace.getStarSum() + request.reviewRating());
         workPlace.changeReviewCount(workPlace.getReviewCount() + 1);
 
-        reviewRepository.save(review);
+
+        reviewRepository.save(request.toEntity(reservation));
+
+        alrim(workPlace);
+
+        Notification notification = notificationRepository.findById(workPlace.getWorkplaceId())
+                .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
+
+        notification.read();
+        notificationRepository.save(notification);
+
+    }
+
+    public void alrim(Workplace workplace){
+        Business business = workplace.getBusiness();
+
+        Notification notification = Notification.builder()
+                .business(business)
+                .notificationType(NotificationType.REVIEW_CREATED)
+                .content("리뷰가 등록되었습니다.")
+                .build();
+
+        ResponseNotificationDto responseNotificationDto = ResponseNotificationDto
+                .builder()
+                .notification(notification)
+                .workplaceId(workplace.getWorkplaceId())
+                .build();
+
+        notificationService.notify(
+                business.getBusinessId(),
+                responseNotificationDto
+        );
     }
 
     @Transactional
@@ -70,7 +115,7 @@ public class ReviewService {
                 .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
 
         boolean isTrue = review.checkMyReservation(reservation, memberId);
-        if (isTrue){
+        if (isTrue) {
             throw ErrorCode.REVIEW_UPDATE_FAIL.commonException();
         }
 
@@ -105,6 +150,7 @@ public class ReviewService {
                 responses.add(new ReviewMeResponse(reservation.getReview(),workplace,fileLocationService));
             }
         }
+
         return responses;
     }
 
@@ -118,7 +164,7 @@ public class ReviewService {
                 .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
 
         boolean isTrue = review.checkMyReservation(reservation, memberId);
-        if (isTrue){
+        if (isTrue) {
             throw ErrorCode.REVIEW_UPDATE_FAIL.commonException();
         }
 

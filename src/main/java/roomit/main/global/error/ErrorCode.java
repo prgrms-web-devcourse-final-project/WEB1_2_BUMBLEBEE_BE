@@ -82,6 +82,10 @@ public enum ErrorCode {
     TOKEN_VERIFICATION_FAILED(HttpStatus.UNAUTHORIZED, "T005", "토큰 검증에 실패했습니다."),
     INSUFFICIENT_ROLE(HttpStatus.FORBIDDEN, "T006", "권한이 부족합니다."),
 
+    /*Notice*/
+    SUBSCRIBE_FAIL(HttpStatus.BAD_REQUEST, "N001", "구독 연결에 실패했습니다.");
+
+
     /*Chat*/
     CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND,"C001","존재하지 채팅방 입니다"),
     CHAT_NOT_AUTHORIZED(HttpStatus.UNAUTHORIZED, "C002", "채팅 권한이 없습니다."),

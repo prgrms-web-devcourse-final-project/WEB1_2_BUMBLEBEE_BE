@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -136,6 +138,7 @@ public class SpringSecurityConfig {
                         .requestMatchers("/api/v1/member/signup").permitAll()
                         .requestMatchers("/api/v1/business/signup").permitAll()
                         .requestMatchers("/toss/**").permitAll()
+                        .requestMatchers("/api/subscribe/**").permitAll()
 
                         .requestMatchers("/api/v1/recommend/**").permitAll()
 
