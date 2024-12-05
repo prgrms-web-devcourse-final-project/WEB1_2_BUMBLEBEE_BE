@@ -83,7 +83,7 @@ public enum ErrorCode {
     INSUFFICIENT_ROLE(HttpStatus.FORBIDDEN, "T006", "권한이 부족합니다."),
 
     /*Notice*/
-    SUBSCRIBE_FAIL(HttpStatus.BAD_REQUEST, "N001", "구독 연결에 실패했습니다.");
+    SUBSCRIBE_FAIL(HttpStatus.BAD_REQUEST, "N001", "구독 연결에 실패했습니다."),
 
 
     /*Chat*/
