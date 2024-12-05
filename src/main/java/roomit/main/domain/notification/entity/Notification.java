@@ -10,6 +10,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.notification.entity.value.NotificationContent;
 import roomit.main.domain.notification.entity.value.RelatedUrl;
+import roomit.main.domain.workplace.entity.Workplace;
 
 @Getter
 @Entity
@@ -33,13 +34,12 @@ public class Notification {
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MEMBER_ID")
-    private Business receiver;
+    private Business business;
 
     @Builder
-    public Notification(Business receiver, NotificationType notificationType, String content, String url) {
-        this.receiver = receiver;
-        this.notificationType = notificationType;
+    public Notification(Business business, NotificationType notificationType, String content, String url) {
+        this.business = business;
+        this.notificationType = NotificationType.REVIEW_CREATED;
         this.content = new NotificationContent(content);
         this.url = new RelatedUrl(url);
         this.isRead = false;
