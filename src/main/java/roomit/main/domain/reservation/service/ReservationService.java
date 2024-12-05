@@ -2,7 +2,14 @@ package roomit.main.domain.reservation.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import ch.qos.logback.core.joran.event.StartEvent;
+import com.zaxxer.hikari.util.ClockSource;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomit.main.domain.member.entity.Member;
@@ -19,10 +26,12 @@ import roomit.main.domain.studyroom.repository.StudyRoomRepository;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.global.error.ErrorCode;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
 
+    private final RedisTemplate<String, Object> redisTemplate;
     private final ReservationRepository reservationRepository;
     private final StudyRoomRepository studyRoomRepository;
     private final MemberRepository memberRepository;
@@ -30,13 +39,10 @@ public class ReservationService {
     // 예약 만드는 메서드
     @Transactional
     public Long createReservation(Long memberId,Long studyRoomId,CreateReservationRequest request) {
-        if(!validateReservation(request.startTime(),request.endTime())){
-            throw ErrorCode.START_TIME_NOT_AFTER_END_TIME.commonException();
-        }
+        validateReservation(request.startTime(),request.endTime());
 
-//        if(isDuplicateReservation(studyRoomId,request.startTime(),request.endTime())){
-//            throw ErrorCode.DUPLICATE_RESERVATION.commonException();
-//        }
+
+        checkReservationTime(request.startTime(),request.endTime(),studyRoomId,ReservationState.ACTIVE,ReservationState.ON_HOLD);
 
         Member member = memberRepository.findById(memberId)
             .orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
@@ -45,21 +51,61 @@ public class ReservationService {
             .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
 
         Reservation reservation = request.toEntity(member,studyRoom);
+
         return reservationRepository.save(reservation).getReservationId();
     }
 
-    // validation startTime & endTime(startTime < endTime = True)
+    // 시작시간이 종료시간보다 빠른가 체크
     @Transactional(readOnly = true)
-    public boolean validateReservation(LocalDateTime startTime, LocalDateTime endTime) {
-        return startTime.isBefore(endTime);
+    public void validateReservation(LocalDateTime startTime, LocalDateTime endTime) {
+        if(!startTime.isBefore(endTime)){
+            throw ErrorCode.START_TIME_NOT_AFTER_END_TIME.commonException();
+        }
+
     }
 
-
-
-//    // 중복 예약 방지 로직
-//    private boolean isDuplicateReservation(Long studyRoomId,LocalDateTime startTime,LocalDateTime endTime){
-//        return reservationRepository.existsByStudyRoomIdAndStartTimeLessThanAndEndTimeGreaterThan(studyRoomId,startTime,endTime);
+//    @Transactional(readOnly = true)
+//    public void checkReservationTime(LocalDateTime startTime, LocalDateTime endTime, Long studyRoomId, ReservationState state) {
+//        String redisKey = "studyroom:" + studyRoomId + ":reservations";
+//        List<Map<String, LocalDateTime>> reservations = (List<Map<String, LocalDateTime>>) redisTemplate.opsForValue().get(redisKey);
+//
+//        // Redis에 데이터 없으면 DB에서 불러와서 저장
+//        if (reservations == null) {
+//            StudyRoom existingStudyRoom = studyRoomRepository.findById(studyRoomId)
+//                .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
+//
+//            reservations = existingStudyRoom.getReservations().stream()
+//                .filter(reservation -> reservation.getReservationState().equals(state))
+//                .map(reservation -> Map.of("startTime", reservation.getStartTime(), "endTime", reservation.getEndTime()))
+//                .collect(Collectors.toList());
+//
+//            // Redis에 저장
+//            redisTemplate.opsForValue().set(redisKey, reservations);
+//        }
+//
+//        // Redis 데이터로 중복 검사
+//        for (Map<String, LocalDateTime> res : reservations) {
+//            if (res.get("startTime").isBefore(endTime) && res.get("endTime").isAfter(startTime)) {
+//                throw ErrorCode.DUPLICATE_RESERVATION.commonException();
+//            }
+//        }
 //    }
+
+    // 예약의 중복 시간 체크
+    @Transactional(readOnly = true)
+    public void checkReservationTime(LocalDateTime StartTime, LocalDateTime endTime, Long studyRoomId ,ReservationState ACTIVE,ReservationState ON_HOLD) {
+        StudyRoom existingStudyRoom = studyRoomRepository.findById(studyRoomId)
+                .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
+
+        existingStudyRoom.getReservations().forEach(reservation -> {
+            if (reservation.getReservationState().equals(ReservationState.ACTIVE) || reservation.getReservationState().equals(ReservationState.ON_HOLD)) {
+                if (reservation.getStartTime().isBefore(endTime) && reservation.getEndTime().isAfter(StartTime)) {
+                    throw ErrorCode.DUPLICATE_RESERVATION.commonException();
+                }
+            }
+        });
+    }
+
 
     // x를 눌러 예약을 삭제하는 메서드
     @Transactional
@@ -117,16 +163,16 @@ public class ReservationService {
     public ReservationResponse findByMemberId(Long memberId) {
         List<Reservation> recentReservation = reservationRepository.findRecentReservationByMemberId(memberId);
 
-        if (recentReservation.isEmpty())
+        if (recentReservation == null)
         {
-            return null;
-        }else {
-            Reservation recentReservation1 = recentReservation.get(0);
-            StudyRoom studyRoom = recentReservation1.getStudyRoom();
-            Workplace workplace = studyRoom.getWorkPlace();
-
-            return ReservationResponse.from(studyRoom,recentReservation1,workplace);
+            throw(ErrorCode.RESERVATION_IS_EMPTY.commonException());
         }
+
+        Reservation recentReservation1 = recentReservation.get(0);
+        StudyRoom studyRoom = recentReservation1.getStudyRoom();
+        Workplace workplace = studyRoom.getWorkPlace();
+
+        return ReservationResponse.from(studyRoom,recentReservation1,workplace);
     }
 
     // memberId를 이용하여 나의 예약 전체 조회
@@ -135,16 +181,16 @@ public class ReservationService {
         List<Reservation> reservations = reservationRepository.findReservationsByMemberId(memberId);
 
         if(reservations.isEmpty()){
-            return null;
-        } {
-            return reservations.stream()
-                .map(reservation -> ReservationResponse.from(
-                    reservation.getStudyRoom(),
-                    reservation,
-                    reservation.getStudyRoom().getWorkPlace()
-                ))
-                .toList();
+            throw(ErrorCode.RESERVATION_IS_EMPTY.commonException());
         }
+
+        return reservations.stream()
+            .map(reservation -> ReservationResponse.from(
+                reservation.getStudyRoom(),
+                reservation,
+                reservation.getStudyRoom().getWorkPlace()
+            ))
+            .toList();
     }
 
 
@@ -155,15 +201,17 @@ public class ReservationService {
         List<Reservation> reservations = reservationRepository.findMyAllReservations(businessId);
 
         if(reservations.isEmpty()){
-            return null;
-        } else {
-            return reservations.stream()
-                .map(reservation -> MyWorkPlaceReservationResponse.from(
-                    reservation.getStudyRoom(),
-                    reservation,
-                    reservation.getStudyRoom().getWorkPlace()
-                ))
-                .toList();
+            throw(ErrorCode.RESERVATION_IS_EMPTY.commonException());
         }
+
+        return reservations.stream()
+            .map(reservation -> MyWorkPlaceReservationResponse.from(
+                reservation.getStudyRoom(),
+                reservation,
+                reservation.getStudyRoom().getWorkPlace()
+            ))
+            .toList();
     }
+
+
 }
