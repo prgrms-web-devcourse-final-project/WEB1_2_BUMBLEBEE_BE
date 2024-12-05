@@ -7,11 +7,14 @@ import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomit.main.domain.business.entity.Business;
+import roomit.main.domain.business.repository.BusinessRepository;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.member.repository.MemberRepository;
 import roomit.main.domain.notification.dto.ResponseNotificationDto;
 import roomit.main.domain.notification.entity.Notification;
 import roomit.main.domain.notification.entity.NotificationType;
+import roomit.main.domain.notification.repository.NotificationRepository;
 import roomit.main.domain.notification.service.NotificationService;
 import roomit.main.domain.reservation.entity.Reservation;
 import roomit.main.domain.reservation.repository.ReservationRepository;
@@ -35,17 +38,20 @@ public class ReviewService {
     private final WorkplaceRepository workplaceRepository;
     private final ReservationRepository reservationRepository;
     private final NotificationService notificationService;
+    private final BusinessRepository businessRepository;
+    private final NotificationRepository notificationRepository;
 
     @Transactional
     public void register(ReviewRegisterRequest request, Long memberId) {
 
         Reservation reservation = reservationRepository.findById(request.reservatinId())
                 .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
+
         // 본인이 예약한거지 확인하는거
 
-//        if (!Objects.equals(reservation.getMember().getMemberId(), memberId)) {
-//            throw ErrorCode.REVIEW_UPDATE_FAIL.commonException();
-//        }
+        if (!Objects.equals(reservation.getMember().getMemberId(), memberId)) {
+            throw ErrorCode.REVIEW_UPDATE_FAIL.commonException();
+        }
 
         Workplace workPlace = workplaceRepository.findByWorkplaceName(new WorkplaceName(request.workPlaceName()))
                 .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
@@ -56,8 +62,21 @@ public class ReviewService {
 
         reviewRepository.save(request.toEntity(reservation));
 
+        alrim(workPlace);
+
+        Notification notification = notificationRepository.findById(workPlace.getWorkplaceId())
+                .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
+
+        notification.read();
+        notificationRepository.save(notification);
+
+    }
+
+    public void alrim(Workplace workplace){
+        Business business = workplace.getBusiness();
+
         Notification notification = Notification.builder()
-                .url("/api/v1/review/register")
+                .business(business)
                 .notificationType(NotificationType.REVIEW_CREATED)
                 .content("리뷰가 등록되었습니다.")
                 .build();
@@ -65,12 +84,13 @@ public class ReviewService {
         ResponseNotificationDto responseNotificationDto = ResponseNotificationDto
                 .builder()
                 .notification(notification)
+                .workplaceId(workplace.getWorkplaceId())
                 .build();
 
         notificationService.notify(
-                workPlace.getBusiness().getBusinessId().longValue(),
+                business.getBusinessId(),
                 responseNotificationDto
-                );
+        );
     }
 
     @Transactional
