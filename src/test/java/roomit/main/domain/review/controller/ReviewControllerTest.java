@@ -24,6 +24,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
+import roomit.main.domain.business.dto.request.BusinessRegisterRequest;
+import roomit.main.domain.business.entity.Business;
+import roomit.main.domain.business.repository.BusinessRepository;
+import roomit.main.domain.business.service.BusinessService;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.member.entity.Sex;
 import roomit.main.domain.member.repository.MemberRepository;
@@ -74,6 +78,12 @@ class ReviewControllerTest {
     @Autowired
     private ImageService imageService;
 
+    @Autowired
+    private BusinessService businessService;
+
+    @Autowired
+    private BusinessRepository businessRepository;
+
     private LocalDate date;
 
     private Member member;
@@ -91,6 +101,18 @@ class ReviewControllerTest {
 
         date = LocalDate.of(2024, 11, 22);
 
+        BusinessRegisterRequest businessRegisterRequest = BusinessRegisterRequest.builder()
+                .businessName("테스트")
+                .businessEmail("business123@gmail.com")
+                .businessPwd("Business1!")
+                .businessNum("146-12-45639")
+                .build();
+
+        businessService.signUpBusiness(businessRegisterRequest); // 데이터 생성
+
+        Business business = businessRepository.findByBusinessEmail("business123@gmail.com")
+                .orElseThrow();
+
         workplace = Workplace.builder()
                 .workplaceName("사업장 넘버원")
                 .workplacePhoneNumber("0507-1234-5678")
@@ -99,7 +121,7 @@ class ReviewControllerTest {
                 .imageUrl(imageService.createImageUrl("사업장 넘버원"))
                 .workplaceStartTime(LocalTime.of(9, 0))
                 .workplaceEndTime(LocalTime.of(18, 0))
-                .business(null)
+                .business(business)
                 .build();
         workplaceRepository.save(workplace);
 

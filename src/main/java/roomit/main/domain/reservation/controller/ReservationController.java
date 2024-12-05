@@ -58,14 +58,14 @@ public class ReservationController {
         reservationService.updateReservation(customMemberDetails.getId(),reservationId , request);
     }
 
-    // 특정 멤버의 예약 찾기
+    // 제일 최근 예약 1건 조회
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/api/v1/reservations/member")
     public ReservationResponse findRecentReservationByMemberId(@AuthenticationPrincipal CustomMemberDetails customMemberDetails) {
         return reservationService.findByMemberId(customMemberDetails.getId());
     }
 
-    // 특정 멤버의 예약 찾기
+    // 나의 예약 모두 조회
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/api/v1/all/reservations/member")
     public List<ReservationResponse> findReservationsByMemberId(@AuthenticationPrincipal CustomMemberDetails customMemberDetails) {

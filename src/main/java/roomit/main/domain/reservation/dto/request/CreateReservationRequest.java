@@ -2,6 +2,7 @@ package roomit.main.domain.reservation.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import lombok.Builder;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.reservation.entity.Reservation;
 import roomit.main.domain.reservation.entity.ReservationState;
@@ -11,6 +12,7 @@ import roomit.main.domain.studyroom.entity.StudyRoom;
 
 import java.time.LocalDateTime;
 
+@Builder
 public record CreateReservationRequest (
 
         @Pattern(regexp = ReservationName.REGEX, message = ReservationName.ERR_MSG) String reservationName,

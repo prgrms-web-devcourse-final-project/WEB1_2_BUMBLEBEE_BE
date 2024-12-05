@@ -64,6 +64,9 @@ dependencies {
     // Spring Data Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+    // Redisson
+    implementation 'org.redisson:redisson-spring-boot-starter:3.27.0'
+
 }
 
 def jacocoDir = layout.buildDirectory.dir("reports/")
