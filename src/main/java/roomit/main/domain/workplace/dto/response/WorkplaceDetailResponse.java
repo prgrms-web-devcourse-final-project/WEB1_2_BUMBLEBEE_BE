@@ -18,7 +18,8 @@ public record WorkplaceDetailResponse(
         @JsonFormat(pattern = "HH:mm") LocalTime workplaceEndTime,
         BigDecimal latitude,
         BigDecimal longitude,
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime createdAt
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime createdAt,
+        Long reviewCount
 ){
     public WorkplaceDetailResponse(Workplace workplace, FileLocationService fileLocationService) {
         this(
@@ -32,7 +33,8 @@ public record WorkplaceDetailResponse(
                 workplace.getWorkplaceEndTime(),
                 workplace.getLatitude(),
                 workplace.getLongitude(),
-                workplace.getCreatedAt()
+                workplace.getCreatedAt(),
+                workplace.getReviewCount()
         );
     }
 }

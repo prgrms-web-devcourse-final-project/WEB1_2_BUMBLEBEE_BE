@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +35,7 @@ import roomit.main.global.service.FileLocationService;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
+@Log4j2
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
@@ -58,8 +59,8 @@ public class ReviewService {
             throw ErrorCode.REVIEW_UPDATE_FAIL.commonException();
         }
 
-        Workplace workPlace = workplaceRepository.findByWorkplaceName(new WorkplaceName(request.workPlaceName()))
-                .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
+        Workplace workPlace = workplaceRepository
+                .getWorkplaceByWorkplaceName(new WorkplaceName(request.workPlaceName()));
 
         Review review = request.toEntity(reservation);
 
@@ -70,16 +71,9 @@ public class ReviewService {
         workPlace.changeReviewCount(workPlace.getReviewCount() + 1);
 
 
-        reviewRepository.save(request.toEntity(reservation));
+        reviewRepository.save(review);
 
         alrim(workPlace);
-
-        Notification notification = notificationRepository.findById(workPlace.getWorkplaceId())
-                .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
-
-        notification.read();
-        notificationRepository.save(notification);
-
     }
 
     public void alrim(Workplace workplace){
@@ -111,8 +105,8 @@ public class ReviewService {
 
         Reservation reservation = review.getReservation();
 
-        Workplace workPlace = workplaceRepository.findByWorkplaceName(new WorkplaceName(workPlaceName))
-                .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
+        Workplace workPlace = workplaceRepository.getWorkplaceByWorkplaceName(new WorkplaceName(workPlaceName));
+
 
         boolean isTrue = review.checkMyReservation(reservation, memberId);
         if (isTrue) {
@@ -144,8 +138,7 @@ public class ReviewService {
         for (Reservation reservation : reservations) {
             if(reservation.getReview() != null){
                 Workplace workplace = workplaceRepository
-                        .findByWorkplaceName(new WorkplaceName(reservation.getReview().getWorkplaceName()))
-                        .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
+                        .getWorkplaceByWorkplaceName(new WorkplaceName(reservation.getReview().getWorkplaceName()));
 
                 responses.add(new ReviewMeResponse(reservation.getReview(),workplace,fileLocationService));
             }
@@ -160,8 +153,9 @@ public class ReviewService {
 
         Reservation reservation = review.getReservation();
 
-        Workplace workPlace = workplaceRepository.findByWorkplaceName(new WorkplaceName(workPlaceName))
-                .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
+        Workplace workPlace = workplaceRepository
+                .getWorkplaceByWorkplaceName(new WorkplaceName(workPlaceName));
+
 
         boolean isTrue = review.checkMyReservation(reservation, memberId);
         if (isTrue) {

@@ -7,11 +7,12 @@ import roomit.main.domain.reservation.entity.value.ReservationNum;
 import roomit.main.domain.studyroom.entity.StudyRoom;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.entity.value.WorkplaceName;
+import roomit.main.global.service.FileLocationService;
 
 public record MyWorkPlaceReservationResponse (
-    WorkplaceName workplaceName,
+    String  workplaceName,
     String reservationName,
-    ReservationNum reservationPhoneNumber,
+    String  reservationPhoneNumber,
     String studyRoomName,
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime reservationCreatedAt,
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime reservationStartTime,
@@ -23,11 +24,11 @@ public record MyWorkPlaceReservationResponse (
     Integer reservationPrice
     // LocalDateTime paymentCreatedAt
 ) {
-    public static MyWorkPlaceReservationResponse from(StudyRoom studyRoom, Reservation reservation, Workplace workplace) {
+    public static MyWorkPlaceReservationResponse from(StudyRoom studyRoom, Reservation reservation, Workplace workplace, FileLocationService fileLocationService) {
         return new MyWorkPlaceReservationResponse(
-                workplace.getWorkplaceName(),
+                workplace.getWorkplaceName().getValue(),
                 reservation.getReservationName().getValue(),
-                reservation.getReservationPhoneNumber(),
+                reservation.getReservationPhoneNumber().getValue(),
                 studyRoom.getStudyRoomName().getValue(),
                 reservation.getCreatedAt(),
                 reservation.getStartTime(),

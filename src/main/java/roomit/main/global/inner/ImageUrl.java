@@ -19,7 +19,7 @@ public class ImageUrl {
 
 
     // S3 URL의 기본 부분 (버킷 이름과 리전 포함)
-    private static final String S3_BASE_URL = "https://{bucket-name}.s3.{region}.amazonaws.com/";
+    private static final String S3_BASE_URL = "https://s3.{region}.amazonaws.com/{bucket-name}/";
 
     @Column(name = "image_url", length = 255)
     private String value;
