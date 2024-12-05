@@ -1,5 +1,6 @@
 package roomit.main.domain.reservation.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import roomit.main.domain.reservation.entity.Reservation;
 import roomit.main.domain.studyroom.entity.StudyRoom;
@@ -11,9 +12,9 @@ public record ReservationResponse (
         String workplaceName,
         String workplaceImageUrl,
         String studyRoomName,
-        LocalDateTime reservationCreatedAt,
-        LocalDateTime startTime,
-        LocalDateTime endTime,
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime reservationCreatedAt,
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime,
         Integer reservationCapacity,
         Integer price
         // LocalDateTime paymentCreatedAt

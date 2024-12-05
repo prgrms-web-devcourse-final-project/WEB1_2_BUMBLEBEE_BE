@@ -139,6 +139,10 @@ public class SpringSecurityConfig {
 
                         .requestMatchers("/api/v1/recommend/**").permitAll()
 
+                        //PresignedURL
+                        .requestMatchers(HttpMethod.GET,"/api/generate-presigned-url").hasRole("BUSINESS")
+                        .requestMatchers(HttpMethod.DELETE,"/api/delete-folder").hasRole("BUSINESS")
+
                         //멤버 권한 설정
                         .requestMatchers("/api/v1/member").hasRole("USER")
 
@@ -146,13 +150,13 @@ public class SpringSecurityConfig {
                         .requestMatchers("/api/v1/business").hasRole("BUSINESS")
 
                         //스터디룸 권한 설정
-                        .requestMatchers(HttpMethod.GET,"/api/v1/studyroom/workplace/**").permitAll() //사업장의 스터디룸 찾기
-                        .requestMatchers(HttpMethod.GET, "/api/v1/studyroom/available").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/studyroom/search/**").permitAll() //예약가능한 스터디룸 찾기
-                        .requestMatchers(HttpMethod.GET,"/api/v1/studyroom/**").hasRole("USER") //최근 예약한 스터디룸 보여주기
-                        .requestMatchers(HttpMethod.POST,"/api/v1/studyroom").hasRole("BUSINESS") //스터디룸 등록
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/studyroom").hasRole("BUSINESS") //스터디룸 수정
-                        .requestMatchers(HttpMethod.DELETE,"/api/v1/studyroom/**").hasRole("BUSINESS") //스터디룸 삭제
+                        .requestMatchers(HttpMethod.GET,"/api/v1/studyroom/workplace/**").permitAll()           //사업장의 스터디룸 찾기
+                        .requestMatchers(HttpMethod.GET, "/api/v1/studyroom/available").permitAll()             //예약가능한 스터디룸 찾기
+                        .requestMatchers(HttpMethod.GET,"/api/v1/studyroom/search/**").permitAll()              //스터디룸의 예약 가능한 시간대
+                        .requestMatchers(HttpMethod.GET,"/api/v1/studyroom/**").permitAll()                     //스터디룸 상세 정보
+                        .requestMatchers(HttpMethod.POST,"/api/v1/studyroom").hasRole("BUSINESS")               //스터디룸 등록
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/studyroom").hasRole("BUSINESS")                //스터디룸 수정
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/studyroom/**").hasRole("BUSINESS")          //스터디룸 삭제
 
                         //사업장 권한 설정
                         .requestMatchers(HttpMethod.GET,"/api/v1/workplace/info/**").permitAll() //사업장 정보 조회

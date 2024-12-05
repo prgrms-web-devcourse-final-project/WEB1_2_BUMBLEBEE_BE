@@ -35,13 +35,13 @@ public class StudyRoomService {
 
     private final StudyRoomRepository studyRoomRepository;
     private final WorkplaceRepository workplaceRepository;
-    private final ImageService imageService;
     private final FileLocationService fileLocationService;
     private final ReservationRepository reservationRepository;
+    private final ImageService imageService;
 
     // 스터디룸 등록
     @Transactional
-    public void createStudyRoom(Long workPlaceId,
+    public Long createStudyRoom(Long workPlaceId,
                                 CreateStudyRoomRequest request,
                                 Long businessId) {
         Workplace workplace = workplaceRepository.findById(workPlaceId)
@@ -53,7 +53,10 @@ public class StudyRoomService {
         }
 
         try {
-            studyRoomRepository.save(request.toEntity(imageService, workplace));
+            StudyRoom studyRoom = studyRoomRepository.save(request.toEntity(workplace));
+            String imageUrl = "workplace-" + workPlaceId + "/studyroom-" + studyRoom.getStudyRoomId();
+            studyRoom.changeStudyRoomImageUrl(imageService.createImageUrl(imageUrl));
+            return studyRoom.getStudyRoomId();
         }catch (Exception e) {
             throw ErrorCode.STUDYROOM_NOT_REGISTERD.commonException();
         }

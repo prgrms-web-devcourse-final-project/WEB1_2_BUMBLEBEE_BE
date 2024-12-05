@@ -13,9 +13,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ImageUrl {
-    // 이미지 URL 검증을 위한 정규식
-    public static final String REGEX = "^[a-zA-Z0-9가-힣\\s/.-]+$";
-    public static final String ERR_MSG = "영문, 숫자, 한글, 공백, /, ., -만 포함해야 합니다.";
     public static final String DB_REGEX = "^https://.*$";
     public static final String DB_ERR_MSG = "이미지 URL은 https://로 시작하며, 올바른 S3 URL 형식이어야 합니다.";
     public static final Pattern PATTERN = Pattern.compile(DB_REGEX);
@@ -24,7 +21,7 @@ public class ImageUrl {
     // S3 URL의 기본 부분 (버킷 이름과 리전 포함)
     private static final String S3_BASE_URL = "https://{bucket-name}.s3.{region}.amazonaws.com/";
 
-    @Column(name = "image_url", nullable = true, length = 255)
+    @Column(name = "image_url", length = 255)
     private String value;
 
     // 생성자에서 S3 버킷 URL과 리전 값을 받도록 수정

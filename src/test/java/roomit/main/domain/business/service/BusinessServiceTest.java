@@ -1,5 +1,10 @@
 package roomit.main.domain.business.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.NoSuchElementException;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -14,11 +19,6 @@ import roomit.main.domain.business.dto.request.BusinessRegisterRequest;
 import roomit.main.domain.business.dto.request.BusinessUpdateRequest;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.business.repository.BusinessRepository;
-
-import java.util.NoSuchElementException;
-import java.util.stream.IntStream;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -41,7 +41,7 @@ public class BusinessServiceTest {
                 .businessName("테스트사업자" + i)
                 .businessEmail("business" + i + 1 + "@gmail.com")
                 .businessPwd("Business1!")
-                .businessNum("123-12-1234" + i)
+                .businessNum("123-99-1234" + i)
                 .build();
 
             businessService.signUpBusiness(businessRegisterRequest); // 데이터 생성

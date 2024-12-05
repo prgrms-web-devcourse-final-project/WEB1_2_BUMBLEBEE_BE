@@ -50,7 +50,7 @@ public class BusinessControllerTest {
           .businessName("테스트사업자")
           .businessEmail("business1@gmail.com")
           .businessPwd("Business1!")
-          .businessNum("123-12-12347")
+          .businessNum("123-99-19347")
           .build();
 
       String json = objectMapper.writeValueAsString(businessRegisterRequest);
@@ -286,7 +286,7 @@ public class BusinessControllerTest {
             .header("Authorization", "Bearer " + token))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.businessName").value("테스트사업자")) // businessName 값 검증
-        .andExpect(jsonPath("$.businessNum").value("123-12-12347")) // businessNum 값 검증
+        .andExpect(jsonPath("$.businessNum").value("123-99-19347")) // businessNum 값 검증
         .andExpect(jsonPath("$.businessEmail").value("business1@gmail.com")); // businessEmail 값 검증
 
   }
@@ -303,12 +303,11 @@ public class BusinessControllerTest {
 
       String businessModify = objectMapper.writeValueAsString(businessUpdateRequest);
 
-      MvcResult businessModifyResult = mockMvc.perform(put("/api/v1/business")
+      mockMvc.perform(put("/api/v1/business")
               .contentType(MediaType.APPLICATION_JSON)
               .header("Authorization", "Bearer " + token)
               .content(businessModify))
-          .andExpect(status().isNoContent())
-          .andReturn();
+          .andExpect(status().isNoContent());
     }
 
     @Test
@@ -331,11 +330,10 @@ public class BusinessControllerTest {
 
       token = loginResult.getResponse().getHeader("Authorization");
 
-    MvcResult businessRemoveResult = mockMvc.perform(delete("/api/v1/business")
+    mockMvc.perform(delete("/api/v1/business")
             .contentType(MediaType.APPLICATION_JSON)
             .header("Authorization", "Bearer " + token))
-        .andExpect(status().isNoContent())
-        .andReturn();
+        .andExpect(status().isNoContent());
   }
 
 }

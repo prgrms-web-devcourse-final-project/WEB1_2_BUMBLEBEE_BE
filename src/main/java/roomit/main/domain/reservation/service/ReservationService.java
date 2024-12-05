@@ -45,7 +45,6 @@ public class ReservationService {
             .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
 
         Reservation reservation = request.toEntity(member,studyRoom);
-
         return reservationRepository.save(reservation).getReservationId();
     }
 
@@ -118,16 +117,16 @@ public class ReservationService {
     public ReservationResponse findByMemberId(Long memberId) {
         List<Reservation> recentReservation = reservationRepository.findRecentReservationByMemberId(memberId);
 
-        if (recentReservation == null)
+        if (recentReservation.isEmpty())
         {
-            throw(ErrorCode.RESERVATION_IS_EMPTY.commonException());
+            return null;
+        }else {
+            Reservation recentReservation1 = recentReservation.get(0);
+            StudyRoom studyRoom = recentReservation1.getStudyRoom();
+            Workplace workplace = studyRoom.getWorkPlace();
+
+            return ReservationResponse.from(studyRoom,recentReservation1,workplace);
         }
-
-        Reservation recentReservation1 = recentReservation.get(0);
-        StudyRoom studyRoom = recentReservation1.getStudyRoom();
-        Workplace workplace = studyRoom.getWorkPlace();
-
-        return ReservationResponse.from(studyRoom,recentReservation1,workplace);
     }
 
     // memberId를 이용하여 나의 예약 전체 조회
@@ -136,16 +135,16 @@ public class ReservationService {
         List<Reservation> reservations = reservationRepository.findReservationsByMemberId(memberId);
 
         if(reservations.isEmpty()){
-            throw(ErrorCode.RESERVATION_IS_EMPTY.commonException());
+            return null;
+        } {
+            return reservations.stream()
+                .map(reservation -> ReservationResponse.from(
+                    reservation.getStudyRoom(),
+                    reservation,
+                    reservation.getStudyRoom().getWorkPlace()
+                ))
+                .toList();
         }
-
-        return reservations.stream()
-            .map(reservation -> ReservationResponse.from(
-                reservation.getStudyRoom(),
-                reservation,
-                reservation.getStudyRoom().getWorkPlace()
-            ))
-            .toList();
     }
 
 
@@ -156,16 +155,15 @@ public class ReservationService {
         List<Reservation> reservations = reservationRepository.findMyAllReservations(businessId);
 
         if(reservations.isEmpty()){
-            throw(ErrorCode.RESERVATION_IS_EMPTY.commonException());
+            return null;
+        } else {
+            return reservations.stream()
+                .map(reservation -> MyWorkPlaceReservationResponse.from(
+                    reservation.getStudyRoom(),
+                    reservation,
+                    reservation.getStudyRoom().getWorkPlace()
+                ))
+                .toList();
         }
-
-        return reservations.stream()
-            .map(reservation -> MyWorkPlaceReservationResponse.from(
-                reservation.getStudyRoom(),
-                reservation,
-                reservation.getStudyRoom().getWorkPlace()
-            ))
-            .toList();
     }
-
 }
