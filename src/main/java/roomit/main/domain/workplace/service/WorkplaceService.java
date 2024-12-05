@@ -184,7 +184,7 @@ public class WorkplaceService {
         Business business = businessRepository.findById(businessId).orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
 
         if (workplaces.isEmpty()) {
-            throw ErrorCode.WORKPLACE_NOT_FOUND.commonException();
+            return null;
         }
 
         return toResponseDto(workplaces, businessId, business.getBusinessName());
