@@ -3,19 +3,16 @@ package roomit.main.domain.notification.repository;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.util.List;
 import java.util.Map;
 
 @Repository
 public interface EmitterRepository {
-    SseEmitter save(String emitterId, SseEmitter sseEmitter);
-    SseEmitter get(String businessId);
-    void saveEventCache(String emitterId, Object event);
+    void save(Long emitterId, SseEmitter sseEmitter);
+    SseEmitter get(Long businessId);
 
-    Map<String, SseEmitter> findAllEmitterStartWithByMemberId(String memberId);
-    Map<String,Object> findAllEventCacheStartWithByMemberId(String memberId);
-
-    void deleteById(String emitterId);
-    void  deleteAllEmitterStartWithId(String memberId);
-    void deleteAllEventCacheStartWithId(String memberId);
+    void deleteById(Long emitterId);
+    Map<Long, SseEmitter> getAll();
+    void deleteAllEventCache();
 
 }
