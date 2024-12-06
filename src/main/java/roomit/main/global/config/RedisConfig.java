@@ -38,10 +38,25 @@ public class RedisConfig {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(connectionFactory);
 
+        // Key는 문자열로 저장
         redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+
+        // Value는 JSON 형식으로 저장
         redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
+        redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
+
         return redisTemplate;
     }
+
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules(); // JavaTimeModule 등록 (LocalDateTime 지원)
+        return objectMapper;
+    }
+
 
     @Bean
     public RedisMessageListenerContainer redisMessageListenerContainer(

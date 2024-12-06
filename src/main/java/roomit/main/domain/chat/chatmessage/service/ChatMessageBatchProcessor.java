@@ -3,7 +3,7 @@ package roomit.main.domain.chat.chatmessage.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import roomit.main.domain.chat.chatroom.repositoroy.ChatRoomRepository;
+import roomit.main.domain.chat.chatroom.repository.ChatRoomRepository;
 
 import java.util.List;
 

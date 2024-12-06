@@ -9,7 +9,7 @@ import roomit.main.domain.chat.chatroom.dto.response.ChatRoomBusinessResponse;
 import roomit.main.domain.chat.chatroom.dto.response.ChatRoomMemberResponse;
 import roomit.main.domain.chat.chatroom.dto.response.ChatRoomResponse;
 import roomit.main.domain.chat.chatroom.entity.ChatRoom;
-import roomit.main.domain.chat.chatroom.repositoroy.ChatRoomRepository;
+import roomit.main.domain.chat.chatroom.repository.ChatRoomRepository;
 import roomit.main.domain.member.dto.CustomMemberDetails;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.member.repository.MemberRepository;
@@ -40,7 +40,7 @@ public class ChatRoomService {
         Business business = workplace.getBusiness();
 
         if (!chatRoomRepository.existsChatRoomByMemberIdAndBusinessId(memberId, business.getBusinessId())) {
-            chatRoomRepository.save(new ChatRoom(business, member, workplace));
+            chatRoomRepository.save(new ChatRoom(business, member, workplace.getWorkplaceName().getValue()));
         }
 
         return chatRoomRepository.findChatRoomId(memberId, business.getBusinessId());
@@ -53,40 +53,26 @@ public class ChatRoomService {
                 return chatRooms.stream()
                         .map(result -> {
                             ChatRoom chatRoom = (ChatRoom) result[0];
-                            LocalDateTime latestTimestamp = (LocalDateTime) result[1];
+                            ChatMessage chatMessage = result[1] != null ? (ChatMessage) result[1] : null;
 
                             // Workplace 이름 가져오기
-                            String workplaceName = chatRoom.getWorkplace().getWorkplaceName().getValue();
+                            String workplaceName = chatRoom.getWorkplaceName();
 
-                            return ChatRoomMemberResponse.builder()
-                                    .roomId(chatRoom.getRoomId())
-                                    .businessId(chatRoom.getBusiness().getBusinessId())
-                                    .workplaceName(workplaceName)
-                                    .updatedAt(latestTimestamp)
-                                    .build();
+
+                            return new ChatRoomMemberResponse(chatRoom, chatMessage, workplaceName);
                         })
                         .toList();
             }
 
         if (business != null) {
-            List<ChatRoom> chatRooms = chatRoomRepository.findChatRoomByBusinessId(business.getId());
+            List<Object[]> chatRooms = chatRoomRepository.findChatRoomByBusinessId(business.getId());
 
             return chatRooms.stream()
-                    .map(chatRoom -> {
-                        // 최근 메시지 타임스탬프 확인
-                        LocalDateTime latestTimestamp = chatRoom.getMessages().stream()
-                                .map(ChatMessage::getTimestamp)
-                                .filter(Objects::nonNull)
-                                .max(Comparator.naturalOrder())
-                                .orElse(chatRoom.getCreatedAt());
+                    .map(result -> {
+                        ChatRoom chatRoom = (ChatRoom) result[0];
+                        ChatMessage chatMessage = result[1] != null ? (ChatMessage) result[1] : null;
 
-                        // DTO 생성
-                        return new ChatRoomBusinessResponse(
-                                chatRoom.getRoomId(),
-                                chatRoom.getMember().getMemberId(),
-                                chatRoom.getMember().getMemberNickName(),
-                                latestTimestamp
-                        );
+                        return new ChatRoomBusinessResponse(chatRoom, chatMessage);
                     })
                     .toList();
         }
