@@ -19,6 +19,7 @@ import roomit.main.domain.notification.dto.ResponseNotificationDto;
 import roomit.main.domain.notification.dto.ResponseNotificationReservationDto;
 import roomit.main.domain.notification.entity.Notification;
 import roomit.main.domain.notification.entity.NotificationType;
+import roomit.main.domain.notification.entity.ReservationNotification;
 import roomit.main.domain.notification.service.NotificationService;
 import roomit.main.domain.payments.config.PaymentsConfig;
 import roomit.main.domain.payments.dto.request.PaymentsRequest;
@@ -75,22 +76,23 @@ public class PaymentsService {
     public void alrim(Workplace workplace, String content, Long price) {
         Business business = workplace.getBusiness();
 
-        Notification notification = Notification.builder()
+        ReservationNotification notification = ReservationNotification.builder()
                 .business(business)
                 .notificationType(NotificationType.RESERVATION_CONFIRMED)
                 .content(workplace.getWorkplaceName() + content)
+                .price(price)
                 .build();
 
         ResponseNotificationReservationDto responseNotificationDto = ResponseNotificationReservationDto
                 .builder()
                 .notification(notification)
                 .workplaceId(workplace.getWorkplaceId())
-                .price(price)
                 .build();
 
         notificationService.customNotifyReservation(
                 business.getBusinessId(),
-                responseNotificationDto
+                responseNotificationDto,
+                notification.getPrice()
         );
 
     }
