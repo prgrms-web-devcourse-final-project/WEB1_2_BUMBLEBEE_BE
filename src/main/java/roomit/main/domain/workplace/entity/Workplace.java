@@ -10,6 +10,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.format.annotation.DateTimeFormat;
 import roomit.main.domain.business.entity.Business;
+import roomit.main.domain.chat.chatroom.entity.ChatRoom;
 import roomit.main.domain.studyroom.entity.StudyRoom;
 import roomit.main.global.inner.ImageUrl;
 import roomit.main.domain.workplace.entity.value.WorkplaceAddress;
@@ -83,7 +84,8 @@ public class Workplace {
     @OneToMany(mappedBy = "workPlace", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<StudyRoom> studyRoom = new ArrayList<>();
 
-
+    @OneToOne(mappedBy = "workplace", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private ChatRoom chatRoom;
 
     @Builder
     public Workplace(final String workplaceName,
