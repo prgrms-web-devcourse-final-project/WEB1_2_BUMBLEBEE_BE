@@ -26,7 +26,6 @@ public class Notification {
     @Embedded
     private NotificationContent content;
 
-
     @Column(nullable = false)
     private Boolean isRead;
 
@@ -42,12 +41,6 @@ public class Notification {
     @CreatedDate
     private LocalDateTime createdAt;
 
-    private Long price;
-
-    public void setPrice(Long price) {
-        this.price = price;
-    }
-
     @Builder
     public Notification(Business business, NotificationType notificationType, String content) {
         this.business = business;
@@ -55,9 +48,6 @@ public class Notification {
         this.content = new NotificationContent(content);
         this.isRead = false;
         this.createdAt = LocalDateTime.now();
-    }
-    public void read(){
-        isRead = true;
     }
 
     public String getContent(){
