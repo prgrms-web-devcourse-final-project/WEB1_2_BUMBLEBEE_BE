@@ -16,8 +16,8 @@ public record WorkplaceDetailResponse(
         String imageUrl,
         @JsonFormat(pattern = "HH:mm") LocalTime workplaceStartTime,
         @JsonFormat(pattern = "HH:mm") LocalTime workplaceEndTime,
-        BigDecimal latitude,
-        BigDecimal longitude,
+        Double latitude,
+        Double longitude,
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime createdAt,
         Long reviewCount
 ){
@@ -31,8 +31,8 @@ public record WorkplaceDetailResponse(
                 fileLocationService.getImagesFromFolder(workplace.getImageUrl().getValue()).get(0),
                 workplace.getWorkplaceStartTime(),
                 workplace.getWorkplaceEndTime(),
-                workplace.getLatitude(),
-                workplace.getLongitude(),
+                workplace.getLocation().getCoordinate().getX(),
+                workplace.getLocation().getCoordinate().getY(),
                 workplace.getCreatedAt(),
                 workplace.getReviewCount()
         );

@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.locationtech.jts.geom.Point;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -17,7 +18,6 @@ import roomit.main.domain.workplace.entity.value.WorkplaceAddress;
 import roomit.main.domain.workplace.entity.value.WorkplaceName;
 import roomit.main.domain.workplace.entity.value.WorkplacePhoneNumber;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -46,11 +46,8 @@ public class Workplace {
     @Embedded
     private WorkplaceAddress workplaceAddress;
 
-    @Column(name = "workplace_latitude", precision = 16, scale = 14)
-    private BigDecimal latitude;
-
-    @Column(name = "workplace_longitude", precision = 17, scale = 14)
-    private BigDecimal longitude;
+    @Column(columnDefinition = "geometry", nullable = false)
+    private Point location;
 
     @DateTimeFormat(pattern = "HH:mm")
     @Column(name = "workplace_start_time", nullable = false)
@@ -84,9 +81,6 @@ public class Workplace {
     @OneToMany(mappedBy = "workPlace", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<StudyRoom> studyRoom = new ArrayList<>();
 
-    @OneToOne(mappedBy = "workplace", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private ChatRoom chatRoom;
-
     @Builder
     public Workplace(final String workplaceName,
                      final String workplacePhoneNumber,
@@ -95,8 +89,7 @@ public class Workplace {
                      final ImageUrl imageUrl,
                      final LocalTime workplaceStartTime,
                      final LocalTime workplaceEndTime,
-                     final BigDecimal latitude,
-                     final BigDecimal longitude,
+                     final Point location,
                      final Business business,
                      final List<StudyRoom> studyRoomList) {
         this.workplaceName = new WorkplaceName(workplaceName);
@@ -106,8 +99,7 @@ public class Workplace {
         this.imageUrl = imageUrl;
         this.workplaceStartTime = workplaceStartTime;
         this.workplaceEndTime = workplaceEndTime;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.location = location;
         this.business = business;
         this.studyRoom = studyRoomList;
     }
@@ -145,15 +137,12 @@ public class Workplace {
         this.reviewCount = reviewCount;
     }
 
-    public void changeLongitude(BigDecimal longitude) {
-        this.longitude = longitude;
-    }
-
-    public void changeLatitude(BigDecimal latitude) {
-        this.latitude = latitude;
+    public void changeLocation(Point location){
+        this.location = location;
     }
 
     public void changeImageUrl(ImageUrl imageUrl) {
         this.imageUrl = imageUrl;
     }
 }
+
