@@ -8,6 +8,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.chat.chatmessage.entity.ChatMessage;
 import roomit.main.domain.member.entity.Member;
+import roomit.main.domain.studyroom.entity.StudyRoom;
+import roomit.main.domain.workplace.entity.Workplace;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -39,12 +41,17 @@ public class ChatRoom {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "workplace_id", nullable = false, unique = true)
+    private Workplace workplace;
+
+
     @OneToMany(mappedBy = "room", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ChatMessage> messages = new ArrayList<>();
 
-    public ChatRoom(Business business, Member member) {
-
+    public ChatRoom(Business business, Member member, Workplace workplace) {
         this.business = business;
         this.member = member;
+        this.workplace = workplace;
     }
 }

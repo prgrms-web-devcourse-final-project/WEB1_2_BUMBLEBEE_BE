@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class ChatMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "message_id")
     private Long messageId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -31,6 +32,12 @@ public class ChatMessage {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(nullable = false)
     private LocalDateTime timestamp;
+    
+    private Boolean isRead;
+
+    public void changeRead(Boolean isRead) {
+        this.isRead = isRead;
+    }
 
     public ChatMessage(ChatRoom room, ChatMessageRequest request) {
         this.room = room;

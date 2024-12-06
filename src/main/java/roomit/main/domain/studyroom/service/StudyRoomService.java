@@ -179,7 +179,7 @@ public class StudyRoomService {
             .map(DistanceWorkplaceResponse::workplaceId)
             .toList();
 
-        List<StudyRoom> studyRooms = studyRoomRepository.findByWorkPlaceId(workplaceIds);
+        List<StudyRoom> studyRooms = studyRoomRepository.findByWorkPlaceId(workplaceIds, request.reservationCapacity());
 
         // 예약이 있는 경우에 대해서만 필터링
         return studyRooms.stream()
