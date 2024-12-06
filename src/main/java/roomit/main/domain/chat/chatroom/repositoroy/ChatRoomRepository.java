@@ -4,8 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import roomit.main.domain.chat.chatroom.dto.ChatRoomDetailsDTO;
-import roomit.main.domain.chat.chatroom.dto.ChatRoomResponse;
 import roomit.main.domain.chat.chatroom.entity.ChatRoom;
 
 import java.util.List;
@@ -15,13 +13,11 @@ import java.util.Optional;
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
     @Query("""
-            SELECT new roomit.main.domain.chat.chatroom.dto.ChatRoomDetailsDTO(
-            c.roomId, c.member.memberNickname.value, c.business.businessName.value
-            )
-            FROM ChatRoom c 
-            WHERE c.roomId = :roomId
-        """)
-    Optional<ChatRoomDetailsDTO> findRoomDetailsById(@Param("roomId") Long roomId);
+        SELECT c
+        FROM ChatRoom c
+        WHERE c.roomId = :roomId
+    """)
+    Optional<ChatRoom> findRoomDetailsById(@Param("roomId") Long roomId);
 
 
     @Query("SELECT c.roomId FROM ChatRoom c")
@@ -29,51 +25,42 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
     @Query("""
         SELECT CASE WHEN COUNT(c) > 0 THEN TRUE ELSE FALSE END
-        FROM ChatRoom c 
+        FROM ChatRoom c
         where c.member.memberId = :memberId and c.business.businessId = :businessId
     """)
     Boolean existsChatRoomByMemberIdAndBusinessId(Long memberId, Long businessId);
 
     @Query("""
-    SELECT new roomit.main.domain.chat.chatroom.dto.ChatRoomMemberResponse(
-        c.roomId, 
-        b.businessId, 
-        CASE 
-            WHEN MAX(m.timestamp) IS NOT NULL THEN MAX(m.timestamp) 
-            ELSE c.createdAt 
-        END
-    ) 
-    FROM ChatRoom c
-    LEFT JOIN c.messages m
-    LEFT JOIN c.business b
-    WHERE c.member.memberId = :memberId
-    GROUP BY c.roomId, b.businessId, c.createdAt
-    ORDER BY 
-        CASE 
-            WHEN MAX(m.timestamp) IS NOT NULL THEN MAX(m.timestamp) 
-            ELSE c.createdAt 
-        END DESC
+        SELECT c, COALESCE(MAX(m.timestamp), c.createdAt) AS lastMessageTimestamp
+        FROM ChatRoom c
+        LEFT JOIN c.messages m
+        WHERE c.member.memberId = :memberId
+        GROUP BY c
+        ORDER BY lastMessageTimestamp DESC
     """)
-    List<ChatRoomResponse> findChatRoomByMembersId(Long memberId);
+    List<Object[]> findChatRoomByMembersId(Long memberId);
 
 
     @Query("""
-            SELECT new roomit.main.domain.chat.chatroom.dto.ChatRoomBusinessResponse(
-                m.room.roomId, m.room.member.memberId, MAX(m.timestamp)
-            ) 
-            FROM ChatRoom c
-            LEFT JOIN c.messages m
-            WHERE m.room.business.businessId = :businessId
-            GROUP BY m.room.roomId, m.room.member, c.createdAt
-            ORDER BY MAX(m.timestamp) DESC
-            """)
-    List<ChatRoomResponse> findChatRoomByBusinessId(Long businessId);
+        SELECT c
+        FROM ChatRoom c
+        LEFT JOIN FETCH c.member m
+        LEFT JOIN FETCH c.messages msg
+        WHERE c.business.businessId = :businessId
+        AND (msg.timestamp = (
+            SELECT MAX(m2.timestamp)
+            FROM ChatMessage m2
+            WHERE m2.room.roomId = c.roomId
+        ) OR msg.timestamp IS NULL)
+        ORDER BY COALESCE(msg.timestamp, c.createdAt) DESC
+    """)
+    List<ChatRoom> findChatRoomByBusinessId(Long businessId);
 
     @Query("""
-    SELECT m.roomId
-    FROM ChatRoom m
-    where m.member.memberId = :memberId and m.business.businessId = :businessId
-""")
+        SELECT m.roomId
+        FROM ChatRoom m
+        where m.member.memberId = :memberId and m.business.businessId = :businessId
+    """)
     Long findChatRoomId(Long memberId, Long businessId);
 
 }
