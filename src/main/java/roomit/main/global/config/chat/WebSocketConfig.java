@@ -20,7 +20,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         // Simple Broker를 사용하여 메시지를 브로커 없이 전달
-        registry.enableSimpleBroker("/sub");
+        registry.enableSimpleBroker("/sub/chat");
         registry.setApplicationDestinationPrefixes("/pub");
     }
 

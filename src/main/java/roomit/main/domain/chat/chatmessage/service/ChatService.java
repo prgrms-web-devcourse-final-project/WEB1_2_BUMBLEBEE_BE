@@ -57,7 +57,7 @@ public class ChatService {
         }
 
         // Redis Pub/Sub 발행
-        String topic = "/sub/chat/room/" + request.roomId();
+        String topic = "/sub/chat";
         redisPublisher.publish(topic, request);
 
         // Redis에 저장

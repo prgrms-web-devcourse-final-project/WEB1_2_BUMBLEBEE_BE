@@ -31,8 +31,8 @@ public record WorkplaceDetailResponse(
                 fileLocationService.getImagesFromFolder(workplace.getImageUrl().getValue()).get(0),
                 workplace.getWorkplaceStartTime(),
                 workplace.getWorkplaceEndTime(),
-                workplace.getLocation().getCoordinate().getX(),
                 workplace.getLocation().getCoordinate().getY(),
+                workplace.getLocation().getCoordinate().getX(),
                 workplace.getCreatedAt(),
                 workplace.getReviewCount()
         );
