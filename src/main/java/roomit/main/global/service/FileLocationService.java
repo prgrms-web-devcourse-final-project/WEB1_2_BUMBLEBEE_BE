@@ -3,6 +3,7 @@ package roomit.main.global.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import roomit.main.global.error.ErrorCode;
@@ -16,6 +17,7 @@ import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
 @Service
+@Slf4j
 public class FileLocationService {
 
   private final S3Client s3Client;
@@ -44,7 +46,9 @@ public class FileLocationService {
   public List<String> getImagesFromFolder(String folderPath) {
     List<String> imageUrls = new ArrayList<>();
 
-    String baseUrl = "https://s3." + region  + ".amazonaws.com/ " + bucketName + "/";
+    String baseUrl = "https://s3." + region  + ".amazonaws.com/" + bucketName + "/";
+
+    log.info("baseUrl: {}", baseUrl);
 
     try {
       String path = folderPath.substring(baseUrl.length());  // baseUrl 길이만큼 잘라냄
@@ -72,6 +76,7 @@ public class FileLocationService {
                 if (key.endsWith(extension)) {
                   String imageUrl = baseUrl + key;
                   imageUrls.add(imageUrl);
+                  log.info("imageUrl: {}", imageUrl);
                   break;
                 }
               }
