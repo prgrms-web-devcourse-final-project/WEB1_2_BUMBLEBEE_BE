@@ -73,13 +73,10 @@ public class PaymentsRestController {
      */
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/toss/cancel")
-    public Map<String, String >tossPaymentCancel(
+    public void tossPaymentCancel(
             @RequestParam(name = "reservationId") Long reservationId,
             @RequestParam (name = "cancelReason") String cancelReason
     ) {
-        Map<String, String > response = new HashMap<>();
-        response.put("cancel", "결제 취소 성공");
         paymentsService.cancelPayments(reservationId, cancelReason);
-        return response;
     }
 }

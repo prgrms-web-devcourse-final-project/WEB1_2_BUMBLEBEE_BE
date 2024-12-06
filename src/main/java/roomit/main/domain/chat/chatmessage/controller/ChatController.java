@@ -2,11 +2,13 @@ package roomit.main.domain.chat.chatmessage.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomit.main.domain.business.dto.CustomBusinessDetails;
 import roomit.main.domain.chat.chatmessage.dto.ChatMessageRequest;
@@ -29,6 +31,7 @@ public class ChatController {
     }
 
     @GetMapping("/api/v1/chat/room/{roomId}")
+    @ResponseStatus(HttpStatus.OK)
     public List<ChatMessageResponse> getMessages(@PathVariable Long roomId,
                                                  @AuthenticationPrincipal CustomMemberDetails customMemberDetails,
                                                  @AuthenticationPrincipal CustomBusinessDetails customBusinessDetails) {
