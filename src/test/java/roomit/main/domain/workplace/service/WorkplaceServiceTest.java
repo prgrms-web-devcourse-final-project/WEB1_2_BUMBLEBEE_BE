@@ -165,11 +165,11 @@ class WorkplaceServiceTest {
 
 
         // When & Then
-        CommonException exception = assertThrows(CommonException.class, () -> {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             workplaceService.createWorkplace(workplace, savedBusiness.getBusinessId());
         });
 
-        assertEquals("잘못된 입력입니다.", exception.getMessage());
+        assertEquals("사업장명은 특수문자를 제외한 1~20자리여야 합니다.", exception.getMessage());
     }
 
     @Test
@@ -202,11 +202,11 @@ class WorkplaceServiceTest {
 
 
         // When & Then
-        CommonException exception = assertThrows(CommonException.class, () -> {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             workplaceService.createWorkplace(workplace, savedBusiness.getBusinessId());
         });
 
-        assertEquals("잘못된 입력입니다.", exception.getMessage());
+        assertEquals("사업장명은 특수문자를 제외한 1~20자리여야 합니다.", exception.getMessage());
     }
 
 
