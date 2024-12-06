@@ -22,7 +22,8 @@ import java.util.List;
 import static lombok.AccessLevel.PROTECTED;
 
 @Entity
-@Table(name = "business")
+@Table(name = "business", indexes = {
+        @Index(name = "idx_businessId", columnList = "business_id")})
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
