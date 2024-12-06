@@ -14,6 +14,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import roomit.main.domain.business.entity.Business;
+import roomit.main.domain.notification.dto.ResponseNotificationDto;
+import roomit.main.domain.notification.dto.ResponseNotificationReservationDto;
+import roomit.main.domain.notification.entity.Notification;
+import roomit.main.domain.notification.entity.NotificationType;
+import roomit.main.domain.notification.service.NotificationService;
 import roomit.main.domain.payments.config.PaymentsConfig;
 import roomit.main.domain.payments.dto.request.PaymentsRequest;
 import roomit.main.domain.payments.dto.response.PaymentsFailResponse;
@@ -24,6 +30,7 @@ import roomit.main.domain.payments.repository.PaymentsRepository;
 import roomit.main.domain.reservation.entity.Reservation;
 import roomit.main.domain.reservation.entity.ReservationState;
 import roomit.main.domain.reservation.repository.ReservationRepository;
+import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.global.error.ErrorCode;
 
 @Service
@@ -33,6 +40,7 @@ public class PaymentsService {
     private final PaymentsRepository paymentsRepository;
     private final ReservationRepository reservationRepository;
     private final PaymentsConfig paymentsConfig;
+    private final NotificationService notificationService;
 
     /**
      * 결제 검증
@@ -41,11 +49,14 @@ public class PaymentsService {
     @Transactional
     public PaymentValidationResponse requestPayment(Long reservationId, Long memberId, PaymentsRequest paymentsRequest) {
 
-        validateReservationForPayment(reservationId,memberId,paymentsRequest); // 검증
+        validateReservationForPayment(reservationId, memberId, paymentsRequest); // 검증
 
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
 
+        Workplace workplace = reservation.getStudyRoom().getWorkPlace();
+
+        alrim(workplace,"예약이 완료 되었습니다.", paymentsRequest.totalAmount());
         try {
             Payments payments = paymentsRequest.toEntity();
             payments.addReservation(reservation);
@@ -56,14 +67,36 @@ public class PaymentsService {
             reservationRepository.save(reservation);
 
             return payments.toDto(paymentsConfig.getSuccessUrl(), paymentsConfig.getFailUrl());
-        } catch (Exception e){
+        } catch (Exception e) {
             throw ErrorCode.PAYMENTS_VALIDATION_FAILED.commonException();
         }
-    }
 
-    /**
-     * 결제 성공
-     */
+    }
+    public void alrim(Workplace workplace, String content, Long price) {
+        Business business = workplace.getBusiness();
+
+        Notification notification = Notification.builder()
+                .business(business)
+                .notificationType(NotificationType.RESERVATION_CONFIRMED)
+                .content(workplace.getWorkplaceName() + content)
+                .build();
+
+        ResponseNotificationReservationDto responseNotificationDto = ResponseNotificationReservationDto
+                .builder()
+                .notification(notification)
+                .workplaceId(workplace.getWorkplaceId())
+                .price(price)
+                .build();
+
+        notificationService.customNotifyReservation(
+                business.getBusinessId(),
+                responseNotificationDto
+        );
+
+    }
+        /**
+         * 결제 성공
+         */
     @Transactional
     public PaymentsResponse tossPaymentSuccess(String paymentKey, String orderId, Long amount) {
         Payments payments = verifyPayment(orderId, amount);
