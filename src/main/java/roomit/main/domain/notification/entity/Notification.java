@@ -7,10 +7,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.data.annotation.CreatedDate;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.notification.entity.value.NotificationContent;
 import roomit.main.domain.notification.entity.value.RelatedUrl;
 import roomit.main.domain.workplace.entity.Workplace;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -22,8 +25,7 @@ public class Notification {
 
     @Embedded
     private NotificationContent content;
-    @Embedded
-    private RelatedUrl url;
+
 
     @Column(nullable = false)
     private Boolean isRead;
@@ -34,15 +36,25 @@ public class Notification {
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "business_id", nullable = false)
     private Business business;
 
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    private Long price;
+
+    public void setPrice(Long price) {
+        this.price = price;
+    }
+
     @Builder
-    public Notification(Business business, NotificationType notificationType, String content, String url) {
+    public Notification(Business business, NotificationType notificationType, String content) {
         this.business = business;
         this.notificationType = NotificationType.valueOf(notificationType.name());
         this.content = new NotificationContent(content);
-        this.url = new RelatedUrl(url);
         this.isRead = false;
+        this.createdAt = LocalDateTime.now();
     }
     public void read(){
         isRead = true;
@@ -50,8 +62,5 @@ public class Notification {
 
     public String getContent(){
         return content.getContent();
-    }
-    public String getUrl(){
-        return url.getUrl();
     }
 }
