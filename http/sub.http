@@ -21,7 +21,7 @@ Content-Type: application/json
 
 GET http://localhost:8080/api/subscribe
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiYnVzaW5lc3M1QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0JVU0lORVNTIiwiaWF0IjoxNzMzNDU1NDE5LCJleHAiOjE3MzM0NTYzMTl9.FZU-gAwu6tZvJsnij-TpasGqEcYmcSXXJOApbhC2qyc
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiYnVzaW5lc3M1QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0JVU0lORVNTIiwiaWF0IjoxNzMzNTA5NzQ0LCJleHAiOjE3MzM1MTA2NDR9.mrLSE8iU2TiLpC15qHWZCGBoWWDVKBEDwjC8ar_k-Jw
 Accept: text/event-stream
 
 ### 예약등록
@@ -38,13 +38,19 @@ Content-Type: application/json
   "endTime": "2024-12-03T14:59:00"
 
 }
+
+### 알람조회
+GET  http://localhost:8080/api/v1/sub/list?workplaceId=5
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiYnVzaW5lc3M1QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0JVU0lORVNTIiwiaWF0IjoxNzMzNTA5NzQ0LCJleHAiOjE3MzM1MTA2NDR9.mrLSE8iU2TiLpC15qHWZCGBoWWDVKBEDwjC8ar_k-Jw
+
 ### 리뷰등록
 POST http://localhost:8080/api/v1/review/register
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiZXh0cmExQGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3MzM0NTUxMTgsImV4cCI6MTczMzQ1NjAxOH0.Ugg8BkP8vbWESFDYc_UjfraLl_FvimZeNq1hYu-E9DY
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiZXh0cmExQGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3MzM1MDk3NTUsImV4cCI6MTczMzUxMDY1NX0.WyJpBZYPcNf_vtGlIts1LleRZ8e2Z8xOy-q8s04AkKg
 
 {
-    "reservationId" : 10,
+    "reservationId" : 8,
     "workPlaceName" : "ENI스터디룸",
     "reviewContent": "좋습니다",
     "reviewRating" : 4
