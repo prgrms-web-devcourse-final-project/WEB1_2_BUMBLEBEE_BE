@@ -9,8 +9,8 @@ public record WorkplaceAllResponse(
         String imageUrl,
         Double stars,
         Long reviewCount,
-        Double positionLat,
         Double positionLon,
+        Double positionLat,
         Double distance
 ) {}
 
