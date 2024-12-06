@@ -21,7 +21,7 @@ Content-Type: application/json
 
 GET http://localhost:8080/api/subscribe
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiYnVzaW5lc3M1QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0JVU0lORVNTIiwiaWF0IjoxNzMzNDQ2OTI4LCJleHAiOjE3MzM0NDc4Mjh9.Pb7kMtgC0iJ3yic2RJCPu5jQ3ls-PGVO2CVb5-i3hC8
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiYnVzaW5lc3M1QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0JVU0lORVNTIiwiaWF0IjoxNzMzNDU1NDE5LCJleHAiOjE3MzM0NTYzMTl9.FZU-gAwu6tZvJsnij-TpasGqEcYmcSXXJOApbhC2qyc
 Accept: text/event-stream
 
 ### 예약등록
@@ -41,10 +41,10 @@ Content-Type: application/json
 ### 리뷰등록
 POST http://localhost:8080/api/v1/review/register
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiMTIzQGFhLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3MzM0NDY5NDgsImV4cCI6MTczMzQ0Nzg0OH0.0GgxRSv56Sfuz8BIqTuPMu90L7GGRFOE64tMzg3NnMY
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiZXh0cmExQGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3MzM0NTUxMTgsImV4cCI6MTczMzQ1NjAxOH0.Ugg8BkP8vbWESFDYc_UjfraLl_FvimZeNq1hYu-E9DY
 
 {
-    "reservationId" : 8,
+    "reservationId" : 10,
     "workPlaceName" : "ENI스터디룸",
     "reviewContent": "좋습니다",
     "reviewRating" : 4
@@ -67,8 +67,8 @@ Content-Type: application/json
 
 {
 
-  "email" : "123@aa.com",
-  "password" : "Tpgur8597!!"
+  "email" : "extra1@gmail.com",
+  "password" : "Test1234!"
 
 }
 

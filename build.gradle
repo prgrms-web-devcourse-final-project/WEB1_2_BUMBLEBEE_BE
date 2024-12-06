@@ -67,6 +67,10 @@ dependencies {
     // Redisson
     implementation 'org.redisson:redisson-spring-boot-starter:3.27.0'
 
+    // 공간 함수
+    implementation 'org.hibernate:hibernate-spatial:6.5.3.Final' // Hibernate Core와 동일한 버전
+    implementation group: 'org.locationtech.jts', name: 'jts-core', version: '1.19.0'
+
 }
 
 def jacocoDir = layout.buildDirectory.dir("reports/")

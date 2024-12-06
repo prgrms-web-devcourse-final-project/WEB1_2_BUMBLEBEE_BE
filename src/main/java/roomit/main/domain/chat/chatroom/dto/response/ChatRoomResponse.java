@@ -6,5 +6,7 @@ public interface ChatRoomResponse {
     Long roomId();
     Long id();
     String name();
+    String messageContent();
+    Boolean isRead();
     LocalDateTime updatedAt();
 }
