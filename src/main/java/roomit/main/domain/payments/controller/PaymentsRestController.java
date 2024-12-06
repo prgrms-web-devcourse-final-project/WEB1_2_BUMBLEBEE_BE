@@ -19,6 +19,9 @@ import roomit.main.domain.payments.dto.response.PaymentValidationResponse;
 import roomit.main.domain.payments.dto.response.PaymentsFailResponse;
 import roomit.main.domain.payments.dto.response.PaymentsResponse;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/payments")
@@ -68,8 +71,9 @@ public class PaymentsRestController {
     /**
      * 결제 취소 했을때
      */
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/toss/cancel")
-    public void tossPaymentCancelPoint(
+    public void tossPaymentCancel(
             @RequestParam(name = "reservationId") Long reservationId,
             @RequestParam (name = "cancelReason") String cancelReason
     ) {

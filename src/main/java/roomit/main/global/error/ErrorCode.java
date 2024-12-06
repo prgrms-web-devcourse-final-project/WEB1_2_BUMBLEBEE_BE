@@ -62,6 +62,7 @@ public enum ErrorCode {
     PAYMENTS_PROCESS_FAILED(HttpStatus.BAD_REQUEST, "P005", "결제 처리에 실패했습니다."),
     PAYMENTS_CANCEL_FAILED(HttpStatus.BAD_REQUEST, "P006", "결제 취소에 실패했습니다."),
     PAYMENTS_FAILED(HttpStatus.BAD_REQUEST, "P007", "결제 실패했습니다."),
+    PAYMENTS_VALIDATION_FAILED(HttpStatus.BAD_REQUEST,"P008","결제 검증에 실패했습니다"),
 
 
     /*OAuth*/

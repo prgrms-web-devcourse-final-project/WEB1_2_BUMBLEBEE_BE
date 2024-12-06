@@ -54,12 +54,10 @@ public class ReservationService {
     public Long createReservation(Long memberId,Long studyRoomId,CreateReservationRequest request) {
         validateReservation(request.startTime(),request.endTime());
 
-
         checkReservationTime(request.startTime(),request.endTime(),studyRoomId,ReservationState.ACTIVE,ReservationState.ON_HOLD);
 
         Member member = memberRepository.findById(memberId)
             .orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
-
 
         StudyRoom studyRoom = studyRoomRepository.findByIdWithWorkplace(studyRoomId)
                 .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
@@ -74,7 +72,6 @@ public class ReservationService {
         if(!startTime.isBefore(endTime)){
             throw ErrorCode.START_TIME_NOT_AFTER_END_TIME.commonException();
         }
-
     }
 
 //    @Transactional(readOnly = true)
@@ -140,24 +137,24 @@ public class ReservationService {
         }
     }
 
-    // 예약을 수정하는 메서드
-    @Transactional
-    public void updateReservation(Long reservationId,Long memberId ,UpdateReservationRequest request) {
-        validateReservationOwner(reservationId,memberId);
-
-        Reservation existingReservation = reservationRepository.findById(reservationId)
-            .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
-        try {
-            existingReservation.updateReservationDetails(
-                request.reservationName(),
-                request.reservationPhoneNumber(),
-                request.startTime(),
-                request.endTime()
-            );
-        }catch (Exception e){
-            throw ErrorCode.RESERVATION_NOT_MODIFIED.commonException();
-        }
-    }
+//    // 예약을 수정하는 메서드
+//    @Transactional
+//    public void updateReservation(Long reservationId,Long memberId ,UpdateReservationRequest request) {
+//        validateReservationOwner(reservationId,memberId);
+//
+//        Reservation existingReservation = reservationRepository.findById(reservationId)
+//            .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
+//        try {
+//            existingReservation.updateReservationDetails(
+//                request.reservationName(),
+//                request.reservationPhoneNumber(),
+//                request.startTime(),
+//                request.endTime()
+//            );
+//        }catch (Exception e){
+//            throw ErrorCode.RESERVATION_NOT_MODIFIED.commonException();
+//        }
+//    }
 
     @Transactional(readOnly = true)
     public void validateReservationOwner(Long reservationId, Long memberId) {
@@ -173,11 +170,15 @@ public class ReservationService {
     // 제일 최근 예약 1건 조회
     @Transactional(readOnly = true)
     public ReservationResponse findByMemberId(Long memberId) {
-        Reservation reservation = reservationRepository.findTopByMemberMemberIdOrderByCreatedAtDesc(memberId)
-                .orElseThrow(ErrorCode.RESERVATION_IS_EMPTY::commonException);
+        Reservation reservation = reservationRepository.findTopByMemberMemberIdOrderByCreatedAtDesc(memberId);
+
+        if(reservation == null){
+            return null;
+        }
 
         StudyRoom studyRoom = reservation.getStudyRoom();
         Workplace workPlace = studyRoom.getWorkPlace();
+
 
         return ReservationResponse.from(studyRoom,reservation,workPlace,fileLocationService);
     }
@@ -190,7 +191,7 @@ public class ReservationService {
         List<Reservation> reservations = reservationRepository.findReservationsByMemberId(memberId);
 
         if(reservations.isEmpty()){
-            throw(ErrorCode.RESERVATION_IS_EMPTY.commonException());
+            return null;
         }
 
         return reservations.stream()
@@ -211,7 +212,7 @@ public class ReservationService {
         List<Reservation> reservations = reservationRepository.findMyAllReservations(businessId);
 
         if(reservations.isEmpty()){
-            throw(ErrorCode.RESERVATION_IS_EMPTY.commonException());
+            return null;
         }
 
         return reservations.stream()
@@ -224,5 +225,25 @@ public class ReservationService {
             .toList();
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    // 분산락 테스트 (분산락x)
+    @Transactional
+    public void createTestLockFalse(Long memberId,Long studyRoomId,CreateReservationRequest request) {
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
+
+        StudyRoom studyRoom = studyRoomRepository.findByIdWithWorkplace(studyRoomId)
+                .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
+
+        Reservation entity = request.toEntity(member, studyRoom);
+
+        boolean existsById = reservationRepository.existsById(entity.getReservationId());
+        if (existsById){
+            throw new IllegalArgumentException();
+        }
+
+        reservationRepository.save(entity);
+    }
 }

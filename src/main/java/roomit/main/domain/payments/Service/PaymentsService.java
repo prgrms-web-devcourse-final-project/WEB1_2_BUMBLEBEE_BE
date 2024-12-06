@@ -51,12 +51,13 @@ public class PaymentsService {
             payments.addReservation(reservation);
             paymentsRepository.save(payments);
 
-            reservation.changeReservationState(ReservationState.COMPLETED);
+            reservation.changeReservationState(ReservationState.ACTIVE); // 엔드타임이 지나면 컴플리트로 << 로직을 추가하고 봐야함
+
             reservationRepository.save(reservation);
 
             return payments.toDto(paymentsConfig.getSuccessUrl(), paymentsConfig.getFailUrl());
         } catch (Exception e){
-            throw e;
+            throw ErrorCode.PAYMENTS_VALIDATION_FAILED.commonException();
         }
     }
 
@@ -89,7 +90,6 @@ public class PaymentsService {
             return restTemplate.postForObject(PaymentsConfig.URL+"/confirm",
                     new HttpEntity<>(params, headers),
                     PaymentsResponse.class);
-
     }
 
     /**

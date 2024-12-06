@@ -106,14 +106,14 @@ class ReviewServiceTest {
 
         BusinessRegisterRequest businessRegisterRequest = BusinessRegisterRequest.builder()
                 .businessName("테스트사업자123")
-                .businessEmail("business123Test@gmail.com")
+                .businessEmail("business123Test12@gmail.com")
                 .businessPwd("Business1!")
                 .businessNum("632-12-25250")
                 .build();
 
         businessService.signUpBusiness(businessRegisterRequest); // 데이터 생성
 
-        Business business = businessRepository.findByBusinessEmail("business123Test@gmail.com")
+        Business business = businessRepository.findByBusinessEmail("business123Test12@gmail.com")
                 .orElseThrow();
 
         workplace = Workplace.builder()
@@ -195,7 +195,7 @@ class ReviewServiceTest {
                 .build();
 
         reviewService.register(request, customMemberDetails.getId());
-        Workplace workplace1 = workplaceRepository.findByWorkplaceName(workplace.getWorkplaceName()).get();
+        Workplace workplace1 = workplaceRepository.getWorkplaceByWorkplaceName(workplace.getWorkplaceName());
 
         assertEquals(3, workplace1.getStarSum());
 
