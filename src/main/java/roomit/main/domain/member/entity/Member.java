@@ -70,7 +70,7 @@ public class Member {
     private List<Reservation> reservations = new ArrayList();
 
     @Builder
-    public Member(String memberNickName, String memberPhoneNumber, LocalDate birthDay, Sex memberSex, String memberEmail, String memberPwd, Role memberRole , PasswordEncoder passwordEncoder, PROVIDER provider /*Reservation reservation*/) {
+    public Member(String memberNickName, String memberPhoneNumber, LocalDate birthDay, Sex memberSex, String memberEmail, String memberPwd, Role memberRole , PasswordEncoder passwordEncoder, PROVIDER provider, List<Reservation> reservation) {
         this.memberNickname = new MemberNickname(memberNickName);
         this.memberPhonenumber = new MemberPhoneNumber(memberPhoneNumber);
         this.memberEmail = new MemberEmail(memberEmail);
@@ -79,7 +79,7 @@ public class Member {
         this.memberSex = memberSex;
         this.memberRole = Role.ROLE_USER;
         this.provider = provider;
-//        this.reservation = reservation;
+        this.reservations = reservation;
     }
 
     public String getMemberNickName(){
