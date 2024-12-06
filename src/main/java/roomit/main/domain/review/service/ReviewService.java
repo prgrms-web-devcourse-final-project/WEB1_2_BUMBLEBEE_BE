@@ -35,7 +35,6 @@ import roomit.main.global.service.FileLocationService;
 
 @Service
 @RequiredArgsConstructor
-@Log4j2
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
