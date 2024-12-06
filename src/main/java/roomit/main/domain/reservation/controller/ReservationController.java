@@ -49,15 +49,6 @@ public class ReservationController {
         reservationService.deleteReservation(reservationId);
     }
 
-//    // 예약 수정
-//    @ResponseStatus(HttpStatus.OK)
-//    @PutMapping("/api/v1/reservations/{reservationId}")
-//    public void updateReservation(@AuthenticationPrincipal CustomMemberDetails customMemberDetails,
-//                                  @PathVariable @Positive Long reservationId,
-//                                  @RequestBody @Valid UpdateReservationRequest request) {
-//        reservationService.updateReservation(customMemberDetails.getId(),reservationId , request);
-//    }
-
     // 제일 최근 예약 1건 조회
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/api/v1/reservations/member")
