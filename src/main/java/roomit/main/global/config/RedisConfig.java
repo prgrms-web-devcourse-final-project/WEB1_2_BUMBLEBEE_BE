@@ -15,6 +15,9 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import roomit.main.domain.chat.redis.service.RedisSubscriber;
+import roomit.main.domain.reservation.dto.response.ReservationResponse;
+
+import java.util.List;
 
 @Configuration
 @EnableRedisRepositories(basePackages = "roomit.main.global.token.repository")
@@ -45,6 +48,17 @@ public class RedisConfig {
         // Value는 JSON 형식으로 저장
         redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
         redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
+
+        return redisTemplate;
+    }
+
+    @Bean
+    public RedisTemplate<Object, List<ReservationResponse>> reservationResponseRedisTemplate(RedisConnectionFactory connectionFactory, ObjectMapper objectMapper) {
+        RedisTemplate<Object, List<ReservationResponse>> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(connectionFactory);
+
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
 
         return redisTemplate;
     }
