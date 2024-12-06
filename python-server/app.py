@@ -8,12 +8,21 @@ from decimal import Decimal
 models = {}
 age_groups = [10, 20, 30, 40]  # 10대, 20대, 30대, 40대 모델 로드
 
+import os
+
+import os
+
 for age_group in age_groups:
     try:
-        with open(f'collaborative_model_{age_group}s.pkl', 'rb') as f:
+        # 모델 파일 경로를 /app/collaborative_models 디렉토리로 수정
+        model_path = os.path.join('/app/collaborative_models', f'collaborative_model_{age_group}s.pkl')
+
+        # 파일을 열고 모델을 로드
+        with open(model_path, 'rb') as f:
             models[age_group] = pickle.load(f)
     except FileNotFoundError:
-        print(f"Model for age group {age_group}s not found. Skipping...")
+        print(f"Model for age group {age_group}s not found at {model_path}. Skipping...")
+
 
 # 데이터베이스 설정
 DB_CONFIG = {
