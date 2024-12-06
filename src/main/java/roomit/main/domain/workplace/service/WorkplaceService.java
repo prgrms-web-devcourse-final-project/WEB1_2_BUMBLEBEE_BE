@@ -3,7 +3,7 @@ package roomit.main.domain.workplace.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.math.BigDecimal;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.locationtech.jts.geom.Point;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,7 @@ import roomit.main.domain.workplace.dto.response.WorkplaceCreateResponse;
 import roomit.main.domain.workplace.dto.response.WorkplaceDetailResponse;
 import roomit.main.domain.workplace.dto.response.WorkplaceResponse;
 import roomit.main.domain.workplace.entity.Workplace;
+import roomit.main.global.util.PointUtil;
 import roomit.main.domain.workplace.entity.value.WorkplaceAddress;
 import roomit.main.domain.workplace.entity.value.WorkplaceName;
 import roomit.main.domain.workplace.entity.value.WorkplacePhoneNumber;
@@ -49,18 +51,22 @@ public class WorkplaceService {
     private final WebClient webClient;
     private final ImageService imageService;
     private final FileLocationService fileLocationService;
+    private final PointUtil pointUtil;
 
     public List<WorkplaceAllResponse> readAllWorkplaces(WorkplaceGetRequest request) {
-        List<Object[]> results = workplaceRepository.findAllByLatitudeAndLongitudeWithDistance(
-                request.latitude(),
-                request.longitude(),
-                request.bottomLeft().getLatitude().doubleValue(),
-                request.topRight().getLatitude().doubleValue(),
-                request.bottomLeft().getLongitude().doubleValue(),
-                request.topRight().getLongitude().doubleValue()
+        String referencePoint = String.format("POINT(%f %f)", request.longitude(), request.latitude());
+        String area = String.format(
+                "POLYGON((%f %f, %f %f, %f %f, %f %f, %f %f))",
+                request.bottomLeft().getLongitude().doubleValue(), request.bottomLeft().getLatitude().doubleValue(),
+                request.topRight().getLongitude().doubleValue(), request.bottomLeft().getLatitude().doubleValue(),
+                request.topRight().getLongitude().doubleValue(), request.topRight().getLatitude().doubleValue(),
+                request.bottomLeft().getLongitude().doubleValue(), request.topRight().getLatitude().doubleValue(),
+                request.bottomLeft().getLongitude().doubleValue(), request.bottomLeft().getLatitude().doubleValue()
         );
 
-        List<WorkplaceAllResponse> responseList = results.stream()
+        List<Object[]> results = workplaceRepository.findAllWithinArea(referencePoint, area);
+
+        return results.stream()
                 .map(result -> {
                     double starSum = ((Number) result[4]).doubleValue();
                     long reviewCount = ((Number) result[5]).longValue();
@@ -71,13 +77,11 @@ public class WorkplaceService {
                             fileLocationService.getImagesFromFolder((String)result[3]).get(0),
                             (reviewCount == 0) ? 0.0 : starSum / reviewCount,
                             reviewCount,
-                            BigDecimal.valueOf(((Number) result[6]).doubleValue()),  // latitude
-                            BigDecimal.valueOf(((Number) result[7]).doubleValue()),  // longitude
+                            ((Number) result[6]).doubleValue(), // longitude
+                            ((Number) result[7]).doubleValue(), // latitude
                             ((Number) result[8]).doubleValue()
                     );
                 }).toList();
-
-        return responseList;
     }
 
 
@@ -92,10 +96,11 @@ public class WorkplaceService {
     public WorkplaceCreateResponse createWorkplace(WorkplaceRequest workplaceDto, Long id) {
         Business business = businessRepository.findById(id).orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
 
-        Map<String, BigDecimal> coordinates = getStringBigDecimalMap(workplaceDto);
+        Map<String, Double> coordinates = getStringBigDecimalMap(workplaceDto);
+        Point location = pointUtil.createPoint(coordinates.get("longitude"), coordinates.get("latitude"));
 
         try {
-            Workplace workplace = workplaceDto.toEntity(coordinates.get("latitude"), coordinates.get("longitude"), business);
+            Workplace workplace = workplaceDto.toEntity(location, business);
             Workplace savedWorkplace = workplaceRepository.save(workplace);
             String imageUrl = "workplace-" + savedWorkplace.getWorkplaceId();
             savedWorkplace.changeImageUrl(imageService.createImageUrl(imageUrl));
@@ -145,7 +150,8 @@ public class WorkplaceService {
             throw ErrorCode.BUSINESS_NOT_AUTHORIZED.commonException();
         }
 
-        Map<String, BigDecimal> coordinates = getStringBigDecimalMap(workplaceDto);
+        Map<String, Double> coordinates = getStringBigDecimalMap(workplaceDto);
+        Point newLocation = pointUtil.createPoint(coordinates.get("longitude"), coordinates.get("latitude"));
 
         try {
             workplace.changeWorkplaceName(new WorkplaceName(workplaceDto.workplaceName()));
@@ -154,8 +160,8 @@ public class WorkplaceService {
             workplace.changeWorkplacePhoneNumber(new WorkplacePhoneNumber(workplaceDto.workplacePhoneNumber()));
             workplace.changeWorkplaceStartTime(workplaceDto.workplaceStartTime());
             workplace.changeWorkplaceEndTime(workplaceDto.workplaceEndTime());
-            workplace.changeLatitude(coordinates.get("latitude"));
-            workplace.changeLongitude(coordinates.get("longitude"));
+            workplace.changeLocation(newLocation);
+
             workplaceRepository.save(workplace);
         } catch (Exception e) {
             throw ErrorCode.WORKPLACE_NOT_MODIFIED.commonException();
@@ -199,7 +205,7 @@ public class WorkplaceService {
         return new WorkplaceBusinessResponse(businessId, businessName, workplaceDtoList);
     }
 
-    protected Map<String, BigDecimal> getStringBigDecimalMap(WorkplaceRequest workplaceDto) {
+    protected Map<String, Double> getStringBigDecimalMap(WorkplaceRequest workplaceDto) {
         try {
             String[] parts = workplaceDto.workplaceAddress().split(",", 2);
             String roadAddress = parts[0].trim();
@@ -210,7 +216,7 @@ public class WorkplaceService {
         }
     }
 
-    private Map<String, BigDecimal> geoCording(String address) {
+    private Map<String, Double> geoCording(String address) {
         try {
             String response = webClient.get()
                     .uri(uriBuilder -> uriBuilder
@@ -224,8 +230,8 @@ public class WorkplaceService {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode document = objectMapper.readTree(response).path("documents").get(0);
 
-            BigDecimal latitude = new BigDecimal(document.path("y").asText());
-            BigDecimal longitude = new BigDecimal(document.path("x").asText());
+            Double latitude = Double.valueOf(document.path("y").asText());
+            Double longitude = Double.valueOf(document.path("x").asText());
 
             return Map.of(
                     "latitude", latitude,
@@ -241,9 +247,9 @@ public class WorkplaceService {
     @Transactional(readOnly = true)
     public List<DistanceWorkplaceResponse> findNearbyWorkplaces(String address, double maxDistance) {
         // 1. 주소를 좌표로 변환
-        Map<String, BigDecimal> coordinates = geoCording(address);
-        BigDecimal latitude = coordinates.get("latitude");
-        BigDecimal longitude = coordinates.get("longitude");
+        Map<String, Double> coordinates = geoCording(address);
+        Double latitude = coordinates.get("latitude");
+        Double longitude = coordinates.get("longitude");
 
         // 2. 좌표와 거리 기반으로 Workplace 조회
         List<Object[]> results = workplaceRepository.findNearbyWorkplaces(longitude.doubleValue(), latitude.doubleValue(), maxDistance);

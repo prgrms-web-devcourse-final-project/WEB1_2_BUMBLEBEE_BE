@@ -41,17 +41,14 @@ public class ChatRoom {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "workplace_id", nullable = false, unique = true)
-    private Workplace workplace;
-
+    private String workplaceName;
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ChatMessage> messages = new ArrayList<>();
 
-    public ChatRoom(Business business, Member member, Workplace workplace) {
+    public ChatRoom(Business business, Member member, String workplaceName) {
         this.business = business;
         this.member = member;
-        this.workplace = workplace;
+        this.workplaceName = workplaceName;
     }
 }

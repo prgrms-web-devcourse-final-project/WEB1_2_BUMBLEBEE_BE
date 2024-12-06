@@ -1,4 +1,4 @@
-package roomit.main.domain.chat.chatroom.repositoroy;
+package roomit.main.domain.chat.chatroom.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +15,8 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
     @Query("""
         SELECT c
         FROM ChatRoom c
+        left join fetch c.business b
+        left join fetch c.member m
         WHERE c.roomId = :roomId
     """)
     Optional<ChatRoom> findRoomDetailsById(@Param("roomId") Long roomId);
@@ -24,27 +26,33 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
     List<Long> findAllRoomIds();
 
     @Query("""
-        SELECT CASE WHEN COUNT(c) > 0 THEN TRUE ELSE FALSE END
-        FROM ChatRoom c
-        where c.member.memberId = :memberId and c.business.businessId = :businessId
+        SELECT CASE WHEN EXISTS (
+            SELECT 1
+            FROM ChatRoom c
+            WHERE c.member.memberId = :memberId AND c.business.businessId = :businessId
+            ) THEN TRUE ELSE FALSE END
     """)
     Boolean existsChatRoomByMemberIdAndBusinessId(Long memberId, Long businessId);
 
     @Query("""
-        SELECT c, COALESCE(MAX(m.timestamp), c.createdAt) AS lastMessageTimestamp
+        SELECT c, m
         FROM ChatRoom c
         LEFT JOIN c.messages m
         WHERE c.member.memberId = :memberId
-        GROUP BY c
-        ORDER BY lastMessageTimestamp DESC
+            AND (m.timestamp = (
+            SELECT MAX(m2.timestamp)
+            FROM ChatMessage m2
+            WHERE m2.room.roomId = c.roomId
+            ) OR m.timestamp IS NULL)
+        ORDER BY COALESCE(m.timestamp, c.createdAt) DESC
     """)
     List<Object[]> findChatRoomByMembersId(Long memberId);
 
 
     @Query("""
-        SELECT c
+        SELECT c, msg
         FROM ChatRoom c
-        LEFT JOIN FETCH c.member m
+        LEFT JOIN c.member m
         LEFT JOIN FETCH c.messages msg
         WHERE c.business.businessId = :businessId
         AND (msg.timestamp = (
@@ -54,7 +62,7 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
         ) OR msg.timestamp IS NULL)
         ORDER BY COALESCE(msg.timestamp, c.createdAt) DESC
     """)
-    List<ChatRoom> findChatRoomByBusinessId(Long businessId);
+    List<Object[]> findChatRoomByBusinessId(Long businessId);
 
     @Query("""
         SELECT m.roomId
