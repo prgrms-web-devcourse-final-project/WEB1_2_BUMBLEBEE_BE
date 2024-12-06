@@ -26,9 +26,6 @@ public class Notification {
     @Embedded
     private NotificationContent content;
 
-    @Column(nullable = false)
-    private Boolean isRead;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private NotificationType notificationType;
@@ -46,7 +43,6 @@ public class Notification {
         this.business = business;
         this.notificationType = NotificationType.valueOf(notificationType.name());
         this.content = new NotificationContent(content);
-        this.isRead = false;
         this.createdAt = LocalDateTime.now();
     }
 
