@@ -169,7 +169,6 @@ class ReviewServiceTest {
                 .business(business)
                 .content("테스트 알람")
                 .notificationType(NotificationType.REVIEW_CREATED)
-                .url("아무거나")
                 .build();
 
         notificationRepository.save(notification);
