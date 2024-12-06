@@ -51,8 +51,7 @@ public class ReservationService {
     private final FileLocationService fileLocationService;
 
     // 예약 만드는 메서드
-    //@DistributedLock(key = "#studyRoomId + ':' + #request.startTime + ':' + #request.endTime")
-    @Transactional
+    @DistributedLock(key = "#studyRoomId + ':' + #request.startTime + ':' + #request.endTime")
     public Long createReservation(Long memberId,Long studyRoomId,CreateReservationRequest request) {
         validateReservation(request.startTime(),request.endTime());
 

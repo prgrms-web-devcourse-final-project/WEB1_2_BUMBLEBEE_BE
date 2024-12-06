@@ -22,7 +22,7 @@ public class DistributedLockAop {
     private final RedissonClient redissonClient;
     private final AopForTransaction aopForTransaction;
 
-    @Around("@annotation(roomit.main.global.rock.DistributedLock)")
+    @Around("@annotation(roomit.main.global.rock.DistributedLock)") // DistributedLock 어노테이션이 있는 위치
     public Object lock(final ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
