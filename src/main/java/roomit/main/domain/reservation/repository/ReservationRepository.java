@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import roomit.main.domain.reservation.entity.Reservation;
+import roomit.main.domain.reservation.entity.ReservationState;
 
 public interface ReservationRepository extends JpaRepository<Reservation,Long> {
 
@@ -38,6 +39,6 @@ public interface ReservationRepository extends JpaRepository<Reservation,Long> {
     @Query("SELECT r FROM Reservation r WHERE r.studyRoom.studyRoomId = :studyRoomId AND FUNCTION('DATE', r.startTime) = :date")
     List<Reservation> findReservationsByStudyRoomAndDate(@Param("studyRoomId") Long studyRoomId, @Param("date") LocalDate date);
 
-
+    List<Reservation> findByReservationState(ReservationState reservationState);
 }
 

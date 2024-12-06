@@ -6,8 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -132,7 +130,7 @@ public class SpringSecurityConfig {
                         //정적 리소스 허용
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/static/**", "/index.html").permitAll()
                         //모두 허용
-                        .requestMatchers("/login/**","/").permitAll()
+                        .requestMatchers("/login/**","/", "/health").permitAll()
                         .requestMatchers("/reissue").permitAll()
                         .requestMatchers("/noauth").permitAll()
                         .requestMatchers("/api/v1/member/signup").permitAll()
