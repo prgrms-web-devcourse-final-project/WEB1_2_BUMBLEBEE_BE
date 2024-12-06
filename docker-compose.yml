@@ -1,0 +1,55 @@
+version: '3.7'
+
+networks:
+  k6:
+  grafana:
+  default:
+
+services:
+  influxdb:
+    image: influxdb:1.8
+    networks:
+      - k6
+      - grafana
+    ports:
+      - "8086:8086"
+    environment:
+      - INFLUXDB_DB=k6
+
+  grafana:
+    image: grafana/grafana:9.3.8
+    networks:
+      - grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_BASIC_ENABLED=false
+    volumes:
+      - ./grafana:/etc/grafana/provisioning/
+
+  k6:
+    image: grafana/k6:latest
+    networks:
+      - k6
+    ports:
+      - "6565:6565"
+    volumes:
+      - C:/Git/WEB1_2_BUMBLEBEE_BE/.github/k6-scripts:/scripts
+    command: ["sleep", "infinity"]  # 기본 실행을 비활성화
+
+  python-server:
+    build:
+      context: ./python-server
+    networks:
+      - default
+    ports:
+      - "8070:8070"  # 컨테이너의 8070 포트를 로컬의 8070 포트로 매핑
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_RUN_HOST=0.0.0.0
+    volumes:
+      - ./python-server/collaborative_models:/app/collaborative_models  # 모델 파일을 도커로 복사
+    command: flask run --host=0.0.0.0 --port=8070  # 플라스크 앱을 8070 포트에서 실행
+

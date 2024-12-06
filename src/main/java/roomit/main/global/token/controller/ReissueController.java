@@ -16,7 +16,7 @@ public class ReissueController {
     private final TokenService tokenService;
 
     @PostMapping("/reissue")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.OK)
     public void reissue(HttpServletRequest request, HttpServletResponse response) {
         tokenService.reissue(request,response);
     }

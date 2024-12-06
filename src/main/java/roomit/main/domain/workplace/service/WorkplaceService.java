@@ -111,7 +111,7 @@ public class WorkplaceService {
             return new WorkplaceCreateResponse(savedWorkplace.getWorkplaceId(), studyroomID);
         }
         catch (IllegalArgumentException e) {
-            throw new CommonException(ErrorCode.WORKPLACE_INVALID_REQUEST);
+            throw e;
         } catch (InvalidDataAccessApiUsageException e) {
             throw ErrorCode.WORKPLACE_INVALID_REQUEST.commonException();
         } catch (CommonException e) {
@@ -133,6 +133,9 @@ public class WorkplaceService {
             }
             return studyroomIDs;
         } catch (Exception e) {
+            if(e instanceof IllegalArgumentException){
+                throw (IllegalArgumentException)e;
+            }
             throw ErrorCode.STUDYROOM_NOT_REGISTERD.commonException();
         }
     }

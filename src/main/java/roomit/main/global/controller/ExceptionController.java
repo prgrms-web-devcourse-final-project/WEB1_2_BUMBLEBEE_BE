@@ -1,5 +1,7 @@
 package roomit.main.global.controller;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -36,6 +38,17 @@ public class ExceptionController {
             response.addValidation(fieldError.getField(), fieldError.getDefaultMessage());
         }
         return ResponseEntity.status(400).body(response);
+
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String,String>> exceptionHandler(IllegalArgumentException e) {
+
+        Map<String, String> messages = new HashMap<>();
+        messages.put("message", e.getMessage());
+
+        return ResponseEntity.status(400).body(messages);
 
     }
 }

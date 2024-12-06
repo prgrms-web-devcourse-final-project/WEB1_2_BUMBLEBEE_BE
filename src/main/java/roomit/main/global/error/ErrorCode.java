@@ -28,9 +28,9 @@ public enum ErrorCode {
     /*StudyRoom*/
     STUDYROOM_NOT_FOUND(HttpStatus.NOT_FOUND,"S001","존재하지 않는 스터디룸입니다."),
     NOT_OWNER_OF_STUDYROOM(HttpStatus.FORBIDDEN, "S002", "본인이 소유한 사업장이 아닙니다."),
-    STUDYROOM_NOT_REGISTERD(HttpStatus.UNAUTHORIZED, "S003","스터디룸 등록에 실패하였습니다."),
-    STUDYROOM_NOT_MODIFY(HttpStatus.UNAUTHORIZED, "S004","스터디룸 수정에 실패하였습니다."),
-    STUDYROOM_NOT_DELETE(HttpStatus.UNAUTHORIZED, "S004","스터디룸 삭제에 실패하였습니다."),
+    STUDYROOM_NOT_REGISTERD(HttpStatus.BAD_REQUEST, "S003","스터디룸 등록에 실패하였습니다."),
+    STUDYROOM_NOT_MODIFY(HttpStatus.BAD_REQUEST, "S004","스터디룸 수정에 실패하였습니다."),
+    STUDYROOM_NOT_DELETE(HttpStatus.BAD_REQUEST, "S004","스터디룸 삭제에 실패하였습니다."),
 
     /*Business*/
     BUSINESS_NOT_FOUND(HttpStatus.BAD_REQUEST, "B003", "존재 하지 않는 사업자입니다."),

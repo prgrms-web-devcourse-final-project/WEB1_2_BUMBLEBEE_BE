@@ -10,20 +10,31 @@ public interface BusinessRepository extends JpaRepository<Business, Long> {
     @Query(value = "SELECT b FROM Business b WHERE b.businessEmail.value=:businessEmail")
     Optional<Business> findByBusinessEmail(String businessEmail);
 
-    @Query(value = "SELECT CASE WHEN COUNT(b) > 0 THEN true ELSE false END FROM Business b WHERE b.businessName.value=:businessName")
-    boolean existsByBusinessName(String businessName);
-
-    @Query(value = "SELECT CASE WHEN COUNT(b) > 0 THEN true ELSE false END FROM Business b WHERE b.businessEmail.value=:businessEmail")
-    Boolean existsByBusinessEmail(String businessEmail);
-
-    @Query(value = "SELECT CASE WHEN COUNT(b) > 0 THEN true ELSE false END FROM Business b WHERE b.businessNum.value=:businessNum")
-    Boolean existsByBusinessNum(String businessNum);
+    @Query("""
+	    SELECT CASE WHEN EXISTS (
+	        SELECT 1
+	        FROM Business b
+	        WHERE b.businessName.value = :businessName
+	    ) THEN TRUE ELSE FALSE END
+	""")
+    Boolean existsByBusinessName(String businessName);
 
     @Query("""
-        SELECT CASE WHEN COUNT(b) > 0 THEN TRUE ELSE FALSE END 
-        FROM Business b
-        WHERE b.businessId = :senderId AND b.businessName = :senderName
-    """)
-    boolean existsByIdAndBusinessName(Long senderId, String senderName);
+	    SELECT CASE WHEN EXISTS (
+	        SELECT 1
+	        FROM Business b
+	        WHERE b.businessEmail.value = :businessEmail
+	    ) THEN TRUE ELSE FALSE END
+	""")
+    Boolean existsByBusinessEmail(String businessEmail);
+
+    @Query("""
+	    SELECT CASE WHEN EXISTS (
+	        SELECT 1
+	        FROM Business b
+	        WHERE b.businessNum.value = :businessNum
+	    ) THEN TRUE ELSE FALSE END
+	""")
+    Boolean existsByBusinessNum(String businessNum);
 }
 
