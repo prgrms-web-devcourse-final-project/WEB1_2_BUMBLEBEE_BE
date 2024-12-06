@@ -44,6 +44,13 @@ GET  http://localhost:8080/api/v1/sub/list?workplaceId=5
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiYnVzaW5lc3M1QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0JVU0lORVNTIiwiaWF0IjoxNzMzNTEzMTc3LCJleHAiOjE3MzM1MTQwNzd9.GeTHlsYJR_PYVaHq8vjkfYsTFH0d0e_VaUTIztXweCg
 
+
+### 예약 알람조회
+GET  http://localhost:8080/api/v1/subReservation/list?workplaceId=5
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiYnVzaW5lc3M1QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0JVU0lORVNTIiwiaWF0IjoxNzMzNTEzMTc3LCJleHAiOjE3MzM1MTQwNzd9.GeTHlsYJR_PYVaHq8vjkfYsTFH0d0e_VaUTIztXweCg
+
+
 ### 리뷰등록
 POST http://localhost:8080/api/v1/review/register
 Content-Type: application/json
