@@ -1,5 +1,6 @@
 package roomit.main.global.config.chat;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -9,6 +10,7 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class StompHandler implements ChannelInterceptor {
 
     private final RedisTemplate<String, Object> redisTemplate;
@@ -27,6 +29,8 @@ public class StompHandler implements ChannelInterceptor {
             connectToChatRoom(accessor);
         } else if (StompCommand.DISCONNECT.equals(command)) {
             disconnectFromChatRoom(accessor);
+        }else if (StompCommand.SUBSCRIBE.equals(command)) {
+            handleSubscribe(accessor);
         }
         return message;
     }
@@ -51,5 +55,10 @@ public class StompHandler implements ChannelInterceptor {
 
     }
 
+    private void handleSubscribe(StompHeaderAccessor accessor) {
+        String chatRoomId = accessor.getDestination(); // 구독 경로 확인
+        String userId = accessor.getFirstNativeHeader("userId");
+        log.info("User [{}] subscribed to room [{}]", userId, chatRoomId);
+    }
 
 }
