@@ -11,9 +11,9 @@ public class PointUtil {
     private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
 
     @Value("${gis.srid}")
-    private int srid;
+    private static int srid;
 
-    public Point createPoint(double latitude, double longitude) {
+    public static Point createPoint(double latitude, double longitude) {
         Point point = GEOMETRY_FACTORY.createPoint(new Coordinate(longitude, latitude));
         point.setSRID(srid); // 주입받은 SRID 값 설정
         return point;
