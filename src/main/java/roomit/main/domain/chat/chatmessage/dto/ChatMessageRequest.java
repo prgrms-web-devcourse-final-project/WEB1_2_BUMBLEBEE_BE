@@ -4,12 +4,11 @@ import lombok.Builder;
 
 import java.time.LocalDateTime;
 
-@Builder
-public record ChatMessageRequest
-        (Long roomId,
-         String sender,
-         String content,
-         LocalDateTime timestamp,
-         String senderType // business or member
+public record ChatMessageRequest(
+        Long roomId,
+        String sender,
+        String content,
+        LocalDateTime timestamp,
+        String senderType // business or member
         ) {
 }

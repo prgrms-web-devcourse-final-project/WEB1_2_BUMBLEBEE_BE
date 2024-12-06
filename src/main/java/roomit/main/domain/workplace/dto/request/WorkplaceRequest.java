@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.List;
 import lombok.Builder;
+import org.locationtech.jts.geom.Point;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.studyroom.dto.request.CreateStudyRoomRequest;
 import roomit.main.domain.workplace.entity.Workplace;
@@ -25,7 +26,7 @@ public record WorkplaceRequest(
         @NotNull(message = "사업장 종료 시간을 입력해주세요.") @JsonFormat(pattern = "HH:mm") LocalTime workplaceEndTime,
         List<CreateStudyRoomRequest> studyRoomList
 ) {
-    public Workplace toEntity(BigDecimal latitude, BigDecimal longitude, Business business) {
+    public Workplace toEntity(Point location, Business business) {
 
         return Workplace.builder()
                 .workplaceName(workplaceName)
@@ -34,8 +35,7 @@ public record WorkplaceRequest(
                 .workplaceAddress(workplaceAddress)
                 .workplaceStartTime(workplaceStartTime)
                 .workplaceEndTime(workplaceEndTime)
-                .latitude(latitude)
-                .longitude(longitude)
+                .location(location)
                 .business(business)
                 .build();
     }

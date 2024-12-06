@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import roomit.main.domain.chat.chatmessage.dto.ChatMessageRequest;
+import roomit.main.domain.chat.chatmessage.dto.ChatMessageSaveRequest;
 import roomit.main.domain.chat.chatroom.entity.ChatRoom;
 
 import java.time.LocalDateTime;
@@ -29,20 +30,23 @@ public class ChatMessage {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss[.SSS]")
     @Column(nullable = false)
     private LocalDateTime timestamp;
-    
-    private Boolean isRead;
 
-    public void changeRead(Boolean isRead) {
-        this.isRead = isRead;
+    private String senderType;
+
+    private Boolean isRead = false;
+
+    public void markAsRead() {
+        this.isRead = true;
     }
 
-    public ChatMessage(ChatRoom room, ChatMessageRequest request) {
+    public ChatMessage(ChatRoom room, ChatMessageSaveRequest request) {
         this.room = room;
         this.sender = request.sender();
         this.content = request.content();
+        this.senderType = request.senderType();
         this.timestamp = request.timestamp();
     }
 }

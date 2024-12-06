@@ -21,17 +21,15 @@ public class ChatRoomController {
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public void createRoom(@RequestBody ChatRoomRequest request,
+    public Long createRoom(@RequestBody ChatRoomRequest request,
             @AuthenticationPrincipal CustomMemberDetails memberDetails){
-        chatRoomService.create(memberDetails.getId(), request.studyRoomId());
+        return chatRoomService.create(memberDetails.getId(), request.workplaceId());
     }
 
     @GetMapping("/room")
     @ResponseStatus(HttpStatus.OK)
     public List<? extends ChatRoomResponse> list(@AuthenticationPrincipal CustomMemberDetails memberDetails,
                                                  @AuthenticationPrincipal CustomBusinessDetails businessDetails){
-        List<? extends ChatRoomResponse> rooms = chatRoomService.getRooms(memberDetails, businessDetails);
-
-        return rooms;
+        return chatRoomService.getRooms(memberDetails, businessDetails);
     }
 }

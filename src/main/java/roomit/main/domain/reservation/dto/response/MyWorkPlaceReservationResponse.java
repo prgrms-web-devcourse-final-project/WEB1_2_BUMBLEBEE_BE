@@ -3,6 +3,7 @@ package roomit.main.domain.reservation.dto.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import roomit.main.domain.reservation.entity.Reservation;
+import roomit.main.domain.reservation.entity.ReservationState;
 import roomit.main.domain.reservation.entity.value.ReservationNum;
 import roomit.main.domain.studyroom.entity.StudyRoom;
 import roomit.main.domain.workplace.entity.Workplace;
@@ -21,7 +22,8 @@ public record MyWorkPlaceReservationResponse (
     String workplaceImageUrl,
     Long workplaceId,
     Long reservationId,
-    Integer reservationPrice
+    Integer reservationPrice,
+    ReservationState reservationState
     // LocalDateTime paymentCreatedAt
 ) {
     public static MyWorkPlaceReservationResponse from(StudyRoom studyRoom, Reservation reservation, Workplace workplace, FileLocationService fileLocationService) {
@@ -37,7 +39,8 @@ public record MyWorkPlaceReservationResponse (
                 workplace.getImageUrl().getValue(),
                 workplace.getWorkplaceId(),
                 reservation.getReservationId(),
-                reservation.getReservationPrice()
+                reservation.getReservationPrice(),
+                reservation.getReservationState()
                 //payment.getCreatedAt()
                 );
     }

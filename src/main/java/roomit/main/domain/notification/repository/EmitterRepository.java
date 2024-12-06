@@ -15,4 +15,6 @@ public interface EmitterRepository {
     Map<Long, SseEmitter> getAll();
     void deleteAllEventCache();
 
+    void saveEventCache(Long businessId, Object eventData);
+    Object getEventCache(Long businessId);
 }

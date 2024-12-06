@@ -9,6 +9,11 @@ import java.math.BigDecimal;
 @Getter
 @Builder
 public class Coordinate {
-    @JsonProperty("lat") private BigDecimal latitude;
-    @JsonProperty("lng") private BigDecimal longitude;
+    @JsonProperty("lat") private Double latitude;
+    @JsonProperty("lng") private Double longitude;
+
+    public Coordinate(Double latitude, Double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
 }

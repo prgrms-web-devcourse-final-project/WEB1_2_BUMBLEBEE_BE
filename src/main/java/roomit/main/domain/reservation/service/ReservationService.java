@@ -33,6 +33,7 @@ import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.entity.value.WorkplaceName;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
+import roomit.main.global.rock.DistributedLock;
 import roomit.main.global.service.FileLocationService;
 
 @Slf4j
@@ -50,14 +51,14 @@ public class ReservationService {
     private final FileLocationService fileLocationService;
 
     // 예약 만드는 메서드
-    @Transactional
+    @DistributedLock(key = "#studyRoomId + ':' + #request.startTime + ':' + #request.endTime")
     public Long createReservation(Long memberId,Long studyRoomId,CreateReservationRequest request) {
         validateReservation(request.startTime(),request.endTime());
 
-        checkReservationTime(request.startTime(),request.endTime(),studyRoomId,ReservationState.ACTIVE,ReservationState.ON_HOLD);
+        checkReservationTime(request.startTime(),request.endTime(),studyRoomId);
 
         Member member = memberRepository.findById(memberId)
-            .orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
+                .orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
 
         StudyRoom studyRoom = studyRoomRepository.findByIdWithWorkplace(studyRoomId)
                 .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
@@ -103,7 +104,7 @@ public class ReservationService {
 
     // 예약의 중복 시간 체크
     @Transactional(readOnly = true)
-    public void checkReservationTime(LocalDateTime StartTime, LocalDateTime endTime, Long studyRoomId ,ReservationState ACTIVE,ReservationState ON_HOLD) {
+    public void checkReservationTime(LocalDateTime StartTime, LocalDateTime endTime, Long studyRoomId) {
         StudyRoom existingStudyRoom = studyRoomRepository.findById(studyRoomId)
                 .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
 
@@ -134,36 +135,6 @@ public class ReservationService {
             reservation.changeReservationState(ReservationState.CANCELLED);
         }else{
             throw ErrorCode.RESERVATION_CANNOT_CANCEL.commonException();
-        }
-    }
-
-//    // 예약을 수정하는 메서드
-//    @Transactional
-//    public void updateReservation(Long reservationId,Long memberId ,UpdateReservationRequest request) {
-//        validateReservationOwner(reservationId,memberId);
-//
-//        Reservation existingReservation = reservationRepository.findById(reservationId)
-//            .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
-//        try {
-//            existingReservation.updateReservationDetails(
-//                request.reservationName(),
-//                request.reservationPhoneNumber(),
-//                request.startTime(),
-//                request.endTime()
-//            );
-//        }catch (Exception e){
-//            throw ErrorCode.RESERVATION_NOT_MODIFIED.commonException();
-//        }
-//    }
-
-    @Transactional(readOnly = true)
-    public void validateReservationOwner(Long reservationId, Long memberId) {
-        Reservation reservation = reservationRepository.findById(reservationId)
-            .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
-
-        // 예약을 만든 사람과 수정 요청자가 동일한지 확인
-        if (!reservation.getMember().getMemberId().equals(memberId)) {
-            throw ErrorCode.RESERVATION_NOT_MODIFIED.commonException();  // 수정 권한이 없을 경우 예외 처리
         }
     }
 
@@ -223,27 +194,5 @@ public class ReservationService {
                     fileLocationService
             ))
             .toList();
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // 분산락 테스트 (분산락x)
-    @Transactional
-    public void createTestLockFalse(Long memberId,Long studyRoomId,CreateReservationRequest request) {
-
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
-
-        StudyRoom studyRoom = studyRoomRepository.findByIdWithWorkplace(studyRoomId)
-                .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
-
-        Reservation entity = request.toEntity(member, studyRoom);
-
-        boolean existsById = reservationRepository.existsById(entity.getReservationId());
-        if (existsById){
-            throw new IllegalArgumentException();
-        }
-
-        reservationRepository.save(entity);
     }
 }

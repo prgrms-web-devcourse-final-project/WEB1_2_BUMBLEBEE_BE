@@ -50,21 +50,21 @@ public class ReviewService {
     @Transactional
     public void register(ReviewRegisterRequest request, Long memberId) {
 
-        Reservation reservation = reservationRepository.findById(request.reservationId())
-                .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
 
+        Reservation reservation1 = reservationRepository.findByIdWithMember(request.reservationId())
+                .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
         // 본인이 예약한거지 확인하는거
 
-        if (!Objects.equals(reservation.getMember().getMemberId(), memberId)) {
+        if (!Objects.equals(reservation1.getMember().getMemberId(), memberId)) {
             throw ErrorCode.REVIEW_UPDATE_FAIL.commonException();
         }
 
         Workplace workPlace = workplaceRepository
                 .getWorkplaceByWorkplaceName(new WorkplaceName(request.workPlaceName()));
 
-        Review review = request.toEntity(reservation);
+        Review review = request.toEntity(reservation1);
 
-        reservation.addReview(review);
+        reservation1.addReview(review);
 
         // 별점 총합 및 리뷰 개수 업데이트
         workPlace.changeStarSum(workPlace.getStarSum() + request.reviewRating());
@@ -74,6 +74,7 @@ public class ReviewService {
         reviewRepository.save(review);
 
         alrim(workPlace);
+
     }
 
     public void alrim(Workplace workplace){
@@ -91,7 +92,7 @@ public class ReviewService {
                 .workplaceId(workplace.getWorkplaceId())
                 .build();
 
-        notificationService.notify(
+        notificationService.customNotify(
                 business.getBusinessId(),
                 responseNotificationDto
         );

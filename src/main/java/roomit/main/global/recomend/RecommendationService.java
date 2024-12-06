@@ -2,24 +2,23 @@ package roomit.main.global.recomend;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.*;
-import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONObject;
-import org.springframework.http.*;
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import java.util.Arrays;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
 public class RecommendationService {
-
+    @Value("${AI.URL}")
+    private String url ;
     public RecommendationResponseWrapper getRecommendations(Long userId, int age, int n) {
-        String url = "http://127.0.0.1:8070/recommend"; // Flask 서버의 recommend 엔드포인트
+         // Flask 서버의 recommend 엔드포인트
         RestTemplate restTemplate = new RestTemplate();
 
         // Flask로 보낼 요청 데이터 생성
@@ -61,5 +60,8 @@ public class RecommendationService {
 
         @JsonProperty("predicted_rating")
         private double predictedRating;
+
+        @JsonProperty("final_score")
+        private double finalScore;   // 최종 점수 추가
     }
 }
