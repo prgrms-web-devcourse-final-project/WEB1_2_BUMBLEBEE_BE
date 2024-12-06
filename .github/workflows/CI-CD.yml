@@ -13,10 +13,13 @@ jobs:
       - uses: actions/checkout@v3
 
       # main/resources에 기본 프로퍼티 파일 생성
-      - run: touch ./src/main/resources/application.properties
-      - run: echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.properties
+      - run: |
+          cd ./src/main/resources
+          touch ./src/main/resources/application.properties  # 파일 생성
+          echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.properties  # 파일에 내용 추가
 
-      # Docker Compose 빌드 및 실행
+
+        # Docker Compose 빌드 및 실행
       - name: Build and Start Python Server
         run: |
           cd .github
