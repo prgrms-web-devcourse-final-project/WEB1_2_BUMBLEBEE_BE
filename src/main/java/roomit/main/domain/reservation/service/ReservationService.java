@@ -33,6 +33,7 @@ import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.entity.value.WorkplaceName;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
+import roomit.main.global.rock.DistributedLock;
 import roomit.main.global.service.FileLocationService;
 
 @Slf4j
@@ -50,6 +51,7 @@ public class ReservationService {
     private final FileLocationService fileLocationService;
 
     // 예약 만드는 메서드
+    //@DistributedLock(key = "#studyRoomId + ':' + #request.startTime + ':' + #request.endTime")
     @Transactional
     public Long createReservation(Long memberId,Long studyRoomId,CreateReservationRequest request) {
         validateReservation(request.startTime(),request.endTime());
@@ -57,7 +59,7 @@ public class ReservationService {
         checkReservationTime(request.startTime(),request.endTime(),studyRoomId,ReservationState.ACTIVE,ReservationState.ON_HOLD);
 
         Member member = memberRepository.findById(memberId)
-            .orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
+                .orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
 
         StudyRoom studyRoom = studyRoomRepository.findByIdWithWorkplace(studyRoomId)
                 .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
@@ -223,27 +225,5 @@ public class ReservationService {
                     fileLocationService
             ))
             .toList();
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // 분산락 테스트 (분산락x)
-    @Transactional
-    public void createTestLockFalse(Long memberId,Long studyRoomId,CreateReservationRequest request) {
-
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
-
-        StudyRoom studyRoom = studyRoomRepository.findByIdWithWorkplace(studyRoomId)
-                .orElseThrow(ErrorCode.STUDYROOM_NOT_FOUND::commonException);
-
-        Reservation entity = request.toEntity(member, studyRoom);
-
-        boolean existsById = reservationRepository.existsById(entity.getReservationId());
-        if (existsById){
-            throw new IllegalArgumentException();
-        }
-
-        reservationRepository.save(entity);
     }
 }
