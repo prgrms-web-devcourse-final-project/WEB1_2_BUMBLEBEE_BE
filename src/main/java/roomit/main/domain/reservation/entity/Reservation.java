@@ -1,19 +1,7 @@
 package roomit.main.domain.reservation.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.PreRemove;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -143,6 +131,13 @@ public class Reservation extends BaseEntity{
     private void preRemove() {
         if (review != null) {
             review.changeReservation(null); // 리뷰와의 연결을 끊음
+        }
+    }
+
+    @PrePersist
+    private void defaultReservationState(){
+        if(reservationState == null){
+            changeReservationState(ReservationState.INITIAL);
         }
     }
 }
