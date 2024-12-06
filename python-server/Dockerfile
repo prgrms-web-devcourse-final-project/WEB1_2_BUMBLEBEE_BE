@@ -1,35 +1,55 @@
-# 공식 Python 런타임을 부모 이미지로 사용
 FROM python:3.9.13
 
-# 시스템 패키지 업데이트 및 필요한 빌드 도구 설치
+# Install system dependencies and build tools
 RUN apt-get update && apt-get install -y \
     gcc g++ libatlas-base-dev python3-dev build-essential \
-    libssl-dev libffi-dev
+    libssl-dev libffi-dev libblas-dev liblapack-dev gfortran && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# 컨테이너 내에서 작업 디렉토리 설정
+# Upgrade pip, setuptools, and wheel to the latest version
+RUN python -m pip install --upgrade pip setuptools wheel
+
+# Install numpy first as it is a build dependency for scikit-surprise
+RUN pip install --no-cache-dir numpy==1.21.6
+
+# Install cython first, as it’s needed for some packages to compile
+RUN pip install --no-cache-dir cython==0.29.35
+
+# Install scikit-learn and scipy
+RUN pip install --no-cache-dir scikit-learn==0.24.0 scipy==1.5.4
+
+# Install pandas and Flask dependencies
+RUN pip install --no-cache-dir pandas==1.1.5 Flask==2.2.3 Flask-Cors==3.0.0
+
+# Install werkzeug to ensure compatibility with Flask
+RUN pip install --no-cache-dir werkzeug==2.2.3
+
+# Install pymysql first to isolate potential issues
+RUN pip install --no-cache-dir pymysql==1.0.2
+
+# Install scikit-surprise with no binary wheel (forces source installation)
+RUN pip install --no-cache-dir --no-binary :all: scikit-surprise==1.1.0
+
+# Set the working directory to /app
 WORKDIR /app
 
-# 현재 디렉토리의 모든 파일을 /app 디렉토리에 복사
+# Copy only the necessary files first to optimize caching (avoid copying all files in one go)
+COPY requirements.txt /app/requirements.txt
+
+# Install dependencies from requirements.txt (if available)
+RUN pip install --no-cache-dir -r /app/requirements.txt
+
+# Copy the rest of the application files
 COPY . /app
 
-# collaborative_models 폴더를 컨테이너에 복사
-COPY ./collaborative_models /app/collaborative_models
-
-# pip 최신 버전으로 업그레이드
-RUN pip install --upgrade pip
-
-# Cython 0.29.x 버전 설치
-RUN pip install cython==0.29.35
-
-# requirements.txt에 지정된 패키지 설치
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Flask 앱 실행에 필요한 환경변수 설정
+# Set Flask environment variables
 ENV FLASK_APP=app.py
 ENV FLASK_RUN_HOST=0.0.0.0
+ENV FLASK_ENV=development
+# Change this to 'production' for production environment
 
-# 컨테이너 실행 시 Flask 애플리케이션 실행
-CMD ["flask", "run"]
-
-# 컨테이너가 실행될 포트 8070 노출
+# Expose the application port
 EXPOSE 8070
+
+# Command to run the Flask app
+CMD ["flask", "run", "--host=0.0.0.0", "--port=8070"]

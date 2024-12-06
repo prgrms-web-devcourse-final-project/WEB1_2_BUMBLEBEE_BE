@@ -1,4 +1,4 @@
 Flask==2.2.3
-Flask-Cors==3.1.1
+Flask-Cors>=2.0.0,<3.0.0
 pymysql==1.0.2
 scikit-surprise==1.1.1

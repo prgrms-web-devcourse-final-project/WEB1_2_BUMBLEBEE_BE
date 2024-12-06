@@ -7,19 +7,16 @@ from decimal import Decimal
 # 연령대별로 학습된 모델 로드
 models = {}
 age_groups = [10, 20, 30, 40]  # 10대, 20대, 30대, 40대 모델 로드
-
-import os
-
 import os
 
 for age_group in age_groups:
     try:
-        # 모델 파일 경로를 /app/collaborative_models 디렉토리로 수정
         model_path = os.path.join('/app/collaborative_models', f'collaborative_model_{age_group}s.pkl')
+        print(f"Trying to load model from: {model_path}")  # 디버깅 로그 추가
 
-        # 파일을 열고 모델을 로드
         with open(model_path, 'rb') as f:
             models[age_group] = pickle.load(f)
+        print(f"Model for age group {age_group}s loaded successfully.")  # 모델 로드 성공 로그 추가
     except FileNotFoundError:
         print(f"Model for age group {age_group}s not found at {model_path}. Skipping...")
 
