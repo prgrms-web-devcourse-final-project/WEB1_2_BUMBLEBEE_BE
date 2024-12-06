@@ -53,6 +53,8 @@ public interface WorkplaceRepository extends JpaRepository<Workplace, Long> {
         POINT(ST_X(w.location), ST_Y(w.location)),
         POINT(:longitude, :latitude)
     ) <= :maxDistance
-    """, nativeQuery = true)
+    ORDER BY distance ASC
+""", nativeQuery = true)
     List<Object[]> findNearbyWorkplaces(double longitude, double latitude, double maxDistance);
+
 }
