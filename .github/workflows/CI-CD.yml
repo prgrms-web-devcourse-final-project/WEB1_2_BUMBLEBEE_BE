@@ -71,9 +71,6 @@ jobs:
       # EC2에 파일 복사 (docker-compose.yml과 python-server 디렉토리)
       - name: Copy docker-compose.yml and python-server to EC2
         run: |
-          # docker-compose.yml 파일 복사
-          scp -i /tmp/ssh-key.pem -o StrictHostKeyChecking=no ./docker-compose.yml ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/Docker/
-          
           # python-server 디렉토리 복사 (-r 옵션을 사용하여 디렉토리 복사)
           scp -i /tmp/ssh-key.pem -o StrictHostKeyChecking=no -r ./python-server ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/Docker/
 

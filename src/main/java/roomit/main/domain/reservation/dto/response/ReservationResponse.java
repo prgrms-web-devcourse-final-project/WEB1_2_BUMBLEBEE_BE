@@ -34,7 +34,7 @@ public record ReservationResponse (
                 reservation.getStartTime(),
                 reservation.getEndTime(),
                 reservation.getReservationCapacity(),
-                studyRoom.getPrice(),
+                reservation.getReservationPrice(),
                 reservation.getReview() != null,
                 reservation.getReservationState()
 
