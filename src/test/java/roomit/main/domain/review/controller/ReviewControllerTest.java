@@ -354,7 +354,6 @@ class ReviewControllerTest {
 
         mockMvc.perform(get("/api/v1/review/workplace/{workplaceId}",workplace.getWorkplaceId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer " + token)
                 )
                 .andExpect(jsonPath("$.data[9].reviewContent").value("치킨이 안보이네요..11"))
                 .andExpect(status().isOk())
