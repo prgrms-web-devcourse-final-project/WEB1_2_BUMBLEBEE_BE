@@ -64,7 +64,12 @@ public class WorkplaceService {
                 request.bottomLeft().getLongitude().doubleValue(), request.bottomLeft().getLatitude().doubleValue()
         );
 
+        log.info(area);
+
         List<Object[]> results = workplaceRepository.findAllWithinArea(referencePoint, area);
+
+        log.info(""+results.get(0)[6]);
+        log.info(""+results.get(0)[7]);
 
         return results.stream()
                 .map(result -> {

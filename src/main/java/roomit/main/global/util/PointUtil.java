@@ -13,7 +13,7 @@ public class PointUtil {
     @Value("${gis.srid}")
     private static int srid;
 
-    public static Point createPoint(double latitude, double longitude) {
+    public static Point createPoint(double longitude, double latitude) {
         Point point = GEOMETRY_FACTORY.createPoint(new Coordinate(longitude, latitude));
         point.setSRID(srid); // 주입받은 SRID 값 설정
         return point;
