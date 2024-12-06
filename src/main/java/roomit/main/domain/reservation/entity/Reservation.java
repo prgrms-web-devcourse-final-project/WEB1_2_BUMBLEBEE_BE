@@ -133,11 +133,4 @@ public class Reservation extends BaseEntity{
             review.changeReservation(null); // 리뷰와의 연결을 끊음
         }
     }
-
-    @PrePersist
-    private void defaultReservationState(){
-        if(reservationState == null){
-            changeReservationState(ReservationState.INITIAL);
-        }
-    }
 }
