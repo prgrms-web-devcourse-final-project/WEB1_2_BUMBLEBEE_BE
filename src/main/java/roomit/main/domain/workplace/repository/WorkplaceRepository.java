@@ -43,16 +43,16 @@ public interface WorkplaceRepository extends JpaRepository<Workplace, Long> {
     void updateRatingAndCount(@Param("rating") Long rating, @Param("workplaceId") Long workplaceId);
 
     @Query(value = """
-        SELECT w.workplace_id,
-               ST_Distance_Sphere(
-                   point(w.workplace_longitude, w.workplace_latitude),
-                   point(:longitude, :latitude)
-               ) AS distance
-        FROM workplace w
-        WHERE ST_Distance_Sphere(
-            point(w.workplace_longitude, w.workplace_latitude),
-            point(:longitude, :latitude)
-        ) <= :maxDistance
+    SELECT w.workplace_id,
+           ST_Distance_Sphere(
+               POINT(ST_X(w.location), ST_Y(w.location)),
+               POINT(:longitude, :latitude)
+           ) AS distance
+    FROM workplace w
+    WHERE ST_Distance_Sphere(
+        POINT(ST_X(w.location), ST_Y(w.location)),
+        POINT(:longitude, :latitude)
+    ) <= :maxDistance
     """, nativeQuery = true)
     List<Object[]> findNearbyWorkplaces(double longitude, double latitude, double maxDistance);
 }

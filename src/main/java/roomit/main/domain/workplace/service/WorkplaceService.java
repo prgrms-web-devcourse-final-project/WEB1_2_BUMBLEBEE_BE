@@ -3,7 +3,6 @@ package roomit.main.domain.workplace.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,6 @@ import roomit.main.domain.workplace.dto.response.WorkplaceCreateResponse;
 import roomit.main.domain.workplace.dto.response.WorkplaceDetailResponse;
 import roomit.main.domain.workplace.dto.response.WorkplaceResponse;
 import roomit.main.domain.workplace.entity.Workplace;
-import roomit.main.global.util.PointUtil;
 import roomit.main.domain.workplace.entity.value.WorkplaceAddress;
 import roomit.main.domain.workplace.entity.value.WorkplaceName;
 import roomit.main.domain.workplace.entity.value.WorkplacePhoneNumber;
@@ -39,6 +37,7 @@ import roomit.main.global.error.ErrorCode;
 import roomit.main.global.exception.CommonException;
 import roomit.main.global.service.FileLocationService;
 import roomit.main.global.service.ImageService;
+import roomit.main.global.util.PointUtil;
 
 @Service
 @RequiredArgsConstructor
@@ -68,8 +67,9 @@ public class WorkplaceService {
 
         List<Object[]> results = workplaceRepository.findAllWithinArea(referencePoint, area);
 
-        log.info(""+results.get(0)[6]);
-        log.info(""+results.get(0)[7]);
+        if (results.isEmpty()) {
+            return new ArrayList<>();
+        }
 
         return results.stream()
                 .map(result -> {
