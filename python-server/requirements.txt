@@ -1,0 +1,4 @@
+Flask==2.2.3
+Flask-Cors==3.1.1
+pymysql==1.0.2
+scikit-surprise==1.1.1

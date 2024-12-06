@@ -1,0 +1,50 @@
+# 워크플로우의 이름 지정
+name: CI/CD
+
+# 워크플로가 시작될 조건 지정
+on:
+  push:
+    branches: [ release ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      # main/resources에 기본 프로퍼티 파일 생성
+      - run: touch ./src/main/resources/application.properties
+      - run: echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.properties
+
+      # Docker Compose 빌드 및 실행
+      - name: Build and Start Python Server
+        run: |
+          cd .github
+          docker-compose up --build -d python-server  # python-server만 실행
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew clean build -x test
+
+      - name: Get current time
+        uses: josStorer/get-current-time@v2
+        id: current-time
+        with:
+          format: YYYY-MM-DDTHH-mm-ss
+          utcOffset: "+09:00"
+
+      - name: Set artifact
+        run: echo "artifact=$(ls ./build/libs/*.jar)" >> $GITHUB_ENV
+
+      - name: Beanstalk Deploy
+        uses: einaregilsson/beanstalk-deploy@v20
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: bumblebee-final
+          environment_name: Bumblebee-final-env
+          version_label: github-action-${{ steps.current-time.outputs.formattedTime }}
+          region: ap-northeast-2
+          deployment_package: ./build/libs/${{ env.artifact }}

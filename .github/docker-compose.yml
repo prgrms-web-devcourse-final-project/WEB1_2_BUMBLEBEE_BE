@@ -1,6 +1,9 @@
+version: '3.7'
+
 networks:
   k6:
   grafana:
+  default:
 
 services:
   influxdb:
@@ -32,7 +35,18 @@ services:
       - k6
     ports:
       - "6565:6565"
-    environment:
-      - K6_OUT=influxdb=http://influxdb:8086/k6
     volumes:
       - C:/Git/WEB1_2_BUMBLEBEE_BE/.github/k6-scripts:/scripts
+    command: ["sleep", "infinity"]  # 기본 실행을 비활성화
+
+  python-server:
+    build:
+      context: ./python-server
+    networks:
+      - default
+    ports:
+      - "8070:8070"
+    volumes:
+      - ./python-server:/app
+    environment:
+      - FLASK_APP=app.py
