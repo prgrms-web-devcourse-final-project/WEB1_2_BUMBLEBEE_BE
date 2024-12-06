@@ -13,8 +13,10 @@ import roomit.main.domain.notification.dto.ResponseNotificationDto;
 import roomit.main.domain.notification.dto.ResponseNotificationReservationDto;
 import roomit.main.domain.notification.entity.Notification;
 import roomit.main.domain.notification.entity.NotificationType;
+import roomit.main.domain.notification.entity.ReservationNotification;
 import roomit.main.domain.notification.repository.EmitterRepository;
 import roomit.main.domain.notification.repository.NotificationRepository;
+import roomit.main.domain.notification.repository.ReservationNotificationRepository;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
@@ -39,6 +41,8 @@ public class NotificationService {
     private final BusinessRepository businessRepository;
 
     private final WorkplaceRepository workplaceRepository;
+
+    private final ReservationNotificationRepository reservationNotificationRepository;
 
     private static final long DEFAULT_TIMEOUT = 30 * 60 * 1000L; // 30분으로 변경
 
@@ -102,19 +106,18 @@ public class NotificationService {
 
     }
     // 예약
-    public  void customNotifyReservation(Long businessId, ResponseNotificationReservationDto responseNotificationReservationDto) {
+    public  void customNotifyReservation(Long businessId, ResponseNotificationReservationDto responseNotificationReservationDto, Long price) {
 
         Business business = businessRepository.findById(businessId).get();
 
-        Notification notification = Notification.builder()
+        ReservationNotification reservationNotification = ReservationNotification.builder()
                 .business(business)
+                .price(price)
                 .content(responseNotificationReservationDto.getContent())
                 .notificationType(responseNotificationReservationDto.getNotificationType())
                 .build();
 
-        notification.setPrice(responseNotificationReservationDto.getPrice());
-
-        notificationRepository.save(notification);
+        reservationNotificationRepository.save(reservationNotification);
 
         cacheEvent(businessId, responseNotificationReservationDto);
         SseEmitter sseEmitter = emitterRepository.get(businessId);
@@ -184,13 +187,13 @@ public class NotificationService {
     }
 
     @Transactional
-    public List<ResponseNotificationReservationDto> getNotificationsReservation(Long businessId, Long workplaceID, Long price) {
+    public List<ResponseNotificationReservationDto> getNotificationsReservation(Long businessId, Long workplaceID) {
 
 
-        List<Notification> notifications = notificationRepository.findNotificationsByBusinessId(businessId);
+        List<ReservationNotification> notifications = reservationNotificationRepository.findNotificationsByBusinessId(businessId);
 
         return notifications.stream()
-                .map(notification -> ResponseNotificationReservationDto.fromEntityReservation(notification, workplaceID, price))  // Notification -> NotificationDto 변환
+                .map(notification -> ResponseNotificationReservationDto.fromEntityReservation(notification, workplaceID))  // Notification -> NotificationDto 변환
                 .collect(Collectors.toList());
     }
 }
