@@ -42,9 +42,15 @@ public class NotificationService {
 
         emitterRepository.save(businessId, emitter);
 
-        Map<String, Object> testContent = new HashMap<>();
-        testContent.put("content", "connected!");
-        sendToClient(emitter, businessId, testContent);
+        Object cachedEvent = emitterRepository.getEventCache(businessId);
+        if(cachedEvent != null){
+            sendToClient(emitter, businessId, cachedEvent);
+        } else {
+            Map<String, Object> testContent = new HashMap<>();
+            testContent.put("content", "connected!");
+            sendToClient(emitter, businessId, testContent);
+        }
+
         emitter.onError((ex) -> {
             log.error("SSE connection error for businessId={}: {}", businessId, ex.getMessage());
             emitterRepository.deleteById(businessId);
@@ -66,7 +72,23 @@ public class NotificationService {
 
         return emitter;
     }
+    // 다른 서비스에서 사용되는 알림
+    public <T> void customNotify(Long businessId, T data) {
+        cacheEvent(businessId, data);
+        SseEmitter sseEmitter = emitterRepository.get(businessId);
+        if(sseEmitter != null){
+            sendToClient(businessId, data);
+        }
 
+    }
+    /**
+     * 이벤트 캐싱 저장
+     */
+    private void cacheEvent(Long businessId, Object data) {
+        emitterRepository.saveEventCache(businessId, data);
+    }
+
+    // 맨처음 구독시 오는곳
     private void sendToClient(SseEmitter emitter, Long emitterId, Object data) {
         try {
             emitter.send(SseEmitter.event()
@@ -80,16 +102,22 @@ public class NotificationService {
         }
     }
 
-    public void notify(Long businessId, ResponseNotificationDto notificationDTO) {
-        SseEmitter emitter = emitterRepository.get(businessId);
+    private <T> void sendToClient(Long userId, T data) {
+        SseEmitter emitter = emitterRepository.get(userId);
         if (emitter != null) {
-            sendToClient(emitter, businessId, notificationDTO);
-        } else {
-            log.warn("No active SSE connection for memberId: {}", businessId);
+            try {
+                emitter.send(SseEmitter.event()
+                        .id(String.valueOf(userId))
+                        .data(data));
+                log.info("sendToClient emitterId={} data={} ", userId, data);
+            } catch (IOException e) {
+                emitterRepository.deleteById(userId);
+                emitter.completeWithError(e);
+            }
         }
     }
 
-    @Scheduled(fixedRate = 60000) // 1분 간격
+    @Scheduled(fixedRate = 30000)// 30초 간격
     public void cleanUpExpiredEmitters() {
         emitterRepository.getAll().forEach((businessId, emitter) -> {
             try {
