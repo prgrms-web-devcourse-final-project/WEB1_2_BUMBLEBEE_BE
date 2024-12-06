@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 import roomit.main.domain.notification.entity.Notification;
 import roomit.main.domain.notification.entity.NotificationType;
+import roomit.main.domain.notification.entity.ReservationNotification;
 
 import java.time.LocalDateTime;
 
@@ -22,19 +23,18 @@ public class ResponseNotificationReservationDto {
     private Long price;
 
     @Builder
-    public ResponseNotificationReservationDto(Notification notification, Long workplaceId, Long price) {
+    public ResponseNotificationReservationDto(ReservationNotification notification, Long workplaceId) {
         this.content = notification.getContent();
         this.createdAt = notification.getCreatedAt();
         this.workplaceId = workplaceId;
         this.notificationType = notification.getNotificationType();
-        this.price = price;
+        this.price = notification.getPrice();
     }
 
-    public static ResponseNotificationReservationDto fromEntityReservation(Notification notification, Long workplaceId, Long price) {
+    public static ResponseNotificationReservationDto fromEntityReservation(ReservationNotification reservationNotification, Long workplaceId) {
         return new ResponseNotificationReservationDto(
-                notification,
-                workplaceId,
-                price
+                reservationNotification,
+                workplaceId
         );
     }
 }
