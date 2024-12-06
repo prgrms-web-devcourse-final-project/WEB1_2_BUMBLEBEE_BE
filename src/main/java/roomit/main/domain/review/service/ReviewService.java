@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Objects;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,6 +73,7 @@ public class ReviewService {
         reviewRepository.save(review);
 
         alrim(workPlace);
+
     }
 
     public void alrim(Workplace workplace){
@@ -91,7 +91,7 @@ public class ReviewService {
                 .workplaceId(workplace.getWorkplaceId())
                 .build();
 
-        notificationService.notify(
+        notificationService.customNotify(
                 business.getBusinessId(),
                 responseNotificationDto
         );

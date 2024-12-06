@@ -39,7 +39,7 @@ public class Notification {
     @Builder
     public Notification(Business business, NotificationType notificationType, String content, String url) {
         this.business = business;
-        this.notificationType = NotificationType.REVIEW_CREATED;
+        this.notificationType = NotificationType.valueOf(notificationType.name());
         this.content = new NotificationContent(content);
         this.url = new RelatedUrl(url);
         this.isRead = false;
