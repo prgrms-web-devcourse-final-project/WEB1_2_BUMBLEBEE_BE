@@ -44,7 +44,6 @@ public class PaymentsService {
     private final PaymentsRepository paymentsRepository;
     private final ReservationRepository reservationRepository;
     private final PaymentsConfig paymentsConfig;
-    private final MemberNotificationService memberNotificationService;
     private final NotificationService notificationService;
     private final MemberRepository memberRepository;
 
@@ -123,7 +122,7 @@ public class PaymentsService {
                 .notification(notification)
                 .build();
 
-        memberNotificationService.customNotifyReservationMember(
+        notificationService.customNotifyReservationMember(
                 member.getMemberId(),
                 responseNotificationDto,
                 notification.getPrice()

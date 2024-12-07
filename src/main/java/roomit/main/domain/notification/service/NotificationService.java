@@ -14,6 +14,7 @@ import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.member.repository.MemberRepository;
 import roomit.main.domain.notification.dto.ResponseNotificationDto;
 import roomit.main.domain.notification.dto.ResponseNotificationReservationDto;
+import roomit.main.domain.notification.dto.ResponseNotificationReservationMemberDto;
 import roomit.main.domain.notification.entity.MemberNotification;
 import roomit.main.domain.notification.entity.Notification;
 import roomit.main.domain.notification.repository.EmitterRepository;
@@ -37,6 +38,10 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     private final BusinessRepository businessRepository;
+
+    private final MemberRepository memberRepository;
+
+    private final MemberNotificationRepository memberNotificationRepository;
 
     private static final long DEFAULT_TIMEOUT = 30 * 60 * 1000L; // 30분으로 변경
 
@@ -163,6 +168,28 @@ public class NotificationService {
             }
         });
     }
+
+    public void customNotifyReservationMember(Long memberId, ResponseNotificationReservationMemberDto responseNotificationReservationDto, Long price) {
+
+        Member member = memberRepository.findById(memberId).get();
+
+        MemberNotification memberNotification = MemberNotification.builder()
+                .member(member)
+                .workplaceId(responseNotificationReservationDto.getWorkplaceId())
+                .content(responseNotificationReservationDto.getContent())
+                .notificationType(responseNotificationReservationDto.getNotificationType())
+                .price(price)
+                .build();
+
+        memberNotificationRepository.save(memberNotification);
+
+        cacheEvent(memberId, responseNotificationReservationDto);
+        SseEmitter sseEmitter = emitterRepository.get(memberId);
+        if (sseEmitter != null) {
+            sendToClient(memberId, responseNotificationReservationDto);
+        }
+    }
+
 
     @Transactional
     public List<ResponseNotificationDto> getNotifications(Long businessId) {

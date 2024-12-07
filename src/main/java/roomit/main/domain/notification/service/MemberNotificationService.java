@@ -39,46 +39,6 @@ public class MemberNotificationService {
     private final MemberRepository memberRepository;
 
     // 멤버 예약 알림
-    public void customNotifyReservationMember(Long memberId, ResponseNotificationReservationMemberDto responseNotificationReservationDto, Long price) {
-
-        Member member = memberRepository.findById(memberId).get();
-
-        MemberNotification memberNotification = MemberNotification.builder()
-                .member(member)
-                .workplaceId(responseNotificationReservationDto.getWorkplaceId())
-                .content(responseNotificationReservationDto.getContent())
-                .notificationType(responseNotificationReservationDto.getNotificationType())
-                .price(price)
-                .build();
-
-        memberNotificationRepository.save(memberNotification);
-
-        cacheEvent(memberId, responseNotificationReservationDto);
-        SseEmitter sseEmitter = emitterRepository.get(memberId);
-        if (sseEmitter != null) {
-            sendToClient(memberId, responseNotificationReservationDto);
-        }
-    }
-
-    private void cacheEvent(Long businessId, Object data) {
-        emitterRepository.saveEventCache(businessId, data);
-    }
-
-    private <T> void sendToClient(Long userId, T data) {
-        SseEmitter emitter = emitterRepository.get(userId);
-        if (emitter != null) {
-            try {
-                emitter.send(SseEmitter.event()
-                        .id(String.valueOf(userId))
-                        .data(data));
-                log.info("sendToClient emitterId={} data={} ", userId, data);
-            } catch (IOException e) {
-                emitterRepository.deleteById(userId);
-                emitter.completeWithError(e);
-            }
-        }
-    }
-
     @Scheduled(fixedRate = 30000)// 30초 간격
     public void cleanUpExpiredEmitters() {
         emitterRepository.getAll().forEach((businessId, emitter) -> {
