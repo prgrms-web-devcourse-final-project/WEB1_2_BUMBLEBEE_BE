@@ -17,7 +17,7 @@ import roomit.main.domain.member.repository.MemberRepository;
 import roomit.main.global.oauth2.dto.KakaoResponse;
 import roomit.main.global.oauth2.dto.NaverResponse;
 import roomit.main.global.oauth2.dto.OAuth2Response;
-import roomit.main.global.oauth2.dto.PROVIDER;
+import roomit.main.global.oauth2.dto.Provider;
 
 @Service
 @RequiredArgsConstructor
@@ -33,13 +33,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             String registrationId = userRequest.getClientRegistration().getRegistrationId();
 
-            OAuth2Response oAuth2Response = switch (PROVIDER.valueOf(registrationId.toUpperCase())) {
+            OAuth2Response oAuth2Response = switch (Provider.valueOf(registrationId.toUpperCase())) {
                 case NAVER -> new NaverResponse(oAuth2User.getAttributes());
                 case KAKAO -> new KakaoResponse(oAuth2User.getAttributes());
                 default -> null;
             };
 
-            PROVIDER provider = oAuth2Response.getProvider(); //NAVER,KAKAO
+            Provider provider = oAuth2Response.getProvider(); //NAVER,KAKAO
             String nickname = oAuth2Response.getNickname(); //닉네임 = 이중호,홍길동 등등
             Member existData = memberRepository.findByMemberNickNameAndProvider(nickname, provider);
         if (existData == null){

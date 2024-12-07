@@ -26,7 +26,7 @@ import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.member.entity.Role;
 import roomit.main.domain.member.entity.Sex;
 import roomit.main.domain.member.service.CustomMemberDetailsService;
-import roomit.main.global.oauth2.dto.PROVIDER;
+import roomit.main.global.oauth2.dto.Provider;
 
 @RequiredArgsConstructor
 @Log4j2
@@ -97,7 +97,7 @@ public class JWTFilter extends OncePerRequestFilter {
                         .memberSex(Sex.MALE)
                         .memberRole(Role.ROLE_USER)
                         .memberPhoneNumber("010-1111-2222")
-                        .provider(PROVIDER.BASIC)
+                        .provider(Provider.BASIC)
                         .passwordEncoder(passwordEncoder)
                         .build();
                 principal = customMemberDetailsService.loadUserByUsername(member.getMemberEmail());

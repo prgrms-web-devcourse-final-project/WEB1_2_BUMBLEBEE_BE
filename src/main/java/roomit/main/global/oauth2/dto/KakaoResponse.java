@@ -21,8 +21,8 @@ public class KakaoResponse implements OAuth2Response {
     }
 
     @Override
-    public PROVIDER getProvider() {
-        return PROVIDER.KAKAO;
+    public Provider getProvider() {
+        return Provider.KAKAO;
     }
 
     @Override

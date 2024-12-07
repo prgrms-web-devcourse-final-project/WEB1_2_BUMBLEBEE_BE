@@ -1,6 +1,6 @@
 package roomit.main.global.oauth2.dto;
 
-public enum PROVIDER {
+public enum Provider {
     NAVER,
     KAKAO,
     BASIC

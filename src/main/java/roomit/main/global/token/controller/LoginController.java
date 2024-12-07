@@ -26,6 +26,7 @@ public class LoginController {
         return tokenService.memberLogin(loginRequest,response);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login/business")
     public LoginResponse businessLogin(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         return tokenService.businessLogin(loginRequest,response);
