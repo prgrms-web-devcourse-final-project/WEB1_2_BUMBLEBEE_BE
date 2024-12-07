@@ -144,7 +144,7 @@ public class SpringSecurityConfig {
                         .requestMatchers("/toss/**").permitAll()
                         .requestMatchers("/api/subscribe/**").permitAll()
 
-                        .requestMatchers("/api/v1/recommend/**").permitAll()
+                        .requestMatchers("/api/v1/recommend/**").hasRole("USER")
 
                         //PresignedURL
                         .requestMatchers(HttpMethod.GET,"/api/generate-presigned-url").hasRole("BUSINESS")
