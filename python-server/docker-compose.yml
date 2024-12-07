@@ -34,7 +34,7 @@ services:
     ports:
       - "6565:6565"
     volumes:
-      - C:\Git\WEB1_2_BUMBLEBEE_BE\.github\k6-scripts:/scripts  # 상대 경로로 수정 (Windows라면, 경로 형식 주의)
+      - /k6-scripts:/scripts  # 상대 경로로 수정 (Windows라면, 경로 형식 주의)
     command: [ "run", "/scripts/test-script.js" ]
 
   python-server:

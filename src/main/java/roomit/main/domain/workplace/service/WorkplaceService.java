@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -54,7 +55,7 @@ public class WorkplaceService {
 
     public List<WorkplaceAllResponse> readAllWorkplaces(WorkplaceGetRequest request) {
         String referencePoint = String.format("POINT(%f %f)", request.longitude(), request.latitude());
-        log.info("Reading all workplaces from {}", referencePoint);
+        log.info("현재위치 {}", referencePoint);
         String area = String.format(
                 "POLYGON((%f %f, %f %f, %f %f, %f %f, %f %f))",
                 request.bottomLeft().getLongitude().doubleValue(), request.bottomLeft().getLatitude().doubleValue(),
@@ -64,18 +65,13 @@ public class WorkplaceService {
                 request.bottomLeft().getLongitude().doubleValue(), request.bottomLeft().getLatitude().doubleValue()
         );
 
-        log.info(area);
-
         List<Object[]> results = workplaceRepository.findAllWithinArea(referencePoint, area);
-
-        if (results.isEmpty()) {
-            return new ArrayList<>();
-        }
 
         return results.stream()
                 .map(result -> {
                     double starSum = ((Number) result[4]).doubleValue();
                     long reviewCount = ((Number) result[5]).longValue();
+
                     return new WorkplaceAllResponse(
                             ((Number) result[0]).longValue(),
                             (String) result[1],
@@ -268,12 +264,10 @@ public class WorkplaceService {
         // 2. 좌표와 거리 기반으로 Workplace 조회
         List<DistanceWorkplaceResponse> results = workplaceRepository.findNearbyWorkplaces(longitude, latitude, maxDistance);
 
-        DecimalFormat df = new DecimalFormat("#.##"); // 소수점 2자리 포맷
-
         return results.stream()
             .map(result -> new DistanceWorkplaceResponse(
                 result.workplaceId(), // workplaceId
-                Double.valueOf(df.format(result.distance() / 1000)) // distance
+                result.distance()
             ))
             .collect(Collectors.toList());
     }
