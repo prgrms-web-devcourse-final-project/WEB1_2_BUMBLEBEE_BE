@@ -58,11 +58,11 @@ public class WorkplaceService {
         log.info("현재위치 {}", referencePoint);
         String area = String.format(
                 "POLYGON((%f %f, %f %f, %f %f, %f %f, %f %f))",
-                request.bottomLeft().getLongitude().doubleValue(), request.bottomLeft().getLatitude().doubleValue(),
-                request.topRight().getLongitude().doubleValue(), request.bottomLeft().getLatitude().doubleValue(),
-                request.topRight().getLongitude().doubleValue(), request.topRight().getLatitude().doubleValue(),
-                request.bottomLeft().getLongitude().doubleValue(), request.topRight().getLatitude().doubleValue(),
-                request.bottomLeft().getLongitude().doubleValue(), request.bottomLeft().getLatitude().doubleValue()
+                request.bottomLeft().getLongitude(), request.bottomLeft().getLatitude(),
+                request.topRight().getLongitude(), request.bottomLeft().getLatitude(),
+                request.topRight().getLongitude(), request.topRight().getLatitude(),
+                request.bottomLeft().getLongitude(), request.topRight().getLatitude(),
+                request.bottomLeft().getLongitude(), request.bottomLeft().getLatitude()
         );
 
         List<Object[]> results = workplaceRepository.findAllWithinArea(referencePoint, area);
