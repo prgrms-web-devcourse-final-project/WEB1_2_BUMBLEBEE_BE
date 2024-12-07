@@ -40,13 +40,16 @@ public class Notification {
 
     private Long price;
 
+    private Long workplaceId;
+
     @Builder
-    public Notification(Business business, NotificationType notificationType, String content, Long price) {
+    public Notification(Business business, NotificationType notificationType, String content, Long price, Long workplaceId) {
         this.business = business;
         this.notificationType = NotificationType.valueOf(notificationType.name());
         this.content = new NotificationContent(content);
         this.createdAt = LocalDateTime.now();
         this.price = price;
+        this.workplaceId = workplaceId;
     }
 
     public String getContent(){

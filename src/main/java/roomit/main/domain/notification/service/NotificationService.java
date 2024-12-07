@@ -9,10 +9,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.business.repository.BusinessRepository;
+import roomit.main.domain.member.dto.request.MemberUpdateRequest;
+import roomit.main.domain.member.entity.Member;
+import roomit.main.domain.member.repository.MemberRepository;
 import roomit.main.domain.notification.dto.ResponseNotificationDto;
 import roomit.main.domain.notification.dto.ResponseNotificationReservationDto;
+import roomit.main.domain.notification.entity.MemberNotification;
 import roomit.main.domain.notification.entity.Notification;
 import roomit.main.domain.notification.repository.EmitterRepository;
+import roomit.main.domain.notification.repository.MemberNotificationRepository;
 import roomit.main.domain.notification.repository.NotificationRepository;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
@@ -35,39 +40,43 @@ public class NotificationService {
 
     private final WorkplaceRepository workplaceRepository;
 
+    private final MemberNotificationRepository memberNotificationRepository;
+
+    private final MemberRepository memberRepository;
+
     private static final long DEFAULT_TIMEOUT = 30 * 60 * 1000L; // 30분으로 변경
 
 
-    public SseEmitter subscribe(Long businessId) {
+    public SseEmitter subscribe(Long id) {
 
 
         SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
 
-        emitterRepository.save(businessId, emitter);
+        emitterRepository.save(id, emitter);
 
-        Object cachedEvent = emitterRepository.getEventCache(businessId);
+        Object cachedEvent = emitterRepository.getEventCache(id);
         if (cachedEvent != null) {
-            sendToClient(emitter, businessId, cachedEvent);
+            sendToClient(emitter, id, cachedEvent);
         } else {
             Map<String, Object> testContent = new HashMap<>();
-            testContent.put("content", "connected!");
-            sendToClient(emitter, businessId, testContent);
+            testContent.put("Bsiness subscribe content", "connected!");
+            sendToClient(emitter, id, testContent);
         }
 
         emitter.onError((ex) -> {
-            log.error("SSE connection error for businessId={}: {}", businessId, ex.getMessage());
-            emitterRepository.deleteById(businessId);
+            log.error("SSE connection error for businessId={}: {}", id, ex.getMessage());
+            emitterRepository.deleteById(id);
         });
 
         emitter.onCompletion(() -> {
-            log.info("SSE connection completed for businessId={}", businessId);
-            emitterRepository.deleteById(businessId);
+            log.info("SSE connection completed for businessId={}", id);
+            emitterRepository.deleteById(id);
         });
 
         emitter.onTimeout(() -> {
-            log.warn("SSE connection timeout for businessId={}", businessId);
+            log.warn("SSE connection timeout for businessId={}", id);
             emitter.complete();
-            emitterRepository.deleteById(businessId);
+            emitterRepository.deleteById(id);
         });
 
 //        sendToClient(emitter, Long.valueOf(emitterId), "EventStream Created. [memberId=" + businessId + "]");
@@ -76,6 +85,20 @@ public class NotificationService {
         return emitter;
     }
 
+    private <T> void sendToClient(Long userId, T data) {
+        SseEmitter emitter = emitterRepository.get(userId);
+        if (emitter != null) {
+            try {
+                emitter.send(SseEmitter.event()
+                        .id(String.valueOf(userId))
+                        .data(data));
+                log.info("sendToClient emitterId={} data={} ", userId, data);
+            } catch (IOException e) {
+                emitterRepository.deleteById(userId);
+                emitter.completeWithError(e);
+            }
+        }
+    }
     // 리뷰
     public void customNotify(Long businessId, ResponseNotificationDto responseNotificationDto) {
 
@@ -85,6 +108,7 @@ public class NotificationService {
                 .business(business)
                 .content(responseNotificationDto.getContent())
                 .notificationType(responseNotificationDto.getNotificationType())
+                .workplaceId(responseNotificationDto.getWorkplaceId())
                 .build();
 
         notificationRepository.save(notification);
@@ -94,19 +118,18 @@ public class NotificationService {
         if (sseEmitter != null) {
             sendToClient(businessId, responseNotificationDto);
         }
-
     }
 
-    // 예약
-    public void customNotifyReservation(Long businessId, ResponseNotificationReservationDto responseNotificationReservationDto, Long price) {
+    // 사업자 예약
+    public void customNotifyReservation(Long businessId, ResponseNotificationReservationDto responseNotificationReservationDto) {
 
         Business business = businessRepository.findById(businessId).get();
 
         Notification reservationNotification = Notification.builder()
                 .business(business)
+                .workplaceId(responseNotificationReservationDto.getWorkplaceId())
                 .content(responseNotificationReservationDto.getContent())
                 .notificationType(responseNotificationReservationDto.getNotificationType())
-                .price(price)
                 .build();
 
         notificationRepository.save(reservationNotification);
@@ -117,6 +140,8 @@ public class NotificationService {
             sendToClient(businessId, responseNotificationReservationDto);
         }
     }
+
+
 
     /**
      * 이벤트 캐싱 저장
@@ -139,21 +164,6 @@ public class NotificationService {
         }
     }
 
-    private <T> void sendToClient(Long userId, T data) {
-        SseEmitter emitter = emitterRepository.get(userId);
-        if (emitter != null) {
-            try {
-                emitter.send(SseEmitter.event()
-                        .id(String.valueOf(userId))
-                        .data(data));
-                log.info("sendToClient emitterId={} data={} ", userId, data);
-            } catch (IOException e) {
-                emitterRepository.deleteById(userId);
-                emitter.completeWithError(e);
-            }
-        }
-    }
-
     @Scheduled(fixedRate = 30000)// 30초 간격
     public void cleanUpExpiredEmitters() {
         emitterRepository.getAll().forEach((businessId, emitter) -> {
@@ -167,23 +177,23 @@ public class NotificationService {
     }
 
     @Transactional
-    public List<ResponseNotificationDto> getNotifications(Long businessId, Long workplaceID) {
+    public List<ResponseNotificationDto> getNotifications(Long businessId) {
 
 
         List<Notification> notifications = notificationRepository.findNotificationsByBusinessId(businessId);
 
         return notifications.stream()
-                .map(notification -> ResponseNotificationDto.fromEntity(notification, workplaceID))  // Notification -> NotificationDto 변환
+                .map(ResponseNotificationDto::fromEntity)  // Notification -> NotificationDto 변환
                 .toList();
     }
 
     @Transactional
-    public List<ResponseNotificationReservationDto> getNotificationsReservation(Long businessId, Long workplaceID) {
+    public List<ResponseNotificationReservationDto> getNotificationsReservation(Long businessId) {
 
         List<Notification> notifications = notificationRepository.findNotificationsByBusinessId(businessId);
 
         return notifications.stream()
-                .map(notification -> ResponseNotificationReservationDto.fromEntityReservation(notification, workplaceID))  // Notification -> NotificationDto 변환
+                .map(ResponseNotificationReservationDto::fromEntityReservation)  // Notification -> NotificationDto 변환
                 .toList();
     }
 }
