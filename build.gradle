@@ -71,6 +71,12 @@ dependencies {
     implementation 'org.hibernate:hibernate-spatial:6.5.3.Final' // Hibernate Core와 동일한 버전
     implementation group: 'org.locationtech.jts', name: 'jts-core', version: '1.19.0'
 
+    // Apache Commons
+    implementation 'commons-io:commons-io:2.18.0'
+    implementation 'org.apache.commons:commons-lang3:3.17.0'
+    implementation 'org.apache.commons:commons-collections4:4.5.0-M2'
+    implementation 'commons-beanutils:commons-beanutils:1.9.4'
+
 }
 
 def jacocoDir = layout.buildDirectory.dir("reports/")
