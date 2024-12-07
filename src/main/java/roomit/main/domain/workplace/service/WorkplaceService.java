@@ -259,19 +259,20 @@ public class WorkplaceService {
         Double latitude = coordinates.get("latitude");
         Double longitude = coordinates.get("longitude");
 
-        // 2. 좌표와 거리 기반으로 Workplace 조회
-        List<Object[]> results = workplaceRepository.findNearbyWorkplaces(longitude.doubleValue(), latitude.doubleValue(), maxDistance);
-
-        if (results.isEmpty()) {
-            return new ArrayList<>();
+        // 위도, 경도가 유효한지 확인 (Optional)
+        if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
+            throw new IllegalArgumentException("위도나 경도가 범위를 벗어났습니다.");
         }
+
+        // 2. 좌표와 거리 기반으로 Workplace 조회
+        List<DistanceWorkplaceResponse> results = workplaceRepository.findNearbyWorkplaces(longitude.doubleValue(), latitude.doubleValue(), maxDistance);
 
         DecimalFormat df = new DecimalFormat("#.##"); // 소수점 2자리 포맷
 
         return results.stream()
             .map(result -> new DistanceWorkplaceResponse(
-                (Long) result[0], // workplaceId
-                Double.valueOf(df.format((Double) result[1] / 1000)) // distance
+                result.workplaceId(), // workplaceId
+                Double.valueOf(df.format(result.distance() / 1000)) // distance
             ))
             .collect(Collectors.toList());
     }
