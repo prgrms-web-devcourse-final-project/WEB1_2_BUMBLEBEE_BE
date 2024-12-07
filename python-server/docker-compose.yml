@@ -34,11 +34,12 @@ services:
     ports:
       - "6565:6565"
     volumes:
-      - C:\Git\WEB1_2_BUMBLEBEE_BE\.github\k6-scripts:/scripts  # 상대 경로로 수정 (Windows라면, 경로 형식 주의)
+      - /k6-scripts:/scripts  # 상대 경로로 수정 (Windows라면, 경로 형식 주의)
     command: [ "run", "/scripts/test-script.js" ]
 
   python-server:
     build:
+      context: .
       dockerfile: Dockerfile   # Dockerfile 경로 (컨텍스트 안에 있어야 함)
     ports:
       - "8070:8070"            # 컨테이너의 8070 포트를 로컬 8070 포트로 매핑

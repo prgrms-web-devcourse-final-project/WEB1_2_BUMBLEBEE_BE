@@ -22,7 +22,7 @@ public interface WorkplaceRepository extends JpaRepository<Workplace, Long> , Wo
            ST_Distance(
                ST_Transform(ST_GeomFromText(:referencePoint, 5181), ST_SRID(w.location)),
                w.location
-           ) AS distance
+           ) * 100 AS distance
     FROM workplace w
     WHERE ST_Within(
               w.location,

@@ -100,9 +100,11 @@ def recommend():
         predictions = []
         model = models[age_group]
         for workplace in workplaces:
-            predicted_rating = float(model.predict(user_id, workplace[0]).est)  # 협업 필터링 예측 평점 (Decimal -> float로 변환)
-
-            # 콘텐츠 기반 필터링: 워크플레이스의 리뷰 점수 가져오기
+            # 협업 필터링 평점 계산
+            predicted_rating_result = model.predict(user_id, workplace[0])
+            predicted_rating = float(predicted_rating_result.est) if predicted_rating_result and predicted_rating_result.est is not None else 0.0
+            # 콘텐츠 기반 필터링 평점 계산
+            review_score = 0.0  # 기본값 초기화
             with connection.cursor() as cursor:
                 cursor.execute("""
                     SELECT star_sum / NULLIF(review_count, 0) AS review_score
@@ -110,29 +112,30 @@ def recommend():
                     WHERE workplace_id = %s
                 """, (workplace[0],))
                 review_score_result = cursor.fetchone()
-                review_score = review_score_result[0] if review_score_result else 0
+                if review_score_result and review_score_result[0] is not None:
+                    review_score = float(review_score_result[0])
 
-            # 하이브리드 방식: 협업 필터링 평점과 콘텐츠 기반 평점을 결합
-            final_score = (predicted_rating * 0.3) + (float(review_score) * 0.7)  # review_score에 더 큰 가중치 부여
-            final_score = min(max(final_score, 1), 5)  # final_score가 1과 5 사이로 제한
+            # 하이브리드 평점 계산
+            final_score = (predicted_rating * 0.3) + (review_score * 0.7)
+            final_score = min(max(final_score, 1), 5)  # final_score를 1~5로 제한
             predictions.append({
                 'workplace_id': workplace[0],
                 'workplace_name': workplace[1],
                 'predicted_rating': round(predicted_rating, 5),
                 'review_score': round(review_score, 2),
-                'final_score': round(final_score, 2)  # final_score 포함
+                'final_score': round(final_score, 2)
             })
 
-        # 상위 n개의 추천 장소 반환 (final_score를 기준으로 내림차순 정렬)
+        # 상위 n개의 추천 장소 반환
         top_n = sorted(predictions, key=lambda x: round(x['final_score'], 4), reverse=True)[:n]
 
-        # 반환할 추천 결과에 나이대 추가
         return jsonify({
             'age_group': age_group,
-            'recommendations': top_n  # final_score 포함된 추천 결과 반환
+            'recommendations': top_n
         })
     finally:
         connection.close()
+
 
 def get_age_group(user_id):
     """
