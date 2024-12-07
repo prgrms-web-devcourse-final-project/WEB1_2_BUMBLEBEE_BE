@@ -21,6 +21,7 @@ import roomit.main.domain.notification.dto.ResponseNotificationReservationDto;
 import roomit.main.domain.notification.dto.ResponseNotificationReservationMemberDto;
 import roomit.main.domain.notification.entity.MemberNotification;
 import roomit.main.domain.notification.entity.Notification;
+import roomit.main.domain.notification.entity.NotificationMemberType;
 import roomit.main.domain.notification.entity.NotificationType;
 import roomit.main.domain.notification.service.MemberNotificationService;
 import roomit.main.domain.notification.service.NotificationService;
@@ -113,7 +114,7 @@ public class PaymentsService {
                 .member(member)
                 .workplaceId(workplace.getWorkplaceId())
                 .price(price)
-                .notificationType(NotificationType.RESERVATION_CONFIRMED)
+                .notificationType(NotificationMemberType.MEMBER_RESERVATION_CONFIRMED)
                 .content(workplace.getWorkplaceName().getValue() + content)
                 .build();
 

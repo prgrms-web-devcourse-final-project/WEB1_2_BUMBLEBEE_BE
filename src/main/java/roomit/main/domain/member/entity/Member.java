@@ -76,7 +76,7 @@ public class Member {
     private List<MemberNotification> memberNotifications = new ArrayList<>();
 
     @Builder
-    public Member(String memberNickName, String memberPhoneNumber, LocalDate birthDay, Sex memberSex, String memberEmail, String memberPwd, Role memberRole , PasswordEncoder passwordEncoder, Provider provider, List<Reservation> reservation) {
+    public Member(String memberNickName, String memberPhoneNumber, LocalDate birthDay, Sex memberSex, Role memberRole, String memberEmail, String memberPwd, PasswordEncoder passwordEncoder, Provider provider, List<Reservation> reservation, List<MemberNotification> list) {
         this.memberNickname = new MemberNickname(memberNickName);
         this.memberPhonenumber = new MemberPhoneNumber(memberPhoneNumber);
         this.memberEmail = new MemberEmail(memberEmail);

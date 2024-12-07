@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 import roomit.main.domain.notification.entity.MemberNotification;
 import roomit.main.domain.notification.entity.Notification;
+import roomit.main.domain.notification.entity.NotificationMemberType;
 import roomit.main.domain.notification.entity.NotificationType;
 
 import java.time.LocalDateTime;
@@ -19,7 +20,7 @@ public class ResponseNotificationReservationMemberDto {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
     private Long workplaceId;
-    private NotificationType notificationType;
+    private NotificationMemberType notificationType;
     private Long price;
 
     @Builder

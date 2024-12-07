@@ -20,14 +20,14 @@ import java.time.LocalDateTime;
 public class MemberNotification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long memberNotificatinId;
 
     @Embedded
     private NotificationContent content;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private NotificationType notificationType;
+    private NotificationMemberType notificationType;
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -42,9 +42,9 @@ public class MemberNotification {
     private Long workplaceId;
 
     @Builder
-    public MemberNotification(Member member, NotificationType notificationType, String content, Long price, Long workplaceId) {
+    public MemberNotification(Member member, NotificationMemberType notificationType, String content, Long price, Long workplaceId) {
         this.member = member;
-        this.notificationType = NotificationType.valueOf(notificationType.name());
+        this.notificationType = NotificationMemberType.valueOf(notificationType.name());
         this.content = new NotificationContent(content);
         this.createdAt = LocalDateTime.now();
         this.price = price;
