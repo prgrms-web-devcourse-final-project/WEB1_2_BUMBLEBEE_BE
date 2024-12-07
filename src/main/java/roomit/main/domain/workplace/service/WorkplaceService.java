@@ -54,6 +54,7 @@ public class WorkplaceService {
 
     public List<WorkplaceAllResponse> readAllWorkplaces(WorkplaceGetRequest request) {
         String referencePoint = String.format("POINT(%f %f)", request.longitude(), request.latitude());
+        log.info("Reading all workplaces from {}", referencePoint);
         String area = String.format(
                 "POLYGON((%f %f, %f %f, %f %f, %f %f, %f %f))",
                 request.bottomLeft().getLongitude().doubleValue(), request.bottomLeft().getLatitude().doubleValue(),
