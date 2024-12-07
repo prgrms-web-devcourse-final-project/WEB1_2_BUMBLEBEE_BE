@@ -21,13 +21,14 @@ Content-Type: application/json
 
 GET http://localhost:8080/api/subscribe
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiYnVzaW5lc3M1QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0JVU0lORVNTIiwiaWF0IjoxNzMzNTA5NzQ0LCJleHAiOjE3MzM1MTA2NDR9.mrLSE8iU2TiLpC15qHWZCGBoWWDVKBEDwjC8ar_k-Jw
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiYnVzaW5lc3M1QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0JVU0lORVNTIiwiaWF0IjoxNzMzNTU0NDYxLCJleHAiOjE3MzM1NTUzNjF9.cyjYLJjE48KyIkq0bbSebfWzMQ6al7G1h-REt8hBZ7w
 Accept: text/event-stream
 
 ### 예약등록
 
-POST http://localhost:8080/api/v1/reservations/1
+POST http://localhost:8080/api/v1/reservations/9
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiZXh0cmExQGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3MzM1NTQ3NDMsImV4cCI6MTczMzU1NTY0M30.xv2a3BYX_eTqP-z52D-NS8iUC27v_KiOXBLA-jdiFr0
 
 {
   "reservationName": "홍길동",
@@ -38,7 +39,19 @@ Content-Type: application/json
   "endTime": "2024-12-03T14:59:00"
 
 }
+### 결제
+POST http://localhost:8080//api/v1/payments/toss?reservationId=9
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiZXh0cmExQGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3MzM1NTQ3NDMsImV4cCI6MTczMzU1NTY0M30.xv2a3BYX_eTqP-z52D-NS8iUC27v_KiOXBLA-jdiFr0
 
+{
+  "orderId": "string",
+  "orderName": "ABC 스터디룸 ROOM A 예약",
+  "totalAmount": 12000,
+  "memberName": "홍길동12",
+  "memberPhoneNum": "010-0000-0000",
+  "tossPaymentMethod": "CARD"
+}
 ### 알람조회
 GET  http://localhost:8080/api/v1/sub/list?workplaceId=5
 Content-Type: application/json
