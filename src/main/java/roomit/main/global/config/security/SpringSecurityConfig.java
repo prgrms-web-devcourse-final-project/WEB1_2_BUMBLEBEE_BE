@@ -44,6 +44,12 @@ public class SpringSecurityConfig {
     @Value("${cors.url}")
     private String corsUrl;
 
+    @Value("${cors.front.url}")
+    private String frontUrl;
+
+    @Value("${cors.ai.url}")
+    private String aiUrl;
+
     private final JWTUtil jwtUtil;
     private final CustomMemberDetailsService memberDetailsService;
     private final CustomBusinessDetailsService businessDetailsService;
@@ -93,7 +99,7 @@ public class SpringSecurityConfig {
                         CorsConfiguration configuration = new CorsConfiguration();
 
                         configuration.setAllowedOrigins(
-                            List.of("https://your-frontend-domain.com",corsUrl,  "http://127.0.0.1:5000"));
+                            List.of(frontUrl,corsUrl,aiUrl));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -158,6 +164,10 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/v1/studyroom").hasRole("BUSINESS")               //스터디룸 등록
                         .requestMatchers(HttpMethod.PUT,"/api/v1/studyroom").hasRole("BUSINESS")                //스터디룸 수정
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/studyroom/**").hasRole("BUSINESS")          //스터디룸 삭제
+
+                        // 알림
+                        .requestMatchers(HttpMethod.GET, "/api/v1/sub/list/**").hasRole("BUSINESS")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/subReservation/list/**").hasRole("BUSINESS")
 
                         //사업장 권한 설정
                         .requestMatchers(HttpMethod.GET,"/api/v1/workplace/info/**").permitAll() //사업장 정보 조회

@@ -21,6 +21,8 @@ import roomit.main.global.token.dto.response.LoginResponse;
 import roomit.main.global.token.entity.Refresh;
 import roomit.main.global.token.repository.RefreshRepository;
 
+import static roomit.main.global.common.CommonToken.*;
+
 @Service
 @RequiredArgsConstructor
 public class TokenService {
@@ -39,15 +41,15 @@ public class TokenService {
             String username = authentication.getName();
 
             // Access Token 생성
-            String accessToken = jwtUtil.createJwt("access", memberDetails.getUsername(), "ROLE_USER", 1000 * 60 * 15L); // 15분 유효
+            String accessToken = jwtUtil.createJwt(JWT_ACCESS_TOKEN_NAME, memberDetails.getUsername(), "ROLE_USER", JWT_ACCESS_TOKEN_EXPIRED_TIME);
             // Refresh Token 생성
-            String refreshToken = jwtUtil.createJwt("refresh", memberDetails.getUsername(), "ROLE_USER", 1000 * 60 * 60 * 24L); // 24시간 유효
+            String refreshToken = jwtUtil.createJwt(JWT_REFRESH_TOKEN_NAME, memberDetails.getUsername(), "ROLE_USER", JWT_REFRESH_TOKEN_EXPIRED_TIME);
 
             // Access Token은 헤더에 추가
-            response.addHeader("Authorization", accessToken);
+            response.addHeader(JWT_HEADER, accessToken);
 
             // Refresh Token을 쿠키에 저장
-            CookieUtil.addCookie(response, "refresh", refreshToken, 60 * 60 * 24); // 1일 유효
+            CookieUtil.addCookie(response, JWT_REFRESH_TOKEN_NAME, refreshToken, JWT_COOKIE_REFRESH_TOKEN_EXPIRED_TIME); // 1일 유효
 
             // Refresh Token을 Redis에 저장
             addRefreshEntity(username, refreshToken);
@@ -69,15 +71,15 @@ public class TokenService {
             String username = authentication.getName();
 
             // Access Token 생성
-            String accessToken = jwtUtil.createJwt("access", businessDetails.getUsername(), "ROLE_BUSINESS", 1000 * 60 * 15L); // 15분 유효
+            String accessToken = jwtUtil.createJwt(JWT_ACCESS_TOKEN_NAME, businessDetails.getUsername(), "ROLE_BUSINESS", JWT_ACCESS_TOKEN_EXPIRED_TIME); // 15분 유효
             // Refresh Token 생성
-            String refreshToken = jwtUtil.createJwt("refresh", businessDetails.getUsername(), "ROLE_BUSINESS", 1000 * 60 * 60 * 24L); // 24시간 유효
+            String refreshToken = jwtUtil.createJwt(JWT_REFRESH_TOKEN_NAME, businessDetails.getUsername(), "ROLE_BUSINESS", JWT_REFRESH_TOKEN_EXPIRED_TIME); // 24시간 유효
 
             // Access Token은 헤더에 추가
-            response.addHeader("Authorization", accessToken);
+            response.addHeader(JWT_HEADER, accessToken);
 
             // Refresh Token을 쿠키에 저장
-            CookieUtil.addCookie(response, "refresh", refreshToken, 60 * 60 * 24); // 1일 유효
+            CookieUtil.addCookie(response, JWT_REFRESH_TOKEN_NAME, refreshToken, JWT_COOKIE_REFRESH_TOKEN_EXPIRED_TIME); // 1일 유효
 
             // Refresh Token을 Redis에 저장
             addRefreshEntity(username, refreshToken);
@@ -107,7 +109,7 @@ public class TokenService {
 
         // 토큰이 refresh인지 체크
         String category = jwtUtil.getCategory(refresh);
-        if (!category.equals("refresh")) {
+        if (!category.equals(JWT_REFRESH_TOKEN_NAME)) {
 
             //response status code
             throw ErrorCode.MALFORMED_TOKEN.commonException();
@@ -122,16 +124,16 @@ public class TokenService {
         String  role = jwtUtil.getRole(refresh).name();
 
         //make new JWT
-        String newAccess = jwtUtil.createJwt("access", username, role, 1000 * 60 * 15L);
-        String newRefresh = jwtUtil.createJwt("refresh", username, role, 1000 * 60 * 60 * 24L);
+        String newAccess = jwtUtil.createJwt(JWT_ACCESS_TOKEN_NAME, username, role, JWT_ACCESS_TOKEN_EXPIRED_TIME);
+        String newRefresh = jwtUtil.createJwt(JWT_REFRESH_TOKEN_NAME, username, role, JWT_REFRESH_TOKEN_EXPIRED_TIME);
 
         // Redis에서 기존 Refresh Token 삭제 및 새로 저장
         refreshRepository.deleteById(refresh);
         addRefreshEntity(username, newRefresh);
 
         //response
-        response.addHeader("Authorization", newAccess);
-        CookieUtil.addCookie(response, "refresh", newRefresh, 60 * 60 * 24); // 1일 유효
+        response.addHeader(JWT_HEADER, newAccess);
+        CookieUtil.addCookie(response, JWT_REFRESH_TOKEN_NAME, newRefresh, JWT_COOKIE_REFRESH_TOKEN_EXPIRED_TIME); // 1일 유효
     }
 
 
@@ -147,7 +149,7 @@ public class TokenService {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if ("refresh".equals(cookie.getName())) {
+                if (JWT_REFRESH_TOKEN_NAME.equals(cookie.getName())) {
                     return cookie.getValue();
                 }
             }

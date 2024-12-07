@@ -55,9 +55,9 @@ public class ReviewService {
                 .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
         // 본인이 예약한거지 확인하는거
 
-        if (!Objects.equals(reservation1.getMember().getMemberId(), memberId)) {
-            throw ErrorCode.REVIEW_UPDATE_FAIL.commonException();
-        }
+//        if (!Objects.equals(reservation1.getMember().getMemberId(), memberId)) {
+//            throw ErrorCode.REVIEW_UPDATE_FAIL.commonException();
+//        }
 
         Workplace workPlace = workplaceRepository
                 .getWorkplaceByWorkplaceName(new WorkplaceName(request.workPlaceName()));
@@ -73,17 +73,17 @@ public class ReviewService {
 
         reviewRepository.save(review);
 
-        alrim(workPlace);
+        alrim(workPlace,request.reviewContent());
 
     }
 
-    public void alrim(Workplace workplace){
+    public void alrim(Workplace workplace, String reviewContent){
         Business business = workplace.getBusiness();
 
         Notification notification = Notification.builder()
                 .business(business)
                 .notificationType(NotificationType.REVIEW_CREATED)
-                .content("리뷰가 등록되었습니다.")
+                .content(reviewContent)
                 .build();
 
         ResponseNotificationDto responseNotificationDto = ResponseNotificationDto
