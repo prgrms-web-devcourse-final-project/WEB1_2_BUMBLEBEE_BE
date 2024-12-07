@@ -21,10 +21,11 @@ public class RedisSubscriber implements MessageListener {
     @Override
     public void onMessage(Message message, byte[] pattern) {
         String payload = new String(message.getBody(), StandardCharsets.UTF_8); // 메시지 내용
-        log.info("Redis message received: {}", payload);
+        String topic = new String(pattern, StandardCharsets.UTF_8);
+        log.info("Redis message received: {} {}", topic, payload);
 
         // 정적 WebSocket 경로로 전송
-        messagingTemplate.convertAndSend("/sub/chat", payload);
+        messagingTemplate.convertAndSend(topic, payload);
         log.info("Message sent to WebSocket destination: {}", "/sub/chat");
     }
 }
