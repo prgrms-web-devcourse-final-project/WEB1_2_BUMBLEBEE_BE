@@ -1,3 +1,7 @@
+on:
+  pull_request:
+    branches:
+      - develop  # develop 브랜치로 풀 리퀘스트가 열릴 때만 실행
 jobs:
   test:
     runs-on: ubuntu-latest
