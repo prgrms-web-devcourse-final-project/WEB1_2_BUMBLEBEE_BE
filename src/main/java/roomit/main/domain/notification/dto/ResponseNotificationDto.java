@@ -22,17 +22,16 @@ public class ResponseNotificationDto {
     private NotificationType notificationType;
 
     @Builder
-    public ResponseNotificationDto(Notification notification, Long workplaceId) {
+    public ResponseNotificationDto(Notification notification) {
         this.content = notification.getContent();
         this.createdAt = notification.getCreatedAt();
-        this.workplaceId = workplaceId;
+        this.workplaceId = notification.getWorkplaceId();
         this.notificationType = notification.getNotificationType();
     }
 
-    public static ResponseNotificationDto fromEntity(Notification notification,Long workplaceId) {
+    public static ResponseNotificationDto fromEntity(Notification notification) {
         return new ResponseNotificationDto(
-                notification,
-                workplaceId
+                notification
         );
     }
 }
