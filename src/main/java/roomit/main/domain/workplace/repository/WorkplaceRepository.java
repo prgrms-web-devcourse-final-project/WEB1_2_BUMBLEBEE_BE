@@ -7,8 +7,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.entity.value.WorkplaceName;
+import roomit.main.domain.workplace.repository.search.WorkplaceSearch;
 
-public interface WorkplaceRepository extends JpaRepository<Workplace, Long> {
+public interface WorkplaceRepository extends JpaRepository<Workplace, Long> , WorkplaceSearch {
 
     Workplace getWorkplaceByWorkplaceName(WorkplaceName workplaceName);
 
@@ -42,17 +43,4 @@ public interface WorkplaceRepository extends JpaRepository<Workplace, Long> {
     @Query("UPDATE Workplace w SET w.starSum = w.starSum + :rating, w.reviewCount = w.reviewCount + 1 WHERE w.workplaceId = :workplaceId")
     void updateRatingAndCount(@Param("rating") Long rating, @Param("workplaceId") Long workplaceId);
 
-    @Query(value = """
-    SELECT w.workplace_id,
-           ST_Distance_Sphere(
-               POINT(ST_X(w.location), ST_Y(w.location)),
-               POINT(:longitude, :latitude)
-           ) AS distance
-    FROM workplace w
-    WHERE ST_Distance_Sphere(
-        POINT(ST_X(w.location), ST_Y(w.location)),
-        POINT(:longitude, :latitude)
-    ) <= :maxDistance
-    """, nativeQuery = true)
-    List<Object[]> findNearbyWorkplaces(double longitude, double latitude, double maxDistance);
 }
