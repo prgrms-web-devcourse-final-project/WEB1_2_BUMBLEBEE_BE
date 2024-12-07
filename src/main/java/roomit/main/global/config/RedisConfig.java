@@ -9,6 +9,7 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
@@ -37,7 +38,7 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory, ObjectMapper objectMapper) {
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(connectionFactory);
 
@@ -45,30 +46,13 @@ public class RedisConfig {
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
 
-        // Value는 JSON 형식으로 저장
-        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
-        redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
+        // Value는 JSON 형식으로 저장 (전용 ObjectMapper 생성)
+        ObjectMapper redisObjectMapper = new ObjectMapper();
+        redisObjectMapper.findAndRegisterModules(); // JavaTimeModule 등록
+        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer(redisObjectMapper));
+        redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer(redisObjectMapper));
 
         return redisTemplate;
-    }
-
-    @Bean
-    public RedisTemplate<Object, List<ReservationResponse>> reservationResponseRedisTemplate(RedisConnectionFactory connectionFactory, ObjectMapper objectMapper) {
-        RedisTemplate<Object, List<ReservationResponse>> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(connectionFactory);
-
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
-
-        return redisTemplate;
-    }
-
-
-    @Bean
-    public ObjectMapper objectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.findAndRegisterModules(); // JavaTimeModule 등록 (LocalDateTime 지원)
-        return objectMapper;
     }
 
 
@@ -78,7 +62,7 @@ public class RedisConfig {
             MessageListenerAdapter listenerAdapter) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        container.addMessageListener(listenerAdapter, new ChannelTopic("/sub/chat/room/*"));
+        container.addMessageListener(listenerAdapter, new ChannelTopic("/sub/chat"));
         return container;
     }
 

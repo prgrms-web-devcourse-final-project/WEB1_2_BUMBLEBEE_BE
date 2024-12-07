@@ -1,0 +1,53 @@
+networks:
+  k6:
+  grafana:
+  default:
+
+services:
+  influxdb:
+    image: influxdb:1.8
+    networks:
+      - k6
+      - grafana
+    ports:
+      - "8086:8086"
+    environment:
+      - INFLUXDB_DB=k6
+
+  grafana:
+    image: grafana/grafana:9.3.8
+    networks:
+      - grafana
+    ports:
+      - "2500:3000"
+    environment:
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_BASIC_ENABLED=false
+    volumes:
+      - ./grafana:/etc/grafana/provisioning/
+
+  k6:
+    image: grafana/k6:latest
+    networks:
+      - k6
+    ports:
+      - "6565:6565"
+    volumes:
+      - C:\Git\WEB1_2_BUMBLEBEE_BE\.github\k6-scripts:/scripts  # 상대 경로로 수정 (Windows라면, 경로 형식 주의)
+    command: [ "run", "/scripts/test-script.js" ]
+
+  python-server:
+    build:
+      dockerfile: Dockerfile   # Dockerfile 경로 (컨텍스트 안에 있어야 함)
+    ports:
+      - "8070:8070"            # 컨테이너의 8070 포트를 로컬 8070 포트로 매핑
+    environment:
+      FLASK_APP: app.py
+      FLASK_RUN_HOST: 0.0.0.0
+    volumes:
+      - ./collaborative_models:/app/collaborative_models  # 파일 마운트
+    command: flask run --host=0.0.0.0 --port=8070  # Flask 앱 실행 명령어
+
+
+

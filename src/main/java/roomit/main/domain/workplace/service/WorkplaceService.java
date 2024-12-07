@@ -3,7 +3,6 @@ package roomit.main.domain.workplace.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,6 @@ import roomit.main.domain.workplace.dto.response.WorkplaceCreateResponse;
 import roomit.main.domain.workplace.dto.response.WorkplaceDetailResponse;
 import roomit.main.domain.workplace.dto.response.WorkplaceResponse;
 import roomit.main.domain.workplace.entity.Workplace;
-import roomit.main.global.util.PointUtil;
 import roomit.main.domain.workplace.entity.value.WorkplaceAddress;
 import roomit.main.domain.workplace.entity.value.WorkplaceName;
 import roomit.main.domain.workplace.entity.value.WorkplacePhoneNumber;
@@ -39,6 +37,7 @@ import roomit.main.global.error.ErrorCode;
 import roomit.main.global.exception.CommonException;
 import roomit.main.global.service.FileLocationService;
 import roomit.main.global.service.ImageService;
+import roomit.main.global.util.PointUtil;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +63,13 @@ public class WorkplaceService {
                 request.bottomLeft().getLongitude().doubleValue(), request.bottomLeft().getLatitude().doubleValue()
         );
 
+        log.info(area);
+
         List<Object[]> results = workplaceRepository.findAllWithinArea(referencePoint, area);
+
+        if (results.isEmpty()) {
+            return new ArrayList<>();
+        }
 
         return results.stream()
                 .map(result -> {
@@ -111,7 +116,7 @@ public class WorkplaceService {
             return new WorkplaceCreateResponse(savedWorkplace.getWorkplaceId(), studyroomID);
         }
         catch (IllegalArgumentException e) {
-            throw new CommonException(ErrorCode.WORKPLACE_INVALID_REQUEST);
+            throw e;
         } catch (InvalidDataAccessApiUsageException e) {
             throw ErrorCode.WORKPLACE_INVALID_REQUEST.commonException();
         } catch (CommonException e) {
@@ -133,6 +138,9 @@ public class WorkplaceService {
             }
             return studyroomIDs;
         } catch (Exception e) {
+            if(e instanceof IllegalArgumentException){
+                throw (IllegalArgumentException)e;
+            }
             throw ErrorCode.STUDYROOM_NOT_REGISTERD.commonException();
         }
     }

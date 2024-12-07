@@ -19,12 +19,13 @@ public class SearchStudyRoomImpl implements SearchStudyRoom {
   }
 
   @Override
-  public List<StudyRoom> findByWorkPlaceId(List<Long> workplaceIds) {
+  public List<StudyRoom> findByWorkPlaceId(List<Long> workplaceIds, Integer reservationCapacity) {
 
     return queryFactory
         .selectFrom(studyRoom)
         .where(
             studyRoom.workPlace.workplaceId.in(workplaceIds)
+                .and(studyRoom.capacity.goe(reservationCapacity))
         )
         .distinct() // 중복 제거
         .fetch();

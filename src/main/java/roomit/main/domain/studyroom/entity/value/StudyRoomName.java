@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class StudyRoomName {
-    public static final String REGEX = "^[ㄱ-ㅎ가-힣a-zA-Z0-9-\\s]{1,20}$";
-    public static final String ERR_MSG = "사업장명은 특수문자를 제외한 1~20자리여야 하며, 띄워쓰기가 가능합니다.";
+    public static final String REGEX = "^[ㄱ-ㅎ가-힣a-zA-Z0-9-\\s~!@#$%^&*()_+\\[\\]{}|;:',.<>?/]{1,20}$";
+    public static final String ERR_MSG = "스터디룸명은 1~20자리여야 합니다.";
     private static final Pattern PATTERN = Pattern.compile(REGEX);
 
     @Column(name = "StudyRoom_name", nullable = false, length = 20)

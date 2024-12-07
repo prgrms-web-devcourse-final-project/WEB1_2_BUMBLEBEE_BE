@@ -39,7 +39,7 @@ public class StudyRoom extends BaseEntity {
     @Embedded
     private StudyRoomName studyRoomName;
 
-    @Column(name = "studyroom_description", nullable = false)
+    @Column(name = "studyroom_description", nullable = false, length = 200)
     private String description;
 
     @Column(name = "studyroom_capacity", nullable = false)

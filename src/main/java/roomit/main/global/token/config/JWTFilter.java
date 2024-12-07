@@ -137,6 +137,7 @@ public class JWTFilter extends OncePerRequestFilter {
         // 예외적으로 필터링하지 않을 경로들
         List<String> excludedPaths = List.of(
                 "/",
+                "/health",
                 "/index.html",
                 "/static/**",
                 "/css/**",
