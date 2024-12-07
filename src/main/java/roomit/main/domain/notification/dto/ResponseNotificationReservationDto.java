@@ -7,7 +7,6 @@ import lombok.Setter;
 import lombok.ToString;
 import roomit.main.domain.notification.entity.Notification;
 import roomit.main.domain.notification.entity.NotificationType;
-import roomit.main.domain.notification.entity.ReservationNotification;
 
 import java.time.LocalDateTime;
 
