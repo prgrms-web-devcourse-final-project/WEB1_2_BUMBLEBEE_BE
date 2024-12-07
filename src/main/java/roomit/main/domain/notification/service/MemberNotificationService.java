@@ -38,44 +38,6 @@ public class MemberNotificationService {
 
     private final MemberRepository memberRepository;
 
-    private static final long DEFAULT_TIMEOUT = 30 * 60 * 1000L; // 30분으로 변경
-
-
-    public SseEmitter subscribe(Long id) {
-
-
-        SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
-
-        emitterRepository.save(id, emitter);
-
-        Object cachedEvent = emitterRepository.getEventCache(id);
-        if (cachedEvent != null) {
-            sendToClient(emitter, id, cachedEvent);
-        } else {
-            Map<String, Object> testContent = new HashMap<>();
-            testContent.put("Member subscribe content", "connected!");
-            sendToClient(emitter, id, testContent);
-        }
-
-        emitter.onError((ex) -> {
-            log.error("SSE connection error for businessId={}: {}", id, ex.getMessage());
-            emitterRepository.deleteById(id);
-        });
-
-        emitter.onCompletion(() -> {
-            log.info("SSE connection completed for businessId={}", id);
-            emitterRepository.deleteById(id);
-        });
-
-        emitter.onTimeout(() -> {
-            log.warn("SSE connection timeout for businessId={}", id);
-            emitter.complete();
-            emitterRepository.deleteById(id);
-        });
-
-        return emitter;
-    }
-
     // 멤버 예약 알림
     public void customNotifyReservationMember(Long memberId, ResponseNotificationReservationMemberDto responseNotificationReservationDto, Long price) {
 
@@ -114,20 +76,6 @@ public class MemberNotificationService {
                 emitterRepository.deleteById(userId);
                 emitter.completeWithError(e);
             }
-        }
-    }
-
-    // 맨처음 구독시 오는곳
-    private void sendToClient(SseEmitter emitter, Long emitterId, Object data) {
-        try {
-            emitter.send(SseEmitter.event()
-                    .id(String.valueOf(emitterId))
-                    .data(data, MediaType.APPLICATION_JSON));
-            log.info("sendToClient emitterId={} data={}", emitterId, data);
-        } catch (IOException exception) {
-            emitterRepository.deleteById(emitterId);
-            emitter.completeWithError(exception);
-            throw ErrorCode.SUBSCRIBE_FAIL.commonException();
         }
     }
 

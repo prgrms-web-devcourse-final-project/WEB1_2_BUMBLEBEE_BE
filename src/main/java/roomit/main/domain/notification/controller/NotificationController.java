@@ -38,7 +38,7 @@ public class NotificationController {
     @GetMapping(value = "/api/subscribe/user", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public ResponseEntity<SseEmitter> subscribeUser(@AuthenticationPrincipal CustomMemberDetails customMemberDetails) {
         Long memberId = customMemberDetails.getId();  // 사용자 ID
-        return ResponseEntity.ok(memberNotificationService.subscribe(memberId));
+        return ResponseEntity.ok(notificationService.subscribe(memberId));
     }
 
     //리뷰
