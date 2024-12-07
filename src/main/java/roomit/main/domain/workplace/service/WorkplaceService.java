@@ -266,7 +266,7 @@ public class WorkplaceService {
         }
 
         // 2. 좌표와 거리 기반으로 Workplace 조회
-        List<DistanceWorkplaceResponse> results = workplaceRepository.findNearbyWorkplaces(longitude.doubleValue(), latitude.doubleValue(), maxDistance);
+        List<DistanceWorkplaceResponse> results = workplaceRepository.findNearbyWorkplaces(longitude, latitude, maxDistance);
 
         DecimalFormat df = new DecimalFormat("#.##"); // 소수점 2자리 포맷
 
