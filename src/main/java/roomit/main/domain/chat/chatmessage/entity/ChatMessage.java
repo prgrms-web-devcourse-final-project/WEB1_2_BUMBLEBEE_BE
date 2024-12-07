@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import roomit.main.domain.chat.chatmessage.dto.ChatMessageRequest;
-import roomit.main.domain.chat.chatmessage.dto.ChatMessageSaveRequest;
+import roomit.main.domain.chat.chatmessage.dto.request.ChatMessageSaveRequest;
 import roomit.main.domain.chat.chatroom.entity.ChatRoom;
 
 import java.time.LocalDateTime;
@@ -34,7 +33,7 @@ public class ChatMessage {
     @Column(nullable = false)
     private LocalDateTime timestamp;
 
-    private String senderType;
+    private SenderType senderType;
 
     private Boolean isRead = false;
 
