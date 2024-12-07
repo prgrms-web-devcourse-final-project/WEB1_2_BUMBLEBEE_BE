@@ -34,13 +34,7 @@ public class MemberNotificationService {
 
     private final EmitterRepository emitterRepository;
 
-    private final NotificationRepository notificationRepository;
-
-    private final BusinessRepository businessRepository;
-
     private final MemberNotificationRepository memberNotificationRepository;
-
-    private final WorkplaceRepository workplaceRepository;
 
     private final MemberRepository memberRepository;
 
@@ -78,9 +72,6 @@ public class MemberNotificationService {
             emitter.complete();
             emitterRepository.deleteById(id);
         });
-
-//        sendToClient(emitter, Long.valueOf(emitterId), "EventStream Created. [memberId=" + businessId + "]");
-
 
         return emitter;
     }
@@ -126,11 +117,6 @@ public class MemberNotificationService {
         }
     }
 
-
-    /**
-     * 이벤트 캐싱 저장
-     */
-
     // 맨처음 구독시 오는곳
     private void sendToClient(SseEmitter emitter, Long emitterId, Object data) {
         try {
@@ -144,7 +130,6 @@ public class MemberNotificationService {
             throw ErrorCode.SUBSCRIBE_FAIL.commonException();
         }
     }
-
 
     @Scheduled(fixedRate = 30000)// 30초 간격
     public void cleanUpExpiredEmitters() {

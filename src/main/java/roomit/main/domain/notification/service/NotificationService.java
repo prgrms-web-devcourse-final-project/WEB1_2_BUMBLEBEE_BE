@@ -38,12 +38,6 @@ public class NotificationService {
 
     private final BusinessRepository businessRepository;
 
-    private final WorkplaceRepository workplaceRepository;
-
-    private final MemberNotificationRepository memberNotificationRepository;
-
-    private final MemberRepository memberRepository;
-
     private static final long DEFAULT_TIMEOUT = 30 * 60 * 1000L; // 30분으로 변경
 
 
@@ -140,12 +134,6 @@ public class NotificationService {
             sendToClient(businessId, responseNotificationReservationDto);
         }
     }
-
-
-
-    /**
-     * 이벤트 캐싱 저장
-     */
     private void cacheEvent(Long businessId, Object data) {
         emitterRepository.saveEventCache(businessId, data);
     }
