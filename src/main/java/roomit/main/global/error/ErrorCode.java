@@ -48,6 +48,8 @@ public enum ErrorCode {
     WORKPLACE_NOT_FOUND(HttpStatus.NOT_FOUND,"W004","존재하지 않는 사업장 입니다"),
     WORKPLACE_INVALID_REQUEST(HttpStatus.BAD_REQUEST,"W001-2","잘못된 입력입니다."),
     WORKPLACE_INVALID_ADDRESS(HttpStatus.BAD_REQUEST,"W001-3","잘못된 주소입니다."),
+    WORKPLACE_RECOMMEND_FAIL(HttpStatus.BAD_REQUEST,"W005","맞춤형 추천에 실패하였습니다."),
+    PYTHON_CONNECTED_FAIL(HttpStatus.BAD_REQUEST,"W006","파이썬 서버와 통신에 실패하였습니다."),
 
     /*Review*/
     REVIEW_NOT_FOUND(HttpStatus.BAD_REQUEST,"V003","존재 하지 않는 리뷰입니다."),
@@ -63,7 +65,6 @@ public enum ErrorCode {
     PAYMENTS_CANCEL_FAILED(HttpStatus.BAD_REQUEST, "P006", "결제 취소에 실패했습니다."),
     PAYMENTS_FAILED(HttpStatus.BAD_REQUEST, "P007", "결제 실패했습니다."),
     PAYMENTS_VALIDATION_FAILED(HttpStatus.BAD_REQUEST,"P008","결제 검증에 실패했습니다"),
-
 
     /*OAuth*/
     OAUTH_LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "O001", "OAuth 로그인에 실패했습니다."),

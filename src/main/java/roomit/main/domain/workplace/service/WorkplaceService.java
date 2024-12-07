@@ -42,7 +42,6 @@ import roomit.main.global.util.PointUtil;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class WorkplaceService {
 
     private final WorkplaceRepository workplaceRepository;
@@ -55,7 +54,6 @@ public class WorkplaceService {
 
     public List<WorkplaceAllResponse> readAllWorkplaces(WorkplaceGetRequest request) {
         String referencePoint = String.format("POINT(%f %f)", request.longitude(), request.latitude());
-        log.info("현재위치 {}", referencePoint);
         String area = String.format(
                 "POLYGON((%f %f, %f %f, %f %f, %f %f, %f %f))",
                 request.bottomLeft().getLongitude(), request.bottomLeft().getLatitude(),

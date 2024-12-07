@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomit.main.domain.business.dto.CustomBusinessDetails;
-import roomit.main.domain.chat.chatmessage.dto.ChatMessageRequest;
-import roomit.main.domain.chat.chatmessage.dto.ChatMessageResponse;
+import roomit.main.domain.chat.chatmessage.dto.request.ChatMessageRequest;
+import roomit.main.domain.chat.chatmessage.dto.response.ChatMessageResponse;
 import roomit.main.domain.chat.chatmessage.service.ChatService;
 import roomit.main.domain.member.dto.CustomMemberDetails;
 

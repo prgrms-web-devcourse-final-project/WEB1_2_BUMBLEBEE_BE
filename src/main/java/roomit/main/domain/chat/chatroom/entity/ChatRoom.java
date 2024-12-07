@@ -7,15 +7,12 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.chat.chatmessage.entity.ChatMessage;
+import roomit.main.domain.chat.chatmessage.entity.SenderType;
 import roomit.main.domain.member.entity.Member;
-import roomit.main.domain.studyroom.entity.StudyRoom;
-import roomit.main.domain.workplace.entity.Workplace;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Table(name = "chat_rooms")
@@ -51,4 +48,11 @@ public class ChatRoom {
         this.member = member;
         this.workplaceName = workplaceName;
     }
+
+    public boolean isSenderValid(SenderType senderType, String sender) {
+        return (senderType.equals(SenderType.BUSINESS) && business.getBusinessName().equals(sender))
+               || (senderType.equals(SenderType.MEMBER) && member.getMemberNickName().equals(sender));
+
+    }
+
 }

@@ -1,6 +1,7 @@
 package roomit.main.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +10,6 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
@@ -43,9 +43,12 @@ public class RedisConfig {
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
 
-        // Value는 JSON 형식으로 저장 (전용 ObjectMapper 생성)
+        // Value는 JSON 형식으로 저장
         ObjectMapper redisObjectMapper = new ObjectMapper();
-        redisObjectMapper.findAndRegisterModules(); // JavaTimeModule 등록
+        redisObjectMapper.findAndRegisterModules(); // JavaTimeModule 자동 등록
+        redisObjectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // ISO-8601 문자열로 설정
+
+        // Value Serializer에 설정된 ObjectMapper 사용
         redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer(redisObjectMapper));
         redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer(redisObjectMapper));
 
