@@ -1,61 +1,65 @@
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    services:
-      redis:
-        image: redis:latest
-        ports:
-          - 6379:6379
-    strategy:
-      matrix:
-        java-version: [ 17 ]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          java-version: ${{ matrix.java-version }}
-          distribution: 'adopt'
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
-
-      - name: Cache SonarCloud packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-
-      - name: Create application.properties from secrets
-        run: |
-          mkdir -p ./src/main/resources  # 경로가 없다면 디렉터리 생성
-          echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.properties
-          mkdir -p ./src/test/resources  # 테스트 파일 경로 생성
-          echo "${{ secrets.APPLICATION_TEST_PROPERTIES }}" > ./src/test/resources/application-test.properties
-
-      - name: Debug generated properties files
-        run: |
-          echo "application.properties content:"
-          cat ./src/main/resources/application.properties
-          echo "application-test.properties content:"
-          cat ./src/test/resources/application-test.properties
-
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: check
-          cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
-
-      - name: Run tests with test profile
-        env:
-          SPRING_PROFILES_ACTIVE: test  # 'test' 프로파일을 활성화하여 application-test.properties 사용
-        run: ./gradlew test --info --stacktrace
-
-      - name: SonarCloud scan
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew sonar --info --stacktrace
+#on:
+#  pull_request:
+#    branches:
+#      - develop  # develop 브랜치로 풀 리퀘스트가 열릴 때만 실행
+#jobs:
+#  test:
+#    runs-on: ubuntu-latest
+#    services:
+#      redis:
+#        image: redis:latest
+#        ports:
+#          - 6379:6379
+#    strategy:
+#      matrix:
+#        java-version: [ 17 ]
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v3
+#
+#      - name: Set up Java
+#        uses: actions/setup-java@v3
+#        with:
+#          java-version: ${{ matrix.java-version }}
+#          distribution: 'adopt'
+#
+#      - name: Grant execute permission for gradlew
+#        run: chmod +x ./gradlew
+#
+#      - name: Cache SonarCloud packages
+#        uses: actions/cache@v3
+#        with:
+#          path: ~/.sonar/cache
+#          key: ${{ runner.os }}-sonar
+#          restore-keys: ${{ runner.os }}-sonar
+#
+#      - name: Create application.properties from secrets
+#        run: |
+#          mkdir -p ./src/main/resources  # 경로가 없다면 디렉터리 생성
+#          echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.properties
+#          mkdir -p ./src/test/resources  # 테스트 파일 경로 생성
+#          echo "${{ secrets.APPLICATION_TEST_PROPERTIES }}" > ./src/test/resources/application-test.properties
+#
+#      - name: Debug generated properties files
+#        run: |
+#          echo "application.properties content:"
+#          cat ./src/main/resources/application.properties
+#          echo "application-test.properties content:"
+#          cat ./src/test/resources/application-test.properties
+#
+#      - name: Setup Gradle
+#        uses: gradle/gradle-build-action@v2
+#        with:
+#          arguments: check
+#          cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
+#
+#      - name: Run tests with test profile
+#        env:
+#          SPRING_PROFILES_ACTIVE: test  # 'test' 프로파일을 활성화하여 application-test.properties 사용
+#        run: ./gradlew test --info --stacktrace
+#
+#      - name: SonarCloud scan
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#        run: ./gradlew sonar --info --stacktrace

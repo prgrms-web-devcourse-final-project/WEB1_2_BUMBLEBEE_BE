@@ -165,6 +165,10 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.PUT,"/api/v1/studyroom").hasRole("BUSINESS")                //스터디룸 수정
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/studyroom/**").hasRole("BUSINESS")          //스터디룸 삭제
 
+                        // 알림
+                        .requestMatchers(HttpMethod.GET, "/api/v1/sub/list/**").hasRole("BUSINESS")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/subReservation/list/**").hasRole("BUSINESS")
+
                         //사업장 권한 설정
                         .requestMatchers(HttpMethod.GET,"/api/v1/workplace/info/**").permitAll() //사업장 정보 조회
 //                        .requestMatchers(HttpMethod.GET,"/api/v1/workplace").permitAll() //사업장 조회
