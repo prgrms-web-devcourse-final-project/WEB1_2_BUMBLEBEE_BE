@@ -56,9 +56,17 @@ public class StompHandler implements ChannelInterceptor {
     }
 
     private void handleSubscribe(StompHeaderAccessor accessor) {
-        String chatRoomId = accessor.getDestination(); // 구독 경로 확인
-        String userId = accessor.getFirstNativeHeader("userId");
-        log.info("User [{}] subscribed to room [{}]", userId, chatRoomId);
+        String destination = accessor.getDestination(); // 구독 경로 확인
+        String username = accessor.getFirstNativeHeader("username");
+        log.info("User [{}] subscribed to room [{}]", username, destination);
+
+        if (!destination.startsWith("/sub/chat/")) {
+            log.warn("Invalid subscription destination: {}", destination);
+            throw new IllegalArgumentException("Invalid subscription destination");
+        }
+
+        String roomId = destination.replace("/sub/chat/", ""); // roomId 추출
+        log.info("User [{}] subscribed to room [{}]", username, roomId);
     }
 
 }
