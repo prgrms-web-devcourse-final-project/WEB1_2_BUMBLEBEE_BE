@@ -53,14 +53,9 @@ public class NotificationService {
 
         emitterRepository.save(id, emitter);
 
-        Object cachedEvent = emitterRepository.getEventCache(id);
-        if (cachedEvent != null) {
-            sendToClient(emitter, id, cachedEvent);
-        } else {
             Map<String, Object> testContent = new HashMap<>();
-            testContent.put("Bsiness subscribe content", "connected!");
+            testContent.put("content", "connected!");
             sendToClient(emitter, id, testContent);
-        }
 
         emitter.onError((ex) -> {
             log.error("SSE connection error for businessId={}: {}", id, ex.getMessage());
@@ -77,9 +72,6 @@ public class NotificationService {
             emitter.complete();
             emitterRepository.deleteById(id);
         });
-
-//        sendToClient(emitter, Long.valueOf(emitterId), "EventStream Created. [memberId=" + businessId + "]");
-
 
         return emitter;
     }
@@ -112,7 +104,6 @@ public class NotificationService {
 
         notificationRepository.save(notification);
 
-        cacheEvent(businessId, responseNotificationDto);
         SseEmitter sseEmitter = emitterRepository.get(businessId);
         if (sseEmitter != null) {
             sendToClient(businessId, responseNotificationDto);
@@ -133,14 +124,10 @@ public class NotificationService {
 
         notificationRepository.save(reservationNotification);
 
-        cacheEvent(businessId, responseNotificationReservationDto);
         SseEmitter sseEmitter = emitterRepository.get(businessId);
         if (sseEmitter != null) {
             sendToClient(businessId, responseNotificationReservationDto);
         }
-    }
-    private void cacheEvent(Long businessId, Object data) {
-        emitterRepository.saveEventCache(businessId, data);
     }
 
     // 맨처음 구독시 오는곳
@@ -183,7 +170,6 @@ public class NotificationService {
 
         memberNotificationRepository.save(memberNotification);
 
-        cacheEvent(memberId, responseNotificationReservationDto);
         SseEmitter sseEmitter = emitterRepository.get(memberId);
         if (sseEmitter != null) {
             sendToClient(memberId, responseNotificationReservationDto);
