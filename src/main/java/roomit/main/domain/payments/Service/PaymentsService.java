@@ -15,9 +15,14 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import roomit.main.domain.business.entity.Business;
+import roomit.main.domain.member.entity.Member;
+import roomit.main.domain.member.repository.MemberRepository;
 import roomit.main.domain.notification.dto.ResponseNotificationReservationDto;
+import roomit.main.domain.notification.dto.ResponseNotificationReservationMemberDto;
+import roomit.main.domain.notification.entity.MemberNotification;
 import roomit.main.domain.notification.entity.Notification;
 import roomit.main.domain.notification.entity.NotificationType;
+import roomit.main.domain.notification.service.MemberNotificationService;
 import roomit.main.domain.notification.service.NotificationService;
 import roomit.main.domain.payments.config.PaymentsConfig;
 import roomit.main.domain.payments.dto.request.PaymentsRequest;
@@ -39,7 +44,9 @@ public class PaymentsService {
     private final PaymentsRepository paymentsRepository;
     private final ReservationRepository reservationRepository;
     private final PaymentsConfig paymentsConfig;
+    private final MemberNotificationService memberNotificationService;
     private final NotificationService notificationService;
+    private final MemberRepository memberRepository;
 
     /**
      * 결제 검증
@@ -55,6 +62,9 @@ public class PaymentsService {
 
         Workplace workplace = reservation.getStudyRoom().getWorkPlace();
 
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(ErrorCode.MEMBER_NOT_FOUND::commonException);
+
         try {
             Payments payments = paymentsRequest.toEntity();
             payments.addReservation(reservation);
@@ -65,6 +75,9 @@ public class PaymentsService {
             reservationRepository.save(reservation);
             if(reservation.getReservationState() == ReservationState.ACTIVE) {
                 alrim(workplace, "예약이 완료 되었습니다.", paymentsRequest.totalAmount());
+            }
+            if(reservation.getReservationState() == ReservationState.ACTIVE) {
+                memberAlrim(member, workplace, "예약이 등록 되었습니다.", paymentsRequest.totalAmount());
             }
             return payments.toDto(paymentsConfig.getSuccessUrl(), paymentsConfig.getFailUrl());
         } catch (Exception e) {
@@ -77,19 +90,41 @@ public class PaymentsService {
 
         Notification notification = Notification.builder()
                 .business(business)
+                .workplaceId(workplace.getWorkplaceId())
                 .notificationType(NotificationType.RESERVATION_CONFIRMED)
-                .content(workplace.getWorkplaceName() + content)
+                .content(workplace.getWorkplaceName().getValue() + content)
                 .price(price)
                 .build();
 
         ResponseNotificationReservationDto responseNotificationDto = ResponseNotificationReservationDto
                 .builder()
                 .notification(notification)
-                .workplaceId(workplace.getWorkplaceId())
                 .build();
 
         notificationService.customNotifyReservation(
                 business.getBusinessId(),
+                responseNotificationDto
+        );
+
+    }
+
+    public void memberAlrim(Member member, Workplace workplace, String content, Long price) {
+
+        MemberNotification notification = MemberNotification.builder()
+                .member(member)
+                .workplaceId(workplace.getWorkplaceId())
+                .price(price)
+                .notificationType(NotificationType.RESERVATION_CONFIRMED)
+                .content(workplace.getWorkplaceName().getValue() + content)
+                .build();
+
+        ResponseNotificationReservationMemberDto responseNotificationDto = ResponseNotificationReservationMemberDto
+                .builder()
+                .notification(notification)
+                .build();
+
+        memberNotificationService.customNotifyReservationMember(
+                member.getMemberId(),
                 responseNotificationDto,
                 notification.getPrice()
         );
