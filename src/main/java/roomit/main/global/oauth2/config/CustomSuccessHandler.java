@@ -58,7 +58,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             // Redirect URL
             String redirectUrl = UriComponentsBuilder.fromHttpUrl(oauthUrl)
                     .queryParam(JWT_ACCESS_TOKEN_NAME, access)
-                    .queryParam("role", refresh)
+                    .queryParam("role", role)
                     .toUriString();
 
             response.sendRedirect(redirectUrl);
