@@ -59,7 +59,7 @@ public class ChatService {
             request = request.withTimestamp(LocalDateTime.now());
         }
         // Redis Pub/Sub 발행
-        String topic = "/sub/chat" + request.roomId();
+        String topic = "/sub/chat/" + request.roomId();
         redisPublisher.publish(topic, request);
         // Redis에 저장
         saveMessageToRedis(new ChatMessageSaveRequest(request));
