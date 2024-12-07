@@ -42,8 +42,6 @@ public class NotificationService {
 
     private final WorkplaceRepository workplaceRepository;
 
-    private final ReservationNotificationRepository reservationNotificationRepository;
-
     private static final long DEFAULT_TIMEOUT = 30 * 60 * 1000L; // 30분으로 변경
 
 
@@ -86,7 +84,7 @@ public class NotificationService {
     }
 
     // 리뷰
-    public  void customNotify(Long businessId, ResponseNotificationDto responseNotificationDto) {
+    public void customNotify(Long businessId, ResponseNotificationDto responseNotificationDto) {
 
         Business business = businessRepository.findById(businessId).get();
 
@@ -105,26 +103,26 @@ public class NotificationService {
         }
 
     }
+
     // 예약
-    public  void customNotifyReservation(Long businessId, ResponseNotificationReservationDto responseNotificationReservationDto, Long price) {
+    public void customNotifyReservation(Long businessId, ResponseNotificationReservationDto responseNotificationReservationDto, Long price) {
 
         Business business = businessRepository.findById(businessId).get();
 
-        ReservationNotification reservationNotification = ReservationNotification.builder()
+        Notification reservationNotification = Notification.builder()
                 .business(business)
-                .price(price)
                 .content(responseNotificationReservationDto.getContent())
                 .notificationType(responseNotificationReservationDto.getNotificationType())
+                .price(price)
                 .build();
 
-        reservationNotificationRepository.save(reservationNotification);
+        notificationRepository.save(reservationNotification);
 
         cacheEvent(businessId, responseNotificationReservationDto);
         SseEmitter sseEmitter = emitterRepository.get(businessId);
         if (sseEmitter != null) {
             sendToClient(businessId, responseNotificationReservationDto);
         }
-
     }
 
     /**
@@ -189,8 +187,7 @@ public class NotificationService {
     @Transactional
     public List<ResponseNotificationReservationDto> getNotificationsReservation(Long businessId, Long workplaceID) {
 
-
-        List<ReservationNotification> notifications = reservationNotificationRepository.findNotificationsByBusinessId(businessId);
+        List<Notification> notifications = notificationRepository.findNotificationsByBusinessId(businessId);
 
         return notifications.stream()
                 .map(notification -> ResponseNotificationReservationDto.fromEntityReservation(notification, workplaceID))  // Notification -> NotificationDto 변환

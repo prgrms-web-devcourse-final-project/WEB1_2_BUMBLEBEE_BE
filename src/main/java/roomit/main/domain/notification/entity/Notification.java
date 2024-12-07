@@ -38,12 +38,15 @@ public class Notification {
     @CreatedDate
     private LocalDateTime createdAt;
 
+    private Long price;
+
     @Builder
-    public Notification(Business business, NotificationType notificationType, String content) {
+    public Notification(Business business, NotificationType notificationType, String content, Long price) {
         this.business = business;
         this.notificationType = NotificationType.valueOf(notificationType.name());
         this.content = new NotificationContent(content);
         this.createdAt = LocalDateTime.now();
+        this.price = price;
     }
 
     public String getContent(){

@@ -76,7 +76,7 @@ public class PaymentsService {
     public void alrim(Workplace workplace, String content, Long price) {
         Business business = workplace.getBusiness();
 
-        ReservationNotification notification = ReservationNotification.builder()
+        Notification notification = Notification.builder()
                 .business(business)
                 .notificationType(NotificationType.RESERVATION_CONFIRMED)
                 .content(workplace.getWorkplaceName() + content)
