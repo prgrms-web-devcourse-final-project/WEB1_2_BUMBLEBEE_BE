@@ -44,6 +44,12 @@ public class SpringSecurityConfig {
     @Value("${cors.url}")
     private String corsUrl;
 
+    @Value("${cors.front.url}")
+    private String frontUrl;
+
+    @Value("${cors.ai.url}")
+    private String aiUrl;
+
     private final JWTUtil jwtUtil;
     private final CustomMemberDetailsService memberDetailsService;
     private final CustomBusinessDetailsService businessDetailsService;
@@ -93,7 +99,7 @@ public class SpringSecurityConfig {
                         CorsConfiguration configuration = new CorsConfiguration();
 
                         configuration.setAllowedOrigins(
-                            List.of("https://your-frontend-domain.com",corsUrl,  "http://127.0.0.1:5000"));
+                            List.of(frontUrl,corsUrl,aiUrl));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));

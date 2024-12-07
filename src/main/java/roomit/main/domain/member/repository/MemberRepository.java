@@ -3,7 +3,7 @@ package roomit.main.domain.member.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import roomit.main.domain.member.entity.Member;
-import roomit.main.global.oauth2.dto.PROVIDER;
+import roomit.main.global.oauth2.dto.Provider;
 
 import java.util.Optional;
 
@@ -16,7 +16,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Member findByMemberNickName(String nickName);
 
     @Query(value = "SELECT m FROM Member m WHERE m.memberNickname.value = :nickName AND m.provider = :provider")
-    Member findByMemberNickNameAndProvider(String nickName, PROVIDER provider);
+    Member findByMemberNickNameAndProvider(String nickName, Provider provider);
 
     @Query("""
         SELECT CASE WHEN COUNT(m) > 0 THEN TRUE ELSE FALSE END

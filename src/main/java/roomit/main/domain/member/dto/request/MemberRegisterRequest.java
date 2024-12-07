@@ -11,7 +11,7 @@ import roomit.main.domain.member.entity.value.MemberEmail;
 import roomit.main.domain.member.entity.value.MemberNickname;
 import roomit.main.domain.member.entity.value.MemberPassword;
 import roomit.main.domain.member.entity.value.MemberPhoneNumber;
-import roomit.main.global.oauth2.dto.PROVIDER;
+import roomit.main.global.oauth2.dto.Provider;
 
 import java.time.LocalDate;
 
@@ -32,7 +32,7 @@ public record MemberRegisterRequest(@Pattern(regexp = MemberNickname.REGEX, mess
                 .memberEmail(email)
                 .memberPhoneNumber(phoneNumber)
                 .memberNickName(nickName)
-                .provider(PROVIDER.BASIC)
+                .provider(Provider.BASIC)
                 .passwordEncoder(passwordEncoder)
                 .build();
     }
