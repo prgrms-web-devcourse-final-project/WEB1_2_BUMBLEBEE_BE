@@ -39,6 +39,7 @@ services:
 
   python-server:
     build:
+      context: .
       dockerfile: Dockerfile   # Dockerfile 경로 (컨텍스트 안에 있어야 함)
     ports:
       - "8070:8070"            # 컨테이너의 8070 포트를 로컬 8070 포트로 매핑
