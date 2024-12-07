@@ -181,7 +181,7 @@ public class NotificationService {
 
         return notifications.stream()
                 .map(notification -> ResponseNotificationDto.fromEntity(notification, workplaceID))  // Notification -> NotificationDto 변환
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional
@@ -191,6 +191,6 @@ public class NotificationService {
 
         return notifications.stream()
                 .map(notification -> ResponseNotificationReservationDto.fromEntityReservation(notification, workplaceID))  // Notification -> NotificationDto 변환
-                .collect(Collectors.toList());
+                .toList();
     }
 }
