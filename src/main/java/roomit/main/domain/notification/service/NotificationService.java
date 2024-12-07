@@ -12,12 +12,8 @@ import roomit.main.domain.business.repository.BusinessRepository;
 import roomit.main.domain.notification.dto.ResponseNotificationDto;
 import roomit.main.domain.notification.dto.ResponseNotificationReservationDto;
 import roomit.main.domain.notification.entity.Notification;
-import roomit.main.domain.notification.entity.NotificationType;
-import roomit.main.domain.notification.entity.ReservationNotification;
 import roomit.main.domain.notification.repository.EmitterRepository;
 import roomit.main.domain.notification.repository.NotificationRepository;
-import roomit.main.domain.notification.repository.ReservationNotificationRepository;
-import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
 
@@ -25,9 +21,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
-import static software.amazon.awssdk.services.s3.endpoints.internal.ParseArn.SERVICE;
 
 @Slf4j
 @Service
