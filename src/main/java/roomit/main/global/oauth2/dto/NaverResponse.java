@@ -12,9 +12,9 @@ public class NaverResponse implements OAuth2Response {
     }
 
     @Override
-    public PROVIDER getProvider() {
+    public Provider getProvider() {
 
-        return PROVIDER.NAVER;
+        return Provider.NAVER;
     }
 
     @Override
