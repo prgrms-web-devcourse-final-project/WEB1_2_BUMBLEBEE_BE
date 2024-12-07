@@ -55,7 +55,6 @@ public class PaymentsService {
 
         Workplace workplace = reservation.getStudyRoom().getWorkPlace();
 
-        alrim(workplace,"예약이 완료 되었습니다.", paymentsRequest.totalAmount());
         try {
             Payments payments = paymentsRequest.toEntity();
             payments.addReservation(reservation);
@@ -64,6 +63,8 @@ public class PaymentsService {
             reservation.changeReservationState(ReservationState.ACTIVE); // 엔드타임이 지나면 컴플리트로 << 로직을 추가하고 봐야함
 
             reservationRepository.save(reservation);
+
+            alrim(workplace,"예약이 완료 되었습니다.", paymentsRequest.totalAmount());
 
             return payments.toDto(paymentsConfig.getSuccessUrl(), paymentsConfig.getFailUrl());
         } catch (Exception e) {
