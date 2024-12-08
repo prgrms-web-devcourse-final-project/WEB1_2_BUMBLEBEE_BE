@@ -44,10 +44,10 @@ public class MemberNotification {
 
     private String workplaceName;
     private String studyRoomName;
-    private ImageUrl imageUrl;
+    private String imageUrl;
 
     @Builder
-    public MemberNotification(Member member, String workplaceName, String studyRoomName, ImageUrl imageUrl,NotificationMemberType notificationType, String content, Long price, Long workplaceId) {
+    public MemberNotification(Member member, String workplaceName, String studyRoomName, String imageUrl,NotificationMemberType notificationType, String content, Long price, Long workplaceId) {
         this.member = member;
         this.notificationType = NotificationMemberType.valueOf(notificationType.name());
         this.content = new NotificationContent(content);
