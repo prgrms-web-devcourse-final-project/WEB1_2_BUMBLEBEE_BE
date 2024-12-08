@@ -197,7 +197,7 @@ public class StudyRoomService {
                     .findFirst()
                     .orElse(0.0); // 기본값 0.0, 일치하는 경우가 없으면 0.0을 반환
 
-                return new FindPossibleStudyRoomResponse(studyRoom, distance);
+                return new FindPossibleStudyRoomResponse(studyRoom, distance, fileLocationService);
             })
             .sorted(Comparator.comparingDouble(FindPossibleStudyRoomResponse::distance))
             .collect(Collectors.toList());
