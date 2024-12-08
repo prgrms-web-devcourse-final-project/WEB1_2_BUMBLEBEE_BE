@@ -91,24 +91,21 @@ public class SpringSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable); //csrf 비활성화
         //Cors 설정
         http
-                .cors((corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
+            .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
+            @Override
+            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                CorsConfiguration configuration = new CorsConfiguration();
 
-                    @Override
-                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                configuration.setAllowedOrigins(List.of(frontUrl, corsUrl, aiUrl));
+                configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization", "X-Requested-With", "Accept", "Origin", "Access-Control-Allow-Origin"));
+                configuration.setAllowCredentials(true);
+                configuration.setMaxAge(3600L);
+                configuration.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie", "refresh"));
 
-                        CorsConfiguration configuration = new CorsConfiguration();
-
-                        configuration.setAllowedOrigins(
-                            List.of(frontUrl,corsUrl,aiUrl));
-                        configuration.setAllowedMethods(Collections.singletonList("*"));
-                        configuration.setAllowCredentials(true);
-                        configuration.setAllowedHeaders(Collections.singletonList("*"));
-                        configuration.setMaxAge(3600L);
-
-                        configuration.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie", "refresh"));
-                        return configuration;
-                    }
-                })));
+                return configuration;
+            }
+        }));
         http
                 .formLogin(AbstractHttpConfigurer::disable); //form 로그인 비활성화
         http
