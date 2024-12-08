@@ -24,16 +24,6 @@ public record ChatMessageResponse(
         );
     }
 
-    public ChatMessageResponse(ChatMessage message, boolean isRead) {
-        this(
-                message.getRoom().getRoomId(),
-                message.getSender(),
-                message.getContent(),
-                isRead,
-                message.getTimestamp()
-        );
-    }
-
     public ChatMessageResponse(Long roomId, ChatMessageSaveRequest request, boolean isRead) {
         this(
                 roomId,
