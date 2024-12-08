@@ -42,8 +42,11 @@ public class ChatService {
     private final ChatMessageRepository messageRepository;
     private final ObjectMapper objectMapper;
 
-    @Value("${redis.message.ttl:3600}") // 메시지 TTL 설정
+    @Value("${redis.message.ttl:1200}") // 메시지 TTL 설정
     private int messageTtl;
+
+    @Value("${redis.message.cleanup.interval}")
+    private int cleanupInterval;
 
     @Transactional
     public void sendMessage(ChatMessageRequest request) {
@@ -233,7 +236,7 @@ public class ChatService {
         throw ErrorCode.CHAT_NOT_AUTHORIZED.commonException();
     }
 
-    @Scheduled(fixedRateString = "120000") // Flush 이후 실행
+    @Scheduled(fixedRateString = "${cleanupInterval:20000}") // Flush 이후 실행
     public void scheduleRemoveExpiredMessages() {
         removeExpiredMessagesForAllRooms();
     }

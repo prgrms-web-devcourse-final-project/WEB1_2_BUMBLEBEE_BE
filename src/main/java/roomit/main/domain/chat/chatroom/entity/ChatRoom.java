@@ -38,15 +38,15 @@ public class ChatRoom {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    private String workplaceName;
+    private Long workplaceId;
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ChatMessage> messages = new ArrayList<>();
 
-    public ChatRoom(Business business, Member member, String workplaceName) {
+    public ChatRoom(Business business, Member member, Long workplaceId) {
         this.business = business;
         this.member = member;
-        this.workplaceName = workplaceName;
+        this.workplaceId = workplaceId;
     }
 
     public boolean isSenderValid(SenderType senderType, String sender) {
