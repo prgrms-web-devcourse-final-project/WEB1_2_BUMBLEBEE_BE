@@ -17,6 +17,14 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 public class ReviewNotification {
+    private Long workplaceId;
+
+    private String studyRoomName;
+
+    private String workplaceName;
+
+    private String url;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,15 +43,6 @@ public class ReviewNotification {
 
     @CreatedDate
     private LocalDateTime createdAt;
-
-    private Long workplaceId;
-
-    private String studyRoomName;
-
-    private String workplaceName;
-
-    private String url;
-
     @Builder
     public ReviewNotification(Business business, String url, NotificationType notificationType, String content, Long workplaceId,String studyRoomName, String workplaceName) {
         this.business = business;
