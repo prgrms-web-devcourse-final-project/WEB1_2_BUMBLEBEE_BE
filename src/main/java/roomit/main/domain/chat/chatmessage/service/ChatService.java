@@ -45,9 +45,6 @@ public class ChatService {
     @Value("${redis.message.ttl:1200}") // 메시지 TTL 설정
     private int messageTtl;
 
-    @Value("${redis.message.cleanup.interval}")
-    private int cleanupInterval;
-
     @Transactional
     public void sendMessage(ChatMessageRequest request) {
         ChatRoom roomDetails = roomRepository.findRoomDetailsById(request.roomId())
@@ -139,24 +136,21 @@ public class ChatService {
         validateAuthorization(senderType, room, senderName);
 
         String redisKey = BumblebeeStringUtil.format(REDIS_MESSAGE_KEY_FORMAT, roomId);
-        String unreadKey = redisKey + ":unread";
 
-        Set<Object> sortedMessages = redisTemplate.opsForZSet().range(redisKey, 0, -1);
         CopyOnWriteArrayList<ChatMessageResponse> combinedList = new CopyOnWriteArrayList<>();
-        if (sortedMessages != null) {
-            // Redis 데이터 처리
-            List<ChatMessageResponse> redisMessages = sortedMessages.stream()
-                    .map(value -> objectMapper.convertValue(value, ChatMessageSaveRequest.class)) // ChatMessageSaveRequest로 역직렬화
-                    .map(request -> Pair.of(room.getRoomId(), request))
-                    .map(pair -> new ChatMessageResponse(pair.getLeft(), pair.getRight(), true))
-                    .toList();
 
-            // Redis 메시지를 CopyOnWriteArrayList에 추가
-            combinedList.addAll(redisMessages);
+        redisChatMessagesAdd(roomId, redisKey, room, combinedList);
 
-            log.debug("Fetched messages from Redis for roomId {}: {}", roomId, redisMessages);
-        }
+        mysqlChatMessagesAdd(roomId, senderName, combinedList);
 
+        // 시간순으로 정렬 (최신 메시지가 마지막으로)
+        combinedList.sort(Comparator.comparing(ChatMessageResponse::timestamp));
+
+        // Combined 결과 반환
+        return combinedList;
+    }
+
+    private void mysqlChatMessagesAdd(Long roomId, String senderName, CopyOnWriteArrayList<ChatMessageResponse> combinedList) {
         // MySQL에서 데이터 조회
         List<ChatMessageResponse> mysqlMessages = messageRepository.findByRoomId(roomId).stream()
                 .peek(message -> {
@@ -166,27 +160,28 @@ public class ChatService {
                         messageRepository.save(message); // 변경 사항 저장
                     }
                 })
-                .map(message -> new ChatMessageResponse(message, true)) // 읽음 상태를 true로 설정)
+                .map(ChatMessageResponse::new) // 읽음 상태를 true로 설정)
                 .toList();
 
         // MySQL 메시지를 CopyOnWriteArrayList에 추가
         combinedList.addAll(mysqlMessages);
         log.debug("Fetched messages from MySQL for roomId {}: {}", roomId, mysqlMessages);
-
-        // 시간순으로 정렬 (최신 메시지가 마지막으로)
-        combinedList.sort(Comparator.comparing(ChatMessageResponse::timestamp));
-
-        // Combined 결과 반환
-        return combinedList;
     }
 
-    private boolean isMessageRead(Long roomId, String senderId, String currentUserId) {
-        // sender가 현재 사용자라면 메시지를 읽은 것으로 간주
-        if (senderId.equals(currentUserId)) {
-            return true;
+    private void redisChatMessagesAdd(Long roomId, String redisKey, ChatRoom room, CopyOnWriteArrayList<ChatMessageResponse> combinedList) {
+        Set<Object> sortedMessages = redisTemplate.opsForZSet().range(redisKey, 0, -1);
+        if (sortedMessages != null) {
+            // Redis 데이터 처리
+            List<ChatMessageResponse> redisMessages = sortedMessages.stream()
+                    .map(value -> objectMapper.convertValue(value, ChatMessageSaveRequest.class)) // ChatMessageSaveRequest로 역직렬화
+                    .map(request -> Pair.of(room.getRoomId(), request))
+                    .map(pair -> new ChatMessageResponse(pair.getLeft(), pair.getRight(), true))
+                    .toList();
+
+            combinedList.addAll(redisMessages);
+
+            log.debug("Fetched messages from Redis for roomId {}: {}", roomId, redisMessages);
         }
-        String unreadKey = REDIS_MESSAGE_KEY_FORMAT + roomId + ":messages" + ":unread";
-        return redisTemplate.opsForHash().get(unreadKey, senderId) == null;
     }
 
     private void validateAuthorization(SenderType senderType, ChatRoom room, String senderName) {
