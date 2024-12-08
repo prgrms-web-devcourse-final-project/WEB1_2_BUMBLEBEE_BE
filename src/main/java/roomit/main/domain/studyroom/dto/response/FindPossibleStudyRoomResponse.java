@@ -1,6 +1,7 @@
 package roomit.main.domain.studyroom.dto.response;
 
 import roomit.main.domain.studyroom.entity.StudyRoom;
+import roomit.main.global.service.FileLocationService;
 
 public record FindPossibleStudyRoomResponse(
     Long studyroomId,
@@ -15,7 +16,7 @@ public record FindPossibleStudyRoomResponse(
     Double distance
 ){
 
-  public FindPossibleStudyRoomResponse (StudyRoom studyRoom, Double distance){
+  public FindPossibleStudyRoomResponse (StudyRoom studyRoom, Double distance, FileLocationService fileLocationService){
     this(
         studyRoom.getStudyRoomId(),
         studyRoom.getWorkPlace().getWorkplaceName().getValue(),
@@ -25,7 +26,7 @@ public record FindPossibleStudyRoomResponse(
         studyRoom.getWorkPlace().getWorkplaceAddress().getValue(),
         studyRoom.getCapacity(),
         studyRoom.getPrice(),
-        studyRoom.getWorkPlace().getImageUrl().getValue(),
+        fileLocationService.getImagesFromFolder(studyRoom.getWorkPlace().getImageUrl().getValue()).get(0),
         distance
     );
   }
