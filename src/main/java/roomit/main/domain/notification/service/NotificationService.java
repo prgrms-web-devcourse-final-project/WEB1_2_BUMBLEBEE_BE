@@ -101,6 +101,7 @@ public class NotificationService {
 
         ReviewNotification notification = ReviewNotification.builder()
                 .business(business)
+                .workplaceName(responseNotificationDto.getWorkplaceName())
                 .content(responseNotificationDto.getContent())
                 .notificationType(responseNotificationDto.getNotificationType())
                 .workplaceId(responseNotificationDto.getWorkplaceId())
