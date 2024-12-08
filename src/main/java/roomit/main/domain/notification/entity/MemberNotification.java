@@ -11,6 +11,7 @@ import org.springframework.data.annotation.CreatedDate;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.notification.entity.value.NotificationContent;
+import roomit.main.global.inner.ImageUrl;
 
 import java.time.LocalDateTime;
 
@@ -41,14 +42,21 @@ public class MemberNotification {
 
     private Long workplaceId;
 
+    private String workplaceName;
+    private String studyRoomName;
+    private ImageUrl imageUrl;
+
     @Builder
-    public MemberNotification(Member member, NotificationMemberType notificationType, String content, Long price, Long workplaceId) {
+    public MemberNotification(Member member, String workplaceName, String studyRoomName, ImageUrl imageUrl,NotificationMemberType notificationType, String content, Long price, Long workplaceId) {
         this.member = member;
         this.notificationType = NotificationMemberType.valueOf(notificationType.name());
         this.content = new NotificationContent(content);
         this.createdAt = LocalDateTime.now();
         this.price = price;
         this.workplaceId = workplaceId;
+        this.workplaceName = workplaceName;
+        this.studyRoomName = studyRoomName;
+        this.imageUrl = imageUrl;
     }
 
     public String getContent(){
