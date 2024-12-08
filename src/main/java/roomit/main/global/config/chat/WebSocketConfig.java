@@ -11,12 +11,6 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final StompHandler stompHandler;
-
-    public WebSocketConfig(StompHandler stompHandler) {
-        this.stompHandler = stompHandler;
-    }
-
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         // Simple Broker를 사용하여 메시지를 브로커 없이 전달
@@ -29,11 +23,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/ws")
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
-    }
-
-    @Override
-    public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(stompHandler);
     }
 }
 
