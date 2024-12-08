@@ -17,24 +17,16 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 public class ReviewNotification {
-    private Long workplaceId;
-
-    private String studyRoomName;
-
-    private String workplaceName;
-
-    private String url;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long reveiewNotificationId;
 
     @Embedded
-    private NotificationContent content;
+    private NotificationContent reveiewNotificationContent;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private NotificationType notificationType;
+    private NotificationType reveiewNotificationType;
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -43,11 +35,19 @@ public class ReviewNotification {
 
     @CreatedDate
     private LocalDateTime createdAt;
+
+    private Long workplaceId;
+
+    private String studyRoomName;
+
+    private String workplaceName;
+
+    private String url;
     @Builder
     public ReviewNotification(Business business, String url, NotificationType notificationType, String content, Long workplaceId,String studyRoomName, String workplaceName) {
         this.business = business;
-        this.notificationType = NotificationType.valueOf(notificationType.name());
-        this.content = new NotificationContent(content);
+        this.reveiewNotificationType = NotificationType.valueOf(notificationType.name());
+        this.reveiewNotificationContent = new NotificationContent(content);
         this.createdAt = LocalDateTime.now();
         this.workplaceId = workplaceId;
         this.studyRoomName = studyRoomName;
@@ -56,6 +56,6 @@ public class ReviewNotification {
     }
 
     public String getContent(){
-        return content.getContent();
+        return reveiewNotificationContent.getContent();
     }
 }

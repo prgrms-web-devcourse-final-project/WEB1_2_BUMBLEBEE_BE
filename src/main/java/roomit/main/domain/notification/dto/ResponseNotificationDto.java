@@ -25,11 +25,11 @@ public class ResponseNotificationDto {
 
     @Builder
     public ResponseNotificationDto(ReviewNotification notification) {
-        this.alrimId = notification.getId();
+        this.alrimId = notification.getReveiewNotificationId();
         this.content = notification.getContent();
         this.createdAt = notification.getCreatedAt();
         this.workplaceId = notification.getWorkplaceId();
-        this.notificationType = notification.getNotificationType();
+        this.notificationType = notification.getReveiewNotificationType();
     }
 
     public static ResponseNotificationDto fromEntity(ReviewNotification notification) {
