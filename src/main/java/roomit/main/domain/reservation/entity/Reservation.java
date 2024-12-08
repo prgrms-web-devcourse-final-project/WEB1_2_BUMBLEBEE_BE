@@ -9,14 +9,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.payments.entity.Payments;
-import roomit.main.domain.reservation.dto.request.UpdateReservationRequest;
 import roomit.main.domain.reservation.entity.value.ReservationName;
 import roomit.main.domain.reservation.entity.value.ReservationNum;
 import roomit.main.domain.review.entity.Review;
 import roomit.main.domain.studyroom.entity.StudyRoom;
 import roomit.main.domain.studyroom.entity.value.BaseEntity;
 
-@Table(name = "Reservation")
+@Table(name = "Reservation", indexes = {
+        @Index(name = "idx_reservation_created_at",
+                columnList = "created_at")})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
