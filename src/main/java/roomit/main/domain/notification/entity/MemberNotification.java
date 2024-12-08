@@ -9,31 +9,30 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.CreatedDate;
 import roomit.main.domain.business.entity.Business;
+import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.notification.entity.value.NotificationContent;
-import roomit.main.domain.notification.entity.value.RelatedUrl;
-import roomit.main.domain.workplace.entity.Workplace;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Entity
 @NoArgsConstructor
-public class Notification {
+public class MemberNotification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long memberNotificatinId;
 
     @Embedded
     private NotificationContent content;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private NotificationType notificationType;
+    private NotificationMemberType notificationType;
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "business_id", nullable = false)
-    private Business business;
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -43,9 +42,9 @@ public class Notification {
     private Long workplaceId;
 
     @Builder
-    public Notification(Business business, NotificationType notificationType, String content, Long price, Long workplaceId) {
-        this.business = business;
-        this.notificationType = NotificationType.valueOf(notificationType.name());
+    public MemberNotification(Member member, NotificationMemberType notificationType, String content, Long price, Long workplaceId) {
+        this.member = member;
+        this.notificationType = NotificationMemberType.valueOf(notificationType.name());
         this.content = new NotificationContent(content);
         this.createdAt = LocalDateTime.now();
         this.price = price;

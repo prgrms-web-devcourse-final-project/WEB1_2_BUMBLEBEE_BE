@@ -168,6 +168,7 @@ public class SpringSecurityConfig {
                         // 알림
                         .requestMatchers(HttpMethod.GET, "/api/v1/sub/list/**").hasRole("BUSINESS")
                         .requestMatchers(HttpMethod.GET, "/api/v1/subReservation/list/**").hasRole("BUSINESS")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/subReservation/memberlist/**").hasRole("USER")
 
                         //사업장 권한 설정
                         .requestMatchers(HttpMethod.GET,"/api/v1/workplace/info/**").permitAll() //사업장 정보 조회
