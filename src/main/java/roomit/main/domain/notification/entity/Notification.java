@@ -9,9 +9,11 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.CreatedDate;
 import roomit.main.domain.business.entity.Business;
+import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.notification.entity.value.NotificationContent;
 import roomit.main.domain.notification.entity.value.RelatedUrl;
 import roomit.main.domain.workplace.entity.Workplace;
+import roomit.main.global.inner.ImageUrl;
 
 import java.time.LocalDateTime;
 
@@ -42,14 +44,26 @@ public class Notification {
 
     private Long workplaceId;
 
+    private String reservationName;
+
+    private String studyRoomName;
+
+    private String workplaceName;
+
+    private ImageUrl url;
+
     @Builder
-    public Notification(Business business, NotificationType notificationType, String content, Long price, Long workplaceId) {
+    public Notification(Business business, ImageUrl url, NotificationType notificationType, String content, Long price, Long workplaceId, String reservationName, String studyRoomName, String workplaceName) {
         this.business = business;
         this.notificationType = NotificationType.valueOf(notificationType.name());
         this.content = new NotificationContent(content);
         this.createdAt = LocalDateTime.now();
         this.price = price;
         this.workplaceId = workplaceId;
+        this.reservationName = reservationName;
+        this.studyRoomName = studyRoomName;
+        this.workplaceName = workplaceName;
+        this.url = url;
     }
 
     public String getContent(){

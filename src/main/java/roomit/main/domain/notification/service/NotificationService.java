@@ -117,9 +117,14 @@ public class NotificationService {
 
         Notification reservationNotification = Notification.builder()
                 .business(business)
+                .price(responseNotificationReservationDto.getPrice())
                 .workplaceId(responseNotificationReservationDto.getWorkplaceId())
                 .content(responseNotificationReservationDto.getContent())
                 .notificationType(responseNotificationReservationDto.getNotificationType())
+                .workplaceName(responseNotificationReservationDto.getWorkplaceName())
+                .reservationName(responseNotificationReservationDto.getReservationName())
+                .studyRoomName(responseNotificationReservationDto.getStudyRoomName())
+                .url(responseNotificationReservationDto.getUrl())
                 .build();
 
         notificationRepository.save(reservationNotification);
@@ -165,6 +170,9 @@ public class NotificationService {
                 .workplaceId(responseNotificationReservationDto.getWorkplaceId())
                 .content(responseNotificationReservationDto.getContent())
                 .notificationType(responseNotificationReservationDto.getNotificationType())
+                .imageUrl(responseNotificationReservationDto.getImageUrl())
+                .studyRoomName(responseNotificationReservationDto.getStudyRoomName())
+                .workplaceName(responseNotificationReservationDto.getWorkplaceName())
                 .price(price)
                 .build();
 
