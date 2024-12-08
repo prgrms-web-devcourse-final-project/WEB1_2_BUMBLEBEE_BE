@@ -11,26 +11,21 @@ import java.util.stream.Collectors;
 
 @Repository
 public class EmitterRepositoryImpl implements EmitterRepository {
-    private final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
+    private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
     private final Map<Long, Object> eventCache = new ConcurrentHashMap<>();
 
     @Override
-    public void save(Long emitterId, SseEmitter sseEmitter) {
+    public void save(String emitterId, SseEmitter sseEmitter) {
         emitters.put(emitterId,sseEmitter);
     }
 
     @Override
-    public SseEmitter get(Long businessId) {
+    public SseEmitter get(String businessId) {
         return emitters.get(businessId);
     }
 
-    public void deleteById(Long userId) {
+    public void deleteById(String userId) {
         emitters.remove(userId);
-    }
-
-    @Override
-    public Map<Long, SseEmitter> getAll() {
-        return emitters;
     }
 
     @Override

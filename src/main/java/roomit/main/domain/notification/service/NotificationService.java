@@ -50,7 +50,7 @@ public class NotificationService {
     private static final long DEFAULT_TIMEOUT = 30 * 60 * 1000L; // 30분으로 변경
 
 
-    public SseEmitter subscribe(Long id) {
+    public SseEmitter subscribe(String id) {
 
 
         SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
@@ -79,13 +79,26 @@ public class NotificationService {
 
         return emitter;
     }
+    // 맨처음 구독시 오는곳
+    private void sendToClient(SseEmitter emitter, String emitterId, Object data) {
+        try {
+            emitter.send(SseEmitter.event()
+                    .id(emitterId)
+                    .data(data, MediaType.APPLICATION_JSON));
+            log.info("sendToClient emitterId={} data={}", emitterId, data);
+        } catch (IOException exception) {
+            emitterRepository.deleteById(emitterId);
+            emitter.completeWithError(exception);
+            throw ErrorCode.SUBSCRIBE_FAIL.commonException();
+        }
+    }
 
-    private <T> void sendToClient(Long userId, T data) {
+    private <T> void sendToClient(String userId, T data) {
         SseEmitter emitter = emitterRepository.get(userId);
         if (emitter != null) {
             try {
                 emitter.send(SseEmitter.event()
-                        .id(String.valueOf(userId))
+                        .id(userId)
                         .data(data));
                 log.info("sendToClient emitterId={} data={} ", userId, data);
             } catch (IOException e) {
@@ -95,9 +108,9 @@ public class NotificationService {
         }
     }
     // 리뷰
-    public void customNotify(Long businessId, ResponseNotificationDto responseNotificationDto) {
+    public void customNotify(String businessId, ResponseNotificationDto responseNotificationDto) {
 
-        Business business = businessRepository.findById(businessId).get();
+        Business business = businessRepository.findById(Long.valueOf(businessId)).get();
 
         ReviewNotification notification = ReviewNotification.builder()
                 .business(business)
@@ -108,17 +121,17 @@ public class NotificationService {
                 .build();
 
         reviewNotificationRepository.save(notification);
-
-        SseEmitter sseEmitter = emitterRepository.get(businessId);
+        String emitterKey = "business-" + businessId;
+        SseEmitter sseEmitter = emitterRepository.get(emitterKey);
         if (sseEmitter != null) {
-            sendToClient(businessId, responseNotificationDto);
+            sendToClient(emitterKey, responseNotificationDto);
         }
     }
 
     // 사업자 예약
-    public void customNotifyReservation(Long businessId, ResponseNotificationReservationDto responseNotificationReservationDto) {
+    public void customNotifyReservation(String businessId, ResponseNotificationReservationDto responseNotificationReservationDto) {
 
-        Business business = businessRepository.findById(businessId).get();
+        Business business = businessRepository.findById(Long.valueOf(businessId)).get();
 
         Notification reservationNotification = Notification.builder()
                 .business(business)
@@ -133,42 +146,16 @@ public class NotificationService {
                 .build();
 
         notificationRepository.save(reservationNotification);
-
-        SseEmitter sseEmitter = emitterRepository.get(businessId);
+        String emitterKey = "business-" + businessId;
+        SseEmitter sseEmitter = emitterRepository.get(emitterKey);
         if (sseEmitter != null) {
-            sendToClient(businessId, responseNotificationReservationDto);
+            sendToClient(emitterKey, responseNotificationReservationDto);
         }
     }
 
-    // 맨처음 구독시 오는곳
-    private void sendToClient(SseEmitter emitter, Long emitterId, Object data) {
-        try {
-            emitter.send(SseEmitter.event()
-                    .id(String.valueOf(emitterId))
-                    .data(data, MediaType.APPLICATION_JSON));
-            log.info("sendToClient emitterId={} data={}", emitterId, data);
-        } catch (IOException exception) {
-            emitterRepository.deleteById(emitterId);
-            emitter.completeWithError(exception);
-            throw ErrorCode.SUBSCRIBE_FAIL.commonException();
-        }
-    }
+    public void customNotifyReservationMember(String memberId, ResponseNotificationReservationMemberDto responseNotificationReservationDto, Long price) {
 
-    @Scheduled(fixedRate = 30000)// 30초 간격
-    public void cleanUpExpiredEmitters() {
-        emitterRepository.getAll().forEach((businessId, emitter) -> {
-            try {
-                emitter.send(SseEmitter.event().comment("Heartbeat")); // 연결 확인
-            } catch (Exception e) {
-                emitterRepository.deleteById(businessId); // 연결 실패 시 제거
-                emitterRepository.deleteAllEventCache(); // 관련 캐시 제거
-            }
-        });
-    }
-
-    public void customNotifyReservationMember(Long memberId, ResponseNotificationReservationMemberDto responseNotificationReservationDto, Long price) {
-
-        Member member = memberRepository.findById(memberId).get();
+        Member member = memberRepository.findById(Long.valueOf(memberId)).get();
 
         MemberNotification memberNotification = MemberNotification.builder()
                 .member(member)
@@ -182,10 +169,10 @@ public class NotificationService {
                 .build();
 
         memberNotificationRepository.save(memberNotification);
-
-        SseEmitter sseEmitter = emitterRepository.get(memberId);
+        String emitterKey = "member-" + memberId;
+        SseEmitter sseEmitter = emitterRepository.get(emitterKey);
         if (sseEmitter != null) {
-            sendToClient(memberId, responseNotificationReservationDto);
+            sendToClient(emitterKey, responseNotificationReservationDto);
         }
     }
 

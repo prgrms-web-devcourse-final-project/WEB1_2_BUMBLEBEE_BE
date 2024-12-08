@@ -124,7 +124,7 @@ public class PaymentsService {
                 .build();
 
         notificationService.customNotifyReservation(
-                business.getBusinessId(),
+                String.valueOf(business.getBusinessId()),
                 responseNotificationDto
         );
 
@@ -149,7 +149,7 @@ public class PaymentsService {
                 .build();
 
         notificationService.customNotifyReservationMember(
-                member.getMemberId(),
+                String.valueOf(member.getMemberId()),
                 responseNotificationDto,
                 notification.getPrice()
         );
