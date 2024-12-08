@@ -1,6 +1,8 @@
 package roomit.main.domain.payments.Service;
 
 import jakarta.transaction.Transactional;
+
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Base64;
@@ -35,6 +37,7 @@ import roomit.main.domain.payments.repository.PaymentsRepository;
 import roomit.main.domain.reservation.entity.Reservation;
 import roomit.main.domain.reservation.entity.ReservationState;
 import roomit.main.domain.reservation.repository.ReservationRepository;
+import roomit.main.domain.studyroom.entity.value.StudyRoomName;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.global.error.ErrorCode;
 
@@ -60,11 +63,6 @@ public class PaymentsService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
 
-        Workplace workplace = reservation.getStudyRoom().getWorkPlace();
-
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(ErrorCode.MEMBER_NOT_FOUND::commonException);
-
         try {
             Payments payments = paymentsRequest.toEntity();
             payments.addReservation(reservation);
@@ -73,27 +71,51 @@ public class PaymentsService {
             reservation.changeReservationState(ReservationState.ACTIVE); // 엔드타임이 지나면 컴플리트로 << 로직을 추가하고 봐야함
 
             reservationRepository.save(reservation);
-            if(reservation.getReservationState() == ReservationState.ACTIVE) {
-                alrim(workplace, "예약이 완료 되었습니다.", paymentsRequest.totalAmount());
-            }
-            if(reservation.getReservationState() == ReservationState.ACTIVE) {
-                memberAlrim(member, workplace, "예약이 등록 되었습니다.", paymentsRequest.totalAmount());
-            }
             return payments.toDto(paymentsConfig.getSuccessUrl(), paymentsConfig.getFailUrl());
         } catch (Exception e) {
             throw ErrorCode.PAYMENTS_VALIDATION_FAILED.commonException();
         }
 
     }
-    public void alrim(Workplace workplace, String content, Long price) {
+        /**
+         * 결제 성공
+         */
+
+    @Transactional
+    public PaymentsResponse tossPaymentSuccess(String paymentKey, String orderId, Long amount) {
+        Payments payments = verifyPayment(orderId, amount);
+        PaymentsResponse result = requestPaymentAccept(paymentKey, orderId, amount);
+
+        Reservation reservation = payments.getReservation();
+
+        Member member = reservation.getMember();
+        Workplace workPlace = reservation.getStudyRoom().getWorkPlace();
+
+
+        alrim(workPlace, reservation, "님의 예약이 등록 되었습니다.", amount);
+
+        memberAlrim(member, reservation, workPlace, "예약이 등록 되었습니다.", amount);
+
+
+        payments.changeTossPaymentsKey(paymentKey);
+        payments.changePaySuccessYN(true);
+
+        return result;
+    }
+
+    public void alrim( Workplace workplace, Reservation  reservation, String content, Long price) {
         Business business = workplace.getBusiness();
 
         Notification notification = Notification.builder()
                 .business(business)
                 .workplaceId(workplace.getWorkplaceId())
                 .notificationType(NotificationType.RESERVATION_CONFIRMED)
-                .content(workplace.getWorkplaceName().getValue() + content)
+                .content(content)
                 .price(price)
+                .url(workplace.getImageUrl())
+                .reservationName(reservation.getReservationName().getValue())
+                .studyRoomName(reservation.getStudyRoom().getStudyRoomName().getValue())
+                .workplaceName(workplace.getWorkplaceName().getValue())
                 .build();
 
         ResponseNotificationReservationDto responseNotificationDto = ResponseNotificationReservationDto
@@ -108,14 +130,17 @@ public class PaymentsService {
 
     }
 
-    public void memberAlrim(Member member, Workplace workplace, String content, Long price) {
+    public void memberAlrim(Member member, Reservation  reservation, Workplace workplace, String content, Long price) {
 
         MemberNotification notification = MemberNotification.builder()
                 .member(member)
                 .workplaceId(workplace.getWorkplaceId())
                 .price(price)
+                .workplaceName(workplace.getWorkplaceName().getValue())
+                .studyRoomName(reservation.getStudyRoom().getStudyRoomName().getValue())
+                .imageUrl(workplace.getImageUrl())
                 .notificationType(NotificationMemberType.MEMBER_RESERVATION_CONFIRMED)
-                .content(workplace.getWorkplaceName().getValue() + content)
+                .content(content)
                 .build();
 
         ResponseNotificationReservationMemberDto responseNotificationDto = ResponseNotificationReservationMemberDto
@@ -129,19 +154,6 @@ public class PaymentsService {
                 notification.getPrice()
         );
 
-    }
-        /**
-         * 결제 성공
-         */
-    @Transactional
-    public PaymentsResponse tossPaymentSuccess(String paymentKey, String orderId, Long amount) {
-        Payments payments = verifyPayment(orderId, amount);
-        PaymentsResponse result = requestPaymentAccept(paymentKey, orderId, amount);
-
-        payments.changeTossPaymentsKey(paymentKey);
-        payments.changePaySuccessYN(true);
-
-        return result;
     }
 
     /**

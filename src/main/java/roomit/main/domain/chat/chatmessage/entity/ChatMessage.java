@@ -33,6 +33,7 @@ public class ChatMessage {
     @Column(nullable = false)
     private LocalDateTime timestamp;
 
+    @Enumerated(value = EnumType.STRING)
     private SenderType senderType;
 
     private Boolean isRead = false;
