@@ -82,6 +82,7 @@ public class ReviewService {
 
         Notification notification = Notification.builder()
                 .business(business)
+                .workplaceId(workplace.getWorkplaceId())
                 .notificationType(NotificationType.REVIEW_CREATED)
                 .content(reviewContent)
                 .build();
@@ -89,7 +90,6 @@ public class ReviewService {
         ResponseNotificationDto responseNotificationDto = ResponseNotificationDto
                 .builder()
                 .notification(notification)
-                .workplaceId(workplace.getWorkplaceId())
                 .build();
 
         notificationService.customNotify(
