@@ -22,18 +22,17 @@ public class ResponseNotificationReservationDto {
     private Long price;
 
     @Builder
-    public ResponseNotificationReservationDto(Notification notification, Long workplaceId) {
+    public ResponseNotificationReservationDto(Notification notification) {
         this.content = notification.getContent();
         this.createdAt = notification.getCreatedAt();
-        this.workplaceId = workplaceId;
+        this.workplaceId = notification.getWorkplaceId();
         this.notificationType = notification.getNotificationType();
         this.price = notification.getPrice();
     }
 
-    public static ResponseNotificationReservationDto fromEntityReservation(Notification notification, Long workplaceId) {
+    public static ResponseNotificationReservationDto fromEntityReservation(Notification notification) {
         return new ResponseNotificationReservationDto(
-                notification,
-                workplaceId
+                notification
         );
     }
 }

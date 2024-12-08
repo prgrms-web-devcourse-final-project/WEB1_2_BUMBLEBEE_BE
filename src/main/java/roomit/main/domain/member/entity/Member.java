@@ -14,6 +14,8 @@ import roomit.main.domain.member.entity.value.MemberNickname;
 import roomit.main.domain.member.entity.value.MemberPassword;
 import roomit.main.domain.member.entity.value.MemberPhoneNumber;
 import roomit.main.global.oauth2.dto.Provider;
+import roomit.main.domain.notification.entity.MemberNotification;
+import roomit.main.domain.notification.entity.Notification;
 import roomit.main.domain.reservation.entity.Reservation;
 
 import java.time.LocalDate;
@@ -70,8 +72,11 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reservation> reservations = new ArrayList();
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MemberNotification> memberNotifications = new ArrayList<>();
+
     @Builder
-    public Member(String memberNickName, String memberPhoneNumber, LocalDate birthDay, Sex memberSex, String memberEmail, String memberPwd, Role memberRole , PasswordEncoder passwordEncoder, Provider provider, List<Reservation> reservation) {
+    public Member(String memberNickName, String memberPhoneNumber, LocalDate birthDay, Sex memberSex, Role memberRole, String memberEmail, String memberPwd, PasswordEncoder passwordEncoder, Provider provider, List<Reservation> reservation, List<MemberNotification> list) {
         this.memberNickname = new MemberNickname(memberNickName);
         this.memberPhonenumber = new MemberPhoneNumber(memberPhoneNumber);
         this.memberEmail = new MemberEmail(memberEmail);
@@ -81,6 +86,7 @@ public class Member {
         this.memberRole = Role.ROLE_USER;
         this.provider = provider;
         this.reservations = reservation;
+        this.memberNotifications = list;
     }
 
     public String getMemberNickName(){
