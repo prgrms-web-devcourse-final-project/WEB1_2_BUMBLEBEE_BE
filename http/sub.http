@@ -8,6 +8,8 @@ Content-Type: application/json
 		"businessNum":"133-12-12345"
 }
 
+
+
 ### 로그인
 POST http://localhost:8080/login/business
 Content-Type: application/json
