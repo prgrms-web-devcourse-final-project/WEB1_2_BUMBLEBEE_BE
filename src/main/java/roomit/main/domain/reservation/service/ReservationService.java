@@ -32,7 +32,6 @@ public class ReservationService {
     private final StudyRoomRepository studyRoomRepository;
     private final MemberRepository memberRepository;
     private final FileLocationService fileLocationService;
-    private final RedisTemplate<Object, List<ReservationResponse>> redisTemplate;
 
     // 예약 만드는 메서드
     @DistributedLock(key = "#studyRoomId + ':' + #request.startTime + ':' + #request.endTime")
