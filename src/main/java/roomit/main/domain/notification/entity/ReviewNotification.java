@@ -9,57 +9,53 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.CreatedDate;
 import roomit.main.domain.business.entity.Business;
-import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.notification.entity.value.NotificationContent;
-import roomit.main.global.inner.ImageUrl;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Entity
 @NoArgsConstructor
-public class MemberNotification {
+public class ReviewNotification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long memberNotificatinId;
+    private Long reveiewNotificationId;
 
     @Embedded
-    private NotificationContent content;
+    private NotificationContent reveiewNotificationContent;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private NotificationMemberType notificationType;
+    private NotificationType reveiewNotificationType;
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    @JoinColumn(name = "business_id", nullable = false)
+    private Business business;
 
     @CreatedDate
     private LocalDateTime createdAt;
 
-    private Long price;
-
     private Long workplaceId;
 
-    private String workplaceName;
     private String studyRoomName;
-    private String imageUrl;
 
+    private String workplaceName;
+
+    private String url;
     @Builder
-    public MemberNotification(Member member, String workplaceName, String studyRoomName, String imageUrl,NotificationMemberType notificationType, String content, Long price, Long workplaceId) {
-        this.member = member;
-        this.notificationType = NotificationMemberType.valueOf(notificationType.name());
-        this.content = new NotificationContent(content);
+    public ReviewNotification(Business business, String url, NotificationType notificationType, String content, Long workplaceId,String studyRoomName, String workplaceName) {
+        this.business = business;
+        this.reveiewNotificationType = NotificationType.valueOf(notificationType.name());
+        this.reveiewNotificationContent = new NotificationContent(content);
         this.createdAt = LocalDateTime.now();
-        this.price = price;
         this.workplaceId = workplaceId;
-        this.workplaceName = workplaceName;
         this.studyRoomName = studyRoomName;
-        this.imageUrl = imageUrl;
+        this.workplaceName = workplaceName;
+        this.url = url;
     }
 
     public String getContent(){
-        return content.getContent();
+        return reveiewNotificationContent.getContent();
     }
 }

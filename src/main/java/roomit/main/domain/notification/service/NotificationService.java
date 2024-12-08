@@ -17,9 +17,11 @@ import roomit.main.domain.notification.dto.ResponseNotificationReservationDto;
 import roomit.main.domain.notification.dto.ResponseNotificationReservationMemberDto;
 import roomit.main.domain.notification.entity.MemberNotification;
 import roomit.main.domain.notification.entity.Notification;
+import roomit.main.domain.notification.entity.ReviewNotification;
 import roomit.main.domain.notification.repository.EmitterRepository;
 import roomit.main.domain.notification.repository.MemberNotificationRepository;
 import roomit.main.domain.notification.repository.NotificationRepository;
+import roomit.main.domain.notification.repository.ReviewNotificationRepository;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
 
@@ -36,6 +38,8 @@ public class NotificationService {
     private final EmitterRepository emitterRepository;
 
     private final NotificationRepository notificationRepository;
+
+    private final ReviewNotificationRepository reviewNotificationRepository;
 
     private final BusinessRepository businessRepository;
 
@@ -95,14 +99,14 @@ public class NotificationService {
 
         Business business = businessRepository.findById(businessId).get();
 
-        Notification notification = Notification.builder()
+        ReviewNotification notification = ReviewNotification.builder()
                 .business(business)
                 .content(responseNotificationDto.getContent())
                 .notificationType(responseNotificationDto.getNotificationType())
                 .workplaceId(responseNotificationDto.getWorkplaceId())
                 .build();
 
-        notificationRepository.save(notification);
+        reviewNotificationRepository.save(notification);
 
         SseEmitter sseEmitter = emitterRepository.get(businessId);
         if (sseEmitter != null) {
@@ -189,7 +193,7 @@ public class NotificationService {
     public List<ResponseNotificationDto> getNotifications(Long businessId) {
 
 
-        List<Notification> notifications = notificationRepository.findNotificationsByBusinessId(businessId);
+        List<ReviewNotification> notifications = reviewNotificationRepository.findNotificationsByBusinessId(businessId);
 
         return notifications.stream()
                 .map(ResponseNotificationDto::fromEntity)  // Notification -> NotificationDto 변환

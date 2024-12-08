@@ -26,7 +26,7 @@ public class ResponseNotificationReservationMemberDto {
     private Long price;
     private String workplaceName;
     private String studyRoomName;
-    private ImageUrl imageUrl;
+    private String imageUrl;
 
     @Builder
     public ResponseNotificationReservationMemberDto(MemberNotification notification) {

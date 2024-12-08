@@ -50,10 +50,10 @@ public class Notification {
 
     private String workplaceName;
 
-    private ImageUrl url;
+    private String url;
 
     @Builder
-    public Notification(Business business, ImageUrl url, NotificationType notificationType, String content, Long price, Long workplaceId, String reservationName, String studyRoomName, String workplaceName) {
+    public Notification(Business business, String url, NotificationType notificationType, String content, Long price, Long workplaceId, String reservationName, String studyRoomName, String workplaceName) {
         this.business = business;
         this.notificationType = NotificationType.valueOf(notificationType.name());
         this.content = new NotificationContent(content);
