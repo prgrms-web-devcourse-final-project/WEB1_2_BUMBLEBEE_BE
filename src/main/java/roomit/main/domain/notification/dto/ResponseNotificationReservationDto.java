@@ -25,7 +25,7 @@ public class ResponseNotificationReservationDto {
     private String reservationName;
     private String studyRoomName;
     private String workplaceName;
-    private ImageUrl url;
+    private String url;
 
     @Builder
     public ResponseNotificationReservationDto(Notification notification) {

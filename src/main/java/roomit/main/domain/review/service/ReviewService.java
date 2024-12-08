@@ -16,6 +16,7 @@ import roomit.main.domain.member.repository.MemberRepository;
 import roomit.main.domain.notification.dto.ResponseNotificationDto;
 import roomit.main.domain.notification.entity.Notification;
 import roomit.main.domain.notification.entity.NotificationType;
+import roomit.main.domain.notification.entity.ReviewNotification;
 import roomit.main.domain.notification.repository.NotificationRepository;
 import roomit.main.domain.notification.service.NotificationService;
 import roomit.main.domain.reservation.entity.Reservation;
@@ -80,7 +81,7 @@ public class ReviewService {
     public void alrim(Workplace workplace, String reviewContent){
         Business business = workplace.getBusiness();
 
-        Notification notification = Notification.builder()
+        ReviewNotification notification = ReviewNotification.builder()
                 .business(business)
                 .workplaceId(workplace.getWorkplaceId())
                 .notificationType(NotificationType.REVIEW_CREATED)
