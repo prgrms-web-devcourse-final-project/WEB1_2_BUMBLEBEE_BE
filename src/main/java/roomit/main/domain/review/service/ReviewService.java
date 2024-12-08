@@ -94,7 +94,7 @@ public class ReviewService {
                 .build();
 
         notificationService.customNotify(
-                business.getBusinessId(),
+                String.valueOf(business.getBusinessId()),
                 responseNotificationDto
         );
     }
