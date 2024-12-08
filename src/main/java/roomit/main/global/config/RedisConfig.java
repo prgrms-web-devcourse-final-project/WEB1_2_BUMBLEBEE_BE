@@ -16,6 +16,9 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import roomit.main.domain.chat.redis.service.RedisSubscriber;
+import roomit.main.domain.reservation.dto.response.ReservationResponse;
+
+import java.util.List;
 
 @Configuration
 @EnableRedisRepositories(basePackages = "roomit.main.global.token.repository")
@@ -54,6 +57,7 @@ public class RedisConfig {
 
         return redisTemplate;
     }
+
 
     @Bean
     public RedisMessageListenerContainer redisMessageListenerContainer(
