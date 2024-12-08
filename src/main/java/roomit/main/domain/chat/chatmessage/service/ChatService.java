@@ -64,6 +64,7 @@ public class ChatService {
         // Redis Pub/Sub 발행
         String topic = "/sub/chat/" + request.roomId();
         redisPublisher.publish(topic, request);
+
         // Redis에 저장
         saveMessageToRedis(new ChatMessageSaveRequest(request));
     }
@@ -147,12 +148,6 @@ public class ChatService {
             List<ChatMessageResponse> redisMessages = sortedMessages.stream()
                     .map(value -> objectMapper.convertValue(value, ChatMessageSaveRequest.class)) // ChatMessageSaveRequest로 역직렬화
                     .map(request -> Pair.of(room.getRoomId(), request))
-                    .peek(pair -> {
-                        if (!isMessageRead(roomId, pair.getRight().sender(), senderName)) {
-                            redisTemplate.opsForHash().delete(unreadKey, pair.getRight().sender());
-                            log.debug("Marked message as read for sender: {}", pair.getRight().sender());
-                        }
-                    })
                     .map(pair -> new ChatMessageResponse(pair.getLeft(), pair.getRight(), true))
                     .toList();
 
@@ -165,7 +160,7 @@ public class ChatService {
         // MySQL에서 데이터 조회
         List<ChatMessageResponse> mysqlMessages = messageRepository.findByRoomId(roomId).stream()
                 .peek(message -> {
-                    if (!message.getSender().equals(senderName)) {
+                    if (!message.getIsRead()&&!message.getSender().equals(senderName)) {
                         // 메시지를 읽음으로 설정
                         message.markAsRead();
                         messageRepository.save(message); // 변경 사항 저장
