@@ -45,9 +45,6 @@ public class ChatService {
     @Value("${redis.message.ttl:1200}") // 메시지 TTL 설정
     private int messageTtl;
 
-    @Value("${redis.message.cleanup.interval}")
-    private int cleanupInterval;
-
     @Transactional
     public void sendMessage(ChatMessageRequest request) {
         ChatRoom roomDetails = roomRepository.findRoomDetailsById(request.roomId())
@@ -139,7 +136,6 @@ public class ChatService {
         validateAuthorization(senderType, room, senderName);
 
         String redisKey = BumblebeeStringUtil.format(REDIS_MESSAGE_KEY_FORMAT, roomId);
-        String unreadKey = redisKey + ":unread";
 
         Set<Object> sortedMessages = redisTemplate.opsForZSet().range(redisKey, 0, -1);
         CopyOnWriteArrayList<ChatMessageResponse> combinedList = new CopyOnWriteArrayList<>();
@@ -178,15 +174,6 @@ public class ChatService {
 
         // Combined 결과 반환
         return combinedList;
-    }
-
-    private boolean isMessageRead(Long roomId, String senderId, String currentUserId) {
-        // sender가 현재 사용자라면 메시지를 읽은 것으로 간주
-        if (senderId.equals(currentUserId)) {
-            return true;
-        }
-        String unreadKey = REDIS_MESSAGE_KEY_FORMAT + roomId + ":messages" + ":unread";
-        return redisTemplate.opsForHash().get(unreadKey, senderId) == null;
     }
 
     private void validateAuthorization(SenderType senderType, ChatRoom room, String senderName) {
