@@ -27,7 +27,6 @@ public class ChatController {
 
     @MessageMapping("/sendMessage")
     public void sendMessage(@Payload ChatMessageRequest request) {
-        log.info(request.toString());
         chatService.sendMessage(request); // Redis 발행 + MySQL 저장
     }
 

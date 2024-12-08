@@ -29,10 +29,10 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
         SELECT CASE WHEN EXISTS (
             SELECT 1
             FROM ChatRoom c
-            WHERE c.member.memberId = :memberId AND c.business.businessId = :businessId
+            WHERE c.member.memberId = :memberId AND c.business.businessId = :businessId And c.workplaceId = :workplaceId
             ) THEN TRUE ELSE FALSE END
     """)
-    Boolean existsChatRoomByMemberIdAndBusinessId(Long memberId, Long businessId);
+    Boolean existsChatRoomByMemberIdAndBusinessIdAndWorkplaceId(Long memberId, Long businessId, Long workplaceId);
 
     @Query("""
         SELECT c, m
@@ -67,8 +67,8 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
     @Query("""
         SELECT m.roomId
         FROM ChatRoom m
-        where m.member.memberId = :memberId and m.business.businessId = :businessId
+        where m.member.memberId = :memberId and m.business.businessId = :businessId and m.workplaceId = :workplaceId
     """)
-    Long findChatRoomId(Long memberId, Long businessId);
+    Long findChatRoomId(Long memberId, Long businessId, Long workplaceId);
 
 }
