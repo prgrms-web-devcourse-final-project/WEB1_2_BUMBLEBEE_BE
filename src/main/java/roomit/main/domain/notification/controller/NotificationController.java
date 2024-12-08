@@ -31,14 +31,16 @@ public class NotificationController {
     @GetMapping(value = "/api/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
         public ResponseEntity<SseEmitter> subscribe(@AuthenticationPrincipal CustomBusinessDetails customBusinessDetails) {
         Long businessId = customBusinessDetails.getId();
-        return ResponseEntity.ok(notificationService.subscribe(businessId));
+        String emitterKey = "business-" + businessId;
+        return ResponseEntity.ok(notificationService.subscribe(emitterKey));
     }
 
     // 멤버 구독
     @GetMapping(value = "/api/subscribe/user", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public ResponseEntity<SseEmitter> subscribeUser(@AuthenticationPrincipal CustomMemberDetails customMemberDetails) {
         Long memberId = customMemberDetails.getId();  // 사용자 ID
-        return ResponseEntity.ok(notificationService.subscribe(memberId));
+        String emitterKey = "member-" + memberId;
+        return ResponseEntity.ok(notificationService.subscribe(emitterKey));
     }
 
     //리뷰

@@ -8,11 +8,10 @@ import java.util.Map;
 
 @Repository
 public interface EmitterRepository {
-    void save(Long emitterId, SseEmitter sseEmitter);
-    SseEmitter get(Long businessId);
+    void save(String emitterId, SseEmitter sseEmitter);
+    SseEmitter get(String businessId);
 
-    void deleteById(Long emitterId);
-    Map<Long, SseEmitter> getAll();
+    void deleteById(String emitterId);
     void deleteAllEventCache();
 
     void saveEventCache(Long businessId, Object eventData);

@@ -38,18 +38,6 @@ public class MemberNotificationService {
 
     private final MemberRepository memberRepository;
 
-    // 멤버 예약 알림
-    @Scheduled(fixedRate = 30000)// 30초 간격
-    public void cleanUpExpiredEmitters() {
-        emitterRepository.getAll().forEach((businessId, emitter) -> {
-            try {
-                emitter.send(SseEmitter.event().comment("Heartbeat")); // 연결 확인
-            } catch (Exception e) {
-                emitterRepository.deleteById(businessId); // 연결 실패 시 제거
-                emitterRepository.deleteAllEventCache(); // 관련 캐시 제거
-            }
-        });
-    }
     @Transactional
     public List<ResponseNotificationReservationMemberDto> getNotificationsReservationMember(Long businessId) {
 
