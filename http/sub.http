@@ -13,7 +13,7 @@ POST http://localhost:8080/login/business
 Content-Type: application/json
 
 {
-  "email" : "business4@gmail.com",
+  "email" : "business5@gmail.com",
   "password" : "Test1234!"
 
 }
@@ -72,16 +72,16 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuY
   "memberPhoneNum": "010-0000-0000",
   "tossPaymentMethod": "CARD"
 }
-### 사업자 알람조회
+### 사업자 리뷰 알람조회
 GET  http://localhost:8080/api/v1/sub/list
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiYnVzaW5lc3M1QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0JVU0lORVNTIiwiaWF0IjoxNzMzNjUwMDc4LCJleHAiOjE3MzM2NTA5Nzh9.QtMHTLk4PPX6XnXwwWpw4lOJfGuKYEbA8ZIEu6MMs-4
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiYnVzaW5lc3M1QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0JVU0lORVNTIiwiaWF0IjoxNzMzNjU1MzExLCJleHAiOjE3MzM2NTYyMTF9.wwyVTHYBnFfX0PTKvh9dvMBKkaUxx7yFFYEhtEQfHxc
 
 
 ### 결제 알람조회
 GET  http://localhost:8080/api/v1/subReservation/list
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiYnVzaW5lc3M1QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0JVU0lORVNTIiwiaWF0IjoxNzMzNjUwMDc4LCJleHAiOjE3MzM2NTA5Nzh9.QtMHTLk4PPX6XnXwwWpw4lOJfGuKYEbA8ZIEu6MMs-4
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiYnVzaW5lc3M1QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0JVU0lORVNTIiwiaWF0IjoxNzMzNjU1MzExLCJleHAiOjE3MzM2NTYyMTF9.wwyVTHYBnFfX0PTKvh9dvMBKkaUxx7yFFYEhtEQfHxc
 
 ### 사용자 알람조회
 GET  http://localhost:8080/api/v1/subReservation/memberlist
@@ -92,10 +92,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuY
 ### 리뷰등록
 POST http://localhost:8080/api/v1/review/register
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiamFuZWRvZUBnbWFpbC5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzMzNjQ4MjQ0LCJleHAiOjE3MzM2NDkxNDR9.9-NrE4pj360Tf1j0Qf6JDaKX86553xl6UcyfNbbpOPI
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoibWVtYmVyMUBnbWFpbC5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzMzNjU1MjA0LCJleHAiOjE3MzM2NTYxMDR9.1Ll4CRRt7fjhpEJbBDBTRdY6XnSQQnrMnRtmMaGzMkk
 
 {
-    "reservationId" : 10,
+    "reservationId" : 9,
     "workPlaceName" : "ENI스터디룸",
     "reviewContent": "좋습니다",
     "reviewRating" : 4

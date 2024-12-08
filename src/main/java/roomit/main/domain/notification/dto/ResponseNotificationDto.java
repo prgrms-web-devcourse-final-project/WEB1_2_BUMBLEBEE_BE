@@ -22,13 +22,15 @@ public class ResponseNotificationDto {
     private LocalDateTime createdAt;
     private Long workplaceId;
     private NotificationType notificationType;
+    private String workplaceName;
 
     @Builder
     public ResponseNotificationDto(ReviewNotification notification) {
-        this.alrimId = notification.getReveiewNotificationId();
+        this.alrimId = notification.getId();
         this.content = notification.getContent();
         this.createdAt = notification.getCreatedAt();
         this.workplaceId = notification.getWorkplaceId();
+        this.workplaceName = notification.getWorkplaceName();
         this.notificationType = notification.getReveiewNotificationType();
     }
 
