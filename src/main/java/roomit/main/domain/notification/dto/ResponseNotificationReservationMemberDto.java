@@ -9,6 +9,7 @@ import roomit.main.domain.notification.entity.MemberNotification;
 import roomit.main.domain.notification.entity.Notification;
 import roomit.main.domain.notification.entity.NotificationMemberType;
 import roomit.main.domain.notification.entity.NotificationType;
+import roomit.main.global.inner.ImageUrl;
 
 import java.time.LocalDateTime;
 
@@ -22,6 +23,9 @@ public class ResponseNotificationReservationMemberDto {
     private Long workplaceId;
     private NotificationMemberType notificationType;
     private Long price;
+    private String workplaceName;
+    private String studyRoomName;
+    private ImageUrl imageUrl;
 
     @Builder
     public ResponseNotificationReservationMemberDto(MemberNotification notification) {
@@ -30,6 +34,9 @@ public class ResponseNotificationReservationMemberDto {
         this.workplaceId = notification.getWorkplaceId();
         this.notificationType = notification.getNotificationType();
         this.price = notification.getPrice();
+        this.workplaceName = notification.getWorkplaceName();
+        this.studyRoomName = notification.getStudyRoomName();
+        this.imageUrl = notification.getImageUrl();
     }
 
     public static ResponseNotificationReservationMemberDto fromEntityReservationtoMember(MemberNotification memberNotification) {
