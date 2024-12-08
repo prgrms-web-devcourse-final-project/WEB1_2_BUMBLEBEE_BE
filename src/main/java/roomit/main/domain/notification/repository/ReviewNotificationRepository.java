@@ -9,7 +9,7 @@ import roomit.main.domain.notification.entity.ReviewNotification;
 import java.util.List;
 
 public interface ReviewNotificationRepository extends JpaRepository<ReviewNotification, Long> {
-    @Query("SELECT n FROM Notification n JOIN FETCH n.business b WHERE b.businessId = :businessId ORDER BY n.createdAt DESC")
+    @Query("SELECT n FROM ReviewNotification n JOIN FETCH n.business b WHERE b.businessId = :businessId ORDER BY n.createdAt DESC")
     List<ReviewNotification> findNotificationsByBusinessId(@Param("businessId") Long businessId);
 
 }

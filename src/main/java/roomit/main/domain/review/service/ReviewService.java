@@ -86,6 +86,7 @@ public class ReviewService {
                 .workplaceId(workplace.getWorkplaceId())
                 .notificationType(NotificationType.REVIEW_CREATED)
                 .content(reviewContent)
+                .workplaceName(workplace.getWorkplaceName().getValue())
                 .build();
 
         ResponseNotificationDto responseNotificationDto = ResponseNotificationDto

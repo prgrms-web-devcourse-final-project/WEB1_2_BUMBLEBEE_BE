@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 public class ReviewNotification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reveiewNotificationId;
+    private Long id;
 
     @Embedded
     private NotificationContent reveiewNotificationContent;
