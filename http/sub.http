@@ -13,7 +13,7 @@ POST http://localhost:8080/login/business
 Content-Type: application/json
 
 {
-  "email" : "business1@gmail.com",
+  "email" : "business4@gmail.com",
   "password" : "Test1234!"
 
 }
@@ -21,34 +21,34 @@ Content-Type: application/json
 
 GET http://localhost:8080/api/subscribe
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiYnVzaW5lc3MxQGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0JVU0lORVNTIiwiaWF0IjoxNzMzNjQ2OTAyLCJleHAiOjE3MzM2NDc4MDJ9.z4Q9uYtJ_m5UyHr6GVrSriEbGA2rTZ_s7_Mzw_t146o
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiYnVzaW5lc3M0QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0JVU0lORVNTIiwiaWF0IjoxNzMzNjUxMDc1LCJleHAiOjE3MzM2NTE5NzV9.cU4C3qoL9UIpV2Z5JGqRViNvcm9yzd7cyTnduFOgWrc
 Accept: text/event-stream
 
 ### 멤버 구독
 
 GET http://localhost:8080/api/subscribe/user
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiZXh0cmExQGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3MzM1NzY5OTEsImV4cCI6MTczMzU3Nzg5MX0.7_ySUZ0piLzYMy6R43pwcA0x4b2nPbl_h-49DmNSmfg
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoibWVtYmVyMUBnbWFpbC5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzMzNjUxMTgyLCJleHAiOjE3MzM2NTIwODJ9.T-zXWwcPANZtdWDAcqbQAYBHuccCP-R40nJncRWo91E
 Accept: text/event-stream
 
 ### 예약등록
 
 POST http://localhost:8080/api/v1/reservations/9
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiZXh0cmExQGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3MzM2NDMwNTgsImV4cCI6MTczMzY0Mzk1OH0.D85pBlmy5aErPgtFJD3Ujm0MTmX7TU5yOhNdFjTLdHw
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoibWVtYmVyMUBnbWFpbC5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzMzNjUxMTgyLCJleHAiOjE3MzM2NTIwODJ9.T-zXWwcPANZtdWDAcqbQAYBHuccCP-R40nJncRWo91E
 
 {
   "reservationName": "홍길동",
   "reservationPhoneNumber": "010-0000-0000",
   "capacity" : 4,
   "price" : 12000,
-  "startTime": "2024-12-02T19:00:00",
-  "endTime": "2024-12-02T20:59:00"
+  "startTime": "2024-12-02T10:00:00",
+  "endTime": "2024-12-02T11:59:00"
 }
 ### 결제
-POST http://localhost:8080//api/v1/payments/toss?reservationId=24
+POST http://localhost:8080//api/v1/payments/toss?reservationId=21
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiZXh0cmExQGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3MzM2NDMwNTgsImV4cCI6MTczMzY0Mzk1OH0.D85pBlmy5aErPgtFJD3Ujm0MTmX7TU5yOhNdFjTLdHw
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoibWVtYmVyMUBnbWFpbC5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzMzNjUxMTgyLCJleHAiOjE3MzM2NTIwODJ9.T-zXWwcPANZtdWDAcqbQAYBHuccCP-R40nJncRWo91E
 
 {
   "orderId": "string",
@@ -72,30 +72,30 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuY
   "memberPhoneNum": "010-0000-0000",
   "tossPaymentMethod": "CARD"
 }
-### 알람조회
+### 사업자 알람조회
 GET  http://localhost:8080/api/v1/sub/list
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiYnVzaW5lc3M0QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0JVU0lORVNTIiwiaWF0IjoxNzMzNjM5MTM5LCJleHAiOjE3MzM2NDAwMzl9.KFCyMW1YD4SJIS2QvThB5Z2id5zRK7FiSzJQG4YUGd8
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiYnVzaW5lc3M1QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0JVU0lORVNTIiwiaWF0IjoxNzMzNjUwMDc4LCJleHAiOjE3MzM2NTA5Nzh9.QtMHTLk4PPX6XnXwwWpw4lOJfGuKYEbA8ZIEu6MMs-4
 
 
 ### 결제 알람조회
 GET  http://localhost:8080/api/v1/subReservation/list
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiYnVzaW5lc3M0QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0JVU0lORVNTIiwiaWF0IjoxNzMzNjQ0MTc5LCJleHAiOjE3MzM2NDUwNzl9.YsWlVN-nDN60V2VYJoNgJ0idHIWw0ywriqQ_WH8B1MQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiYnVzaW5lc3M1QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0JVU0lORVNTIiwiaWF0IjoxNzMzNjUwMDc4LCJleHAiOjE3MzM2NTA5Nzh9.QtMHTLk4PPX6XnXwwWpw4lOJfGuKYEbA8ZIEu6MMs-4
 
 ### 사용자 알람조회
 GET  http://localhost:8080/api/v1/subReservation/memberlist
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiZXh0cmExQGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3MzM1NzY5OTEsImV4cCI6MTczMzU3Nzg5MX0.7_ySUZ0piLzYMy6R43pwcA0x4b2nPbl_h-49DmNSmfg
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoibWVtYmVyMUBnbWFpbC5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzMzNjUxMTgyLCJleHAiOjE3MzM2NTIwODJ9.T-zXWwcPANZtdWDAcqbQAYBHuccCP-R40nJncRWo91E
 
 
 ### 리뷰등록
 POST http://localhost:8080/api/v1/review/register
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiZXh0cmExQGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3MzM1NzQ5ODQsImV4cCI6MTczMzU3NTg4NH0.b1tLhrNFTAf6YnmagWMlRYPalMQFvSl4O24-vf9SUDU
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiamFuZWRvZUBnbWFpbC5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzMzNjQ4MjQ0LCJleHAiOjE3MzM2NDkxNDR9.9-NrE4pj360Tf1j0Qf6JDaKX86553xl6UcyfNbbpOPI
 
 {
-    "reservationId" : 9,
+    "reservationId" : 10,
     "workPlaceName" : "ENI스터디룸",
     "reviewContent": "좋습니다",
     "reviewRating" : 4
@@ -118,7 +118,7 @@ Content-Type: application/json
 
 {
 
-  "email" : "extra1@gmail.com",
+  "email" : "member1@gmail.com",
   "password" : "Test1234!"
 
 }
