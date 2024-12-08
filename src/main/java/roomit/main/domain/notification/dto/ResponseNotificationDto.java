@@ -8,6 +8,7 @@ import lombok.ToString;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.notification.entity.Notification;
 import roomit.main.domain.notification.entity.NotificationType;
+import roomit.main.domain.notification.entity.ReviewNotification;
 
 import java.time.LocalDateTime;
 
@@ -23,7 +24,7 @@ public class ResponseNotificationDto {
     private NotificationType notificationType;
 
     @Builder
-    public ResponseNotificationDto(Notification notification) {
+    public ResponseNotificationDto(ReviewNotification notification) {
         this.alrimId = notification.getId();
         this.content = notification.getContent();
         this.createdAt = notification.getCreatedAt();
@@ -31,7 +32,7 @@ public class ResponseNotificationDto {
         this.notificationType = notification.getNotificationType();
     }
 
-    public static ResponseNotificationDto fromEntity(Notification notification) {
+    public static ResponseNotificationDto fromEntity(ReviewNotification notification) {
         return new ResponseNotificationDto(
                 notification
         );
