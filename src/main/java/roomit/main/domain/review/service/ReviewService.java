@@ -82,6 +82,7 @@ public class ReviewService {
                 .business(business)
                 .workplaceId(workplace.getWorkplaceId())
                 .notificationType(NotificationType.REVIEW_CREATED)
+                .url(workplace.getImageUrl().getValue())
                 .content(reviewContent)
                 .workplaceName(workplace.getWorkplaceName().getValue())
                 .build();
@@ -89,6 +90,7 @@ public class ReviewService {
         ResponseNotificationDto responseNotificationDto = ResponseNotificationDto
                 .builder()
                 .notification(notification)
+                .fileLocationService(fileLocationService)
                 .build();
 
         notificationService.customNotify(
