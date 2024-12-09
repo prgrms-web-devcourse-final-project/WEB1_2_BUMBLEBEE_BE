@@ -115,7 +115,7 @@ public class PaymentsService {
                 .notificationType(NotificationType.RESERVATION_CONFIRMED)
                 .content(content)
                 .price(price)
-                .url(fileLocationService.getImagesFromFolder(workplace.getImageUrl().getValue()).get(0))
+                .url(workplace.getImageUrl().getValue())
                 .reservationName(reservation.getReservationName().getValue())
                 .studyRoomName(reservation.getStudyRoom().getStudyRoomName().getValue())
                 .workplaceName(workplace.getWorkplaceName().getValue())
@@ -141,7 +141,7 @@ public class PaymentsService {
                 .price(price)
                 .workplaceName(workplace.getWorkplaceName().getValue())
                 .studyRoomName(reservation.getStudyRoom().getStudyRoomName().getValue())
-                .imageUrl(fileLocationService.getImagesFromFolder(workplace.getImageUrl().getValue()).get(0))
+                .imageUrl(workplace.getImageUrl().getValue())
                 .notificationType(NotificationMemberType.MEMBER_RESERVATION_CONFIRMED)
                 .content(content)
                 .build();
