@@ -19,7 +19,6 @@ import roomit.main.global.service.FileLocationService;
 public class ResponseNotificationDto {
     private Long reviewId;
     private String content;
-    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
     private Long workplaceId;
     private NotificationType notificationType;
@@ -35,6 +34,7 @@ public class ResponseNotificationDto {
         this.workplaceName = notification.getWorkplaceName();
         this.notificationType = notification.getReveiewNotificationType();
         this.imageURL = fileLocationService.getImagesFromFolder(notification.getUrl()).get(0);
+        //
     }
 
     public static ResponseNotificationDto fromEntity(ReviewNotification notification, FileLocationService fileLocationService) {
