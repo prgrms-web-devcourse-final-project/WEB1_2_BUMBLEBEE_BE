@@ -126,6 +126,7 @@ public class PaymentsService {
         ResponseNotificationReservationDto responseNotificationDto = ResponseNotificationReservationDto
                 .builder()
                 .notification(notification)
+                .fileLocationService(fileLocationService)
                 .build();
 
         notificationService.customNotifyReservation(
@@ -151,6 +152,7 @@ public class PaymentsService {
         ResponseNotificationReservationMemberDto responseNotificationDto = ResponseNotificationReservationMemberDto
                 .builder()
                 .notification(notification)
+                .fileLocationService(fileLocationService)
                 .build();
 
         notificationService.customNotifyReservationMember(
