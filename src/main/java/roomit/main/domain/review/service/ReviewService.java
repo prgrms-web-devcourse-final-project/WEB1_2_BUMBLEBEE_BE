@@ -43,8 +43,6 @@ public class ReviewService {
     private final WorkplaceRepository workplaceRepository;
     private final ReservationRepository reservationRepository;
     private final NotificationService notificationService;
-    private final BusinessRepository businessRepository;
-    private final NotificationRepository notificationRepository;
     private final FileLocationService fileLocationService;
 
     @Transactional
@@ -55,9 +53,9 @@ public class ReviewService {
                 .orElseThrow(ErrorCode.RESERVATION_NOT_FOUND::commonException);
         // 본인이 예약한거지 확인하는거
 
-//        if (!Objects.equals(reservation1.getMember().getMemberId(), memberId)) {
-//            throw ErrorCode.REVIEW_UPDATE_FAIL.commonException();
-//        }
+        if (!Objects.equals(reservation1.getMember().getMemberId(), memberId)) {
+            throw ErrorCode.REVIEW_UPDATE_FAIL.commonException();
+        }
 
         Workplace workPlace = workplaceRepository
                 .getWorkplaceByWorkplaceName(new WorkplaceName(request.workPlaceName()));

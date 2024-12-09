@@ -121,6 +121,7 @@ public class NotificationService {
                 .content(responseNotificationDto.getContent())
                 .notificationType(responseNotificationDto.getNotificationType())
                 .workplaceId(responseNotificationDto.getWorkplaceId())
+                .url(responseNotificationDto.getImageURL())
                 .build();
 
         reviewNotificationRepository.save(notification);
@@ -188,7 +189,8 @@ public class NotificationService {
         List<ReviewNotification> notifications = reviewNotificationRepository.findNotificationsByBusinessId(businessId);
 
         return notifications.stream()
-                .map(ResponseNotificationDto::fromEntity)  // Notification -> NotificationDto 변환
+                .map((ReviewNotification notification) -> ResponseNotificationDto.fromEntity(
+                    notification, fileLocationService))  // Notification -> NotificationDto 변환
                 .toList();
     }
 
