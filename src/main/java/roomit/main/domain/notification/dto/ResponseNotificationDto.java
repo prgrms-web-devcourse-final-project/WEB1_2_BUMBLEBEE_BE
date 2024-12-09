@@ -11,6 +11,7 @@ import roomit.main.domain.notification.entity.NotificationType;
 import roomit.main.domain.notification.entity.ReviewNotification;
 
 import java.time.LocalDateTime;
+import roomit.main.global.service.FileLocationService;
 
 @Getter
 @Setter
@@ -23,20 +24,23 @@ public class ResponseNotificationDto {
     private Long workplaceId;
     private NotificationType notificationType;
     private String workplaceName;
+    private String imageURL;
 
     @Builder
-    public ResponseNotificationDto(ReviewNotification notification) {
+    public ResponseNotificationDto(ReviewNotification notification, FileLocationService fileLocationService) {
         this.reviewId = notification.getId();
         this.content = notification.getContent();
         this.createdAt = notification.getCreatedAt();
         this.workplaceId = notification.getWorkplaceId();
         this.workplaceName = notification.getWorkplaceName();
         this.notificationType = notification.getReveiewNotificationType();
+        this.imageURL = fileLocationService.getImagesFromFolder(notification.getUrl()).get(0);
     }
 
-    public static ResponseNotificationDto fromEntity(ReviewNotification notification) {
+    public static ResponseNotificationDto fromEntity(ReviewNotification notification, FileLocationService fileLocationService) {
         return new ResponseNotificationDto(
-                notification
+                notification,
+            fileLocationService
         );
     }
 }

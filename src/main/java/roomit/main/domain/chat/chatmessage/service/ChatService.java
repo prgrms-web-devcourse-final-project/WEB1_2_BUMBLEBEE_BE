@@ -171,7 +171,7 @@ public class ChatService {
             List<ChatMessageResponse> redisMessages = sortedMessages.stream()
                     .map(value -> objectMapper.convertValue(value, ChatMessageSaveRequest.class)) // ChatMessageSaveRequest로 역직렬화
                     .map(request -> Pair.of(room.getRoomId(), request))
-                    .map(pair -> new ChatMessageResponse(pair.getLeft(), pair.getRight(), true))
+                    .map(pair -> new ChatMessageResponse(pair.getLeft(), pair.getRight(), false))
                     .toList();
 
             combinedList.addAll(redisMessages);
