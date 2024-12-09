@@ -29,11 +29,13 @@ public interface WorkplaceRepository extends JpaRepository<Workplace, Long> , Wo
               ST_Transform(ST_GeomFromText(:area, 5181), ST_SRID(w.location))
           )
     ORDER BY distance ASC
+    LIMIT 10
 """, nativeQuery = true)
     List<Object[]> findAllWithinArea(
-            @Param("referencePoint") String referencePoint,
-            @Param("area") String area
+        @Param("referencePoint") String referencePoint,
+        @Param("area") String area
     );
+
 
     // Business ID로 Workplace 목록 조회
     @Query("SELECT w FROM Workplace w WHERE w.business.businessId = :businessId")

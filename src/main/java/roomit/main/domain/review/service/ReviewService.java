@@ -90,6 +90,7 @@ public class ReviewService {
         ResponseNotificationDto responseNotificationDto = ResponseNotificationDto
                 .builder()
                 .notification(notification)
+                .fileLocationService(fileLocationService)
                 .build();
 
         notificationService.customNotify(
