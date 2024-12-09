@@ -24,6 +24,7 @@ import roomit.main.domain.notification.repository.NotificationRepository;
 import roomit.main.domain.notification.repository.ReviewNotificationRepository;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
+import roomit.main.global.service.FileLocationService;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -46,6 +47,8 @@ public class NotificationService {
     private final MemberRepository memberRepository;
 
     private final MemberNotificationRepository memberNotificationRepository;
+
+    private final FileLocationService fileLocationService;
 
     private static final long DEFAULT_TIMEOUT = 30 * 60 * 1000L; // 30분으로 변경
 
@@ -142,7 +145,7 @@ public class NotificationService {
                 .workplaceName(responseNotificationReservationDto.getWorkplaceName())
                 .reservationName(responseNotificationReservationDto.getReservationName())
                 .studyRoomName(responseNotificationReservationDto.getStudyRoomName())
-                .url(responseNotificationReservationDto.getUrl())
+                .url(fileLocationService.getImagesFromFolder(responseNotificationReservationDto.getUrl()).get(0))
                 .build();
 
         notificationRepository.save(reservationNotification);
@@ -162,7 +165,7 @@ public class NotificationService {
                 .workplaceId(responseNotificationReservationDto.getWorkplaceId())
                 .content(responseNotificationReservationDto.getContent())
                 .notificationType(responseNotificationReservationDto.getNotificationType())
-                .imageUrl(responseNotificationReservationDto.getImageUrl())
+                .imageUrl(fileLocationService.getImagesFromFolder(responseNotificationReservationDto.getImageUrl()).get(0))
                 .studyRoomName(responseNotificationReservationDto.getStudyRoomName())
                 .workplaceName(responseNotificationReservationDto.getWorkplaceName())
                 .price(price)
@@ -175,6 +178,7 @@ public class NotificationService {
             sendToClient(emitterKey, responseNotificationReservationDto);
         }
     }
+    
 
 
     @Transactional
