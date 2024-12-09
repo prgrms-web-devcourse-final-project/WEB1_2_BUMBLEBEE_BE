@@ -145,7 +145,7 @@ public class NotificationService {
                 .workplaceName(responseNotificationReservationDto.getWorkplaceName())
                 .reservationName(responseNotificationReservationDto.getReservationName())
                 .studyRoomName(responseNotificationReservationDto.getStudyRoomName())
-                .url(fileLocationService.getImagesFromFolder(responseNotificationReservationDto.getUrl()).get(0))
+                .url((responseNotificationReservationDto.getUrl()))
                 .build();
 
         notificationRepository.save(reservationNotification);
@@ -165,7 +165,7 @@ public class NotificationService {
                 .workplaceId(responseNotificationReservationDto.getWorkplaceId())
                 .content(responseNotificationReservationDto.getContent())
                 .notificationType(responseNotificationReservationDto.getNotificationType())
-                .imageUrl(fileLocationService.getImagesFromFolder(responseNotificationReservationDto.getImageUrl()).get(0))
+                .imageUrl((responseNotificationReservationDto.getImageUrl()))
                 .studyRoomName(responseNotificationReservationDto.getStudyRoomName())
                 .workplaceName(responseNotificationReservationDto.getWorkplaceName())
                 .price(price)
@@ -198,7 +198,7 @@ public class NotificationService {
         List<Notification> notifications = notificationRepository.findNotificationsByBusinessId(businessId);
 
         return notifications.stream()
-                .map(ResponseNotificationReservationDto::fromEntityReservation)  // Notification -> NotificationDto 변환
+                .map((Notification notification) -> ResponseNotificationReservationDto.fromEntityReservation(notification, fileLocationService))  // Notification -> NotificationDto 변환
                 .toList();
     }
 }

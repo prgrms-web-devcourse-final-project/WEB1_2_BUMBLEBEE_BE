@@ -21,6 +21,7 @@ import roomit.main.domain.notification.repository.MemberNotificationRepository;
 import roomit.main.domain.notification.repository.NotificationRepository;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
+import roomit.main.global.service.FileLocationService;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -38,13 +39,15 @@ public class MemberNotificationService {
 
     private final MemberRepository memberRepository;
 
+    private final FileLocationService fileLocationService;
+
     @Transactional
     public List<ResponseNotificationReservationMemberDto> getNotificationsReservationMember(Long businessId) {
 
         List<MemberNotification> notifications = memberNotificationRepository.findNotificationsByBusinessId(businessId);
 
         return notifications.stream()
-                .map(ResponseNotificationReservationMemberDto::fromEntityReservationtoMember)  // Notification -> NotificationDto 변환
+                .map((MemberNotification memberNotification) -> ResponseNotificationReservationMemberDto.fromEntityReservationtoMember(memberNotification, fileLocationService))  // Notification -> NotificationDto 변환
                 .toList();
     }
 }

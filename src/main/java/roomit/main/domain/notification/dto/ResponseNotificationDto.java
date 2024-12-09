@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 public class ResponseNotificationDto {
-    private Long alrimId;
+    private Long reviewId;
     private String content;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
@@ -26,7 +26,7 @@ public class ResponseNotificationDto {
 
     @Builder
     public ResponseNotificationDto(ReviewNotification notification) {
-        this.alrimId = notification.getId();
+        this.reviewId = notification.getId();
         this.content = notification.getContent();
         this.createdAt = notification.getCreatedAt();
         this.workplaceId = notification.getWorkplaceId();
