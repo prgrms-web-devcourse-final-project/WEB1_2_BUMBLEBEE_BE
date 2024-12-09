@@ -36,7 +36,7 @@ public record MyWorkPlaceReservationResponse (
                 reservation.getStartTime(),
                 reservation.getEndTime(),
                 reservation.getReservationCapacity(),
-                workplace.getImageUrl().getValue(),
+                fileLocationService.getImagesFromFolder(workplace.getImageUrl().getValue()).get(0),
                 workplace.getWorkplaceId(),
                 reservation.getReservationId(),
                 reservation.getReservationPrice(),
