@@ -24,6 +24,16 @@ public record ChatMessageResponse(
         );
     }
 
+    public ChatMessageResponse(ChatMessageSaveRequest chatMessage) {
+        this(
+                chatMessage.roomId(),
+                chatMessage.sender(),
+                chatMessage.content(),
+                chatMessage.isRead(),
+                chatMessage.timestamp()
+        );
+    }
+
     public ChatMessageResponse(Long roomId, ChatMessageSaveRequest request, boolean isRead) {
         this(
                 roomId,
