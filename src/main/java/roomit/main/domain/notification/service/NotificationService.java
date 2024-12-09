@@ -113,18 +113,6 @@ public class NotificationService {
     // 리뷰
     public void customNotify(String businessId, ResponseNotificationDto responseNotificationDto) {
 
-        Business business = businessRepository.findById(Long.valueOf(businessId)).get();
-
-        ReviewNotification notification = ReviewNotification.builder()
-                .business(business)
-                .workplaceName(responseNotificationDto.getWorkplaceName())
-                .content(responseNotificationDto.getContent())
-                .notificationType(responseNotificationDto.getNotificationType())
-                .workplaceId(responseNotificationDto.getWorkplaceId())
-                .url(responseNotificationDto.getImageURL())
-                .build();
-
-        reviewNotificationRepository.save(notification);
         String emitterKey = "business-" + businessId;
         SseEmitter sseEmitter = emitterRepository.get(emitterKey);
         if (sseEmitter != null) {
@@ -135,21 +123,6 @@ public class NotificationService {
     // 사업자 예약
     public void customNotifyReservation(String businessId, ResponseNotificationReservationDto responseNotificationReservationDto) {
 
-        Business business = businessRepository.findById(Long.valueOf(businessId)).get();
-
-        Notification reservationNotification = Notification.builder()
-                .business(business)
-                .price(responseNotificationReservationDto.getPrice())
-                .workplaceId(responseNotificationReservationDto.getWorkplaceId())
-                .content(responseNotificationReservationDto.getContent())
-                .notificationType(responseNotificationReservationDto.getNotificationType())
-                .workplaceName(responseNotificationReservationDto.getWorkplaceName())
-                .reservationName(responseNotificationReservationDto.getReservationName())
-                .studyRoomName(responseNotificationReservationDto.getStudyRoomName())
-                .url((responseNotificationReservationDto.getUrl()))
-                .build();
-
-        notificationRepository.save(reservationNotification);
         String emitterKey = "business-" + businessId;
         SseEmitter sseEmitter = emitterRepository.get(emitterKey);
         if (sseEmitter != null) {
@@ -157,22 +130,8 @@ public class NotificationService {
         }
     }
 
-    public void customNotifyReservationMember(String memberId, ResponseNotificationReservationMemberDto responseNotificationReservationDto, Long price) {
+    public void customNotifyReservationMember(String memberId, ResponseNotificationReservationMemberDto responseNotificationReservationDto) {
 
-        Member member = memberRepository.findById(Long.valueOf(memberId)).get();
-
-        MemberNotification memberNotification = MemberNotification.builder()
-                .member(member)
-                .workplaceId(responseNotificationReservationDto.getWorkplaceId())
-                .content(responseNotificationReservationDto.getContent())
-                .notificationType(responseNotificationReservationDto.getNotificationType())
-                .imageUrl((responseNotificationReservationDto.getImageUrl()))
-                .studyRoomName(responseNotificationReservationDto.getStudyRoomName())
-                .workplaceName(responseNotificationReservationDto.getWorkplaceName())
-                .price(price)
-                .build();
-
-        memberNotificationRepository.save(memberNotification);
         String emitterKey = "member-" + memberId;
         SseEmitter sseEmitter = emitterRepository.get(emitterKey);
         if (sseEmitter != null) {

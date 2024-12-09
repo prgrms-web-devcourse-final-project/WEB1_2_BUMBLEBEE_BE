@@ -25,6 +25,8 @@ import roomit.main.domain.notification.entity.MemberNotification;
 import roomit.main.domain.notification.entity.Notification;
 import roomit.main.domain.notification.entity.NotificationMemberType;
 import roomit.main.domain.notification.entity.NotificationType;
+import roomit.main.domain.notification.repository.MemberNotificationRepository;
+import roomit.main.domain.notification.repository.NotificationRepository;
 import roomit.main.domain.notification.service.MemberNotificationService;
 import roomit.main.domain.notification.service.NotificationService;
 import roomit.main.domain.payments.config.PaymentsConfig;
@@ -53,6 +55,8 @@ public class PaymentsService {
     private final NotificationService notificationService;
     private final MemberRepository memberRepository;
     private final FileLocationService fileLocationService;
+    private final NotificationRepository notificationRepository;
+    private final MemberNotificationRepository memberNotificationRepository;
 
     /**
      * 결제 검증
@@ -123,6 +127,8 @@ public class PaymentsService {
                 .workplaceName(workplace.getWorkplaceName().getValue())
                 .build();
 
+        notificationRepository.save(notification);
+
         ResponseNotificationReservationDto responseNotificationDto = ResponseNotificationReservationDto
                 .builder()
                 .notification(notification)
@@ -148,6 +154,7 @@ public class PaymentsService {
                 .notificationType(NotificationMemberType.MEMBER_RESERVATION_CONFIRMED)
                 .content(content)
                 .build();
+        memberNotificationRepository.save(notification);
 
         ResponseNotificationReservationMemberDto responseNotificationDto = ResponseNotificationReservationMemberDto
                 .builder()
@@ -157,8 +164,7 @@ public class PaymentsService {
 
         notificationService.customNotifyReservationMember(
                 String.valueOf(member.getMemberId()),
-                responseNotificationDto,
-                notification.getPrice()
+                responseNotificationDto
         );
 
     }
