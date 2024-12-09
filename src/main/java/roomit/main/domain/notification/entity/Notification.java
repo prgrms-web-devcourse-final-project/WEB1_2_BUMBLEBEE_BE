@@ -14,6 +14,7 @@ import roomit.main.domain.notification.entity.value.NotificationContent;
 import roomit.main.domain.notification.entity.value.RelatedUrl;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.global.inner.ImageUrl;
+import roomit.main.global.service.FileLocationService;
 
 import java.time.LocalDateTime;
 

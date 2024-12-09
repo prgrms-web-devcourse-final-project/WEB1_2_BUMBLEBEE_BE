@@ -42,7 +42,7 @@ public class ChatService {
     private final ChatMessageRepository messageRepository;
     private final ObjectMapper objectMapper;
 
-    @Value("${redis.message.ttl:1200}") // 메시지 TTL 설정
+    @Value("${redis.message.ttl:3600}") // 메시지 TTL 설정
     private int messageTtl;
 
     @Transactional
@@ -73,28 +73,27 @@ public class ChatService {
     }
 
     private void saveMessageToRedis(ChatMessageSaveRequest message) {
-        String redisKey = BumblebeeStringUtil.format(REDIS_MESSAGE_KEY_FORMAT, message.roomId()); // Key 수정
-        String unreadKey = redisKey + ":unread";
+        String redisKey = BumblebeeStringUtil.format(REDIS_MESSAGE_KEY_FORMAT, message.roomId());
 
-        // LocalDateTime을 문자열로 변환하여 저장
+        try {
+            ChatMessageSaveRequest messageWithFormattedTimestamp = message.withFormattedTimestamp();
 
-        ChatMessageSaveRequest messageWithFormattedTimestamp = message.withFormattedTimestamp();
+            // Redis에 ZSet으로 저장 (timestamp를 score로 사용)
+            redisTemplate.opsForZSet().add(redisKey, messageWithFormattedTimestamp, message.timestamp().toEpochSecond(ZoneOffset.UTC));
+            redisTemplate.expire(redisKey, Duration.ofSeconds(messageTtl)); // TTL 설정
 
-        redisTemplate.opsForZSet().add(redisKey, messageWithFormattedTimestamp, message.timestamp().toEpochSecond(ZoneOffset.UTC));
-        redisTemplate.expire(redisKey, Duration.ofSeconds(messageTtl)); // TTL 설정
-        redisTemplate.opsForHash().increment(unreadKey, message.sender(), 1);
-        redisTemplate.expire(unreadKey, Duration.ofSeconds(messageTtl)); // TTL 설정
-
-        log.debug("Saved message to ZSet: key={}, message={}, score={}", redisKey, message, message.timestamp().toEpochSecond(ZoneOffset.UTC));
-        log.debug("Incremented unread count in Hash: key={}, field={}, value=1", unreadKey, message.sender());
+            log.debug("Saved message to Redis: key={}, message={}", redisKey, messageWithFormattedTimestamp);
+        } catch (Exception e) {
+            log.error("Failed to save message to Redis: key={}, message={}, error={}", redisKey, message, e.getMessage(), e);
+            throw new RuntimeException("Failed to save message to Redis", e);
+        }
     }
 
     public void flushMessagesToDatabase(Long roomId) {
-        String redisKey = BumblebeeStringUtil.format(REDIS_MESSAGE_KEY_FORMAT, roomId); // Key 수정
+        String redisKey = BumblebeeStringUtil.format(REDIS_MESSAGE_KEY_FORMAT, roomId);
         log.debug("Flushing messages to database: key={}", redisKey);
-        Set<Object> sortedMessages = redisTemplate.opsForZSet().range(redisKey, 0, -1);
-        log.debug("Fetched ZSet data from Redis: key={}, messages={}", redisKey, sortedMessages);
 
+        Set<Object> sortedMessages = redisTemplate.opsForZSet().range(redisKey, 0, -1);
         if (sortedMessages == null || sortedMessages.isEmpty()) {
             log.debug("No messages to flush: key={}", redisKey);
             return;
@@ -106,12 +105,10 @@ public class ChatService {
 
         saveMessagesToDatabase(messages);
 
-        log.debug("Saved messages to MySQL: messages={}", messages);
-
         redisTemplate.delete(redisKey);
-
         log.debug("Deleted ZSet data from Redis: key={}", redisKey);
     }
+
 
     private void saveMessagesToDatabase(List<ChatMessageSaveRequest> requests) {
         requests.forEach(request -> {
@@ -171,7 +168,6 @@ public class ChatService {
     private void redisChatMessagesAdd(Long roomId, String redisKey, ChatRoom room, CopyOnWriteArrayList<ChatMessageResponse> combinedList) {
         Set<Object> sortedMessages = redisTemplate.opsForZSet().range(redisKey, 0, -1);
         if (sortedMessages != null) {
-            // Redis 데이터 처리
             List<ChatMessageResponse> redisMessages = sortedMessages.stream()
                     .map(value -> objectMapper.convertValue(value, ChatMessageSaveRequest.class)) // ChatMessageSaveRequest로 역직렬화
                     .map(request -> Pair.of(room.getRoomId(), request))
@@ -180,7 +176,7 @@ public class ChatService {
 
             combinedList.addAll(redisMessages);
 
-            log.debug("Fetched messages from Redis for roomId {}: {}", roomId, redisMessages);
+            log.debug("Fetched messages from Redis: key={}, messages={}", redisKey, redisMessages);
         }
     }
 
@@ -226,7 +222,7 @@ public class ChatService {
         throw ErrorCode.CHAT_NOT_AUTHORIZED.commonException();
     }
 
-    @Scheduled(fixedRateString = "${cleanupInterval:20000}") // Flush 이후 실행
+    @Scheduled(fixedRateString = "${cleanupInterval:40000}") // Flush 이후 실행
     public void scheduleRemoveExpiredMessages() {
         removeExpiredMessagesForAllRooms();
     }
