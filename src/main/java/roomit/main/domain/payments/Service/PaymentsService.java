@@ -40,6 +40,8 @@ import roomit.main.domain.reservation.repository.ReservationRepository;
 import roomit.main.domain.studyroom.entity.value.StudyRoomName;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.global.error.ErrorCode;
+import roomit.main.global.service.FileLocationService;
+import roomit.main.global.service.FileUploadService;
 
 @Service
 @RequiredArgsConstructor
@@ -50,6 +52,7 @@ public class PaymentsService {
     private final PaymentsConfig paymentsConfig;
     private final NotificationService notificationService;
     private final MemberRepository memberRepository;
+    private final FileLocationService fileLocationService;
 
     /**
      * 결제 검증
@@ -112,7 +115,7 @@ public class PaymentsService {
                 .notificationType(NotificationType.RESERVATION_CONFIRMED)
                 .content(content)
                 .price(price)
-                .url(workplace.getImageUrl().getValue())
+                .url(fileLocationService.getImagesFromFolder(workplace.getImageUrl().getValue()).get(0))
                 .reservationName(reservation.getReservationName().getValue())
                 .studyRoomName(reservation.getStudyRoom().getStudyRoomName().getValue())
                 .workplaceName(workplace.getWorkplaceName().getValue())
@@ -138,7 +141,7 @@ public class PaymentsService {
                 .price(price)
                 .workplaceName(workplace.getWorkplaceName().getValue())
                 .studyRoomName(reservation.getStudyRoom().getStudyRoomName().getValue())
-                .imageUrl(workplace.getImageUrl().getValue())
+                .imageUrl(fileLocationService.getImagesFromFolder(workplace.getImageUrl().getValue()).get(0))
                 .notificationType(NotificationMemberType.MEMBER_RESERVATION_CONFIRMED)
                 .content(content)
                 .build();
