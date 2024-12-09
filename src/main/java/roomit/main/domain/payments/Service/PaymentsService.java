@@ -71,9 +71,6 @@ public class PaymentsService {
             payments.addReservation(reservation);
             paymentsRepository.save(payments);
 
-            reservation.changeReservationState(ReservationState.ACTIVE); // 엔드타임이 지나면 컴플리트로 << 로직을 추가하고 봐야함
-
-            reservationRepository.save(reservation);
             return payments.toDto(paymentsConfig.getSuccessUrl(), paymentsConfig.getFailUrl());
         } catch (Exception e) {
             throw ErrorCode.PAYMENTS_VALIDATION_FAILED.commonException();
@@ -99,9 +96,14 @@ public class PaymentsService {
 
         memberAlrim(member, reservation, workPlace, "예약이 등록 되었습니다.", amount);
 
+        try {
+            payments.changeTossPaymentsKey(paymentKey);
+            payments.changePaySuccessYN(true);
+            reservation.changeReservationState(ReservationState.ACTIVE);
 
-        payments.changeTossPaymentsKey(paymentKey);
-        payments.changePaySuccessYN(true);
+        } catch (Exception e){
+            throw ErrorCode.PAYMENTS_PROCESS_FAILED.commonException();
+        }
 
         return result;
     }
