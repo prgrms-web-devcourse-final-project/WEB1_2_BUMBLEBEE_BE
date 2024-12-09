@@ -20,7 +20,6 @@ import java.time.LocalDateTime;
 public class ResponseNotificationReservationMemberDto {
     private Long memberalrimId;
     private String content;
-    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
     private Long workplaceId;
     private NotificationMemberType notificationType;
