@@ -11,7 +11,8 @@ public record ChatMessageSaveRequest (
         String sender,
         String content,
         LocalDateTime timestamp,
-        SenderType senderType
+        SenderType senderType,
+        Boolean isRead
 ) {
     public static ChatMessageSaveRequest fromRedis(Object value, ObjectMapper objectMapper) {
         ChatMessageSaveRequest request = objectMapper.convertValue(value, ChatMessageSaveRequest.class);
@@ -23,7 +24,8 @@ public record ChatMessageSaveRequest (
                 request.sender(),
                 request.content(),
                 parsedTimestamp,
-                request.senderType()
+                request.senderType(),
+                false
         );
     }
 
@@ -48,7 +50,8 @@ public record ChatMessageSaveRequest (
                 request.sender(),
                 request.content(),
                 request.timestamp(),
-                request.getSenderTypeEnum()
+                request.getSenderTypeEnum(),
+                false
         );
     }
 
@@ -59,7 +62,20 @@ public record ChatMessageSaveRequest (
                 this.sender,
                 this.content,
                 LocalDateTime.parse(this.timestamp.toString()),
-                this.senderType
+                this.senderType,
+                this.isRead
+        );
+    }
+
+    // 읽음 상태를 변경한 새로운 객체 생성
+    public ChatMessageSaveRequest withRead(boolean isRead) {
+        return new ChatMessageSaveRequest(
+                this.roomId,
+                this.sender,
+                this.content,
+                this.timestamp,
+                this.senderType,
+                isRead
         );
     }
 
