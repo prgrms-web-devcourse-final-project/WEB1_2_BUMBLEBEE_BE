@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 public class ResponseNotificationReservationDto {
     private Long reservationId;
     private String content;
-    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
     private Long workplaceId;
     private NotificationType notificationType;

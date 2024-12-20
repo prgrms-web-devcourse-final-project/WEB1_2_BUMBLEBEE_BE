@@ -15,7 +15,7 @@ POST http://localhost:8080/login/business
 Content-Type: application/json
 
 {
-  "email" : "business5@gmail.com",
+  "email" : "business1@gmail.com",
   "password" : "Test1234!"
 
 }
@@ -23,7 +23,7 @@ Content-Type: application/json
 
 GET http://localhost:8080/api/subscribe
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiYnVzaW5lc3M1QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0JVU0lORVNTIiwiaWF0IjoxNzMzNjcxMTY3LCJleHAiOjE3MzM2NzIwNjd9.L52b0mBAHb-Q3y6prRxnHiFxB5ftUGHnkFQbZyQHzWY
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiYnVzaW5lc3MxQGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0JVU0lORVNTIiwiaWF0IjoxNzMzNzIzMzY5LCJleHAiOjE3MzM3MjQyNjl9.3YEVoHObjWu7A1mmwkxw_Cdk70Gvwpldd4tp5E469vU
 Accept: text/event-stream
 
 ### 멤버 구독
@@ -88,16 +88,16 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuY
 ### 사용자 알람조회
 GET  http://localhost:8080/api/v1/subReservation/memberlist
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoibWVtYmVyMUBnbWFpbC5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzMzNjUxMTgyLCJleHAiOjE3MzM2NTIwODJ9.T-zXWwcPANZtdWDAcqbQAYBHuccCP-R40nJncRWo91E
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiamFuZWRvZUBnbWFpbC5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzMzNzI0MzY3LCJleHAiOjE3MzM3MjUyNjd9.Tw95QnGcqst1mc8uuiloOouzEc3-Tlxstm7Fgpp9YPI
 
 
 ### 리뷰등록
 POST http://localhost:8080/api/v1/review/register
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoibWVtYmVyMUBnbWFpbC5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzMzNjcwODI3LCJleHAiOjE3MzM2NzE3Mjd9.phb-BoWXGWG9NWg5IzBzaYNBsyMZ_byxiHHnpNFrTqI
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiamFuZWRvZUBnbWFpbC5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzMzNzI2MDQwLCJleHAiOjE3MzM3MjY5NDB9.PLkO2lyDofv5RlK61XWt8sK7rQxy-AB8VcZhfyvyi1s
 
 {
-    "reservationId" : 9,
+    "reservationId" : 8,
     "workPlaceName" : "ENI스터디룸",
     "reviewContent": "좋습니다",
     "reviewRating" : 4
@@ -120,7 +120,7 @@ Content-Type: application/json
 
 {
 
-  "email" : "member1@gmail.com",
+  "email" : "janedoe@gmail.com",
   "password" : "Test1234!"
 
 }

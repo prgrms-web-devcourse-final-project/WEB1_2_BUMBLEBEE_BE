@@ -18,6 +18,7 @@ import roomit.main.domain.notification.entity.Notification;
 import roomit.main.domain.notification.entity.NotificationType;
 import roomit.main.domain.notification.entity.ReviewNotification;
 import roomit.main.domain.notification.repository.NotificationRepository;
+import roomit.main.domain.notification.repository.ReviewNotificationRepository;
 import roomit.main.domain.notification.service.NotificationService;
 import roomit.main.domain.reservation.entity.Reservation;
 import roomit.main.domain.reservation.repository.ReservationRepository;
@@ -44,6 +45,7 @@ public class ReviewService {
     private final ReservationRepository reservationRepository;
     private final NotificationService notificationService;
     private final FileLocationService fileLocationService;
+    private final ReviewNotificationRepository reviewNotificationRepository;
 
     @Transactional
     public void register(ReviewRegisterRequest request, Long memberId) {
@@ -86,11 +88,12 @@ public class ReviewService {
                 .content(reviewContent)
                 .workplaceName(workplace.getWorkplaceName().getValue())
                 .build();
+        reviewNotificationRepository.save(notification);
 
         ResponseNotificationDto responseNotificationDto = ResponseNotificationDto
                 .builder()
-                .notification(notification)
                 .fileLocationService(fileLocationService)
+                .notification(notification)
                 .build();
 
         notificationService.customNotify(
