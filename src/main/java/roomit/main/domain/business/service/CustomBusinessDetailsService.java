@@ -18,7 +18,8 @@ public class CustomBusinessDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Business business = businessRepository.findByBusinessEmail(email).orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
+        Business business = businessRepository.findByBusinessEmail(email)
+                .orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
 
         if (business != null){
 

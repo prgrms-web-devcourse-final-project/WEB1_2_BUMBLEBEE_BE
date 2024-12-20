@@ -1,23 +1,40 @@
 package roomit.main.domain.workplace.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.locationtech.jts.geom.Point;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.format.annotation.DateTimeFormat;
 import roomit.main.domain.business.entity.Business;
-import roomit.main.domain.review.entity.Review;
+import roomit.main.domain.chat.chatroom.entity.ChatRoom;
 import roomit.main.domain.studyroom.entity.StudyRoom;
-import roomit.main.domain.workplace.entity.value.ImageUrl;
 import roomit.main.domain.workplace.entity.value.WorkplaceAddress;
 import roomit.main.domain.workplace.entity.value.WorkplaceName;
 import roomit.main.domain.workplace.entity.value.WorkplacePhoneNumber;
-
-import java.math.BigDecimal;
+import roomit.main.global.inner.ImageUrl;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -40,17 +57,14 @@ public class Workplace {
     @Embedded
     private WorkplacePhoneNumber workplacePhoneNumber;
 
-    @Column(name = "workplace_description", nullable = false)
+    @Column(name = "workplace_description", nullable = false, length = 500)
     private String workplaceDescription;
 
     @Embedded
     private WorkplaceAddress workplaceAddress;
 
-    @Column(name = "workplace_latitude", precision = 16, scale = 14)
-    private BigDecimal latitude;
-
-    @Column(name = "workplace_longitude", precision = 17, scale = 14)
-    private BigDecimal longitude;
+    @Column(columnDefinition = "geometry", nullable = false)
+    private Point location;
 
     @DateTimeFormat(pattern = "HH:mm")
     @Column(name = "workplace_start_time", nullable = false)
@@ -61,7 +75,10 @@ public class Workplace {
     private LocalTime workplaceEndTime;
 
     @Column(name = "star_sum")
-    private Long starSum;
+    private Long starSum = 0L;
+
+    @Column(name = "review_count")
+    private Long reviewCount = 0L;
 
     @Embedded
     private ImageUrl imageUrl;
@@ -71,41 +88,35 @@ public class Workplace {
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "business_id")
     private Business business;
 
-    @OneToMany(mappedBy = "workPlaceId", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "workPlace", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<StudyRoom> studyRoom = new ArrayList<>();
-
-    @OneToMany(mappedBy = "workplace", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<Review> review = new ArrayList<>();
-
 
     @Builder
     public Workplace(final String workplaceName,
                      final String workplacePhoneNumber,
                      final String workplaceDescription,
                      final String workplaceAddress,
-                     final String imageUrl,
+                     final ImageUrl imageUrl,
                      final LocalTime workplaceStartTime,
                      final LocalTime workplaceEndTime,
-                     final BigDecimal latitude,
-                     final BigDecimal longitude,
+                     final Point location,
                      final Business business,
                      final List<StudyRoom> studyRoomList) {
         this.workplaceName = new WorkplaceName(workplaceName);
         this.workplacePhoneNumber = new WorkplacePhoneNumber(workplacePhoneNumber);
         this.workplaceDescription = workplaceDescription;
         this.workplaceAddress = new WorkplaceAddress(workplaceAddress);
-        this.imageUrl = new ImageUrl(imageUrl);
+        this.imageUrl = imageUrl;
         this.workplaceStartTime = workplaceStartTime;
         this.workplaceEndTime = workplaceEndTime;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.location = location;
         this.business = business;
         this.studyRoom = studyRoomList;
     }
@@ -139,15 +150,16 @@ public class Workplace {
         this.starSum = starSum;
     }
 
-    public void changeLongitude(BigDecimal longitude) {
-        this.longitude = longitude;
+    public void changeReviewCount(Long reviewCount) {
+        this.reviewCount = reviewCount;
     }
 
-    public void changeLatitude(BigDecimal latitude) {
-        this.latitude = latitude;
+    public void changeLocation(Point location){
+        this.location = location;
     }
 
     public void changeImageUrl(ImageUrl imageUrl) {
         this.imageUrl = imageUrl;
     }
 }
+

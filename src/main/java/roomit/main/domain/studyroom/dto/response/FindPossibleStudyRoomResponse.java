@@ -1,32 +1,33 @@
 package roomit.main.domain.studyroom.dto.response;
 
-import roomit.main.domain.review.entity.Review;
 import roomit.main.domain.studyroom.entity.StudyRoom;
-import roomit.main.domain.workplace.entity.Workplace;
-import roomit.main.domain.workplace.entity.value.ImageUrl;
-import roomit.main.domain.workplace.entity.value.WorkplaceAddress;
-import roomit.main.domain.workplace.entity.value.WorkplaceName;
+import roomit.main.global.service.FileLocationService;
 
 public record FindPossibleStudyRoomResponse(
-    WorkplaceName workplaceName,
-    String studyRoomTitle,
+    Long studyroomId,
+    String workplaceName,
+    String studyRoomName,
     Double reviewScore,
-    WorkplaceAddress workplaceAddress,
+    Long reviewCount,
+    String workplaceAddress,
     Integer studyRoomCapacity,
     Integer studyRoomPrice,
-    ImageUrl imageUrl){
+    String  imageUrl,
+    Double distance
+){
 
-
-    public static FindPossibleStudyRoomResponse from(Workplace workplace, StudyRoom studyRoom, Review review){
-        return new FindPossibleStudyRoomResponse(
-                workplace.getWorkplaceName(),
-                studyRoom.getTitle(),
-                review.getReviewRating(),
-                workplace.getWorkplaceAddress(),
-                studyRoom.getCapacity(),
-                studyRoom.getPrice(),
-                workplace.getImageUrl()
-        );
-    }
-
+  public FindPossibleStudyRoomResponse (StudyRoom studyRoom, Double distance, FileLocationService fileLocationService){
+    this(
+        studyRoom.getStudyRoomId(),
+        studyRoom.getWorkPlace().getWorkplaceName().getValue(),
+        studyRoom.getStudyRoomName().getValue(),
+        (double) studyRoom.getWorkPlace().getStarSum() / (studyRoom.getWorkPlace().getReviewCount()),
+        studyRoom.getWorkPlace().getReviewCount(),
+        studyRoom.getWorkPlace().getWorkplaceAddress().getValue(),
+        studyRoom.getCapacity(),
+        studyRoom.getPrice(),
+        fileLocationService.getImagesFromFolder(studyRoom.getWorkPlace().getImageUrl().getValue()).get(0),
+        distance
+    );
+  }
 }

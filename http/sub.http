@@ -1,0 +1,140 @@
+POST http://localhost:8080/api/v1/business/signup
+Content-Type: application/json
+
+{
+		"businessName":"사업자3",
+		"businessEmail":"business1@email.com",
+	     "businessPwd":"testT!123",
+		"businessNum":"133-12-12345"
+}
+
+
+
+### 로그인
+POST http://localhost:8080/login/business
+Content-Type: application/json
+
+{
+  "email" : "business1@gmail.com",
+  "password" : "Test1234!"
+
+}
+### 사업자 구독
+
+GET http://localhost:8080/api/subscribe
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiYnVzaW5lc3MxQGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0JVU0lORVNTIiwiaWF0IjoxNzMzNzIzMzY5LCJleHAiOjE3MzM3MjQyNjl9.3YEVoHObjWu7A1mmwkxw_Cdk70Gvwpldd4tp5E469vU
+Accept: text/event-stream
+
+### 멤버 구독
+
+GET http://localhost:8080/api/subscribe/user
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoibWVtYmVyMUBnbWFpbC5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzMzNjcwMDE4LCJleHAiOjE3MzM2NzA5MTh9.XmltYlV7D5XMkn9hWeJcEUJroB9RCPIpjQ_Mj0NtQk4
+Accept: text/event-stream
+
+### 예약등록
+
+POST http://localhost:8080/api/v1/reservations/9
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoibWVtYmVyMUBnbWFpbC5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzMzNjUxMTgyLCJleHAiOjE3MzM2NTIwODJ9.T-zXWwcPANZtdWDAcqbQAYBHuccCP-R40nJncRWo91E
+
+{
+  "reservationName": "홍길동",
+  "reservationPhoneNumber": "010-0000-0000",
+  "capacity" : 4,
+  "price" : 12000,
+  "startTime": "2024-12-02T10:00:00",
+  "endTime": "2024-12-02T11:59:00"
+}
+### 결제
+POST http://localhost:8080//api/v1/payments/toss?reservationId=21
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoibWVtYmVyMUBnbWFpbC5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzMzNjUxMTgyLCJleHAiOjE3MzM2NTIwODJ9.T-zXWwcPANZtdWDAcqbQAYBHuccCP-R40nJncRWo91E
+
+{
+  "orderId": "string",
+  "orderName": "ABC 스터디룸 ROOM A 예약",
+  "totalAmount": 12000,
+  "memberName": "홍길동12",
+  "memberPhoneNum": "010-0000-0000",
+  "tossPaymentMethod": "CARD"
+}
+
+### 결제 성공
+POST http://localhost:8080//api/v1/payments/toss/success?reservationId=24
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiZXh0cmExQGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3MzM2NDMwNTgsImV4cCI6MTczMzY0Mzk1OH0.D85pBlmy5aErPgtFJD3Ujm0MTmX7TU5yOhNdFjTLdHw
+
+{
+  "orderId": "string",
+  "orderName": "ABC 스터디룸 ROOM A 예약",
+  "totalAmount": 12000,
+  "memberName": "홍길동12",
+  "memberPhoneNum": "010-0000-0000",
+  "tossPaymentMethod": "CARD"
+}
+### 사업자 리뷰 알람조회
+GET  http://localhost:8080/api/v1/sub/list
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiYnVzaW5lc3M1QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0JVU0lORVNTIiwiaWF0IjoxNzMzNjYzMjIyLCJleHAiOjE3MzM2NjQxMjJ9.n82EfmL9EMvPUSYLSF-voHj3yRw6tuDsb8zEdXzvtlU
+
+
+### 결제 알람조회
+GET  http://localhost:8080/api/v1/subReservation/list
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiYnVzaW5lc3M1QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX0JVU0lORVNTIiwiaWF0IjoxNzMzNjU1MzExLCJleHAiOjE3MzM2NTYyMTF9.wwyVTHYBnFfX0PTKvh9dvMBKkaUxx7yFFYEhtEQfHxc
+
+### 사용자 알람조회
+GET  http://localhost:8080/api/v1/subReservation/memberlist
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiamFuZWRvZUBnbWFpbC5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzMzNzI0MzY3LCJleHAiOjE3MzM3MjUyNjd9.Tw95QnGcqst1mc8uuiloOouzEc3-Tlxstm7Fgpp9YPI
+
+
+### 리뷰등록
+POST http://localhost:8080/api/v1/review/register
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiamFuZWRvZUBnbWFpbC5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzMzNzI2MDQwLCJleHAiOjE3MzM3MjY5NDB9.PLkO2lyDofv5RlK61XWt8sK7rQxy-AB8VcZhfyvyi1s
+
+{
+    "reservationId" : 8,
+    "workPlaceName" : "ENI스터디룸",
+    "reviewContent": "좋습니다",
+    "reviewRating" : 4
+ }
+### 멤버 회원가입
+POST http://localhost:8080/api/v1/member/signup
+Content-Type: application/json
+
+{
+    "nickName" : "테스트",
+    "phoneNumber": "010-3333-2222",
+    "sex" : "MALE",
+    "email" : "123@aa.com",
+    "pwd" : "Tpgur8597!!",
+    "birthDay" : "2024-01-01"
+}
+### 멤버 로그인
+POST http://localhost:8080/login/member
+Content-Type: application/json
+
+{
+
+  "email" : "janedoe@gmail.com",
+  "password" : "Test1234!"
+
+}
+
+### 예약 등록
+POST http://localhost:8080/api/v1/reservations/12
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoibWVtYmVyNUBtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3MzMzMTkxOTgsImV4cCI6MTczMzMyMDA5OH0.HpIkdS7MeuKbSRwPWrTGPm3CAMrd0ZhZdiH2NRVxI7M
+
+{
+  "reservationName": "홍길동",
+  "reservationPhoneNumber": "010-0000-0000",
+  "capacity" : 4,
+  "price" : 12000,
+  "startTime": "2024-12-03T13:00:00",
+  "endTime": "2024-12-03T14:59:00"
+}

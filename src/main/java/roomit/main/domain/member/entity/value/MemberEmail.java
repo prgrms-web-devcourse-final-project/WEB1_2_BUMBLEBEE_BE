@@ -20,12 +20,11 @@ public class MemberEmail {
     public static final String ERR_MSG = "이메일 형식이 올바르지 않습니다.";
     private static final Pattern PATTERN = Pattern.compile(REGEX);
 
-    @Column(name = "member_email", nullable = false, unique = true, length = 100)
+    @Column(name = "member_email", nullable = false, length = 100)
     private String value;
 
     public MemberEmail(final String email) {
         if (!PATTERN.matcher(email).matches()) {
-            log.error(ERR_MSG);
             throw new IllegalArgumentException(ERR_MSG);
         }
         this.value = email;

@@ -57,9 +57,26 @@ dependencies {
 
     // Websocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework:spring-messaging'
+    testImplementation 'org.springframework:spring-websocket'
 
     // Spring Data Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // Redisson
+    implementation 'org.redisson:redisson-spring-boot-starter:3.27.0'
+
+    // 공간 함수
+    implementation 'org.hibernate:hibernate-spatial:6.5.3.Final' // Hibernate Core와 동일한 버전
+    implementation group: 'org.locationtech.jts', name: 'jts-core', version: '1.19.0'
+
+    // Apache Commons
+    implementation 'commons-io:commons-io:2.18.0'
+    implementation 'org.apache.commons:commons-lang3:3.17.0'
+    implementation 'org.apache.commons:commons-collections4:4.5.0-M2'
+    implementation 'commons-beanutils:commons-beanutils:1.9.4'
+
 }
 
 def jacocoDir = layout.buildDirectory.dir("reports/")

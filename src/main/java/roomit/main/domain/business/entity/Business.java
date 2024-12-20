@@ -14,15 +14,18 @@ import roomit.main.domain.business.entity.value.BusinessNum;
 import roomit.main.domain.business.entity.value.BusinessPassword;
 import roomit.main.domain.business.dto.request.BusinessUpdateRequest;
 import roomit.main.domain.member.entity.Role;
+import roomit.main.domain.notification.entity.Notification;
 import roomit.main.domain.workplace.entity.Workplace;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static lombok.AccessLevel.PROTECTED;
 
 @Entity
-@Table(name = "business")
+@Table(name = "business", indexes = {
+        @Index(name = "idx_businessId", columnList = "business_id")})
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
@@ -59,17 +62,22 @@ public class Business {
     @OneToMany(mappedBy = "business", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Workplace> workplace;
 
+    @OneToMany(mappedBy = "business", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> notification = new ArrayList<>();
+
     @Builder
     public Business(final String businessName,
                     final String businessPwd,
                     final String businessEmail,
                     final String businessNum,
-                    final PasswordEncoder passwordEncoder) {
+                    final PasswordEncoder passwordEncoder,
+                    List<Notification> list) {
         this.businessName = new BusinessNickname(businessName);
         this.businessPwd = new BusinessPassword(businessPwd, passwordEncoder);
         this.businessEmail = new BusinessEmail(businessEmail);
         this.businessNum = new BusinessNum(businessNum);
         this.businessRole = Role.ROLE_BUSINESS;
+        this.notification = list;
     }
 
     public String getBusinessName() {

@@ -1,34 +1,48 @@
 package roomit.main.domain.reservation.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-import roomit.main.domain.member.entity.Member;
-import roomit.main.domain.studyroom.entity.BaseEntity;
-import roomit.main.domain.studyroom.entity.StudyRoom;
 
 import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import roomit.main.domain.member.entity.Member;
+import roomit.main.domain.payments.entity.Payments;
+import roomit.main.domain.reservation.entity.value.ReservationName;
+import roomit.main.domain.reservation.entity.value.ReservationNum;
+import roomit.main.domain.review.entity.Review;
+import roomit.main.domain.studyroom.entity.StudyRoom;
+import roomit.main.domain.studyroom.entity.value.BaseEntity;
 
-@Table(name = "Reservation")
+@Table(name = "Reservation", indexes = {
+        @Index(name = "idx_reservation_created_at",
+                columnList = "created_at")})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Setter
 @Entity
 public class Reservation extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "reservation_id", unique = true, updatable = false, columnDefinition = "BIGINT")
-    private Long id;
+    private Long reservationId;
 
-    @Column(name = "reservation_name", nullable = false, columnDefinition = "VARCHAR(255)")
-    private String reservationName;
+    @Embedded
+    private ReservationName reservationName;
 
-    @Column(name = "reservation_phone_number", nullable = false, columnDefinition = "VARCHAR(20)")
-    private String reservationPhoneNumber;
+    @Embedded
+    private ReservationNum reservationPhoneNumber;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "reservation_state", nullable = false, columnDefinition = "VARCHAR(20)")
     private ReservationState reservationState;
+
+    @Column(name = "reservation_capacity", nullable = false, columnDefinition = "INTEGER")
+    private Integer reservationCapacity;
+
+    @Column(name= "reservation_price", nullable = false, columnDefinition = "INTEGER")
+    private Integer reservationPrice;
 
     @Column(name = "start_time", nullable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime startTime;
@@ -38,27 +52,86 @@ public class Reservation extends BaseEntity{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member memberId;
+    private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "studyroom_id")
-    private StudyRoom studyRoomId;
+    private StudyRoom studyRoom;
+
+    @OneToOne
+    @JoinColumn(name = "review_id") // 외래 키 이름 설정
+    private Review review;
+
+    @OneToOne(mappedBy = "reservation")
+    private Payments payments;
+
 
     @Builder
-    public Reservation(String reservationName, String reservationPhoneNumber, ReservationState reservationState, LocalDateTime startTime, LocalDateTime endTime, Member memberId, StudyRoom studyRoomId) {
-        this.reservationName = reservationName;
-        this.reservationPhoneNumber = reservationPhoneNumber;
+    public Reservation(String reservationName, String reservationPhoneNumber, ReservationState reservationState, Integer reservationCapacity,Integer reservationPrice,LocalDateTime startTime, LocalDateTime endTime, Member member, StudyRoom studyRoom) {
+        this.reservationName = new ReservationName(reservationName);
+        this.reservationPhoneNumber = new ReservationNum(reservationPhoneNumber);
         this.reservationState = reservationState;
+        this.reservationCapacity = reservationCapacity;
+        this.reservationPrice = reservationPrice;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.memberId = memberId;
-        this.studyRoomId = studyRoomId;
+        this.member = member;
+        this.studyRoom = studyRoom;
     }
 
-    @PrePersist
-    public void prePersist() {
-        if (this.reservationState == null) {
-            this.reservationState = ReservationState.RESERVABLE;
+    public void changereservationName(String reservationName) {
+        this.reservationName = new ReservationName(reservationName);
+    }
+
+    public void changeReservationState(ReservationState reservationState) {
+        this.reservationState = reservationState;
+    }
+
+    public void changeReservationCapacity(Integer reservationCapacity) {
+        this.reservationCapacity = reservationCapacity;
+    }
+
+    public void changeReservationPrice(Integer reservationPrice) {
+        this.reservationPrice = reservationPrice;
+    }
+
+    public void changeStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void changeEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public void changeMember(Member member) {
+        this.member = member;
+    }
+
+    public void changeStudyRoom(StudyRoom studyRoom) {
+        this.studyRoom = studyRoom;
+    }
+
+    public void changePayments(Payments payments) {
+        this.payments = payments;
+    }
+
+    public void updateReservationDetails(String reservationName, String reservationPhoneNumber,
+                                         LocalDateTime startTime, LocalDateTime endTime) {
+        this.reservationName = new ReservationName(reservationName);
+        this.reservationPhoneNumber = new ReservationNum(reservationPhoneNumber);
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
+    public void addReview(Review review) {
+        this.review = review;
+        review.changeReservation(this); // Review에도 역방향 관계 설정
+    }
+
+    @PreRemove
+    private void preRemove() {
+        if (review != null) {
+            review.changeReservation(null); // 리뷰와의 연결을 끊음
         }
     }
 }

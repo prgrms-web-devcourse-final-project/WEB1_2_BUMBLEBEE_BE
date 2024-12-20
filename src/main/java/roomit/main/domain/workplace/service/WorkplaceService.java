@@ -3,11 +3,18 @@ package roomit.main.domain.workplace.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.transaction.Transactional;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.locationtech.jts.geom.Point;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.business.repository.BusinessRepository;
@@ -16,7 +23,11 @@ import roomit.main.domain.studyroom.entity.StudyRoom;
 import roomit.main.domain.studyroom.repository.StudyRoomRepository;
 import roomit.main.domain.workplace.dto.request.WorkplaceGetRequest;
 import roomit.main.domain.workplace.dto.request.WorkplaceRequest;
-import roomit.main.domain.workplace.dto.response.WorkplaceGetResponse;
+import roomit.main.domain.workplace.dto.response.DistanceWorkplaceResponse;
+import roomit.main.domain.workplace.dto.response.WorkplaceAllResponse;
+import roomit.main.domain.workplace.dto.response.WorkplaceBusinessResponse;
+import roomit.main.domain.workplace.dto.response.WorkplaceCreateResponse;
+import roomit.main.domain.workplace.dto.response.WorkplaceDetailResponse;
 import roomit.main.domain.workplace.dto.response.WorkplaceResponse;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.domain.workplace.entity.value.WorkplaceAddress;
@@ -24,92 +35,113 @@ import roomit.main.domain.workplace.entity.value.WorkplaceName;
 import roomit.main.domain.workplace.entity.value.WorkplacePhoneNumber;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
-
-import java.math.BigDecimal;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import roomit.main.global.exception.CommonException;
+import roomit.main.global.service.FileLocationService;
+import roomit.main.global.service.ImageService;
+import roomit.main.global.util.PointUtil;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class WorkplaceService {
 
     private final WorkplaceRepository workplaceRepository;
     private final BusinessRepository businessRepository;
     private final StudyRoomRepository studyRoomRepository;
     private final WebClient webClient;
+    private final ImageService imageService;
+    private final FileLocationService fileLocationService;
+    private final PointUtil pointUtil;
 
-    public List<WorkplaceGetResponse> readAllWorkplaces(WorkplaceGetRequest request, double myLat, double myLon) {
-        List<Object[]> results = workplaceRepository.findAllByLatitudeAndLongitudeWithDistance(
-                myLat, myLon,
-                request.bottomRight().getLatitude().doubleValue(),
-                request.topLeft().getLatitude().doubleValue(),
-                request.topLeft().getLongitude().doubleValue(),
-                request.bottomRight().getLongitude().doubleValue());
+    public List<WorkplaceAllResponse> readAllWorkplaces(WorkplaceGetRequest request) {
+        String referencePoint = String.format("POINT(%f %f)", request.longitude(), request.latitude());
+        String area = String.format(
+                "POLYGON((%f %f, %f %f, %f %f, %f %f, %f %f))",
+                request.bottomLeft().getLongitude(), request.bottomLeft().getLatitude(),
+                request.topRight().getLongitude(), request.bottomLeft().getLatitude(),
+                request.topRight().getLongitude(), request.topRight().getLatitude(),
+                request.bottomLeft().getLongitude(), request.topRight().getLatitude(),
+                request.bottomLeft().getLongitude(), request.bottomLeft().getLatitude()
+        );
+
+        List<Object[]> results = workplaceRepository.findAllWithinArea(referencePoint, area);
 
         return results.stream()
-                .map(result -> new WorkplaceGetResponse(
-                        ((Number) result[0]).longValue(),
-                        (String) result[1],
-                        (String) result[2],
-                        (String) result[3],
-                        (String) result[4],
-                        (String) result[5],
-                        ((Time) result[6]).toLocalTime(),
-                        ((Time) result[7]).toLocalTime(),
-                        ((Timestamp) result[8]).toLocalDateTime(),
-                        (BigDecimal) result[10],
-                        (BigDecimal) result[9],
-                        ((Number) result[11]).doubleValue()
-                ))
-                .toList();
+                .map(result -> {
+                    double starSum = ((Number) result[4]).doubleValue();
+                    long reviewCount = ((Number) result[5]).longValue();
+
+                    return new WorkplaceAllResponse(
+                            ((Number) result[0]).longValue(),
+                            (String) result[1],
+                            (String) result[2],
+                            fileLocationService.getImagesFromFolder((String)result[3]).get(0),
+                            (reviewCount == 0) ? 0.0 : starSum / reviewCount,
+                            reviewCount,
+                            ((Number) result[6]).doubleValue(), // longitude
+                            ((Number) result[7]).doubleValue(), // latitude
+                            ((Number) result[8]).doubleValue()
+                    );
+                }).toList();
     }
 
 
-    public WorkplaceResponse readWorkplace(Long workplaceId) {
+    public WorkplaceDetailResponse readWorkplace(Long workplaceId) {
         Workplace workplace = workplaceRepository.findById(workplaceId)
                 .orElseThrow(ErrorCode.WORKPLACE_NOT_FOUND::commonException);
 
-        return new WorkplaceResponse(workplace);
+        return new WorkplaceDetailResponse(workplace, fileLocationService);
     }
 
     @Transactional
-    public void createWorkplace(WorkplaceRequest workplaceDto, Long id) {
+    public WorkplaceCreateResponse createWorkplace(WorkplaceRequest workplaceDto, Long id) {
+        Business business = businessRepository.findById(id).orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
 
-        if (workplaceRepository.getWorkplaceByWorkplaceName(new WorkplaceName(workplaceDto.workplaceName())) != null ||
-                workplaceRepository.getWorkplaceByWorkplacePhoneNumber(new WorkplacePhoneNumber(workplaceDto.workplacePhoneNumber())) != null ||
-                workplaceRepository.getWorkplaceByWorkplaceAddress(new WorkplaceAddress(workplaceDto.workplaceAddress())) != null) {
-            throw ErrorCode.WORKPLACE_NOT_REGISTERED.commonException();
-        }
-
-        Map<String, BigDecimal> coordinates = getStringBigDecimalMap(workplaceDto);
+        Map<String, Double> coordinates = getStringBigDecimalMap(workplaceDto);
+        Point location = pointUtil.createPoint(coordinates.get("longitude"), coordinates.get("latitude"));
 
         try {
-            Business business = businessRepository.findById(id).orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
-
-            Workplace workplace = workplaceDto.toEntity(coordinates.get("latitude"), coordinates.get("longitude"), business);
-            workplace.changeStarSum(0L);
+            Workplace workplace = workplaceDto.toEntity(location, business);
             Workplace savedWorkplace = workplaceRepository.save(workplace);
+            String imageUrl = "workplace-" + savedWorkplace.getWorkplaceId();
+            savedWorkplace.changeImageUrl(imageService.createImageUrl(imageUrl));
 
-            for (CreateStudyRoomRequest studyRoomRequest : workplaceDto.studyRoomList()) {
-                StudyRoom studyRoom = studyRoomRequest.toEntity();
-                studyRoom.setWorkPlaceId(savedWorkplace); // 스터디룸에 사업장 연결
-                studyRoomRepository.save(studyRoom);
-            }
+            List<Long> studyroomID = new ArrayList<>();
+            studyroomID = saveStudyrooms(workplaceDto, savedWorkplace, studyroomID);
 
+            return new WorkplaceCreateResponse(savedWorkplace.getWorkplaceId(), studyroomID);
+        }
+        catch (IllegalArgumentException e) {
+            throw e;
         } catch (InvalidDataAccessApiUsageException e) {
             throw ErrorCode.WORKPLACE_INVALID_REQUEST.commonException();
+        } catch (CommonException e) {
+            if (e.getErrorCode() == ErrorCode.STUDYROOM_NOT_REGISTERD) {
+                throw e;
+            }
+            throw e;
+        }
+
+    }
+
+    private List<Long> saveStudyrooms(WorkplaceRequest workplaceDto, Workplace savedWorkplace, List<Long> studyroomIDs) {
+        try {
+            for (CreateStudyRoomRequest studyRoomRequest : workplaceDto.studyRoomList()) {
+                StudyRoom studyRoom = studyRoomRepository.save(studyRoomRequest.toEntity(savedWorkplace));
+                String imageUrl = "workplace-" + savedWorkplace.getWorkplaceId() + "/studyroom-" + studyRoom.getStudyRoomId();
+                studyRoom.changeStudyRoomImageUrl(imageService.createImageUrl(imageUrl));
+                studyroomIDs.add(studyRoom.getStudyRoomId());
+            }
+            return studyroomIDs;
         } catch (Exception e) {
-            throw ErrorCode.WORKPLACE_NOT_REGISTERED.commonException();
+            if(e instanceof IllegalArgumentException){
+                throw (IllegalArgumentException)e;
+            }
+            throw ErrorCode.STUDYROOM_NOT_REGISTERD.commonException();
         }
     }
 
     @Transactional
     public void updateWorkplace(Long workplaceId, WorkplaceRequest workplaceDto, Long businessId) {
-
         if (workplaceDto == null && !workplaceDto.workplaceStartTime().isBefore(workplaceDto.workplaceEndTime())) {
             throw ErrorCode.WORKPLACE_INVALID_REQUEST.commonException();
         }
@@ -121,7 +153,8 @@ public class WorkplaceService {
             throw ErrorCode.BUSINESS_NOT_AUTHORIZED.commonException();
         }
 
-        Map<String, BigDecimal> coordinates = getStringBigDecimalMap(workplaceDto);
+        Map<String, Double> coordinates = getStringBigDecimalMap(workplaceDto);
+        Point newLocation = pointUtil.createPoint(coordinates.get("longitude"), coordinates.get("latitude"));
 
         try {
             workplace.changeWorkplaceName(new WorkplaceName(workplaceDto.workplaceName()));
@@ -130,8 +163,8 @@ public class WorkplaceService {
             workplace.changeWorkplacePhoneNumber(new WorkplacePhoneNumber(workplaceDto.workplacePhoneNumber()));
             workplace.changeWorkplaceStartTime(workplaceDto.workplaceStartTime());
             workplace.changeWorkplaceEndTime(workplaceDto.workplaceEndTime());
-            workplace.changeLatitude(coordinates.get("latitude"));
-            workplace.changeLongitude(coordinates.get("longitude"));
+            workplace.changeLocation(newLocation);
+
             workplaceRepository.save(workplace);
         } catch (Exception e) {
             throw ErrorCode.WORKPLACE_NOT_MODIFIED.commonException();
@@ -150,29 +183,32 @@ public class WorkplaceService {
         try {
             workplaceRepository.delete(workplace);
         } catch (Exception e) {
-            throw ErrorCode.BUSINESS_NOT_DELETE.commonException();
+            throw ErrorCode.WORKPLACE_NOT_DELETE.commonException();
         }
     }
 
-    public List<WorkplaceResponse> findWorkplacesByBusinessId(Long businessId) {
-        List<Workplace> workplaces = workplaceRepository.findByBusiness_BusinessId(businessId);
+    public WorkplaceBusinessResponse findWorkplacesByBusinessId(Long businessId) {
+        List<Workplace> workplaces = workplaceRepository.findByBusinessId(businessId);
+
+        Business business = businessRepository.findById(businessId).orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
 
         if (workplaces.isEmpty()) {
-            throw ErrorCode.STUDYROOM_NOT_FOUND.commonException();
+            return null;
         }
 
-        return toResponseDto(workplaces);
+        return toResponseDto(workplaces, businessId, business.getBusinessName());
     }
 
-    private List<WorkplaceResponse> toResponseDto(List<Workplace> workplaces) {
+    private WorkplaceBusinessResponse toResponseDto(List<Workplace> workplaces, Long businessId, String businessName) {
         List<WorkplaceResponse> workplaceDtoList = new ArrayList<>();
         for (Workplace workplace : workplaces) {
-            workplaceDtoList.add(new WorkplaceResponse(workplace));
+            workplaceDtoList.add(new WorkplaceResponse(workplace, fileLocationService));
         }
-        return workplaceDtoList;
+
+        return new WorkplaceBusinessResponse(businessId, businessName, workplaceDtoList);
     }
 
-    protected Map<String, BigDecimal> getStringBigDecimalMap(WorkplaceRequest workplaceDto) {
+    protected Map<String, Double> getStringBigDecimalMap(WorkplaceRequest workplaceDto) {
         try {
             String[] parts = workplaceDto.workplaceAddress().split(",", 2);
             String roadAddress = parts[0].trim();
@@ -183,7 +219,7 @@ public class WorkplaceService {
         }
     }
 
-    private Map<String, BigDecimal> geoCording(String address) {
+    private Map<String, Double> geoCording(String address) {
         try {
             String response = webClient.get()
                     .uri(uriBuilder -> uriBuilder
@@ -197,8 +233,8 @@ public class WorkplaceService {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode document = objectMapper.readTree(response).path("documents").get(0);
 
-            BigDecimal latitude = new BigDecimal(document.path("y").asText());
-            BigDecimal longitude = new BigDecimal(document.path("x").asText());
+            Double latitude = Double.valueOf(document.path("y").asText());
+            Double longitude = Double.valueOf(document.path("x").asText());
 
             return Map.of(
                     "latitude", latitude,
@@ -209,6 +245,29 @@ public class WorkplaceService {
         } catch (Exception e) {
             throw new RuntimeException("Failed to extract coordinates from response", e);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<DistanceWorkplaceResponse> findNearbyWorkplaces(String address, double maxDistance) {
+        // 1. 주소를 좌표로 변환
+        Map<String, Double> coordinates = geoCording(address);
+        Double latitude = coordinates.get("latitude");
+        Double longitude = coordinates.get("longitude");
+
+        // 위도, 경도가 유효한지 확인 (Optional)
+        if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
+            throw new IllegalArgumentException("위도나 경도가 범위를 벗어났습니다.");
+        }
+
+        // 2. 좌표와 거리 기반으로 Workplace 조회
+        List<DistanceWorkplaceResponse> results = workplaceRepository.findNearbyWorkplaces(longitude, latitude, maxDistance);
+
+        return results.stream()
+            .map(result -> new DistanceWorkplaceResponse(
+                result.workplaceId(), // workplaceId
+                result.distance()
+            ))
+            .collect(Collectors.toList());
     }
 }
 

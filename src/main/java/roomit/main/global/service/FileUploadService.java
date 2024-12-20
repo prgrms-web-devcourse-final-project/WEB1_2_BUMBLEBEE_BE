@@ -1,7 +1,9 @@
 package roomit.main.global.service;
 
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -9,10 +11,6 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
-
-import java.time.Duration;
-import java.util.Calendar;
-import java.util.Date;
 
 @Service
 public class FileUploadService {
@@ -33,21 +31,28 @@ public class FileUploadService {
                 .build();
     }
 
-    public String generatePreSignUrl(String filePath, HttpMethod method) {
-        if (method == HttpMethod.PUT) {
-            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(filePath)
-                    .build();
+    public Map<String, Object> generatePreSignUrl(String fileName, String fileLocation) {
+        String filePath = fileLocation + "/" + fileName;
 
-            PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
-                    .putObjectRequest(putObjectRequest)
-                    .signatureDuration(Duration.ofMinutes(10))
-                    .build();
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(filePath)
+                .build();
 
-            return s3Presigner.presignPutObject(presignRequest).url().toString();
-        }
+        PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
+                .putObjectRequest(putObjectRequest)
+                .signatureDuration(Duration.ofMinutes(10))
+                .build();
 
-        throw new IllegalArgumentException("Unsupported HTTP method");
+        String url = s3Presigner.presignPutObject(presignRequest).url().toString();
+
+        // URL 정보 반환
+        Map<String, Object> response = new HashMap<>();
+        response.put("presignedUrl", url);
+        response.put("method", "PUT");
+        response.put("headers", Map.of("Content-Type", fileLocation + "/" + fileName));
+        response.put("filePath", filePath);
+
+        return response;
     }
 }

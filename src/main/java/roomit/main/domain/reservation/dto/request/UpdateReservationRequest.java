@@ -1,26 +1,20 @@
 package roomit.main.domain.reservation.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
-import roomit.main.domain.reservation.entity.Reservation;
-
+import jakarta.validation.constraints.Pattern;
 import java.time.LocalDateTime;
+import roomit.main.domain.reservation.entity.value.ReservationName;
+import roomit.main.domain.reservation.entity.value.ReservationNum;
 
 public record UpdateReservationRequest (
 
-    @NotBlank String reservationName,
+    @Pattern(regexp = ReservationName.REGEX, message = ReservationName.ERR_MSG) String reservationName,
 
-    @NotBlank String reservationPhoneNumber,
+    @Pattern(regexp = ReservationNum.REGEX, message = ReservationNum.ERR_MSG) String reservationPhoneNumber,
 
-    @NotNull LocalDateTime startTime,
+    @NotNull @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
 
-    @NotNull LocalDateTime endTime
+    @NotNull @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime
 ){
-    public void updateReservation(Reservation reservation) {
-        reservation.setReservationName(this.reservationName);
-        reservation.setReservationPhoneNumber(this.reservationPhoneNumber);
-        reservation.setStartTime(this.startTime);
-        reservation.setEndTime(this.endTime);
-    }
-
 }

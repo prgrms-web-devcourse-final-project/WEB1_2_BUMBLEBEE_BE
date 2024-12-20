@@ -6,9 +6,11 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ReservationState {
-    RESERVABLE("예약 가능"),
+    PAYMENT_FAIL("결제 실패"),
+    ON_HOLD("예약 대기"),
     CANCELLED("예약 취소"),
-    COMPLETED("예약 완료");
+    COMPLETED("예약 완료"),
+    ACTIVE("활성");
 
     private final String description;
 
