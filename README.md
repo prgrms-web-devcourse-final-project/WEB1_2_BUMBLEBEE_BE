@@ -11,37 +11,98 @@ ___
 ## ✨ 주요 기능
 
 ### ✅ 위치 기반 시스템
-<div style="display: flex; align-items: center;">
-  <img src="https://github.com/user-attachments/assets/4d722261-770d-47fe-9780-6cf56eab1a16" alt="BUMBLEBEE_ROOMIT (1)" width="250px" height="500px" style="margin-right: 20px;">
-  <span>사용자의 현재 위치를 기반으로 근처에 있는 스터디룸을 지도에 표시하여, 위치를 시각적으로 확인할 수 있다. <br> <br>
-        사용자가 지도를 이동시키면,해당 위치를 기준으로 근처 스터디룸을 확인할 수 있다.</span>
-</div>
+<table width="100%">
+  <tr>
+    <!-- 왼쪽 셀 -->
+    <td align="center" valign="middle" width="50%">
+      <img src="https://github.com/user-attachments/assets/4d722261-770d-47fe-9780-6cf56eab1a16" alt="BUMBLEBEE_ROOMIT (1)" width="250" height="500">
+    </td>
+    <!-- 오른쪽 셀 -->
+    <td align="center" valign="middle" width="50%">
+      <p>
+        사용자의 현재 위치를 기반으로 근처에 있는 스터디룸을 지도에 표시하여, 위치를 시각적으로 확인할 수 있다.
+      </p>
+      <p>
+        사용자가 지도를 이동시키면, 해당 위치를 기준으로 근처 스터디룸을 확인할 수 있다.
+      </p>
+    </td>
+  </tr>
+</table>
 
 ### ✅ 맞춤형 추천 시스템
-<div style="display: flex; align-items: center;">
-<img src="https://github.com/user-attachments/assets/a0c1f445-789f-4d82-b494-6e8f97e31878" alt="BUMBLEBEE_ROOMIT (1)" width="250px" height="500px" style="margin-right: 20px;">
-  <span>사용자의 이용 내역을 기반으로 새로운 스터디룸을 추천받을 수 있다. <br> <br>
-        비슷한 취향을 가진 사용자들이 좋아한 아이템을 추천하는 추천 알고리즘 추후 도입 예정</span>
-</div>
+<table width="100%">
+  <tr>
+    <!-- 왼쪽 셀 -->
+    <td align="center" valign="middle" width="50%">
+      <img src="https://github.com/user-attachments/assets/a0c1f445-789f-4d82-b494-6e8f97e31878" alt="BUMBLEBEE_ROOMIT (1)" width="250" height="500">
+    </td>
+    <!-- 오른쪽 셀 -->
+    <td align="center" valign="middle" width="50%">
+      <p>
+        사용자의 이용 내역을 기반으로 새로운 스터디룸을 추천받을 수 있다. <br><br>
+        비슷한 취향을 가진 사용자들이 좋아한 아이템을 추천하는 추천 알고리즘 추후 도입 예정
+      </p>
+    </td>
+  </tr>
+</table>
+
+
 
 
 ### ✅ 검색 필터링
-<div style="display: flex; align-items: center;">
-<img src="https://github.com/user-attachments/assets/833d70ee-8ef0-48f9-a2a0-376bcf9a6a20" alt="BUMBLEBEE_ROOMIT (1)" width="250px" height="500px" style="margin-right: 20px;">
-<img src="https://github.com/user-attachments/assets/8fc6455f-860d-459d-8d87-bfca9777acfe" alt="BUMBLEBEE_ROOMIT (1)" width="250px" height="500px" style="margin-right: 20px;">
-  <span>원하는 장소 / 날짜 / 시간 / 인원수를 선택하여 예약 가능한 스터디룸을 찾을 수 있다. <br> <br>
-        검색 결과 페이지에서 검색창을 누르면 다시 원하는 장소와 시간대 등을 선택해 검색할 수 있다.</span>
-</div>
+<table>
+  <tr>
+    <!-- 왼쪽 셀 -->
+    <td align="center" valign="middle" width="50%">
+      <table>
+        <tr>
+          <td align="center" valign="middle">
+            <img src="https://github.com/user-attachments/assets/833d70ee-8ef0-48f9-a2a0-376bcf9a6a20" alt="BUMBLEBEE_ROOMIT (1)" width="250" height="500">
+          </td>
+          <td align="center" valign="middle">
+            <img src="https://github.com/user-attachments/assets/8fc6455f-860d-459d-8d87-bfca9777acfe" alt="BUMBLEBEE_ROOMIT (1)" width="250" height="500">
+          </td>
+        </tr>
+      </table>
+    </td>
+    <!-- 오른쪽 셀 -->
+    <td align="center" valign="middle" width="50%">
+      <p>
+        원하는 장소 / 날짜 / 시간 / 인원수를 선택하여 예약 가능한 스터디룸을 찾을 수 있다. <br><br>
+        검색 결과 페이지에서 검색창을 누르면 다시 원하는 장소와 시간대 등을 선택해 검색할 수 있다.
+      </p>
+    </td>
+  </tr>
+</table>
+
 
 ### ✅ 1:1 채팅
-<div style="display: flex; align-items: center;">
-<img src="https://github.com/user-attachments/assets/f0faca18-ff51-44a9-a0d9-6c8d8748eb57" alt="BUMBLEBEE_ROOMIT (1)" width="250px" height="500px" style="margin-right: 20px;">
-<img src="https://github.com/user-attachments/assets/d2b87ca4-7b54-43a9-891f-72871be90cd1" alt="BUMBLEBEE_ROOMIT (1)" width="250px" height="500px" style="margin-right: 20px;">
-  <span>사용자는 실시간으로 호스트와 소통할 수 있으며,
-        예약 관련 문의나 이용 시 요청 사항을 즉시
-        답변받을 수 있다. <br> <br>
-        문의 내용은 문의 후 30일까지 다시 확인할 수 있다.</span>
-</div>
+<table>
+  <tr>
+    <!-- 왼쪽 셀 -->
+    <td align="center" valign="middle" width="50%">
+      <table>
+        <tr>
+          <td align="center" valign="middle">
+            <img src="https://github.com/user-attachments/assets/f0faca18-ff51-44a9-a0d9-6c8d8748eb57" alt="BUMBLEBEE_ROOMIT (1)" width="250" height="500">
+          </td>
+          <td align="center" valign="middle">
+            <img src="https://github.com/user-attachments/assets/d2b87ca4-7b54-43a9-891f-72871be90cd1" alt="BUMBLEBEE_ROOMIT (1)" width="250" height="500">
+          </td>
+        </tr>
+      </table>
+    </td>
+    <!-- 오른쪽 셀 -->
+    <td align="center" valign="middle" width="50%">
+      <p>
+        사용자는 실시간으로 호스트와 소통할 수 있으며, 예약 관련 문의나 이용 시 요청 사항을 즉시 답변받을 수 있다. <br><br>
+        문의 내용은 문의 후 30일까지 다시 확인할 수 있다.
+      </p>
+    </td>
+  </tr>
+</table>
+
+
 
 
 
