@@ -63,8 +63,8 @@ jobs:
 
       # S3에 python-server 폴더 업로드 (최초 및 업데이트 시)
       - name: Upload python-server folder to S3
+        # python-server 폴더를 S3에 업로드
         run: |
-      # python-server 폴더를 S3에 업로드
           aws s3 cp ./python-server s3://bumblebee.roomit/python-server --recursive --region ap-northeast-2
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
