@@ -61,18 +61,26 @@ jobs:
           echo "${{ secrets.EC2_SSH_KEY }}" > /tmp/ssh-key.pem
           chmod 600 /tmp/ssh-key.pem
 
-      # EC2에서 Docker 디렉토리 권한 설정 (파일 복사 전)
-      - name: Set Docker directory permissions on EC2
+      # S3에 python-server 폴더 업로드 (최초 및 업데이트 시)
+      - name: Upload python-server folder to S3
         run: |
-          ssh -i /tmp/ssh-key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} "sudo mkdir -p /Docker"
-          ssh -i /tmp/ssh-key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} "sudo chown -R ec2-user:ec2-user /Docker"
-          ssh -i /tmp/ssh-key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} "sudo chmod -R 777 /Docker"
+      # python-server 폴더를 S3에 업로드
+          aws s3 cp ./python-server s3://bumblebee.roomit/python-server --recursive --region ap-northeast-2
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ap-northeast-2
 
-      # EC2에 파일 복사 (docker-compose.yml과 python-server 디렉토리)
-      - name: Copy docker-compose.yml and python-server to EC2
+
+      # EC2에서 S3에서 python-server 폴더 다운로드
+      - name: Download python-server folder from S3 to EC2
         run: |
-          # python-server 디렉토리 복사 (-r 옵션을 사용하여 디렉토리 복사)
-          scp -i /tmp/ssh-key.pem -o StrictHostKeyChecking=no -r ./python-server ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/Docker/
+          # python-server 폴더를 S3에서 EC2의 /Docker 디렉토리로 다운로드
+          ssh -i /tmp/ssh-key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} "aws s3 sync s3://bumblebee.roomit/python-server /Docker/python-server --region ap-northeast-2"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ap-northeast-2
 
       # Elastic Beanstalk 배포
       - name: Beanstalk Deploy
