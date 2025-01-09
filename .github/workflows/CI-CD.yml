@@ -67,7 +67,7 @@ jobs:
         run: |
           aws s3 cp ./python-server s3://bumblebee.roomit/python-server --recursive --region ap-northeast-2
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ap-northeast-2
 
@@ -78,7 +78,7 @@ jobs:
           # python-server 폴더를 S3에서 EC2의 /Docker 디렉토리로 다운로드
           ssh -i /tmp/ssh-key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} "aws s3 sync s3://bumblebee.roomit/python-server /Docker/python-server --region ap-northeast-2"
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ap-northeast-2
 
