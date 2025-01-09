@@ -51,7 +51,7 @@ jobs:
       # 빌드된 JAR 파일 경로 설정
       - name: Set artifact path
         run: |
-          artifact=$(ls ./build/libs/WEB1_2_BUMBLEBEE_BE-*.jar | head -n 1)
+          artifact=$(ls ./build/libs/RoomIt_BE-*.jar | head -n 1)
           artifact=${artifact//\"/}  # Remove any double quotes from the artifact path
           echo "artifact=$artifact" >> $GITHUB_ENV
 
