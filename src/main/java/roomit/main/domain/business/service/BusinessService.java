@@ -10,6 +10,7 @@ import roomit.main.domain.business.dto.request.BusinessRegisterRequest;
 import roomit.main.domain.business.dto.request.BusinessUpdateRequest;
 import roomit.main.domain.business.dto.response.BusinessResponse;
 import roomit.main.global.error.ErrorCode;
+import roomit.main.global.exception.CommonException;
 
 @Service
 @RequiredArgsConstructor
@@ -58,13 +59,16 @@ public class BusinessService {
     //사업자 정보 수정
     @Transactional
     public void updateBusinessInfo(Long businessId, BusinessUpdateRequest updateRequest) {
-        Business business = businessRepository.findById(businessId)
-                .orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
-
         try {
-            business.updateBusiness(updateRequest);
+            businessRepository.updateBusiness(updateRequest, businessId);
         }catch (Exception e){
-            throw ErrorCode.BUSINESS_NOT_MODIFY.commonException();
+            // 기존 오류 코드가 담긴 예외를 그대로 던짐
+            if (e instanceof CommonException) {
+                throw (CommonException) e;
+            } else {
+                // 새로운 예외를 던지거나 일반 오류 처리
+                throw ErrorCode.BUSINESS_NOT_MODIFY.commonException();
+            }
         }
     }
 
