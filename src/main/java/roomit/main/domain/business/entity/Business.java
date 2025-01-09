@@ -91,12 +91,4 @@ public class Business {
     public String getBusinessNum() {
         return this.businessNum.getValue();
     }
-
-
-    public void updateBusiness(final BusinessUpdateRequest businessUpdateRequest) {
-        this.businessName = new BusinessNickname(businessUpdateRequest.businessName());
-        this.businessEmail = new BusinessEmail(businessUpdateRequest.businessEmail());
-        this.businessNum = new BusinessNum(businessUpdateRequest.businessNum());
-    }
-
 }
