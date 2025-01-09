@@ -55,7 +55,7 @@ public class StudyRoom extends BaseEntity {
     @JoinColumn(name = "workplace_id", nullable = false)
     private Workplace workPlace;
 
-    @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reservation> reservations;
 
     @Builder
