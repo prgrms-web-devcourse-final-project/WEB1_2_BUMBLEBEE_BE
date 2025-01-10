@@ -27,6 +27,7 @@ import roomit.main.global.error.ErrorCode;
 import roomit.main.global.service.FileLocationService;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,12 +42,6 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     private final ReviewNotificationRepository reviewNotificationRepository;
-
-    private final BusinessRepository businessRepository;
-
-    private final MemberRepository memberRepository;
-
-    private final MemberNotificationRepository memberNotificationRepository;
 
     private final FileLocationService fileLocationService;
 
@@ -130,6 +125,7 @@ public class NotificationService {
         }
     }
 
+    // 멤버 예약
     public void customNotifyReservationMember(String memberId, ResponseNotificationReservationMemberDto responseNotificationReservationDto) {
 
         String emitterKey = "member-" + memberId;
@@ -141,6 +137,7 @@ public class NotificationService {
     
 
 
+    // 사업자 리뷰 알림
     @Transactional
     public List<ResponseNotificationDto> getNotifications(Long businessId) {
 
@@ -148,18 +145,31 @@ public class NotificationService {
         List<ReviewNotification> notifications = reviewNotificationRepository.findNotificationsByBusinessId(businessId);
 
         return notifications.stream()
-                .map((ReviewNotification notification) -> ResponseNotificationDto.fromEntity(
+                .map(notification -> ResponseNotificationDto.fromEntity(
                     notification, fileLocationService))  // Notification -> NotificationDto 변환
                 .toList();
     }
 
+    // 사업자 예약 알림
     @Transactional
     public List<ResponseNotificationReservationDto> getNotificationsReservation(Long businessId) {
 
         List<Notification> notifications = notificationRepository.findNotificationsByBusinessId(businessId);
 
         return notifications.stream()
-                .map((Notification notification) -> ResponseNotificationReservationDto.fromEntityReservation(notification, fileLocationService))  // Notification -> NotificationDto 변환
+                .map( notification -> ResponseNotificationReservationDto.fromEntityReservation(notification, fileLocationService))  // Notification -> NotificationDto 변환
                 .toList();
+    }
+
+    // 3개월이 지난 사업자 리뷰 알림 제거
+    @Scheduled(cron = "0 0 3 * * ?")
+    public void deleteOldReviewNotifications(){
+        reviewNotificationRepository.deleteByCreatedAtBefore(LocalDateTime.now().minusMonths(3));
+    }
+
+    // 3개월이 지난 사업자 예약 알림 제거
+    @Scheduled(cron = "0 0 3 * * ?")
+    public void deleteOldReservationNotifications(){
+        notificationRepository.deleteByCreatedAtBefore(LocalDateTime.now().minusMonths(3));
     }
 }
