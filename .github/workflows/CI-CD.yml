@@ -93,6 +93,16 @@ jobs:
       # 다운로드된 파일 목록 확인 (디버깅용)
       - name: List downloaded files
         run: |
+          ls -al .
+
+      # 아티팩트 압축 해제
+      - name: Unzip downloaded artifact
+        run: |
+          unzip homework.zip -d ./homework
+
+      # 압축 해제 후 내용 확인
+      - name: List extracted files
+        run: |
           ls -al ./homework
 
       # Elastic Beanstalk 배포
@@ -105,4 +115,5 @@ jobs:
           environment_name: Bumblebee-final-env
           version_label: github-action-${{ steps.current-time.outputs.formattedTime }}
           region: ap-northeast-2
-          deployment_package: ./homework/RoomIt_BE-0.0.1-SNAPSHOT.jar  # 다운로드된 아티팩트 경로
+          deployment_package: ./homework/RoomIt_BE-0.0.1-SNAPSHOT.jar  # 압축 해제 후 .jar 파일 경로
+
