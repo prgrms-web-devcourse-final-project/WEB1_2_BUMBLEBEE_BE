@@ -5,7 +5,8 @@ on:
     branches: [ release ]
 
 jobs:
-  build:
+  # CI: Continuous Integration
+  ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -55,15 +56,8 @@ jobs:
           artifact=${artifact//\"/}  # Remove any double quotes from the artifact path
           echo "artifact=$artifact" >> $GITHUB_ENV
 
-      # EC2 SSH 키를 파일로 저장
-      - name: Save SSH key
-        run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" > /tmp/ssh-key.pem
-          chmod 600 /tmp/ssh-key.pem
-
       # S3에 python-server 폴더 업로드 (최초 및 업데이트 시)
       - name: Upload python-server folder to S3
-        # python-server 폴더를 S3에 업로드
         run: |
           aws s3 cp ./python-server s3://bumblebee.roomit/python-server --recursive --region ap-northeast-2
         env:
@@ -71,11 +65,20 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ap-northeast-2
 
+  # CD: Continuous Deployment
+  cd:
+    runs-on: ubuntu-latest
+    needs: ci  # ci job이 완료된 후 실행
+    steps:
+      - name: Save SSH key
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" > /tmp/ssh-key.pem
+          chmod 600 /tmp/ssh-key.pem
 
       # EC2에서 S3에서 python-server 폴더 다운로드
       - name: Download python-server folder from S3 to EC2
         run: |
-          # Docker 디렉토리가 없으면 만들고, 권한 설정
+      # Docker 디렉토리가 없으면 만들고, 권한 설정
           ssh -i /tmp/ssh-key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} "
           sudo mkdir -p /Docker/python-server && 
           sudo chown -R ec2-user:ec2-user /Docker && 
@@ -89,8 +92,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ap-northeast-2
 
-
-        # Elastic Beanstalk 배포
+      # Elastic Beanstalk 배포
       - name: Beanstalk Deploy
         uses: einaregilsson/beanstalk-deploy@v20
         with:
