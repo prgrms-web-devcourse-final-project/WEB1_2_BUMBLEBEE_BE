@@ -77,8 +77,8 @@ jobs:
 
       # EC2에서 S3에서 python-server 폴더 다운로드
       - name: Download python-server folder from S3 to EC2
+        # Docker 디렉토리가 없으면 만들고, 권한 설정
         run: |
-      # Docker 디렉토리가 없으면 만들고, 권한 설정
           ssh -i /tmp/ssh-key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} "
           sudo mkdir -p /Docker/python-server && 
           sudo chown -R ec2-user:ec2-user /Docker && 
