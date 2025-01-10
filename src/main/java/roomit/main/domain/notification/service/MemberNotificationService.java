@@ -24,6 +24,7 @@ import roomit.main.global.error.ErrorCode;
 import roomit.main.global.service.FileLocationService;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,11 +34,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class MemberNotificationService {
 
-    private final EmitterRepository emitterRepository;
-
     private final MemberNotificationRepository memberNotificationRepository;
-
-    private final MemberRepository memberRepository;
 
     private final FileLocationService fileLocationService;
 
@@ -47,7 +44,13 @@ public class MemberNotificationService {
         List<MemberNotification> notifications = memberNotificationRepository.findNotificationsByBusinessId(businessId);
 
         return notifications.stream()
-                .map((MemberNotification memberNotification) -> ResponseNotificationReservationMemberDto.fromEntityReservationtoMember(memberNotification, fileLocationService))  // Notification -> NotificationDto 변환
+                .map(memberNotification -> ResponseNotificationReservationMemberDto.fromEntityReservationtoMember(memberNotification, fileLocationService))  // Notification -> NotificationDto 변환
                 .toList();
+    }
+
+    // 3개월이 지난 회원 예약 알림 제거
+    @Scheduled(cron = "0 0 3 * * ?")
+    public void deleteOldReservationNotifications() {
+        memberNotificationRepository.deleteByCreatedAtBefore(LocalDateTime.now().minusMonths(3));
     }
 }

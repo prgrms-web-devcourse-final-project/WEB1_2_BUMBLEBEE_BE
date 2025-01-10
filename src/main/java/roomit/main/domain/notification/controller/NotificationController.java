@@ -43,20 +43,20 @@ public class NotificationController {
         return ResponseEntity.ok(notificationService.subscribe(emitterKey));
     }
 
-    //리뷰
+    //사업자 리뷰
     @GetMapping("/api/v1/sub/list")
     public ResponseEntity<List<ResponseNotificationDto>> read(@AuthenticationPrincipal CustomBusinessDetails customBusinessDetails) {
         Long businessId = customBusinessDetails.getId();
         return ResponseEntity.ok(notificationService.getNotifications(businessId));
     }
 
-    //예약
+    //사업자 예약
     @GetMapping("/api/v1/subReservation/list")
     public ResponseEntity<List<ResponseNotificationReservationDto>> reads(@AuthenticationPrincipal CustomBusinessDetails customBusinessDetails) {
         Long businessId = customBusinessDetails.getId();
         return ResponseEntity.ok(notificationService.getNotificationsReservation(businessId));
     }
-
+    // 회원 예약
     @GetMapping("/api/v1/subReservation/memberlist")
     public ResponseEntity<List<ResponseNotificationReservationMemberDto>> readsMember(@AuthenticationPrincipal CustomMemberDetails customMemberDetails) {
         Long memberDetailsId = customMemberDetails.getId();
