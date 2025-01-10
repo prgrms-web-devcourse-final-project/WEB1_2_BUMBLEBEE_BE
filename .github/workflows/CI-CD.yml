@@ -50,8 +50,7 @@ jobs:
       - name: Set artifact path
         id: set-artifact-path
         run: |
-          artifact=$(ls ./build/libs/RoomIt_BE-0.0.1-SNAPSHOT.jar | head -n 1)
-          artifact=${artifact//\"/}  # 따옴표 제거
+          artifact="./build/libs/RoomIt_BE-0.0.1-SNAPSHOT.jar"  # 절대 경로로 수정
           echo "artifact=$artifact" >> $GITHUB_ENV  # 환경 변수 설정
           echo "::set-output name=artifact::$artifact"  # 출력으로 설정
 
@@ -105,6 +104,6 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: bumblebee-final
           environment_name: Bumblebee-final-env
-          version_label: github-action-${{ steps.current-time.outputs.formattedTime }}  # 현재 시간 사용
+          version_label: github-action-${{ steps.current-time.outputs.formattedTime }}
           region: ap-northeast-2
-          deployment_package: ${{ needs.ci.outputs.artifact }}  # CI 작업에서 출력한 아티팩트 경로를 참조
+          deployment_package: ${{ needs.ci.outputs.artifact }}  # CI 작업에서 출력한 artifact 경로 참조
