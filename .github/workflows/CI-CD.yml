@@ -49,12 +49,12 @@ jobs:
           format: YYYY-MM-DDTHH-mm-ss
           utcOffset: "+09:00"
 
-      # 빌드된 JAR 파일 경로 설정
       - name: Set artifact path
         run: |
-          artifact=$(ls ./build/libs/RoomIt_BE-*.jar | head -n 1)
+          artifact=$(ls ./build/libs/RoomIt_BE-0.0.1-SNAPSHOT.jar | head -n 1)
           artifact=${artifact//\"/}  # Remove any double quotes from the artifact path
           echo "artifact=$artifact" >> $GITHUB_ENV
+          echo "Artifact path: $artifact"
 
       # S3에 python-server 폴더 업로드 (최초 및 업데이트 시)
       - name: Upload python-server folder to S3
