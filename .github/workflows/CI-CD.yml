@@ -39,11 +39,9 @@ jobs:
 
       # 현재 시간 정보 가져오기
       - name: Get current time
-        uses: josStorer/get-current-time@v2
         id: current-time
-        with:
-          format: YYYY-MM-DDTHH-mm-ss
-          utcOffset: "+09:00"
+        run: |
+          echo "current_time=$(date -u +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_ENV  # 현재 UTC 시간 형식 설정
 
       # 아티팩트 경로 설정 (set-output 대신 GITHUB_ENV 사용)
       - name: Set artifact path
@@ -103,7 +101,7 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: bumblebee-final
           environment_name: Bumblebee-final-env
-          version_label: github-action-${{ steps.current-time.outputs.formattedTime }}
+          version_label: github-action-${{ env.current_time }}  # 고유한 버전 레이블 사용
           region: ap-northeast-2
           deployment_package: ./RoomIt_BE-0.0.1-SNAPSHOT.jar  # .jar 파일 경로
 
