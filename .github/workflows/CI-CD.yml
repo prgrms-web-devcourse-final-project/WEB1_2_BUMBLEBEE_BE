@@ -53,9 +53,9 @@ jobs:
         run: |
           artifact=$(ls ./build/libs/RoomIt_BE-0.0.1-SNAPSHOT.jar | head -n 1)
           artifact=${artifact//\"/}  # Remove any double quotes from the artifact path
-          echo "artifact=$artifact" >> $GITHUB_ENV
+          echo "artifact=$artifact" >> $GITHUB_OUTPUT  # Set the artifact as an output
           echo "Artifact path: $artifact"
-          echo "artifact=$artifact" >> $GITHUB_OUTPUT  # artifact를 output으로 설정
+      
 
       # S3에 python-server 폴더 업로드 (최초 및 업데이트 시)
       - name: Upload python-server folder to S3
@@ -102,5 +102,6 @@ jobs:
           environment_name: Bumblebee-final-env
           version_label: github-action-${{ steps.current-time.outputs.formattedTime }}
           region: ap-northeast-2
-          deployment_package: ${{ needs.ci.outputs.artifact }}  # CI job의 output에서 artifact 가져오기
+          deployment_package: ${{ needs.ci.outputs.artifact }}  # CI job에서 output으로 설정한 artifact 경로 사용
+
 
