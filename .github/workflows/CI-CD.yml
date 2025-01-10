@@ -74,11 +74,23 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ap-northeast-2
 
+      # .jar 파일을 아티팩트로 업로드
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: roomit-jar
+          path: ./build/libs/RoomIt_BE-0.0.1-SNAPSHOT.jar
+
   # CD: Continuous Deployment
   cd:
     runs-on: ubuntu-latest
     needs: ci  # ci 작업이 완료된 후 실행
     steps:
+      - name: Download build artifact for deployment
+        uses: actions/download-artifact@v2
+        with:
+          name: roomit-jar  # CI 작업에서 업로드한 아티팩트 이름
+
       - name: Save SSH key
         run: |
           echo "${{ secrets.EC2_SSH_KEY }}" > /tmp/ssh-key.pem
@@ -110,4 +122,4 @@ jobs:
           environment_name: Bumblebee-final-env
           version_label: github-action-${{ steps.current-time.outputs.formattedTime }}  # 현재 시간 사용
           region: ap-northeast-2
-          deployment_package: ${{ needs.ci.outputs.artifact }}  # CI 작업에서 출력한 아티팩트 경로를 참조
+          deployment_package: ./RoomIt_BE-0.0.1-SNAPSHOT.jar  # 다운로드 받은 .jar 파일 사용
