@@ -80,7 +80,10 @@ jobs:
           echo "${{ secrets.EC2_SSH_KEY }}" > /tmp/ssh-key.pem
           chmod 600 /tmp/ssh-key.pem
 
-      # EC2에서 S3에서 python-server 폴더 다운로드
+      - name: Check uploaded artifact
+        run: ls -al ./path/to/deployment_package
+
+    # EC2에서 S3에서 python-server 폴더 다운로드
       - name: Download python-server folder from S3 to EC2
         run: |
           ssh -i /tmp/ssh-key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} "
