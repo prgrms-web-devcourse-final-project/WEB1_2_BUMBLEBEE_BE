@@ -37,12 +37,6 @@ jobs:
         run: |
           ls -al ./build/libs/  # 여기서 .jar 파일이 존재하는지 확인
 
-      # 현재 시간 정보 가져오기
-      - name: Get current time
-        id: current-time
-        run: |
-          echo "current_time=$(date -u +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_ENV  # 현재 UTC 시간 형식 설정
-
       # 아티팩트 경로 설정 (set-output 대신 GITHUB_ENV 사용)
       - name: Set artifact path
         id: set-artifact-path
@@ -93,6 +87,12 @@ jobs:
         run: |
           ls -al .
 
+      # 현재 시간 정보 가져오기
+      - name: Get current time
+        id: current-time
+        run: |
+          echo "current_time=$(date -u +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_ENV  # 현재 UTC 시간 형식 설정
+
       # Elastic Beanstalk 배포
       - name: Beanstalk Deploy
         uses: einaregilsson/beanstalk-deploy@v20
@@ -104,5 +104,3 @@ jobs:
           version_label: github-action-${{ env.current_time }}  # 고유한 버전 레이블 사용
           region: ap-northeast-2
           deployment_package: ./RoomIt_BE-0.0.1-SNAPSHOT.jar  # .jar 파일 경로
-
-
