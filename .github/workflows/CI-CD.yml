@@ -35,7 +35,7 @@ jobs:
       # 빌드 후 .jar 파일 확인
       - name: Verify build artifact
         run: |
-          ls -al ./build/libs/
+          ls -al ./build/libs/  # 여기서 .jar 파일이 존재하는지 확인
 
       # 현재 시간 정보 가져오기
       - name: Get current time
@@ -51,7 +51,6 @@ jobs:
         run: |
           artifact="./build/libs/RoomIt_BE-0.0.1-SNAPSHOT.jar"
           echo "artifact=$artifact" >> $GITHUB_ENV  # GITHUB_ENV에 아티팩트 경로 설정
-          echo "::set-output name=artifact::$artifact"  # outputs에 경로 설정
 
       # 업로드된 아티팩트를 v4로 업로드
       - name: Upload artifact v4
@@ -85,6 +84,12 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ap-northeast-2
 
+      # 업로드된 아티팩트를 다운로드
+      - name: Download artifact v4
+        uses: actions/download-artifact@v4
+        with:
+          name: homework
+
       # Elastic Beanstalk 배포
       - name: Beanstalk Deploy
         uses: einaregilsson/beanstalk-deploy@v20
@@ -95,4 +100,4 @@ jobs:
           environment_name: Bumblebee-final-env
           version_label: github-action-${{ steps.current-time.outputs.formattedTime }}
           region: ap-northeast-2
-          deployment_package: ${{ needs.ci.outputs.artifact }}  # ci 작업에서 출력한 아티팩트 경로를 참조
+          deployment_package: ./homework/RoomIt_BE-0.0.1-SNAPSHOT.jar  # 다운로드된 아티팩트 경로
