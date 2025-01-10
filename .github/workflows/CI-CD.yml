@@ -5,7 +5,6 @@ on:
     branches: [ release ]
 
 jobs:
-  # CI: Continuous Integration
   ci:
     runs-on: ubuntu-latest
     steps:
@@ -41,6 +40,11 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean bootJar -x test
 
+      # 빌드 후 .jar 파일 확인
+      - name: Verify build artifact
+        run: |
+          ls -al ./build/libs/
+
       # 현재 시간 정보 가져오기
       - name: Get current time
         uses: josStorer/get-current-time@v2
@@ -57,6 +61,7 @@ jobs:
           artifact=${artifact//\"/}  # 따옴표 제거
           echo "artifact=$artifact" >> $GITHUB_ENV  # 환경 변수 설정
           echo "::set-output name=artifact::$artifact"  # 출력으로 설정
+
 
       # S3에 python-server 폴더 업로드 (최초 및 업데이트 시)
       - name: Upload python-server folder to S3
