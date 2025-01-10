@@ -152,6 +152,7 @@ public class ReviewService {
         return responses;
     }
 
+    @Transactional
     public void remove(Long reviewId, String workPlaceName, Long memberId) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(ErrorCode.REVIEW_NOT_FOUND::commonException);
