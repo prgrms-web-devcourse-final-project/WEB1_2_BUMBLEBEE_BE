@@ -8,8 +8,6 @@ jobs:
   # CI: Continuous Integration
   ci:
     runs-on: ubuntu-latest
-    outputs:
-      artifact: ${{ steps.set-artifact-path.outputs.artifact }}  # 아티팩트 경로를 출력으로 설정
     steps:
       - uses: actions/checkout@v3
 
@@ -105,4 +103,4 @@ jobs:
           environment_name: Bumblebee-final-env
           version_label: github-action-${{ steps.current-time.outputs.formattedTime }}  # 현재 시간 사용
           region: ap-northeast-2
-          deployment_package: ${{ needs.ci.outputs.artifact }}  # CI 작업에서 출력한 아티팩트 경로 사용
+          deployment_package: ./build/libs/RoomIt_BE-0.0.1-SNAPSHOT.jar  # CI 작업에서 빌드된 .jar 파일 경로 사용
