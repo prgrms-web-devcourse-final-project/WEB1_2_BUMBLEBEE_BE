@@ -13,16 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # Docker Compose 설치
-      - name: Install Docker Compose
-        run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-
-      # Docker Compose 버전 확인
-      - name: Check Docker Compose version
-        run: docker-compose --version
-
       # main/resources에 기본 프로퍼티 파일 생성
       - run: |
           mkdir -p ./src/main/resources
@@ -74,11 +64,11 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ap-northeast-2
 
-      # .jar 파일을 아티팩트로 업로드
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v2
+      # 업로드된 아티팩트를 v3로 업로드
+      - name: Upload artifact v3
+        uses: actions/upload-artifact@v3
         with:
-          name: roomit-jar
+          name: homework
           path: ./build/libs/RoomIt_BE-0.0.1-SNAPSHOT.jar
 
   # CD: Continuous Deployment
@@ -86,11 +76,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: ci  # ci 작업이 완료된 후 실행
     steps:
-      - name: Download build artifact for deployment
-        uses: actions/download-artifact@v2
-        with:
-          name: roomit-jar  # CI 작업에서 업로드한 아티팩트 이름
-
       - name: Save SSH key
         run: |
           echo "${{ secrets.EC2_SSH_KEY }}" > /tmp/ssh-key.pem
@@ -122,4 +107,4 @@ jobs:
           environment_name: Bumblebee-final-env
           version_label: github-action-${{ steps.current-time.outputs.formattedTime }}  # 현재 시간 사용
           region: ap-northeast-2
-          deployment_package: ./RoomIt_BE-0.0.1-SNAPSHOT.jar  # 다운로드 받은 .jar 파일 사용
+          deployment_package: ${{ needs.ci.outputs.artifact }}  # CI 작업에서 출력한 아티팩트 경로를 참조
