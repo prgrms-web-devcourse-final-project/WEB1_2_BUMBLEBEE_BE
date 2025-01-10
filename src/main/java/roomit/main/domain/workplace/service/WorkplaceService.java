@@ -1,21 +1,14 @@
 package roomit.main.domain.workplace.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Point;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClient;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.business.repository.BusinessRepository;
 import roomit.main.domain.studyroom.dto.request.CreateStudyRoomRequest;
@@ -30,9 +23,6 @@ import roomit.main.domain.workplace.dto.response.WorkplaceCreateResponse;
 import roomit.main.domain.workplace.dto.response.WorkplaceDetailResponse;
 import roomit.main.domain.workplace.dto.response.WorkplaceResponse;
 import roomit.main.domain.workplace.entity.Workplace;
-import roomit.main.domain.workplace.entity.value.WorkplaceAddress;
-import roomit.main.domain.workplace.entity.value.WorkplaceName;
-import roomit.main.domain.workplace.entity.value.WorkplacePhoneNumber;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
 import roomit.main.global.exception.CommonException;
@@ -47,7 +37,7 @@ public class WorkplaceService {
     private final WorkplaceRepository workplaceRepository;
     private final BusinessRepository businessRepository;
     private final StudyRoomRepository studyRoomRepository;
-    private final WebClient webClient;
+    private final GeoService geoService;
     private final ImageService imageService;
     private final FileLocationService fileLocationService;
     private final PointUtil pointUtil;
@@ -96,7 +86,7 @@ public class WorkplaceService {
     public WorkplaceCreateResponse createWorkplace(WorkplaceRequest workplaceDto, Long id) {
         Business business = businessRepository.findById(id).orElseThrow(ErrorCode.BUSINESS_NOT_FOUND::commonException);
 
-        Map<String, Double> coordinates = getStringBigDecimalMap(workplaceDto);
+        Map<String, Double> coordinates = getStringDoubleMap(workplaceDto);
         Point location = pointUtil.createPoint(coordinates.get("longitude"), coordinates.get("latitude"));
 
         try {
@@ -153,21 +143,16 @@ public class WorkplaceService {
             throw ErrorCode.BUSINESS_NOT_AUTHORIZED.commonException();
         }
 
-        Map<String, Double> coordinates = getStringBigDecimalMap(workplaceDto);
-        Point newLocation = pointUtil.createPoint(coordinates.get("longitude"), coordinates.get("latitude"));
-
         try {
-            workplace.changeWorkplaceName(new WorkplaceName(workplaceDto.workplaceName()));
-            workplace.changeWorkplaceDescription(workplaceDto.workplaceDescription());
-            workplace.changeWorkplaceAddress(new WorkplaceAddress(workplaceDto.workplaceAddress()));
-            workplace.changeWorkplacePhoneNumber(new WorkplacePhoneNumber(workplaceDto.workplacePhoneNumber()));
-            workplace.changeWorkplaceStartTime(workplaceDto.workplaceStartTime());
-            workplace.changeWorkplaceEndTime(workplaceDto.workplaceEndTime());
-            workplace.changeLocation(newLocation);
-
-            workplaceRepository.save(workplace);
-        } catch (Exception e) {
-            throw ErrorCode.WORKPLACE_NOT_MODIFIED.commonException();
+            workplaceRepository.updateWorkplace(workplaceDto, businessId);
+        }catch (Exception e){
+            // 기존 오류 코드가 담긴 예외를 그대로 던짐
+            if (e instanceof CommonException) {
+                throw (CommonException) e;
+            } else {
+                // 새로운 예외를 던지거나 일반 오류 처리
+                throw ErrorCode.WORKPLACE_NOT_MODIFIED.commonException();
+            }
         }
     }
 
@@ -208,49 +193,11 @@ public class WorkplaceService {
         return new WorkplaceBusinessResponse(businessId, businessName, workplaceDtoList);
     }
 
-    protected Map<String, Double> getStringBigDecimalMap(WorkplaceRequest workplaceDto) {
-        try {
-            String[] parts = workplaceDto.workplaceAddress().split(",", 2);
-            String roadAddress = parts[0].trim();
-            String detailAddress = (parts.length > 1) ? parts[1].trim() : "";
-            return geoCording(roadAddress);
-        } catch (Exception e) {
-            throw ErrorCode.WORKPLACE_INVALID_ADDRESS.commonException();
-        }
-    }
-
-    private Map<String, Double> geoCording(String address) {
-        try {
-            String response = webClient.get()
-                    .uri(uriBuilder -> uriBuilder
-                            .path("/v2/local/search/address.json")
-                            .queryParam("query", address)
-                            .build())
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block(); // 동기식 호출
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode document = objectMapper.readTree(response).path("documents").get(0);
-
-            Double latitude = Double.valueOf(document.path("y").asText());
-            Double longitude = Double.valueOf(document.path("x").asText());
-
-            return Map.of(
-                    "latitude", latitude,
-                    "longitude", longitude
-            );
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Error parsing JSON response", e);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to extract coordinates from response", e);
-        }
-    }
 
     @Transactional(readOnly = true)
     public List<DistanceWorkplaceResponse> findNearbyWorkplaces(String address, double maxDistance) {
         // 1. 주소를 좌표로 변환
-        Map<String, Double> coordinates = geoCording(address);
+        Map<String, Double> coordinates = geocoding(address);
         Double latitude = coordinates.get("latitude");
         Double longitude = coordinates.get("longitude");
 
@@ -268,6 +215,14 @@ public class WorkplaceService {
                 result.distance()
             ))
             .collect(Collectors.toList());
+    }
+
+    public Map<String, Double> getStringDoubleMap(WorkplaceRequest workplaceDto) {
+        return geoService.parseAddress(workplaceDto.workplaceAddress());
+    }
+
+    public Map<String, Double> geocoding(String address) {
+        return geoService.geocoding(address);
     }
 }
 
