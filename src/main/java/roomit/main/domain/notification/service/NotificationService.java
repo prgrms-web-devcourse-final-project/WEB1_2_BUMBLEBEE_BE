@@ -7,11 +7,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import roomit.main.domain.business.entity.Business;
-import roomit.main.domain.business.repository.BusinessRepository;
-import roomit.main.domain.member.dto.request.MemberUpdateRequest;
-import roomit.main.domain.member.entity.Member;
-import roomit.main.domain.member.repository.MemberRepository;
 import roomit.main.domain.notification.dto.ResponseNotificationDto;
 import roomit.main.domain.notification.dto.ResponseNotificationReservationDto;
 import roomit.main.domain.notification.dto.ResponseNotificationReservationMemberDto;
@@ -22,7 +17,6 @@ import roomit.main.domain.notification.repository.EmitterRepository;
 import roomit.main.domain.notification.repository.MemberNotificationRepository;
 import roomit.main.domain.notification.repository.NotificationRepository;
 import roomit.main.domain.notification.repository.ReviewNotificationRepository;
-import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
 import roomit.main.global.service.FileLocationService;
 
@@ -43,9 +37,13 @@ public class NotificationService {
 
     private final ReviewNotificationRepository reviewNotificationRepository;
 
+    private final MemberNotificationRepository memberNotificationRepository;
+
     private final FileLocationService fileLocationService;
 
     private static final long DEFAULT_TIMEOUT = 30 * 60 * 1000L; // 30분으로 변경
+    private static final String BUSINESS_KEY_PREFIX = "business-";
+    private static final String MEMBER_KEY_PREFIX = "business-";
 
 
     public SseEmitter subscribe(String id) {
@@ -55,9 +53,9 @@ public class NotificationService {
 
         emitterRepository.save(id, emitter);
 
-            Map<String, Object> testContent = new HashMap<>();
-            testContent.put("content", "connected!");
-            sendToClient(emitter, id, testContent);
+        Map<String, Object> testContent = new HashMap<>();
+        testContent.put("content", "connected!");
+        sendToClient(emitter, id, testContent);
 
         emitter.onError((ex) -> {
             log.error("SSE connection error for businessId={}: {}", id, ex.getMessage());
@@ -77,6 +75,7 @@ public class NotificationService {
 
         return emitter;
     }
+
     // 맨처음 구독시 오는곳
     private void sendToClient(SseEmitter emitter, String emitterId, Object data) {
         try {
@@ -105,10 +104,11 @@ public class NotificationService {
             }
         }
     }
+
     // 리뷰
     public void customNotify(String businessId, ResponseNotificationDto responseNotificationDto) {
 
-        String emitterKey = "business-" + businessId;
+        String emitterKey = BUSINESS_KEY_PREFIX + businessId;
         SseEmitter sseEmitter = emitterRepository.get(emitterKey);
         if (sseEmitter != null) {
             sendToClient(emitterKey, responseNotificationDto);
@@ -118,7 +118,7 @@ public class NotificationService {
     // 사업자 예약
     public void customNotifyReservation(String businessId, ResponseNotificationReservationDto responseNotificationReservationDto) {
 
-        String emitterKey = "business-" + businessId;
+        String emitterKey = BUSINESS_KEY_PREFIX + businessId;
         SseEmitter sseEmitter = emitterRepository.get(emitterKey);
         if (sseEmitter != null) {
             sendToClient(emitterKey, responseNotificationReservationDto);
@@ -128,13 +128,12 @@ public class NotificationService {
     // 멤버 예약
     public void customNotifyReservationMember(String memberId, ResponseNotificationReservationMemberDto responseNotificationReservationDto) {
 
-        String emitterKey = "member-" + memberId;
+        String emitterKey = MEMBER_KEY_PREFIX + memberId;
         SseEmitter sseEmitter = emitterRepository.get(emitterKey);
         if (sseEmitter != null) {
             sendToClient(emitterKey, responseNotificationReservationDto);
         }
     }
-    
 
 
     // 사업자 리뷰 알림
@@ -146,7 +145,7 @@ public class NotificationService {
 
         return notifications.stream()
                 .map(notification -> ResponseNotificationDto.fromEntity(
-                    notification, fileLocationService))  // Notification -> NotificationDto 변환
+                        notification, fileLocationService))  // Notification -> NotificationDto 변환
                 .toList();
     }
 
@@ -157,19 +156,35 @@ public class NotificationService {
         List<Notification> notifications = notificationRepository.findNotificationsByBusinessId(businessId);
 
         return notifications.stream()
-                .map( notification -> ResponseNotificationReservationDto.fromEntityReservation(notification, fileLocationService))  // Notification -> NotificationDto 변환
+                .map(notification -> ResponseNotificationReservationDto.fromEntityReservation(notification, fileLocationService))  // Notification -> NotificationDto 변환
+                .toList();
+    }
+
+    @Transactional
+    public List<ResponseNotificationReservationMemberDto> getNotificationsReservationMember(Long businessId) {
+
+        List<MemberNotification> notifications = memberNotificationRepository.findNotificationsByBusinessId(businessId);
+
+        return notifications.stream()
+                .map(memberNotification -> ResponseNotificationReservationMemberDto.fromEntityReservationtoMember(memberNotification, fileLocationService))  // Notification -> NotificationDto 변환
                 .toList();
     }
 
     // 3개월이 지난 사업자 리뷰 알림 제거
     @Scheduled(cron = "0 0 3 * * ?")
-    public void deleteOldReviewNotifications(){
+    public void deleteOldReviewNotifications() {
         reviewNotificationRepository.deleteByCreatedAtBefore(LocalDateTime.now().minusMonths(3));
     }
 
     // 3개월이 지난 사업자 예약 알림 제거
     @Scheduled(cron = "0 0 3 * * ?")
-    public void deleteOldReservationNotifications(){
+    public void deleteOldReservationNotifications() {
         notificationRepository.deleteByCreatedAtBefore(LocalDateTime.now().minusMonths(3));
+    }
+
+    // 3개월이 지난 회원 예약 알림 제거
+    @Scheduled(cron = "0 0 3 * * ?")
+    public void deleteOldMemberReservationNotifications() {
+        memberNotificationRepository.deleteByCreatedAtBefore(LocalDateTime.now().minusMonths(3));
     }
 }

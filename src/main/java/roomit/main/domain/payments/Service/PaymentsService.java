@@ -27,7 +27,6 @@ import roomit.main.domain.notification.entity.NotificationMemberType;
 import roomit.main.domain.notification.entity.NotificationType;
 import roomit.main.domain.notification.repository.MemberNotificationRepository;
 import roomit.main.domain.notification.repository.NotificationRepository;
-import roomit.main.domain.notification.service.MemberNotificationService;
 import roomit.main.domain.notification.service.NotificationService;
 import roomit.main.domain.payments.config.PaymentsConfig;
 import roomit.main.domain.payments.dto.request.PaymentsRequest;
@@ -39,11 +38,9 @@ import roomit.main.domain.payments.repository.PaymentsRepository;
 import roomit.main.domain.reservation.entity.Reservation;
 import roomit.main.domain.reservation.entity.ReservationState;
 import roomit.main.domain.reservation.repository.ReservationRepository;
-import roomit.main.domain.studyroom.entity.value.StudyRoomName;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.global.error.ErrorCode;
 import roomit.main.global.service.FileLocationService;
-import roomit.main.global.service.FileUploadService;
 
 @Service
 @RequiredArgsConstructor

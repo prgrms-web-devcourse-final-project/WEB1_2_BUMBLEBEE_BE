@@ -36,8 +36,8 @@ public class MemberController {
     // 내 정보 수정
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping()
-    public MemberResponse update(@AuthenticationPrincipal CustomMemberDetails customMemberDetails, @RequestBody @Valid MemberUpdateRequest request) {
-        return memberService.update(customMemberDetails.getId(), request);
+    public void update(@AuthenticationPrincipal CustomMemberDetails customMemberDetails, @RequestBody @Valid MemberUpdateRequest request) {
+         memberService.update(customMemberDetails.getId(), request);
     }
 
     // 내 정보 삭제
