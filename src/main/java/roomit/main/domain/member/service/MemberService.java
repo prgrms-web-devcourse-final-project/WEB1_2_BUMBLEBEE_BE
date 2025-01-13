@@ -4,6 +4,7 @@ import ch.qos.logback.core.spi.ErrorCodes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomit.main.domain.member.dto.request.MemberRegisterRequest;
 import roomit.main.domain.member.dto.request.MemberUpdateRequest;
 import roomit.main.domain.member.dto.response.MemberResponse;
@@ -11,6 +12,7 @@ import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.member.exception.MemberNotFound;
 import roomit.main.domain.member.repository.MemberRepository;
 import roomit.main.global.error.ErrorCode;
+import roomit.main.global.exception.CommonException;
 
 import java.util.Optional;
 
@@ -40,17 +42,17 @@ public class MemberService {
         return new MemberResponse(member);
     }
 
-    public MemberResponse update(Long memberId, MemberUpdateRequest request) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(ErrorCode.MEMBER_NOT_FOUND::commonException);
-
+    @Transactional
+    public void update(Long memberId, MemberUpdateRequest request) {
         try {
-            member.updateMember(request);
-            memberRepository.save(member);
-        } catch (Exception e) {
-            throw ErrorCode.MEMBER_UPDATE_EXCEPTION.commonException();
+            memberRepository.updateMember(request, memberId);
+        } catch (Exception e){
+            if(e instanceof CommonException){
+                throw (CommonException)e;
+            }else{
+                throw ErrorCode.MEMBER_NOT_MODIFY.commonException();
+            }
         }
-        return new MemberResponse(member);
     }
 
     public void delete(Long memberId) {
