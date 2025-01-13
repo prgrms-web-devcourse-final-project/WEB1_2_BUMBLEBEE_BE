@@ -27,6 +27,7 @@ import roomit.main.global.error.ErrorCode;
 import roomit.main.global.service.FileLocationService;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -130,6 +131,7 @@ public class NotificationService {
         }
     }
 
+    // 멤버 예약
     public void customNotifyReservationMember(String memberId, ResponseNotificationReservationMemberDto responseNotificationReservationDto) {
 
         String emitterKey = MEMBER_KEY_PREFIX + memberId;
@@ -139,6 +141,8 @@ public class NotificationService {
         }
     }
 
+
+    // 사업자 리뷰 알림
     @Transactional
     public List<ResponseNotificationDto> getNotifications(Long businessId) {
 
@@ -151,6 +155,7 @@ public class NotificationService {
                 .toList();
     }
 
+    // 사업자 예약 알림
     @Transactional
     public List<ResponseNotificationReservationDto> getNotificationsReservation(Long businessId) {
 
@@ -169,5 +174,22 @@ public class NotificationService {
         return notifications.stream()
                 .map(memberNotification -> ResponseNotificationReservationMemberDto.fromEntityReservationtoMember(memberNotification, fileLocationService))  // Notification -> NotificationDto 변환
                 .toList();
+    }
+
+    // 3개월이 지난 사업자 리뷰 알림 제거
+    @Scheduled(cron = "0 0 3 * * ?")
+    public void deleteOldReviewNotifications(){
+        reviewNotificationRepository.deleteByCreatedAtBefore(LocalDateTime.now().minusMonths(3));
+    }
+
+    // 3개월이 지난 사업자 예약 알림 제거
+    @Scheduled(cron = "0 0 3 * * ?")
+    public void deleteOldReservationNotifications(){
+        notificationRepository.deleteByCreatedAtBefore(LocalDateTime.now().minusMonths(3));
+    }
+    // 3개월이 지난 회원 예약 알림 제거
+    @Scheduled(cron = "0 0 3 * * ?")
+    public void deleteOldMemberReservationNotifications() {
+        memberNotificationRepository.deleteByCreatedAtBefore(LocalDateTime.now().minusMonths(3));
     }
 }

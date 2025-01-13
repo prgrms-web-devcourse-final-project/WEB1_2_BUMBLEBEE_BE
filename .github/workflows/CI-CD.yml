@@ -5,26 +5,18 @@ on:
     branches: [ release ]
 
 jobs:
-  build:
+  ci:
     runs-on: ubuntu-latest
+    outputs:
+      artifact: ${{ steps.set-artifact-path.outputs.artifact }}  # ci 작업에서 출력한 아티팩트 경로
     steps:
       - uses: actions/checkout@v3
-
-      # Docker Compose 설치
-      - name: Install Docker Compose
-        run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-
-      # Docker Compose 버전 확인
-      - name: Check Docker Compose version
-        run: docker-compose --version
 
       # main/resources에 기본 프로퍼티 파일 생성
       - run: |
           mkdir -p ./src/main/resources
-          touch ./src/main/resources/application.properties  # 파일 생성
-          echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.properties  # 파일에 내용 추가
+          touch ./src/main/resources/application.properties
+          echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.properties
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -40,39 +32,66 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean bootJar -x test
 
-      # 현재 시간 정보 가져오기
-      - name: Get current time
-        uses: josStorer/get-current-time@v2
-        id: current-time
-        with:
-          format: YYYY-MM-DDTHH-mm-ss
-          utcOffset: "+09:00"
-
-      # 빌드된 JAR 파일 경로 설정
-      - name: Set artifact path
+      # 빌드 후 .jar 파일 확인
+      - name: Verify build artifact
         run: |
-          artifact=$(ls ./build/libs/RoomIt_BE-*.jar | head -n 1)
-          artifact=${artifact//\"/}  # Remove any double quotes from the artifact path
-          echo "artifact=$artifact" >> $GITHUB_ENV
+          ls -al ./build/libs/  # 여기서 .jar 파일이 존재하는지 확인
 
-      # EC2 SSH 키를 파일로 저장
+      # 아티팩트 경로 설정 (set-output 대신 GITHUB_ENV 사용)
+      - name: Set artifact path
+        id: set-artifact-path
+        run: |
+          artifact="./build/libs/RoomIt_BE-0.0.1-SNAPSHOT.jar"
+          echo "artifact=$artifact" >> $GITHUB_ENV  # GITHUB_ENV에 아티팩트 경로 설정
+
+      # 업로드된 아티팩트를 v4로 업로드
+      - name: Upload artifact v4
+        uses: actions/upload-artifact@v4
+        with:
+          name: homework
+          path: ./build/libs/RoomIt_BE-0.0.1-SNAPSHOT.jar
+
+  cd:
+    runs-on: ubuntu-latest
+    needs: ci  # ci 작업이 완료된 후 실행
+    steps:
       - name: Save SSH key
         run: |
           echo "${{ secrets.EC2_SSH_KEY }}" > /tmp/ssh-key.pem
           chmod 600 /tmp/ssh-key.pem
 
-      # EC2에서 Docker 디렉토리 권한 설정 (파일 복사 전)
-      - name: Set Docker directory permissions on EC2
+      # EC2에서 S3에서 python-server 폴더 다운로드
+      - name: Download python-server folder from S3 to EC2
         run: |
-          ssh -i /tmp/ssh-key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} "sudo mkdir -p /Docker"
-          ssh -i /tmp/ssh-key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} "sudo chown -R ec2-user:ec2-user /Docker"
-          ssh -i /tmp/ssh-key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} "sudo chmod -R 777 /Docker"
+          ssh -i /tmp/ssh-key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} "
+          sudo mkdir -p /Docker/python-server &&
+          sudo chown -R ec2-user:ec2-user /Docker &&
+          sudo chmod -R 777 /Docker
+          "
+          ssh -i /tmp/ssh-key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} "
+            aws s3 sync s3://bumblebee.roomit/python-server /Docker/python-server --region ap-northeast-2
+          "
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ap-northeast-2
 
-      # EC2에 파일 복사 (docker-compose.yml과 python-server 디렉토리)
-      - name: Copy docker-compose.yml and python-server to EC2
+      # 업로드된 아티팩트를 다운로드
+      - name: Download artifact v4
+        uses: actions/download-artifact@v4
+        with:
+          name: homework
+
+      # 다운로드된 파일 목록 확인 (디버깅용)
+      - name: List downloaded files
         run: |
-          # python-server 디렉토리 복사 (-r 옵션을 사용하여 디렉토리 복사)
-          scp -i /tmp/ssh-key.pem -o StrictHostKeyChecking=no -r ./python-server ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/Docker/
+          ls -al .
+
+      # 현재 시간 정보 가져오기
+      - name: Get current time
+        id: current-time
+        run: |
+          echo "current_time=$(date -u +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_ENV  # 현재 UTC 시간 형식 설정
 
       # Elastic Beanstalk 배포
       - name: Beanstalk Deploy
@@ -82,6 +101,6 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: bumblebee-final
           environment_name: Bumblebee-final-env
-          version_label: github-action-${{ steps.current-time.outputs.formattedTime }}
+          version_label: github-action-${{ env.current_time }}  # 고유한 버전 레이블 사용
           region: ap-northeast-2
-          deployment_package: ${{ env.artifact }}  # JAR 파일 경로를 환경 변수로 전달
+          deployment_package: ./RoomIt_BE-0.0.1-SNAPSHOT.jar  # .jar 파일 경로
