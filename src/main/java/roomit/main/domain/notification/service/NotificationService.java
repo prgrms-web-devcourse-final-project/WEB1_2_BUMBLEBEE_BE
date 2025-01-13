@@ -42,15 +42,13 @@ public class NotificationService {
 
     private final ReviewNotificationRepository reviewNotificationRepository;
 
-    private final BusinessRepository businessRepository;
-
-    private final MemberRepository memberRepository;
-
     private final MemberNotificationRepository memberNotificationRepository;
 
     private final FileLocationService fileLocationService;
 
     private static final long DEFAULT_TIMEOUT = 30 * 60 * 1000L; // 30분으로 변경
+    private static final String BUSINESS_KEY_PREFIX = "business-";
+    private static final String MEMBER_KEY_PREFIX = "business-";
 
 
     public SseEmitter subscribe(String id) {
@@ -60,9 +58,9 @@ public class NotificationService {
 
         emitterRepository.save(id, emitter);
 
-            Map<String, Object> testContent = new HashMap<>();
-            testContent.put("content", "connected!");
-            sendToClient(emitter, id, testContent);
+        Map<String, Object> testContent = new HashMap<>();
+        testContent.put("content", "connected!");
+        sendToClient(emitter, id, testContent);
 
         emitter.onError((ex) -> {
             log.error("SSE connection error for businessId={}: {}", id, ex.getMessage());
@@ -82,6 +80,7 @@ public class NotificationService {
 
         return emitter;
     }
+
     // 맨처음 구독시 오는곳
     private void sendToClient(SseEmitter emitter, String emitterId, Object data) {
         try {
@@ -110,10 +109,11 @@ public class NotificationService {
             }
         }
     }
+
     // 리뷰
     public void customNotify(String businessId, ResponseNotificationDto responseNotificationDto) {
 
-        String emitterKey = "business-" + businessId;
+        String emitterKey = BUSINESS_KEY_PREFIX + businessId;
         SseEmitter sseEmitter = emitterRepository.get(emitterKey);
         if (sseEmitter != null) {
             sendToClient(emitterKey, responseNotificationDto);
@@ -123,7 +123,7 @@ public class NotificationService {
     // 사업자 예약
     public void customNotifyReservation(String businessId, ResponseNotificationReservationDto responseNotificationReservationDto) {
 
-        String emitterKey = "business-" + businessId;
+        String emitterKey = BUSINESS_KEY_PREFIX + businessId;
         SseEmitter sseEmitter = emitterRepository.get(emitterKey);
         if (sseEmitter != null) {
             sendToClient(emitterKey, responseNotificationReservationDto);
@@ -132,14 +132,12 @@ public class NotificationService {
 
     public void customNotifyReservationMember(String memberId, ResponseNotificationReservationMemberDto responseNotificationReservationDto) {
 
-        String emitterKey = "member-" + memberId;
+        String emitterKey = MEMBER_KEY_PREFIX + memberId;
         SseEmitter sseEmitter = emitterRepository.get(emitterKey);
         if (sseEmitter != null) {
             sendToClient(emitterKey, responseNotificationReservationDto);
         }
     }
-    
-
 
     @Transactional
     public List<ResponseNotificationDto> getNotifications(Long businessId) {
@@ -148,8 +146,8 @@ public class NotificationService {
         List<ReviewNotification> notifications = reviewNotificationRepository.findNotificationsByBusinessId(businessId);
 
         return notifications.stream()
-                .map((ReviewNotification notification) -> ResponseNotificationDto.fromEntity(
-                    notification, fileLocationService))  // Notification -> NotificationDto 변환
+                .map(notification -> ResponseNotificationDto.fromEntity(
+                        notification, fileLocationService))  // Notification -> NotificationDto 변환
                 .toList();
     }
 
@@ -159,7 +157,17 @@ public class NotificationService {
         List<Notification> notifications = notificationRepository.findNotificationsByBusinessId(businessId);
 
         return notifications.stream()
-                .map((Notification notification) -> ResponseNotificationReservationDto.fromEntityReservation(notification, fileLocationService))  // Notification -> NotificationDto 변환
+                .map(notification -> ResponseNotificationReservationDto.fromEntityReservation(notification, fileLocationService))  // Notification -> NotificationDto 변환
+                .toList();
+    }
+
+    @Transactional
+    public List<ResponseNotificationReservationMemberDto> getNotificationsReservationMember(Long businessId) {
+
+        List<MemberNotification> notifications = memberNotificationRepository.findNotificationsByBusinessId(businessId);
+
+        return notifications.stream()
+                .map(memberNotification -> ResponseNotificationReservationMemberDto.fromEntityReservationtoMember(memberNotification, fileLocationService))  // Notification -> NotificationDto 변환
                 .toList();
     }
 }
