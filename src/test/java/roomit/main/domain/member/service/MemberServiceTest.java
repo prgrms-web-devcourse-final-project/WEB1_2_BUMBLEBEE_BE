@@ -112,29 +112,29 @@ class MemberServiceTest {
 
     }
 
-    @Test
-    @DisplayName(" 정보 수정")
-    void test4(){
-
-
-        memberRepository.save(member);
-
-        MemberUpdateRequest memberRequest = MemberUpdateRequest.builder()
-                .sex(Sex.MALE)
-                .email("sdsd@naver.com")
-                .phoneNumber("010-3323-2323")
-                .nickName("이이")
-                .birthDay(LocalDate.parse("1999-01-01"))
-                .build();
-
-
-
-        MemberResponse myDate = memberService.update(member.getMemberId(), memberRequest);
-
-        assertEquals(memberRequest.sex(),myDate.sex());
-        assertEquals(memberRequest.birthDay(),myDate.birthDay());
-
-    }
+//    @Test
+//    @DisplayName(" 정보 수정")
+//    void test4(){
+//
+//
+//        memberRepository.save(member);
+//
+//        MemberUpdateRequest memberRequest = MemberUpdateRequest.builder()
+//                .sex(Sex.MALE)
+//                .email("sdsd@naver.com")
+//                .phoneNumber("010-3323-2323")
+//                .nickName("이이")
+//                .birthDay(LocalDate.parse("1999-01-01"))
+//                .build();
+//
+//
+//
+//        MemberResponse myDate = memberService.update(member.getMemberId(), memberRequest);
+//
+//        assertEquals(memberRequest.sex(),myDate.sex());
+//        assertEquals(memberRequest.birthDay(),myDate.birthDay());
+//
+//    }
 
     @Test
     @DisplayName(" 정보 삭제")

@@ -1,0 +1,36 @@
+### 멤버 회원가입
+POST http://localhost:8080/api/v1/member/signup
+Content-Type: application/json
+
+{
+  "nickName" : "테스트",
+  "phoneNumber": "010-3333-2222",
+  "sex" : "MALE",
+  "email" : "123@aa.com",
+  "pwd" : "Tpgur8597!!",
+  "birthDay" : "2024-01-01"
+}
+### 멤버 로그인
+POST http://localhost:8080/login/member
+Content-Type: application/json
+
+
+{
+
+  "email" : "chanegeTest231@naver.com",
+  "password" : "Test1234!"
+
+}
+
+### 멤버 수정
+PUT http://localhost:8080/api/v1/member
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuYW1lIjoiY2hhbmVnZVRlc3QyMzFAbmF2ZXIuY29tIiwicm9sZSI6IlJPTEVfVVNFUiIsImlhdCI6MTczNjQ5ODM0NSwiZXhwIjoxNzM2NDk5MjQ1fQ.Jy_iJqNG9gjRfMp4jq64Glud1cnBQRESXioUFcx8o9Q
+
+{
+  "nickName": "치킨집12",
+  "phoneNumber": "010-4231-2313",
+  "email": "chanegeTest1@naver.com",
+  "birthDay": "2000-05-03",
+  "sex": "FEMALE"
+}
