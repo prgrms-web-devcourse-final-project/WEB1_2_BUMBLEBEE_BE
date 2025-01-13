@@ -102,28 +102,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJuY
     "reviewContent": "좋습니다",
     "reviewRating" : 4
  }
-### 멤버 회원가입
-POST http://localhost:8080/api/v1/member/signup
-Content-Type: application/json
-
-{
-    "nickName" : "테스트",
-    "phoneNumber": "010-3333-2222",
-    "sex" : "MALE",
-    "email" : "123@aa.com",
-    "pwd" : "Tpgur8597!!",
-    "birthDay" : "2024-01-01"
-}
-### 멤버 로그인
-POST http://localhost:8080/login/member
-Content-Type: application/json
-
-{
-
-  "email" : "janedoe@gmail.com",
-  "password" : "Test1234!"
-
-}
 
 ### 예약 등록
 POST http://localhost:8080/api/v1/reservations/12
