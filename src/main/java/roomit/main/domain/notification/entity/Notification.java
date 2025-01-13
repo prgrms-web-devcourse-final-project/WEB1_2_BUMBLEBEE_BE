@@ -12,6 +12,7 @@ import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.notification.entity.value.NotificationContent;
 import roomit.main.domain.notification.entity.value.RelatedUrl;
+import roomit.main.domain.reservation.entity.Reservation;
 import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.global.inner.ImageUrl;
 import roomit.main.global.service.FileLocationService;
@@ -66,6 +67,23 @@ public class Notification {
         this.workplaceName = workplaceName;
         this.url = url;
     }
+
+    public static Notification toentity(Business business, Workplace workplace, Reservation reservation, String content, Long price){
+        Notification notification = Notification.builder()
+                .business(business)
+                .workplaceId(workplace.getWorkplaceId())
+                .notificationType(NotificationType.RESERVATION_CONFIRMED)
+                .content(content)
+                .price(price)
+                .url(workplace.getImageUrl().getValue())
+                .reservationName(reservation.getReservationName().getValue())
+                .studyRoomName(reservation.getStudyRoom().getStudyRoomName().getValue())
+                .workplaceName(workplace.getWorkplaceName().getValue())
+                .build();
+
+        return notification;
+    }
+
 
     public String getContent(){
         return content.getContent();

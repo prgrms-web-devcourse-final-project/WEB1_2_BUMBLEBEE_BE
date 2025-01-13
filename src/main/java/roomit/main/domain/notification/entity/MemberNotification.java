@@ -11,6 +11,8 @@ import org.springframework.data.annotation.CreatedDate;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.notification.entity.value.NotificationContent;
+import roomit.main.domain.reservation.entity.Reservation;
+import roomit.main.domain.workplace.entity.Workplace;
 import roomit.main.global.inner.ImageUrl;
 
 import java.time.LocalDateTime;
@@ -57,6 +59,21 @@ public class MemberNotification {
         this.workplaceName = workplaceName;
         this.studyRoomName = studyRoomName;
         this.imageUrl = imageUrl;
+    }
+
+    public static MemberNotification toMemberNotificationEntity(Member member, Reservation reservation, Workplace workplace, String content, Long price){
+        MemberNotification notification = MemberNotification.builder()
+                .member(member)
+                .workplaceId(workplace.getWorkplaceId())
+                .price(price)
+                .workplaceName(workplace.getWorkplaceName().getValue())
+                .studyRoomName(reservation.getStudyRoom().getStudyRoomName().getValue())
+                .imageUrl(workplace.getImageUrl().getValue())
+                .notificationType(NotificationMemberType.MEMBER_RESERVATION_CONFIRMED)
+                .content(content)
+                .build();
+
+        return notification;
     }
 
     public String getContent(){
