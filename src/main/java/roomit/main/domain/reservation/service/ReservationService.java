@@ -83,13 +83,19 @@ public class ReservationService {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime reservationTime = reservation.getStartTime();
 
-        if(now.isBefore(reservationTime.minusDays(2))){
-            // 100프로 환불 메서드
-            reservation.changeReservationState(ReservationState.CANCELLED);
-        }else if(now.isBefore(reservationTime.minusDays(1))){
-            // 50프로 환불 메서드
-            reservation.changeReservationState(ReservationState.CANCELLED);
-        }else{
+        try {
+            reservation.removeReview();
+
+            if (now.isBefore(reservationTime.minusDays(2))) {
+                // 100프로 환불 메서드
+                reservation.changeReservationState(ReservationState.CANCELLED);
+            } else if (now.isBefore(reservationTime.minusDays(1))) {
+                // 50프로 환불 메서드
+                reservation.changeReservationState(ReservationState.CANCELLED);
+            } else {
+                throw ErrorCode.RESERVATION_CANNOT_CANCEL.commonException();
+            }
+        }catch (Exception e){
             throw ErrorCode.RESERVATION_CANNOT_CANCEL.commonException();
         }
     }

@@ -108,6 +108,13 @@ public class StudyRoomService {
             throw ErrorCode.NOT_OWNER_OF_STUDYROOM.commonException();
         }
         try {
+            // 스터디룸에 연결된 예약들 처리
+            existingStudyRoom.getReservations().forEach(reservation -> {
+                // 예약에 연결된 리뷰와의 관계를 끊음
+                if (reservation.getReview() != null) {
+                    reservation.removeReview(); // 리뷰와 예약의 참조 제거
+                }
+            });
             studyRoomRepository.delete(existingStudyRoom);
         }catch (Exception e) {
             throw ErrorCode.STUDYROOM_NOT_DELETE.commonException();
@@ -168,7 +175,6 @@ public class StudyRoomService {
                                                         studyRoom.getWorkPlace().getWorkplaceStartTime(),
                                                         studyRoom.getWorkPlace().getWorkplaceEndTime());
     }
-
 
     // 예약가능한 스터디룸 조회
     @Transactional(readOnly = true)
