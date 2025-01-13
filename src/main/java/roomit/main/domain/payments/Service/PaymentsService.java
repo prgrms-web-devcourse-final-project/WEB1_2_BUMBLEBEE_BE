@@ -110,25 +110,17 @@ public class PaymentsService {
     }
 
     public void alrim( Workplace workplace, Reservation  reservation, String content, Long price) {
+        // 사업자 예약 알림 Entity 생성후 DB에 저장
         Business business = workplace.getBusiness();
 
-        Notification notification = Notification.builder()
-                .business(business)
-                .workplaceId(workplace.getWorkplaceId())
-                .notificationType(NotificationType.RESERVATION_CONFIRMED)
-                .content(content)
-                .price(price)
-                .url(workplace.getImageUrl().getValue())
-                .reservationName(reservation.getReservationName().getValue())
-                .studyRoomName(reservation.getStudyRoom().getStudyRoomName().getValue())
-                .workplaceName(workplace.getWorkplaceName().getValue())
-                .build();
+        Notification toEntity = Notification
+                .toentity(business, workplace, reservation, content, price);
 
-        notificationRepository.save(notification);
+        notificationRepository.save(toEntity);
 
         ResponseNotificationReservationDto responseNotificationDto = ResponseNotificationReservationDto
                 .builder()
-                .notification(notification)
+                .notification(toEntity)
                 .fileLocationService(fileLocationService)
                 .build();
 
@@ -141,21 +133,15 @@ public class PaymentsService {
 
     public void memberAlrim(Member member, Reservation  reservation, Workplace workplace, String content, Long price) {
 
-        MemberNotification notification = MemberNotification.builder()
-                .member(member)
-                .workplaceId(workplace.getWorkplaceId())
-                .price(price)
-                .workplaceName(workplace.getWorkplaceName().getValue())
-                .studyRoomName(reservation.getStudyRoom().getStudyRoomName().getValue())
-                .imageUrl(workplace.getImageUrl().getValue())
-                .notificationType(NotificationMemberType.MEMBER_RESERVATION_CONFIRMED)
-                .content(content)
-                .build();
-        memberNotificationRepository.save(notification);
+        // 멤버 예약 알림 Entity 생성후 DB에 저장
+        MemberNotification memberNotificationEntity = MemberNotification
+                .toMemberNotificationEntity(member, reservation, workplace, content, price);
+
+        memberNotificationRepository.save(memberNotificationEntity);
 
         ResponseNotificationReservationMemberDto responseNotificationDto = ResponseNotificationReservationMemberDto
                 .builder()
-                .notification(notification)
+                .notification(memberNotificationEntity)
                 .fileLocationService(fileLocationService)
                 .build();
 
