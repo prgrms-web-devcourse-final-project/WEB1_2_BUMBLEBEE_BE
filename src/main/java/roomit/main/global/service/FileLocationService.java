@@ -48,7 +48,6 @@ public class FileLocationService {
 
     String baseUrl = "https://s3." + region  + ".amazonaws.com/" + bucketName + "/";
 
-    log.info("baseUrl: {}", baseUrl);
 
     try {
       String path = folderPath.substring(baseUrl.length());  // baseUrl 길이만큼 잘라냄
@@ -76,7 +75,6 @@ public class FileLocationService {
                 if (key.endsWith(extension)) {
                   String imageUrl = baseUrl + key;
                   imageUrls.add(imageUrl);
-                  log.info("imageUrl: {}", imageUrl);
                   break;
                 }
               }

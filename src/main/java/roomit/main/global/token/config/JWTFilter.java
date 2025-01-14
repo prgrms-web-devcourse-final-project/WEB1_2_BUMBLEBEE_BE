@@ -44,6 +44,8 @@ public class JWTFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String headerAuth = request.getHeader("Authorization");
 
+        log.info(request.getRequestURI());
+
         // 헤더 값이 없거나, 토큰 값이 "Bearer "로 시작하지 않으면 다음 필터로 넘김
         if (headerAuth == null || !headerAuth.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);

@@ -23,7 +23,7 @@ public class FileController {
 
         // 단일 URL 생성
         if(fileName != null && fileLocation != null) {
-            Map<String, Object> singleUrl = fileUploadService.generatePreSignUrl(fileName, fileLocation);
+            Map<String, Object> singleUrl = fileUploadService.generaㅣtePreSignUrl(fileName, fileLocation);
             return ResponseEntity.ok(singleUrl);
         }
 
