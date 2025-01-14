@@ -4,8 +4,9 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import roomit.main.domain.business.entity.Business;
+import roomit.main.domain.business.repository.search.SearchBusiness;
 
-public interface BusinessRepository extends JpaRepository<Business, Long> {
+public interface BusinessRepository extends JpaRepository<Business, Long> , SearchBusiness {
 
     @Query(value = "SELECT b FROM Business b WHERE b.businessEmail.value=:businessEmail")
     Optional<Business> findByBusinessEmail(String businessEmail);

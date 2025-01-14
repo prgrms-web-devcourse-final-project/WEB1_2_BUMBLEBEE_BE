@@ -1,23 +1,14 @@
 package roomit.main.domain.review.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomit.main.domain.business.entity.Business;
-import roomit.main.domain.business.repository.BusinessRepository;
 import roomit.main.domain.member.entity.Member;
 import roomit.main.domain.member.repository.MemberRepository;
 import roomit.main.domain.notification.dto.ResponseNotificationDto;
-import roomit.main.domain.notification.entity.Notification;
 import roomit.main.domain.notification.entity.NotificationType;
 import roomit.main.domain.notification.entity.ReviewNotification;
-import roomit.main.domain.notification.repository.NotificationRepository;
 import roomit.main.domain.notification.repository.ReviewNotificationRepository;
 import roomit.main.domain.notification.service.NotificationService;
 import roomit.main.domain.reservation.entity.Reservation;
@@ -34,6 +25,10 @@ import roomit.main.domain.workplace.entity.value.WorkplaceName;
 import roomit.main.domain.workplace.repository.WorkplaceRepository;
 import roomit.main.global.error.ErrorCode;
 import roomit.main.global.service.FileLocationService;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -80,20 +75,16 @@ public class ReviewService {
     public void alrim(Workplace workplace, String reviewContent){
         Business business = workplace.getBusiness();
 
-        ReviewNotification notification = ReviewNotification.builder()
-                .business(business)
-                .workplaceId(workplace.getWorkplaceId())
-                .notificationType(NotificationType.REVIEW_CREATED)
-                .url(workplace.getImageUrl().getValue())
-                .content(reviewContent)
-                .workplaceName(workplace.getWorkplaceName().getValue())
-                .build();
-        reviewNotificationRepository.save(notification);
+        // 리뷰 알림 Entity 생성후 DB에 저장 리뷰 등록시
+        ReviewNotification reviewNotification = ReviewNotification
+                .toReviewNotification(business, workplace, reviewContent);
+
+        reviewNotificationRepository.save(reviewNotification);
 
         ResponseNotificationDto responseNotificationDto = ResponseNotificationDto
                 .builder()
                 .fileLocationService(fileLocationService)
-                .notification(notification)
+                .notification(reviewNotification)
                 .build();
 
         notificationService.customNotify(
@@ -152,6 +143,7 @@ public class ReviewService {
         return responses;
     }
 
+    @Transactional
     public void remove(Long reviewId, String workPlaceName, Long memberId) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(ErrorCode.REVIEW_NOT_FOUND::commonException);

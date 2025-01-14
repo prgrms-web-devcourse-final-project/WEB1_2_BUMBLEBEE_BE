@@ -55,14 +55,13 @@ public class Reservation extends BaseEntity{
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "studyroom_id")
+    @JoinColumn(name = "studyroom_id", nullable = false)
     private StudyRoom studyRoom;
 
-    @OneToOne
-    @JoinColumn(name = "review_id") // 외래 키 이름 설정
+    @OneToOne(mappedBy = "reservation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Review review;
 
-    @OneToOne(mappedBy = "reservation")
+    @OneToOne(mappedBy = "reservation", fetch = FetchType.LAZY)
     private Payments payments;
 
 
@@ -128,10 +127,10 @@ public class Reservation extends BaseEntity{
         review.changeReservation(this); // Review에도 역방향 관계 설정
     }
 
-    @PreRemove
-    private void preRemove() {
-        if (review != null) {
-            review.changeReservation(null); // 리뷰와의 연결을 끊음
+    public void removeReview() {
+        if (this.review != null) {
+            this.review.changeReservation(null); // 리뷰의 예약 참조 제거
+            this.review = null; // 예약에서 리뷰 참조 제거
         }
     }
 }

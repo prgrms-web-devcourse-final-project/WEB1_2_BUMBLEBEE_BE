@@ -14,6 +14,8 @@ public enum ErrorCode {
     MEMBER_UPDATE_EXCEPTION(HttpStatus.BAD_REQUEST, "M001", "잘못된 회원 수정 입니다."),
     MEMBER_DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST, "L005", "중복된 이메일 입니다."),
     MEMBER_DUPLICATE_NICK_NAME(HttpStatus.BAD_REQUEST, "L006", "중복된 닉네임 입니다."),
+    MEMBER_DUPLICATE_PHONENUMBER(HttpStatus.BAD_REQUEST, "L007", "중복된 전화번호 입니다."),
+    MEMBER_NOT_MODIFY(HttpStatus.BAD_REQUEST,"L008","회원 수정 실패"),
 
     /*Reservation*/
     RESERVATION_NOT_FOUND(HttpStatus.BAD_REQUEST,"R001","존재하지 않는 예약입니다."),
@@ -48,8 +50,11 @@ public enum ErrorCode {
     WORKPLACE_NOT_FOUND(HttpStatus.NOT_FOUND,"W004","존재하지 않는 사업장 입니다"),
     WORKPLACE_INVALID_REQUEST(HttpStatus.BAD_REQUEST,"W001-2","잘못된 입력입니다."),
     WORKPLACE_INVALID_ADDRESS(HttpStatus.BAD_REQUEST,"W001-3","잘못된 주소입니다."),
-    WORKPLACE_RECOMMEND_FAIL(HttpStatus.BAD_REQUEST,"W005","맞춤형 추천에 실패하였습니다."),
-    PYTHON_CONNECTED_FAIL(HttpStatus.BAD_REQUEST,"W006","파이썬 서버와 통신에 실패하였습니다."),
+    WORKPLACE_NAME_DUPLICATION(HttpStatus.CONFLICT, "W005", "이미 등록된 이름입니다."),
+    WORKPLACE_ADDRESS_DUPLICATION(HttpStatus.CONFLICT, "W006", "이미 등록된 주소입니다."),
+    WORKPLACE_PHONE_NUMBER_DUPLICATION(HttpStatus.CONFLICT, "W007", "이미 등록된 전화번호입니다."),
+    WORKPLACE_RECOMMEND_FAIL(HttpStatus.BAD_REQUEST,"W008","맞춤형 추천에 실패하였습니다."),
+    PYTHON_CONNECTED_FAIL(HttpStatus.BAD_REQUEST,"W009","파이썬 서버와 통신에 실패하였습니다."),
 
     /*Review*/
     REVIEW_NOT_FOUND(HttpStatus.BAD_REQUEST,"V003","존재 하지 않는 리뷰입니다."),

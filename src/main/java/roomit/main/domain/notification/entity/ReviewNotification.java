@@ -10,6 +10,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.CreatedDate;
 import roomit.main.domain.business.entity.Business;
 import roomit.main.domain.notification.entity.value.NotificationContent;
+import roomit.main.domain.workplace.entity.Workplace;
 
 import java.time.LocalDateTime;
 
@@ -53,6 +54,19 @@ public class ReviewNotification {
         this.studyRoomName = studyRoomName;
         this.workplaceName = workplaceName;
         this.url = url;
+    }
+
+    public static ReviewNotification toReviewNotification(Business business, Workplace workplace, String reviewContent) {
+        ReviewNotification notification = ReviewNotification.builder()
+                .business(business)
+                .workplaceId(workplace.getWorkplaceId())
+                .notificationType(NotificationType.REVIEW_CREATED)
+                .url(workplace.getImageUrl().getValue())
+                .content(reviewContent)
+                .workplaceName(workplace.getWorkplaceName().getValue())
+                .build();
+
+        return notification;
     }
 
     public String getContent(){

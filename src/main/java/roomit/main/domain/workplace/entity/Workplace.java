@@ -95,7 +95,7 @@ public class Workplace {
     @JoinColumn(name = "business_id")
     private Business business;
 
-    @OneToMany(mappedBy = "workPlace", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "workPlace", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudyRoom> studyRoom = new ArrayList<>();
 
     @Builder
