@@ -55,7 +55,6 @@ public class BusinessService {
         return new BusinessResponse(business);
     }
 
-
     //사업자 정보 수정
     @Transactional
     public void updateBusinessInfo(Long businessId, BusinessUpdateRequest updateRequest) {
@@ -70,7 +69,6 @@ public class BusinessService {
             }
         }
     }
-
 
     //사업자 탈퇴
     @Transactional
